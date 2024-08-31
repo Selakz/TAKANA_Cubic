@@ -1,0 +1,13 @@
+{
+  "Speed": 7.0,
+  "AudioDeviation": 0.0,
+  "VisionDeviation": 0.0,
+  "Mode": 2,
+  "Layouts": [
+    1,
+    4,
+    0,
+    3,
+    2
+  ]
+}

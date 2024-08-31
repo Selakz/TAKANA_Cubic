@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 319845bdd6943244c8be3c886aed84fc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - uNote: {instanceID: 0}
+  - tNote: {instanceID: 0}
+  - pauseMenu: {instanceID: 0}
+  - countdown: {instanceID: 0}
+  - m_camera: {instanceID: 0}
+  - audioSource: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
