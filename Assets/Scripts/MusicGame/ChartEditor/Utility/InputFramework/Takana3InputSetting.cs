@@ -827,6 +827,15 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""ForcePause"",
+                    ""type"": ""Value"",
+                    ""id"": ""b6ab26f7-5e26-45d6-9d44-545b5d6734f9"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""Undo"",
                     ""type"": ""Value"",
                     ""id"": ""9fdbd057-e19d-4af2-9153-ffe6676798be"",
@@ -1288,6 +1297,116 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""f8454663-b8a3-49c3-86ce-394f3574926d"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""6b8a7c0c-daa3-449c-8728-890a3f07a719"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""4743d911-56f7-4ff7-91a5-00b8f6bc28d1"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""b722cd29-d341-477a-81de-2d873961a30d"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""8d0a6bc4-b231-4dfa-9437-af221dfea4dd"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""409723a3-9c03-4300-8ae3-f9b91c198abd"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForcePause"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""2e47b9c3-beb4-460e-ad18-5714ba14dd84"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForcePause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""92c4fdee-2d69-4ae2-9180-f121e4397bd8"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForcePause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""04c55298-7371-4eb4-8727-8c993ca0ecc5"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForcePause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""a6db8d5f-26d4-4a82-bdfe-af3f33b41e17"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ForcePause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -3320,6 +3439,7 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         // EditorHotKey
         m_EditorHotKey = asset.FindActionMap("EditorHotKey", throwIfNotFound: true);
         m_EditorHotKey_Pause = m_EditorHotKey.FindAction("Pause", throwIfNotFound: true);
+        m_EditorHotKey_ForcePause = m_EditorHotKey.FindAction("ForcePause", throwIfNotFound: true);
         m_EditorHotKey_Undo = m_EditorHotKey.FindAction("Undo", throwIfNotFound: true);
         m_EditorHotKey_Redo = m_EditorHotKey.FindAction("Redo", throwIfNotFound: true);
         m_EditorHotKey_ToggleSelectMode = m_EditorHotKey.FindAction("ToggleSelectMode", throwIfNotFound: true);
@@ -3788,6 +3908,7 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_EditorHotKey;
     private List<IEditorHotKeyActions> m_EditorHotKeyActionsCallbackInterfaces = new List<IEditorHotKeyActions>();
     private readonly InputAction m_EditorHotKey_Pause;
+    private readonly InputAction m_EditorHotKey_ForcePause;
     private readonly InputAction m_EditorHotKey_Undo;
     private readonly InputAction m_EditorHotKey_Redo;
     private readonly InputAction m_EditorHotKey_ToggleSelectMode;
@@ -3820,6 +3941,7 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         private @Takana3InputSettings m_Wrapper;
         public EditorHotKeyActions(@Takana3InputSettings wrapper) { m_Wrapper = wrapper; }
         public InputAction @Pause => m_Wrapper.m_EditorHotKey_Pause;
+        public InputAction @ForcePause => m_Wrapper.m_EditorHotKey_ForcePause;
         public InputAction @Undo => m_Wrapper.m_EditorHotKey_Undo;
         public InputAction @Redo => m_Wrapper.m_EditorHotKey_Redo;
         public InputAction @ToggleSelectMode => m_Wrapper.m_EditorHotKey_ToggleSelectMode;
@@ -3859,6 +3981,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @ForcePause.started += instance.OnForcePause;
+            @ForcePause.performed += instance.OnForcePause;
+            @ForcePause.canceled += instance.OnForcePause;
             @Undo.started += instance.OnUndo;
             @Undo.performed += instance.OnUndo;
             @Undo.canceled += instance.OnUndo;
@@ -3947,6 +4072,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @ForcePause.started -= instance.OnForcePause;
+            @ForcePause.performed -= instance.OnForcePause;
+            @ForcePause.canceled -= instance.OnForcePause;
             @Undo.started -= instance.OnUndo;
             @Undo.performed -= instance.OnUndo;
             @Undo.canceled -= instance.OnUndo;
@@ -4091,6 +4219,7 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
     public interface IEditorHotKeyActions
     {
         void OnPause(InputAction.CallbackContext context);
+        void OnForcePause(InputAction.CallbackContext context);
         void OnUndo(InputAction.CallbackContext context);
         void OnRedo(InputAction.CallbackContext context);
         void OnToggleSelectMode(InputAction.CallbackContext context);

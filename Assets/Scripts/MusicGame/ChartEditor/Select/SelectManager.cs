@@ -42,6 +42,7 @@ public class SelectManager : MonoBehaviour
         foreach (var note in _selectedNotes) note.Unselect();
         _selectedNotes.Clear();
         TrackLineManager.Instance.Clear();
+        EditPanelManager.Instance.AskForRender();
     }
 
     public void RaycastTrack()

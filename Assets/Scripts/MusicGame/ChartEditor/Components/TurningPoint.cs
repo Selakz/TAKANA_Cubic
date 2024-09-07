@@ -73,8 +73,8 @@ public class TurningPoint : MonoBehaviour
             calcEnd.FixRaw(EditingLevelManager.Instance.MusicSetting.Speed);
             float endX = moveList[index + 1].x;
             float endY = calcEnd.GetPos(moveList[0].time).y;
-            LineDrawer.DrawCurve(lineRenderer, new(Camera.main.G2WPosX(startX), Camera.main.G2WPosY(startY)), new(Camera.main.G2WPosX(endX), Camera.main.G2WPosY(endY)), moveList[index].curve, 0.15f, 0.1f);
-            LineDrawer.DrawCurve(edgeCollider, new(Camera.main.G2WPosX(startX), Camera.main.G2WPosY(startY)), new(Camera.main.G2WPosX(endX), Camera.main.G2WPosY(endY)), moveList[index].curve, 0.1f, 0.2f);
+            LineDrawer.DrawCurve(lineRenderer, new(Camera.main.G2WPosX(startX), Camera.main.G2WPosY(startY)), new(Camera.main.G2WPosX(endX), Camera.main.G2WPosY(endY)), moveList[index].curve, 0.15f);
+            LineDrawer.DrawCurve(edgeCollider, new(Camera.main.G2WPosX(startX), Camera.main.G2WPosY(startY)), new(Camera.main.G2WPosX(endX), Camera.main.G2WPosY(endY)), moveList[index].curve, 0.1f);
         }
     }
 

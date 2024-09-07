@@ -66,10 +66,19 @@ public class InScreenEditManager : MonoBehaviour
             var gamePoint = Camera.main.T3ScreenToGamePoint(Input.mousePosition);
             float inputX = gamePoint.x;
             if (GridManager.Instance.IsTGridShow) gamePoint = GridManager.Instance.GetAttachedGamePoint(gamePoint);
-            var time = GameYToTime(TimeProvider.Instance.ChartTime, EditingLevelManager.Instance.MusicSetting.Speed, gamePoint.y);
+            var timeStart = GameYToTime(TimeProvider.Instance.ChartTime, EditingLevelManager.Instance.MusicSetting.Speed, gamePoint.y);
             float left = gamePoint.x - 1f, right = gamePoint.x + 1f;
             if (GridManager.Instance.IsXGridShow) (left, right) = GridManager.Instance.GetNearestXGridPos(inputX);
-            Track track = new(EditingLevelManager.Instance.RawChartInfo.NewId, TrackType.Common, time, time + 3f,
+            float timeEnd;
+            if (EditingLevelManager.Instance.GlobalSetting.IsInitialTrackLengthNotToEnd)
+            {
+                timeEnd = timeStart + EditingLevelManager.Instance.GlobalSetting.InitialTrackLength_Ms / 1000f;
+            }
+            else
+            {
+                timeEnd = TimeProvider.Instance.AudioToChartTime(TimeProvider.Instance.AudioLength);
+            }
+            Track track = new(EditingLevelManager.Instance.RawChartInfo.NewId, TrackType.Common, timeStart, timeEnd,
                 left, right, true, false, false, EditingLevelManager.Instance.defaultJudgeLine);
             CommandManager.Instance.Add(new CreateTrackCommand(track));
             SelectManager.Instance.SelectTarget = SelectTarget.Track;

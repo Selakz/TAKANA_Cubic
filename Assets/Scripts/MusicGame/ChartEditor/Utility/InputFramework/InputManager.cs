@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.InputActionRebindingExtensions;
 using System.Collections.Generic;
+using TMPro;
 
 public class InputManager : MonoBehaviour
 {
@@ -45,12 +46,10 @@ public class InputManager : MonoBehaviour
             return false;
         }
         InputField inputField = EventSystem.currentSelectedGameObject.GetComponent<InputField>();
-        if (inputField != null)
+        TMP_InputField tmp_InputField = EventSystem.currentSelectedGameObject.GetComponent<TMP_InputField>();
+        if ((inputField != null && inputField.isFocused) || (tmp_InputField != null && tmp_InputField.isFocused))
         {
-            if (inputField.isFocused)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }

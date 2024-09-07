@@ -127,30 +127,35 @@ public class ChartInfo
             ret.AppendLine($"{pair.Key} : {pair.Value};");
         }
         ret.AppendLine("-");
+
+        List<Track> tracks = new();
         foreach (var component in ComponentList)
         {
-            if (component is Track track)
+            if (component is Track track) tracks.Add(track);
+        }
+        tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
+        foreach (var track in tracks)
+        {
+
+            // track本体
+            float lPosEnd = track.LMoveList[^1].x;
+            float rPosEnd = track.RMoveList[^1].x;
+            ret.AppendLine($"track({Mathf.RoundToInt(track.TimeInstantiate * 1000f)}, {Mathf.RoundToInt(track.TimeEnd * 1000f)}, {lPosEnd:0.00}, {rPosEnd:0.00});");
+            // track运动列表
+            ret.AppendLine($"lpos{track.LMoveList}");
+            ret.AppendLine($"rpos{track.RMoveList}");
+            // track附属note
+            for (int i = 0; i < track.Notes.Count; i++)
             {
-                // track本体
-                float lPosEnd = track.LMoveList[^1].x;
-                float rPosEnd = track.RMoveList[^1].x;
-                ret.AppendLine($"track({Mathf.RoundToInt(track.TimeInstantiate * 1000f)}, {Mathf.RoundToInt(track.TimeEnd * 1000f)}, {lPosEnd}, {rPosEnd});");
-                // track运动列表
-                ret.AppendLine($"lpos{track.LMoveList}");
-                ret.AppendLine($"rpos{track.RMoveList}");
-                // track附属note
-                foreach (var note in track.Notes)
-                {
-                    ret.AppendLine(
-                        note switch
-                        {
-                            Tap tap => $"\ttap({Mathf.RoundToInt(tap.TimeJudge * 1000f)});",
-                            Slide slide => $"\tslide({Mathf.RoundToInt(slide.TimeJudge * 1000f)});",
-                            Hold hold => $"\thold({Mathf.RoundToInt(hold.TimeJudge * 1000f)}, {Mathf.RoundToInt(hold.TimeEnd * 1000f)});",
-                            _ => string.Empty
-                        }
-                    );
-                }
+                ret.AppendLine(
+                    track.Notes["Judge", i] switch
+                    {
+                        Tap tap => $"\ttap({Mathf.RoundToInt(tap.TimeJudge * 1000f)});",
+                        Slide slide => $"\tslide({Mathf.RoundToInt(slide.TimeJudge * 1000f)});",
+                        Hold hold => $"\thold({Mathf.RoundToInt(hold.TimeJudge * 1000f)}, {Mathf.RoundToInt(hold.TimeEnd * 1000f)});",
+                        _ => string.Empty
+                    }
+                );
             }
         }
         return ret.ToString();

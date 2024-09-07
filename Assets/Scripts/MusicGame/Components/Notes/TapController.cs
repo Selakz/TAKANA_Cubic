@@ -56,8 +56,8 @@ public class TapController : BaseNoteController
 
     public override void SpriteInit()
     {
-        sprite.size = new(Camera.main.G2WPosX(1.0f), 0.07f);
-        sprite.transform.localScale = new(1, Camera.main.G2WPosY(3.5f));
+        sprite.size = new(Camera.main.G2WPosX(1.0f), 0.1f);
+        sprite.transform.localScale = new(1, Camera.main.G2WPosY(3f));
         boxCollider.size = new(Camera.main.G2WPosX(1.0f), Camera.main.G2WPosY(0.5f));
     }
 

@@ -20,9 +20,9 @@ namespace Takana3.MusicGame
         public const float LowHeightLimit = -11.0f;
 
         /// <summary> Tap和Hold的宽度比Track小的固定值 </summary>
-        public const float TapTrackGap = 0.2f;
+        public const float TapTrackGap = 0.15f;
         /// <summary> Slide的宽度比Track小的固定值 </summary>
-        public const float SlideTrackGap = 0.4f;
+        public const float SlideTrackGap = 0.35f;
 
         /// <summary> 元件停止运动后到销毁前的时间，方便响应其他组合逻辑 </summary>
         public const float TimeAfterEnd = 2.000f;

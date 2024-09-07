@@ -154,6 +154,17 @@ public class EditingLevelManager : MonoBehaviour
                 timer = Time.time;
             }
         }
+        if (GlobalSetting.IsForcePauseAllowed)
+        {
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ForcePause))
+            {
+                if (!isPaused && Camera.main.ContainsScreenPoint(Input.mousePosition))
+                {
+
+                    EventManager.Trigger(EventManager.EventName.Pause);
+                }
+            }
+        }
 
         if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Pause)) TogglePause();
         if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Save)) SaveProject();
@@ -169,7 +180,7 @@ public class EditingLevelManager : MonoBehaviour
             }
             else
             {
-                ResetFieldTo(Current + (y > 0 ? 1f : -1f));
+                ResetFieldTo(Current + (y > 0 ? 0.5f : -0.5f));
             }
         }
     }

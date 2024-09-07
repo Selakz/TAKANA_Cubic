@@ -116,6 +116,10 @@ public class TimeProvider : MonoBehaviour
         isPaused = false;
     }
 
+    public float AudioToChartTime(float audioTime) => audioTime - audioDeviation - Offset;
+
+    public float ChartToAudioTime(float chartTime) => chartTime + audioDeviation + Offset;
+
     // 根据进度条修改时间
 
     // System Functions

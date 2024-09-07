@@ -7,8 +7,9 @@ using static Takana3.MusicGame.Values;
 public class HoldController : BaseNoteController
 {
     // Serializable and Public
-    [SerializeField] Highlight2D holdHighlight;
-    [SerializeField] Highlight2D holdStartHighlight;
+    [SerializeField] private Highlight2D holdHighlight;
+    [SerializeField] private Highlight2D holdStartHighlight;
+    [SerializeField] private SpriteRenderer holdStartSprite;
 
     public override BaseNote Info => _hold;
     public override float GameWidth
@@ -18,20 +19,20 @@ public class HoldController : BaseNoteController
         protected set
         {
             float width = value > 2 * TapTrackGap ? value - TapTrackGap : value;
-            scalePart.localScale = new(Camera.main.G2WPosX(width), scalePart.localScale.y);
-            holdStartSprite.localScale = new(Camera.main.G2WPosX(width), holdStartSprite.localScale.y);
-            boxCollider.size = scalePart.localScale;
+            sprite.size = new(Camera.main.G2WPosX(width), sprite.size.y);
+            holdStartSprite.size = new(Camera.main.G2WPosX(width), holdStartSprite.size.y);
+            boxCollider.size = sprite.size;
         }
     }
     public float GameLength
     {
-        get => Camera.main.W2GPosY(scalePart.localScale.y);
+        get => Camera.main.W2GPosY(sprite.size.y);
         set
         {
-            scalePart.localScale = new(scalePart.localScale.x, Camera.main.G2WPosY(value));
-            scalePart.localPosition = defaultPosition * new Vector2(1, value);
-            boxCollider.size = new(scalePart.localScale.x, Mathf.Max(scalePart.localScale.y, Camera.main.G2WPosY(0.5f)));
-            boxCollider.offset = scalePart.localPosition;
+            sprite.size = new(sprite.size.x, Camera.main.G2WPosY(value));
+            sprite.transform.localPosition = defaultPosition * new Vector2(1, value);
+            boxCollider.size = new(sprite.size.x, Mathf.Max(sprite.size.y, Camera.main.G2WPosY(0.5f)));
+            boxCollider.offset = sprite.transform.localPosition;
         }
     }
     public float GamePos
@@ -44,10 +45,7 @@ public class HoldController : BaseNoteController
     }
 
 
-    [SerializeField] Transform scalePart;
-    [SerializeField] Transform spriteRelease;
-    [SerializeField] Transform spriteFail; // TODO: 将spriterelease/fail换成fail时直接淡出
-    [SerializeField] Transform holdStartSprite;
+
 
     // Private
     private float Current => TimeProvider.Instance.ChartTime;
@@ -64,7 +62,6 @@ public class HoldController : BaseNoteController
     private HoldInputInfo realTimeInfo;
 
     // Static?
-    Vector2 defaultScale;
     Vector2 defaultPosition;
 
     // Defined Functions
@@ -87,10 +84,10 @@ public class HoldController : BaseNoteController
 
     public override void SpriteInit()
     {
-        defaultScale = new(Camera.main.G2WPosX(1.0f), Camera.main.G2WPosY(1.0f));
         defaultPosition = new(0, Camera.main.G2WPosY(0.5f));
-        holdStartSprite.localScale = defaultScale * new Vector2(1, 3.5f);
-        holdStartSprite.localPosition = new(0, 0);
+        holdStartSprite.size = new(Camera.main.G2WPosX(1.0f), 0.1f);
+        holdStartSprite.transform.localScale = new(1, Camera.main.G2WPosY(3f));
+        holdStartSprite.transform.localPosition = new(0, 0);
     }
 
     public override bool HandleInput(float timeInput)
@@ -175,7 +172,7 @@ public class HoldController : BaseNoteController
                 EventManager.Trigger(EventManager.EventName.AddJudgeAndInputInfo, (JudgeResult.LateMiss, (InputInfo)realTimeInfo));
                 Debug.Log("hold" + _hold.Id + " failed.");
 
-                sprite.gameObject.SetActive(false);
+                base.sprite.gameObject.SetActive(false);
             }
         }
     }
@@ -190,7 +187,7 @@ public class HoldController : BaseNoteController
 
             if (!isPaused)
             {
-                sprite.gameObject.SetActive(true);
+                base.sprite.gameObject.SetActive(true);
             }
         }
     }
@@ -205,7 +202,7 @@ public class HoldController : BaseNoteController
 
             if (!isPaused)
             {
-                sprite.gameObject.SetActive(false);
+                base.sprite.gameObject.SetActive(false);
             }
         }
     }
@@ -256,7 +253,7 @@ public class HoldController : BaseNoteController
                     effect.transform.position = effect.transform.position = new(transform.position.x, _hold.BelongingTrack.BelongingLine.ThisObject.transform.position.y);
                     isJudged = false;
                 }
-                sprite.gameObject.SetActive(false);
+                base.sprite.gameObject.SetActive(false);
                 boxCollider.enabled = false;
                 return;
             }

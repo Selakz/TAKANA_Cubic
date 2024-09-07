@@ -141,23 +141,41 @@ public class GridManager : MonoBehaviour
 
     public void InputTGrid()
     {
-        LinesPerBeat = int.Parse(tGridInputField.text);
-        EditingLevelManager.Instance.SingleSetting.TGridLineCount = LinesPerBeat;
-        ResetGrids();
+        if (int.TryParse(tGridInputField.text, out int newTGrid))
+        {
+            if (newTGrid > 0)
+            {
+                LinesPerBeat = int.Parse(tGridInputField.text);
+                EditingLevelManager.Instance.SingleSetting.TGridLineCount = LinesPerBeat;
+                ResetGrids();
+                return;
+            }
+        }
+        tGridInputField.text = LinesPerBeat.ToString();
     }
 
     public void InputXGridInterval()
     {
-        XGridInterval = float.Parse(xGridIntervalInputField.text);
-        EditingLevelManager.Instance.SingleSetting.XGridInterval = XGridInterval;
-        ResetGrids();
+        if (float.TryParse(xGridIntervalInputField.text, out float newInterval))
+        {
+            XGridInterval = newInterval;
+            EditingLevelManager.Instance.SingleSetting.XGridInterval = XGridInterval;
+            ResetGrids();
+            return;
+        }
+        xGridIntervalInputField.text = XGridInterval.ToString();
     }
 
     public void InputXGridOffset()
     {
-        XGridOffset = float.Parse(xGridOffsetInputField.text);
-        EditingLevelManager.Instance.SingleSetting.XGridOffset = XGridOffset;
-        ResetGrids();
+        if (float.TryParse(xGridOffsetInputField.text, out float newOffset))
+        {
+            XGridOffset = newOffset;
+            EditingLevelManager.Instance.SingleSetting.XGridOffset = XGridOffset;
+            ResetGrids();
+            return;
+        }
+        xGridOffsetInputField.text = XGridOffset.ToString();
     }
 
     // System Functions

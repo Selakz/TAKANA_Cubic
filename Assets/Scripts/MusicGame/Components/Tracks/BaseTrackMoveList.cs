@@ -56,7 +56,6 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
     // Defined Functions
     public BaseTrackMoveList(float x, float timeStart, float timeEnd)
     {
-        timeStart -= 0.0001f;
         moveList = new(Comparer<(float time, float x, string curve)>.Create((x, y) => x.time.CompareTo(y.time)));
         moveList.Add((timeStart, x, "u"));
         moveList.Add((timeEnd, x, "u"));
@@ -64,7 +63,6 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
 
     public BaseTrackMoveList(List<(float time, float x, string curve)> moveList, float timeStart, float timeEnd, float posEnd)
     {
-        timeStart -= 0.0001f;
         moveList.RemoveAll(item => item.time < timeStart || item.time > timeEnd);
         this.moveList = new(moveList, Comparer<(float time, float x, string curve)>.Create((x, y) => x.time.CompareTo(y.time)));
         if (moveList.Count == 0) this.moveList.Add((timeStart, posEnd, "u"));

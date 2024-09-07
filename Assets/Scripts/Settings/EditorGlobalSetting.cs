@@ -22,6 +22,13 @@ namespace Takana3.Settings
         /// <summary> 为非正数时将不进行保存 </summary>
         [DefaultValue(1)] public int AutoSaveInterval_Minute { get; set; } = 1;
 
+        [DefaultValue(false)] public bool IsForcePauseAllowed { get; set; } = false;
+
+        [DefaultValue(false)] public bool IsInitialTrackLengthNotToEnd { get; set; } = false;
+
+        /// <summary> 为非正数时长度将自动与乐曲末尾对齐 </summary>
+        [DefaultValue(3000)] public int InitialTrackLength_Ms { get; set; } = 3000;
+
         public static EditorGlobalSetting Load()
         {
             if (!File.Exists(path)) new EditorGlobalSetting().Save();

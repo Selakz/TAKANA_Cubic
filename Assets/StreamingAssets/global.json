@@ -4,5 +4,8 @@
   "TrackOpacity": 1.0,
   "LastOpenedPath": "",
   "IsAutoSaveAllowed": true,
-  "AutoSaveInterval_Minute": 1
+  "AutoSaveInterval_Minute": 1,
+  "IsForcePauseAllowed": false,
+  "IsInitialTrackLengthNotToEnd": false,
+  "InitialTrackLength_Ms": 3000
 }
