@@ -18,7 +18,7 @@ namespace Takana3.MusicGame.LevelSelect
         public void StartGame()
         {
             SongInfo songInfo = new SongList().GetSongInfo(id);
-            LevelInfo levelInfo = new(songInfo, 1);
+            LevelInfo levelInfo = new(songInfo, 2);
             InfoReader.SetInfo(levelInfo);
             SceneLoader.LoadScene("Playfield", "Shutter", "SceneLoadDone");
         }

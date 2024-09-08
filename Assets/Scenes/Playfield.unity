@@ -936,90 +936,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &520891252
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 520891253}
-  - component: {fileID: 520891254}
-  m_Layer: 0
-  m_Name: Sprite
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &520891253
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520891252}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.8135898}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 908281548}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &520891254
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520891252}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0, g: 0.5647059, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &534292585
 GameObject:
   m_ObjectHideFlags: 0
@@ -1194,7 +1110,7 @@ Transform:
   m_GameObject: {fileID: 564627601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.7908554, y: 6.7049313, z: 1.8135898}
+  m_LocalPosition: {x: 0, y: 0, z: 1.8135898}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1787,6 +1703,8 @@ MonoBehaviour:
   _audioTime: 0
   audioDeviation: 0
   audioSource: {fileID: 908281546}
+  PitchShiftMixerGroup: {fileID: 0}
+  DoublePitchShiftMixerGroup: {fileID: 0}
 --- !u!4 &908281548
 Transform:
   m_ObjectHideFlags: 0
@@ -1796,11 +1714,10 @@ Transform:
   m_GameObject: {fileID: 908281545}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.2, y: -3.9, z: 1.8135898}
+  m_LocalPosition: {x: 0, y: 0, z: 1.8135898}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 520891253}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1098925251
@@ -2731,90 +2648,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641365132}
   m_CullTransparentMesh: 1
---- !u!1 &1647453146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1647453147}
-  - component: {fileID: 1647453148}
-  m_Layer: 0
-  m_Name: Sprite
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1647453147
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1647453146}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.2, z: 12.017613}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2048746304}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1647453148
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1647453146}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &1662442641
 GameObject:
   m_ObjectHideFlags: 0
@@ -3029,6 +2862,50 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1814185741
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1814185743}
+  - component: {fileID: 1814185742}
+  m_Layer: 0
+  m_Name: PlayfieldInputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1814185742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814185741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 493a741b8284b6b449c1b5ebe0579b64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1814185743
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1814185741}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.2173395, y: 3.3958867, z: -3.904805}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1839906113
 GameObject:
   m_ObjectHideFlags: 0
@@ -3663,11 +3540,10 @@ Transform:
   m_GameObject: {fileID: 2048746302}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 23.2, y: -3.5, z: -12.017613}
+  m_LocalPosition: {x: 0, y: 0, z: -12.017613}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1647453147}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2048746306
@@ -4251,6 +4127,122 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: f4a44168-e933-4c7a-b05c-8febe026b451
     m_ActionName: Holding/DarkTrackHold[/Keyboard/d,/Keyboard/k]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 559c97b5-704d-4de3-8bcb-4cbf69375f60
+    m_ActionName: EditorHotKey/Pause[/Keyboard/q,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b6ab26f7-5e26-45d6-9d44-545b5d6734f9
+    m_ActionName: EditorHotKey/ForcePause[/Mouse/leftButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9fdbd057-e19d-4af2-9153-ffe6676798be
+    m_ActionName: EditorHotKey/Undo[/Keyboard/z,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7af0ca85-6dd4-4184-90e6-ed5f6478acb4
+    m_ActionName: EditorHotKey/Redo[/Keyboard/y,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 66ba3df7-eed7-4096-9b71-3abf02fa9a18
+    m_ActionName: EditorHotKey/ToggleSelectMode[/Keyboard/backquote,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 920bbbbc-2f50-48fe-81aa-fd019e62d604
+    m_ActionName: EditorHotKey/ToggleLineCurve[/Keyboard/tab,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fc261bf5-fc5e-476d-adf6-dd5aaf12d5be
+    m_ActionName: EditorHotKey/RaycastTrack[/Mouse/leftButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b79cfcc8-7b74-42cd-aed7-6a9e7990edf2
+    m_ActionName: EditorHotKey/RaycastNote[/Mouse/leftButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3087a784-1002-41aa-9736-395114165209
+    m_ActionName: EditorHotKey/RaycastTurningPoint[/Mouse/leftButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a609c4ef-661e-40d1-bc9c-5b48d2411d3c
+    m_ActionName: EditorHotKey/CreateTrack[/Mouse/rightButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5477c356-8913-4590-9aa4-7d71d49817d4
+    m_ActionName: EditorHotKey/CreateNote[/Mouse/rightButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5184fb1a-8199-4775-8bed-227017cedcf4
+    m_ActionName: EditorHotKey/CreateTurningPoint[/Mouse/rightButton,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 87b356e1-bfdc-4dcc-a79b-fcf68b4ab890
+    m_ActionName: EditorHotKey/Delete[/Keyboard/delete,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 23ece0a9-69e0-464f-b7a4-9873e51e5eba
+    m_ActionName: EditorHotKey/SwitchToTap[/Keyboard/1,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: a2e9232d-9e56-44ee-9608-c0d432288acf
+    m_ActionName: EditorHotKey/SwitchToSlide[/Keyboard/2,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: d25cb5a0-a2ca-407d-a812-707c94ecba49
+    m_ActionName: EditorHotKey/SwitchToHold[/Keyboard/3,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ec24e372-e80b-4e8b-9c1f-d91c496e15ae
+    m_ActionName: EditorHotKey/ToNext[/Keyboard/w,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5bd41e68-a8b8-46db-86ec-b9f500b9bf3c
+    m_ActionName: EditorHotKey/ToPrevious[/Keyboard/s,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5f7a9a31-5f6b-4ec5-98f4-25af40d8190e
+    m_ActionName: EditorHotKey/ToNextBeat[/Keyboard/w,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8848cf69-2edc-4e2b-8c9c-cec5fe4f69e3
+    m_ActionName: EditorHotKey/ToPreviousBeat[/Keyboard/s,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 2c9ebd1e-1dfd-455f-baf3-aa050601cb23
+    m_ActionName: EditorHotKey/HoldEndToNext[/Keyboard/w,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 72632893-162f-467d-b4e9-cd64faaa8147
+    m_ActionName: EditorHotKey/HoldEndToPrevious[/Keyboard/s,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6f42dbf7-0c32-4920-a1cd-ac32671faaaf
+    m_ActionName: EditorHotKey/HoldEndToNextBeat[/Keyboard/w,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/upArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 51c12eaa-26a8-44ef-9ae2-9452e7cc9b2a
+    m_ActionName: EditorHotKey/HoldEndToPreviousBeat[/Keyboard/s,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/downArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0a24acb8-a50e-49d2-a083-f246d54fc5ec
+    m_ActionName: EditorHotKey/ToLeft[/Keyboard/a,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/leftArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 68f1f65c-fe92-46a4-a676-e3fb87f6c3e5
+    m_ActionName: EditorHotKey/ToRight[/Keyboard/d,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5ee73d82-76a7-4fc8-a2b6-803d6531f41a
+    m_ActionName: EditorHotKey/ToLeftGrid[/Keyboard/a,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/leftArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 216b53dc-3e64-4b70-9bb2-a6327822379e
+    m_ActionName: EditorHotKey/ToRightGrid[/Keyboard/d,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift,/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0bc8436f-dd8d-4b85-8b11-513bd015f7fd
+    m_ActionName: EditorHotKey/Save[/Keyboard/s,/Keyboard/ctrl,/Keyboard/alt,/Keyboard/shift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Keyboard
@@ -4497,9 +4489,10 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
-  - {fileID: 564627603}
   - {fileID: 2048746304}
   - {fileID: 908281548}
   - {fileID: 2001705663}
   - {fileID: 1275028284}
   - {fileID: 1246632091}
+  - {fileID: 564627603}
+  - {fileID: 1814185743}

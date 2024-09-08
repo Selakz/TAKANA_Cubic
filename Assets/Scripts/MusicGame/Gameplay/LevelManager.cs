@@ -36,7 +36,6 @@ public class LevelManager : MonoBehaviour
         while (componentIndex < levelInfo.ChartInfo.ComponentList.Count
             && levelInfo.ChartInfo.ComponentList["Instantiate", componentIndex].TimeInstantiate < current)
         {
-            Debug.Log($"Instantiate id {levelInfo.ChartInfo.ComponentList["Instantiate", componentIndex].Id} at time {current}");
             levelInfo.ChartInfo.ComponentList["Instantiate", componentIndex].Instantiate();
             componentIndex++;
         }
@@ -171,7 +170,14 @@ public class LevelManager : MonoBehaviour
         EventManager.AddListener(EventManager.EventName.Pause, Pause);
         EventManager.AddListener(EventManager.EventName.Resume, Resume);
 
-        levelInfo = InfoReader.ReadInfo<LevelInfo>() ?? new(new SongList().GetSongInfo(1), 1);
+        levelInfo = InfoReader.ReadInfo<LevelInfo>();
+        if (levelInfo == null)
+        {
+            SongInfo songInfo = new SongList().GetSongInfo(0);
+            levelInfo = new(songInfo, 2);
+            InfoReader.SetInfo(levelInfo);
+            Debug.Log("default levelinfo");
+        }
         chartStatusManager = new(levelInfo.ChartInfo, levelInfo.MusicSetting);
         cover.texture = levelInfo.Cover;
     }
@@ -180,6 +186,7 @@ public class LevelManager : MonoBehaviour
     {
         StartCoroutine(FirstInit());
         EventManager.Trigger(EventManager.EventName.LevelInit);
+        EventManager.Trigger(EventManager.EventName.Resume);
     }
 
     void Update()

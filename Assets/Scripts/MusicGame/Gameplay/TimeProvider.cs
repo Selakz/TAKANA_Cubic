@@ -134,6 +134,13 @@ public class TimeProvider : MonoBehaviour
     void OnEnable()
     {
         levelInfo = InfoReader.ReadInfo<LevelInfo>();
+        if (levelInfo == null)
+        {
+            SongInfo songInfo = new SongList().GetSongInfo(0);
+            levelInfo = new(songInfo, 2);
+            InfoReader.SetInfo(levelInfo);
+            Debug.Log("default levelinfo");
+        }
         Offset = levelInfo.ChartInfo.Offset;
         audioSource.clip = levelInfo.Music;
         AudioLength = levelInfo.Music.length;

@@ -73,6 +73,7 @@ public class TapController : BaseNoteController
             var effect = Instantiate(hitEffect);
             effect.transform.position = new(transform.position.x, _tap.BelongingTrack.BelongingLine.ThisObject.transform.position.y);
             _tap.BelongingTrack.Controller.LaneHitEffect(judgeResult);
+            Debug.Log($"{Info.Id}: {judgeResult}");
             isJudged = true;
             return true;
         }

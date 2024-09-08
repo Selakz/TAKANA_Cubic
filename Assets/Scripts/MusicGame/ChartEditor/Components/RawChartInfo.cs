@@ -1,9 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using Takana3.Settings;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class RawChartInfo
 {
