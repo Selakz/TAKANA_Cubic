@@ -28,6 +28,16 @@ public class TapController : BaseNoteController
         }
     }
 
+    public override bool IsHighlight
+    {
+        get => _isHighlight;
+        set
+        {
+            highlight.IsHighlight = value;
+            _isHighlight = value;
+        }
+    }
+
     // Private
     private float Current => TimeProvider.Instance.ChartTime;
 
@@ -36,12 +46,11 @@ public class TapController : BaseNoteController
     private bool isJudged = false;
     private InputInfo inputInfo;
     private InputInfo realTimeInfo;
+    private bool _isHighlight = false;
 
     // Static
 
-
     // Defined Functions
-
     public override void InfoInit(BaseNote note, InputInfo inputInfo)
     {
         if (note is Tap tap) _tap = tap;
@@ -90,16 +99,6 @@ public class TapController : BaseNoteController
     public void HandleInputInfo()
     {
         if (!isJudged && Current >= _tap.InputInfo.TimeInput) HandleInput(inputInfo.TimeInput);
-    }
-
-    public override void Highlight()
-    {
-        highlight.Highlight();
-    }
-
-    public override void Dehighlight()
-    {
-        highlight.Dehighlight();
     }
 
     // System Functions

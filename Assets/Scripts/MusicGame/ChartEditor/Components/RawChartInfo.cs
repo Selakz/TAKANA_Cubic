@@ -3,7 +3,6 @@ using Takana3.Settings;
 using UnityEngine;
 using UnityEngine.Assertions;
 using System.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 public class RawChartInfo
 {
@@ -100,7 +99,9 @@ public class RawChartInfo
     /// <summary> 只是把track添加到列表中。添加附属note的操作在对应command中进行 </summary>
     public void AddTrack(Track track)
     {
-        ComponentList.AddItem(EditingComponent.AutoWrapByType(track));
+        var editingTrack = EditingComponent.AutoWrapByType(track);
+        (editingTrack as EditingTrack).Layer = TrackLayerManager.Instance == null ? 0 : TrackLayerManager.Instance.SelectedLayer;
+        ComponentList.AddItem(editingTrack);
     }
 
     /// <summary> 只是把track从列表中移除。删除附属note的操作在对应command中进行 </summary>
@@ -168,6 +169,36 @@ public class RawChartInfo
             pair.Value.AddSort("Instantiate", (INote x, INote y) => x.TimeInstantiate.CompareTo(y.TimeInstantiate));
         }
         ComponentList.AddSort("Instantiate", (EditingComponent x, EditingComponent y) => x.TimeInstantiate.CompareTo(y.TimeInstantiate));
+    }
+
+    public void SetLayers(LayerInfo layerInfo)
+    {
+        int i = 0;
+        foreach (var component in ComponentList)
+        {
+            if (component is EditingTrack track)
+            {
+                if (layerInfo.TrackBelongings.Count > i)
+                {
+                    track.Layer = layerInfo.TrackBelongings[i];
+                    i++;
+                }
+                else track.Layer = 0;
+            }
+        }
+    }
+
+    public List<int> GetTrackBelongings()
+    {
+        List<int> list = new();
+        foreach (var component in ComponentList)
+        {
+            if (component is EditingTrack track)
+            {
+                list.Add(track.Layer);
+            }
+        }
+        return list;
     }
 
     public ChartInfo ToChartInfo()

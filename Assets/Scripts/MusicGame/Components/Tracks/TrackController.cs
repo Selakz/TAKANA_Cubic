@@ -6,7 +6,6 @@ public class TrackController : MonoBehaviour
 {
     // Serializable and Public
     [SerializeField] private Highlight2D highlight;
-    [SerializeField] private Transform scalePart;
     [SerializeField] private Transform sprite;
     [SerializeField] private Transform leftLine;
     [SerializeField] private Transform rightLine;
@@ -35,10 +34,38 @@ public class TrackController : MonoBehaviour
         }
     }
 
+    public bool IsHighlight
+    {
+        get => _isHighlight;
+        set
+        {
+            if (_isHighlight == value) return;
+            if (value) highlight.IsHighlight = true;
+            else highlight.IsHighlight = false;
+            _isHighlight = value;
+        }
+    }
+
+    public bool IsHidden
+    {
+        get => _isHidden;
+        set
+        {
+            if (_isHidden == value) return; // 暂时的，理论上该考虑非IsVisible的轨道，但目前也用不到啊
+            sprite.gameObject.SetActive(!value);
+            leftLine.gameObject.SetActive(!value);
+            rightLine.gameObject.SetActive(!value);
+            boxCollider.enabled = !value;
+            _isHidden = value;
+        }
+    }
+
     // Private
     private float Current => TimeProvider.Instance.ChartTime;
 
     private Track _track;
+    private bool _isHighlight = false;
+    private bool _isHidden = false;
 
     // Defined Functions
     public void InfoInit(Track track)
@@ -73,16 +100,6 @@ public class TrackController : MonoBehaviour
     {
         laneBeam.gameObject.SetActive(true);
         if (laneBeam.gameObject.activeInHierarchy) laneBeamAnimator.Play(0);
-    }
-
-    public void Highlight()
-    {
-        highlight.Highlight();
-    }
-
-    public void Dehighlight()
-    {
-        highlight.Dehighlight();
     }
 
     // System Functions

@@ -15,6 +15,7 @@ namespace Takana3.MusicGame.LevelSelect
         public List<InputInfo> InputInfos { get; set; }
         public int Difficulty { get; set; }
         public string LevelPath { get; set; } = string.Empty;
+        public LayerInfo LayerInfo { get; set; } = null;
 
         public LevelInfo(SongInfo songInfo, int difficulty)
         {
@@ -65,7 +66,8 @@ namespace Takana3.MusicGame.LevelSelect
             // MusicSetting
             MusicSetting = MusicSetting.EditorLoad();
             // Chart
-            ChartInfo = ChartReader.ReadExternal(path, difficulty, MusicSetting);
+            ChartInfo = ChartReader.ReadExternal(path, difficulty, MusicSetting, out LayerInfo layerInfo);
+            LayerInfo = layerInfo;
             InputInfos = new();
         }
     }

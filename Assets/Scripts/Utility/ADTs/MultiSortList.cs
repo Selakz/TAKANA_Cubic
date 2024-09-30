@@ -84,6 +84,11 @@ public class MultiSortList<T> : IEnumerable<T>
         foreach (var ids in sortIndexes.Values) ids.Clear();
     }
 
+    public List<T> ToList()
+    {
+        return new(list);
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var item in list)

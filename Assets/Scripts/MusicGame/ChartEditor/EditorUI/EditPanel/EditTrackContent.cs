@@ -9,6 +9,7 @@ public class EditTrackContent : MonoBehaviour
     [SerializeField] private TMP_Text title;
     [SerializeField] private TMP_InputField timeStartInputField;
     [SerializeField] private TMP_InputField timeEndInputField;
+    [SerializeField] private TMP_Dropdown layerDropdown;
     [SerializeField] private GameObject leftMoveListScroll;
     [SerializeField] private GameObject rightMoveListScroll;
     [SerializeField] private RectTransform leftMoveListItems;
@@ -51,6 +52,8 @@ public class EditTrackContent : MonoBehaviour
         end = track.Track.TimeEnd;
         timeStartInputField.text = Mathf.RoundToInt(start * 1000).ToString();
         timeEndInputField.text = Mathf.RoundToInt(end * 1000).ToString();
+        if (TrackLayerManager.Instance != null) layerDropdown.options = TrackLayerManager.Instance.GetOptions();
+        layerDropdown.SetValueWithoutNotify(track.Layer);
         RenderMoveList();
         isLeftMoveListShow = isFirstShowLeft;
         DecideListShow();
@@ -159,6 +162,18 @@ public class EditTrackContent : MonoBehaviour
             HeaderMessage.Show("修改失败", HeaderMessage.MessageType.Warn);
             timeStartInputField.text = Mathf.RoundToInt(start * 1000f).ToString();
         }
+    }
+
+    public void OnLayerValueChanged()
+    {
+        if (layerDropdown.value == 1 && Track.Track.Notes.Count > 0)
+        {
+            HeaderMessage.Show("该轨道上存在Note，无法切换至装饰层", HeaderMessage.MessageType.Info);
+            layerDropdown.SetValueWithoutNotify(Track.Layer);
+            return;
+        }
+        Track.Layer = layerDropdown.value;
+        if (TrackLayerManager.Instance != null) Track.OnSelectedLayerChanged(TrackLayerManager.Instance.SelectedLayer);
     }
 
     // System Functions

@@ -72,4 +72,9 @@ public class Tap : BaseNote
             TimeInput = TimeJudge,
         };
     }
+
+    public override BaseNote Clone(int id, float timeJudge, Track belongingTrack)
+    {
+        return new Tap(id, Type, timeJudge, belongingTrack);
+    }
 }

@@ -72,4 +72,26 @@ public class Track : ITrack
         if (isLeft) return LMoveList.GetPos(current).x;
         else return RMoveList.GetPos(current).x;
     }
+
+    public Track Clone(int id, float timeStart, float leftStart)
+    {
+        Track track = new(id++, Type, timeStart, timeStart + TimeEnd - TimeInstantiate, GetX(TimeEnd, true), GetX(TimeEnd, false), true, false, false, BelongingLine)
+        {
+            // 克隆运动列表
+            LMoveList = LMoveList.Clone(timeStart, leftStart),
+            RMoveList = RMoveList.Clone(timeStart, leftStart + GetX(TimeInstantiate, false) - GetX(TimeInstantiate, true))
+        };
+        // 克隆轨道上的所有Note
+        foreach (var note in Notes)
+        {
+            track.Notes.AddItem(note.Clone(id++, note.TimeJudge + timeStart - TimeInstantiate, track));
+        }
+        // 调整RawChartInfo的id
+        if (EditingLevelManager.Instance != null)
+        {
+            try { EditingLevelManager.Instance.RawChartInfo.NewId = id; }
+            catch { throw new System.Exception("在复制轨道时发生不正确的id赋值情况"); }
+        }
+        return track;
+    }
 }

@@ -1,4 +1,3 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +30,14 @@ public class HeaderMessage : MonoBehaviour
     void Awake()
     {
         _instance = this;
+    }
+
+    void Start()
+    {
+        if (ExceptionHandler.Instance != null)
+        {
+            ExceptionHandler.Instance.LogCallbacks.Add((string a, string b, LogType c) => Show("出现未处理异常，请将日志汇报给作者", MessageType.Error));
+        }
     }
 }
 

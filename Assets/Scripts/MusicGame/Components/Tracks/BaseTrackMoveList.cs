@@ -29,7 +29,7 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
             if (value > moveList[1].time) return;
             else
             {
-                moveList[0] = (value - 0.0001f, moveList[0].x, moveList[0].curve);
+                moveList[0] = (value, moveList[0].x, moveList[0].curve);
                 lastIndex = 0;
             }
         }
@@ -43,7 +43,7 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
             if (value < moveList[^2].time) return;
             else
             {
-                moveList[^1] = (value + 0.0001f, moveList[^1].x, moveList[^1].curve);
+                moveList[^1] = (value, moveList[^1].x, moveList[^1].curve);
                 lastIndex = 0;
             }
         }
@@ -106,6 +106,22 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
         return moveList.IndexOf(item);
     }
 
+    public BaseTrackMoveList Clone(float timeStart, float xStart)
+    {
+        // 计算时间和位置的偏移量
+        float timeOffset = timeStart - moveList[0].time;
+        float xOffset = xStart - moveList[0].x;
+
+        // 创建新的列表并填充数据
+        List<(float time, float x, string curve)> newMoveList = new();
+        for (int i = 0; i < moveList.Count; i++)
+        {
+            var (time, x, curve) = moveList[i];
+            newMoveList.Add((time + timeOffset, x + xOffset, curve));
+        }
+        return new(newMoveList, timeStart, TimeEnd + timeOffset, newMoveList[^1].x);
+    }
+
     /// <summary> 返回不带前缀的pos行内容（含括号和分号） </summary>
     public override string ToString()
     {
@@ -114,7 +130,7 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
         {
             sb.Append($"{Mathf.RoundToInt(moveList[i].time * 1000f)}, {moveList[i].x}, {moveList[i].curve}, ");
         }
-        sb.Append($"{Mathf.RoundToInt(moveList[^2].time * 1000f)}, {moveList[^2].x}, {moveList[^2].curve}); ");
+        sb.Append($"{Mathf.RoundToInt(moveList[^2].time * 1000f)}, {moveList[^2].x}, {moveList[^2].curve});");
         return sb.ToString();
     }
 

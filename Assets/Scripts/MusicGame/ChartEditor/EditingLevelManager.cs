@@ -43,7 +43,8 @@ public class EditingLevelManager : MonoBehaviour
         while (componentIndex < RawChartInfo.ComponentList.Count
             && RawChartInfo.ComponentList["Instantiate", componentIndex].TimeInstantiate < Current)
         {
-            RawChartInfo.ComponentList["Instantiate", componentIndex].Instantiate();
+            var item = RawChartInfo.ComponentList["Instantiate", componentIndex];
+            if (item.IsInitialized) item.Instantiate(); // TODO: 挺有问题的这个，之后找找怎么修！！
             componentIndex++;
         }
     }
@@ -87,11 +88,17 @@ public class EditingLevelManager : MonoBehaviour
 
     public void SaveProject()
     {
-        File.WriteAllText(Path.Combine(LevelPath, $"{SingleSetting.Difficulty}.dlf"), RawChartInfo.ToChartInfo().ToSimpleDLF());
+        LayerInfo layerInfo = null;
+        if (TrackLayerManager.Instance != null)
+        {
+            TrackLayerManager.Instance.UpdateLayer();
+            layerInfo = TrackLayerManager.Instance.LayerInfo;
+        }
+        File.WriteAllText(Path.Combine(LevelPath, $"{SingleSetting.Difficulty}.dlf"), RawChartInfo.ToChartInfo().ToSimpleDLF(layerInfo));
         MusicSetting.EditorSave();
         GlobalSetting.Save();
         SingleSetting.Save(Path.Combine(LevelPath, "Takana_Data", "setting.json"));
-        SongInfo.Save(Path.Combine(levelInfo.LevelPath, "Takana_Data", "song.json"));
+        SongInfo.Save(Path.Combine(LevelPath, "Takana_Data", "song.json"));
         HeaderMessage.Show("保存成功！", HeaderMessage.MessageType.Success);
     }
 

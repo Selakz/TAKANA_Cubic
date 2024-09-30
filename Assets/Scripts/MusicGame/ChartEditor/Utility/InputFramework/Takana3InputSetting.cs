@@ -899,6 +899,33 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""RaycastTrackMulti"",
+                    ""type"": ""Value"",
+                    ""id"": ""74823946-7060-4079-97e2-36e2451be98a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RaycastNoteMulti"",
+                    ""type"": ""Value"",
+                    ""id"": ""d234982a-c62c-43f8-85b5-6be9cbca6039"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RaycastTurningPointMulti"",
+                    ""type"": ""Value"",
+                    ""id"": ""b41a9a3a-bba2-4ba1-b483-f8d63c61b88c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""CreateTrack"",
                     ""type"": ""Value"",
                     ""id"": ""a609c4ef-661e-40d1-bc9c-5b48d2411d3c"",
@@ -1077,6 +1104,51 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Cut"",
+                    ""type"": ""Value"",
+                    ""id"": ""091a24f0-52cc-4860-8776-7a182a6baf4e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Copy"",
+                    ""type"": ""Value"",
+                    ""id"": ""5d8de9c2-3c47-43e4-8a04-27a4f6ca77d0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Paste"",
+                    ""type"": ""Value"",
+                    ""id"": ""1f81c443-a755-4338-aaa6-dc0786a7177e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ExactPaste"",
+                    ""type"": ""Value"",
+                    ""id"": ""304b4c2d-f6d0-47b3-a3fb-c07fa9249f77"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CheckClipboard"",
+                    ""type"": ""Value"",
+                    ""id"": ""ce7f7df1-d672-40f9-a56d-3a71e231bbcf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -1137,6 +1209,61 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Key With Modifiers"",
+                    ""id"": ""4ffe1557-e287-4c0e-983a-b968053de39a"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTrackMulti"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""a65f6ce3-cff7-4f87-bace-7b8c7a562937"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTrackMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""40cb3743-e881-4467-9eab-048d3b0671d4"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTrackMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""6417670f-9328-4c3e-be5a-3d549d006b74"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTrackMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""1f859508-e35a-4aee-a55f-e1ee1abcee4f"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTrackMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
                     ""id"": ""b23bc372-5246-42f7-b15e-35922a0db87b"",
                     ""path"": ""KeyWithModifiers"",
                     ""interactions"": ""HotKey(needModifier3=true)"",
@@ -1192,6 +1319,61 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Key With Modifiers"",
+                    ""id"": ""ebadda12-a43a-4cc2-b9b3-134c45a94fef"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true,needModifier3=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastNoteMulti"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""82b6fc4e-fd12-4e6d-bc0d-b7e35390b34b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastNoteMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""a0a302df-dc26-4f05-8b10-260b140435cc"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastNoteMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""8232ad30-b001-4407-9df4-f29a736604ff"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastNoteMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""4ba839e4-7e1b-4502-b33d-558457cb6014"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastNoteMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
                     ""id"": ""5d3378b0-2388-4300-9429-29631930eeeb"",
                     ""path"": ""KeyWithModifiers"",
                     ""interactions"": ""HotKey(needModifier2=true)"",
@@ -1242,6 +1424,61 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""RaycastTurningPoint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""140b541e-f1ac-4a10-bce0-bd8be214d1d9"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true,needModifier2=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTurningPointMulti"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""4aec75ad-4df2-457d-9e35-7bfe70cbd104"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTurningPointMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""37bf5798-4624-4d4f-bb29-f4f2413b0df0"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTurningPointMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""b7d4bf0b-992a-4316-8aa8-af14aa67d3c6"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTurningPointMulti"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""e8297c8c-f6c7-4dac-8368-217fa9a9a6d2"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaycastTurningPointMulti"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1462,6 +1699,281 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""102f36fc-c690-4cca-a3f0-30b3f75c62fd"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""df4f86db-a9e5-46d8-928c-8494d2441f6b"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""4d1c3a77-c6ef-42af-bf17-64b2df4281e7"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""b09b0434-95d4-49e1-a18f-fa8c3704b533"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""0a24a9f0-ae03-4ac1-a18e-fe42b50a6512"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""3fb4c256-e0d7-4c6b-b1fd-3bdbb31f7216"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""67dc2227-12c6-435a-94e6-706a53e3c0d0"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""bd762aa1-f9f4-48f3-8c60-4890af3d4b0c"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""1ddd122f-4cd7-4ba9-8c22-1a2088c3b58c"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""bac238df-dbea-4122-a57b-8811a6bcfcdc"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Copy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""fedbb165-59f4-487c-ae31-7fa2ad40479a"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""a4b9e68d-8006-4c1b-8deb-a409333e96ca"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""de395ca4-31dd-46eb-bba4-ae3d7062b54f"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""a1cce8fc-8c03-404b-9f19-98a2cae4d219"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""97f95408-da01-442d-8c09-20373e839a96"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Paste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""7d497d3e-b136-4ff5-8017-f079c8206257"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true,needModifier3=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExactPaste"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""1e7dee5c-e1f5-4013-9229-034ab7052329"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExactPaste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""4122e718-7d0e-4ae9-aa40-7e0de6171c75"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExactPaste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""bf1797de-2278-4bdb-a0f0-7e13ad734bd6"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExactPaste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""df6e9be9-cd17-47d2-a738-7af716059ce0"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ExactPaste"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""bd5818b0-a667-4677-a131-e62cc65690b2"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClipboard"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""f4fe0a41-29be-4052-b33d-14af01b38d87"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClipboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""7bece00d-49dd-455b-954e-82d8dac3c9be"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClipboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""8324cad1-615c-496f-ad35-5b67e80b4e27"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClipboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""6a951110-1530-40ce-8783-137077ba76b7"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheckClipboard"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -3447,6 +3959,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         m_EditorHotKey_RaycastTrack = m_EditorHotKey.FindAction("RaycastTrack", throwIfNotFound: true);
         m_EditorHotKey_RaycastNote = m_EditorHotKey.FindAction("RaycastNote", throwIfNotFound: true);
         m_EditorHotKey_RaycastTurningPoint = m_EditorHotKey.FindAction("RaycastTurningPoint", throwIfNotFound: true);
+        m_EditorHotKey_RaycastTrackMulti = m_EditorHotKey.FindAction("RaycastTrackMulti", throwIfNotFound: true);
+        m_EditorHotKey_RaycastNoteMulti = m_EditorHotKey.FindAction("RaycastNoteMulti", throwIfNotFound: true);
+        m_EditorHotKey_RaycastTurningPointMulti = m_EditorHotKey.FindAction("RaycastTurningPointMulti", throwIfNotFound: true);
         m_EditorHotKey_CreateTrack = m_EditorHotKey.FindAction("CreateTrack", throwIfNotFound: true);
         m_EditorHotKey_CreateNote = m_EditorHotKey.FindAction("CreateNote", throwIfNotFound: true);
         m_EditorHotKey_CreateTurningPoint = m_EditorHotKey.FindAction("CreateTurningPoint", throwIfNotFound: true);
@@ -3467,6 +3982,11 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         m_EditorHotKey_ToLeftGrid = m_EditorHotKey.FindAction("ToLeftGrid", throwIfNotFound: true);
         m_EditorHotKey_ToRightGrid = m_EditorHotKey.FindAction("ToRightGrid", throwIfNotFound: true);
         m_EditorHotKey_Save = m_EditorHotKey.FindAction("Save", throwIfNotFound: true);
+        m_EditorHotKey_Cut = m_EditorHotKey.FindAction("Cut", throwIfNotFound: true);
+        m_EditorHotKey_Copy = m_EditorHotKey.FindAction("Copy", throwIfNotFound: true);
+        m_EditorHotKey_Paste = m_EditorHotKey.FindAction("Paste", throwIfNotFound: true);
+        m_EditorHotKey_ExactPaste = m_EditorHotKey.FindAction("ExactPaste", throwIfNotFound: true);
+        m_EditorHotKey_CheckClipboard = m_EditorHotKey.FindAction("CheckClipboard", throwIfNotFound: true);
     }
 
     ~@Takana3InputSettings()
@@ -3916,6 +4436,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
     private readonly InputAction m_EditorHotKey_RaycastTrack;
     private readonly InputAction m_EditorHotKey_RaycastNote;
     private readonly InputAction m_EditorHotKey_RaycastTurningPoint;
+    private readonly InputAction m_EditorHotKey_RaycastTrackMulti;
+    private readonly InputAction m_EditorHotKey_RaycastNoteMulti;
+    private readonly InputAction m_EditorHotKey_RaycastTurningPointMulti;
     private readonly InputAction m_EditorHotKey_CreateTrack;
     private readonly InputAction m_EditorHotKey_CreateNote;
     private readonly InputAction m_EditorHotKey_CreateTurningPoint;
@@ -3936,6 +4459,11 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
     private readonly InputAction m_EditorHotKey_ToLeftGrid;
     private readonly InputAction m_EditorHotKey_ToRightGrid;
     private readonly InputAction m_EditorHotKey_Save;
+    private readonly InputAction m_EditorHotKey_Cut;
+    private readonly InputAction m_EditorHotKey_Copy;
+    private readonly InputAction m_EditorHotKey_Paste;
+    private readonly InputAction m_EditorHotKey_ExactPaste;
+    private readonly InputAction m_EditorHotKey_CheckClipboard;
     public struct EditorHotKeyActions
     {
         private @Takana3InputSettings m_Wrapper;
@@ -3949,6 +4477,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         public InputAction @RaycastTrack => m_Wrapper.m_EditorHotKey_RaycastTrack;
         public InputAction @RaycastNote => m_Wrapper.m_EditorHotKey_RaycastNote;
         public InputAction @RaycastTurningPoint => m_Wrapper.m_EditorHotKey_RaycastTurningPoint;
+        public InputAction @RaycastTrackMulti => m_Wrapper.m_EditorHotKey_RaycastTrackMulti;
+        public InputAction @RaycastNoteMulti => m_Wrapper.m_EditorHotKey_RaycastNoteMulti;
+        public InputAction @RaycastTurningPointMulti => m_Wrapper.m_EditorHotKey_RaycastTurningPointMulti;
         public InputAction @CreateTrack => m_Wrapper.m_EditorHotKey_CreateTrack;
         public InputAction @CreateNote => m_Wrapper.m_EditorHotKey_CreateNote;
         public InputAction @CreateTurningPoint => m_Wrapper.m_EditorHotKey_CreateTurningPoint;
@@ -3969,6 +4500,11 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         public InputAction @ToLeftGrid => m_Wrapper.m_EditorHotKey_ToLeftGrid;
         public InputAction @ToRightGrid => m_Wrapper.m_EditorHotKey_ToRightGrid;
         public InputAction @Save => m_Wrapper.m_EditorHotKey_Save;
+        public InputAction @Cut => m_Wrapper.m_EditorHotKey_Cut;
+        public InputAction @Copy => m_Wrapper.m_EditorHotKey_Copy;
+        public InputAction @Paste => m_Wrapper.m_EditorHotKey_Paste;
+        public InputAction @ExactPaste => m_Wrapper.m_EditorHotKey_ExactPaste;
+        public InputAction @CheckClipboard => m_Wrapper.m_EditorHotKey_CheckClipboard;
         public InputActionMap Get() { return m_Wrapper.m_EditorHotKey; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -4005,6 +4541,15 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @RaycastTurningPoint.started += instance.OnRaycastTurningPoint;
             @RaycastTurningPoint.performed += instance.OnRaycastTurningPoint;
             @RaycastTurningPoint.canceled += instance.OnRaycastTurningPoint;
+            @RaycastTrackMulti.started += instance.OnRaycastTrackMulti;
+            @RaycastTrackMulti.performed += instance.OnRaycastTrackMulti;
+            @RaycastTrackMulti.canceled += instance.OnRaycastTrackMulti;
+            @RaycastNoteMulti.started += instance.OnRaycastNoteMulti;
+            @RaycastNoteMulti.performed += instance.OnRaycastNoteMulti;
+            @RaycastNoteMulti.canceled += instance.OnRaycastNoteMulti;
+            @RaycastTurningPointMulti.started += instance.OnRaycastTurningPointMulti;
+            @RaycastTurningPointMulti.performed += instance.OnRaycastTurningPointMulti;
+            @RaycastTurningPointMulti.canceled += instance.OnRaycastTurningPointMulti;
             @CreateTrack.started += instance.OnCreateTrack;
             @CreateTrack.performed += instance.OnCreateTrack;
             @CreateTrack.canceled += instance.OnCreateTrack;
@@ -4065,6 +4610,21 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @Save.started += instance.OnSave;
             @Save.performed += instance.OnSave;
             @Save.canceled += instance.OnSave;
+            @Cut.started += instance.OnCut;
+            @Cut.performed += instance.OnCut;
+            @Cut.canceled += instance.OnCut;
+            @Copy.started += instance.OnCopy;
+            @Copy.performed += instance.OnCopy;
+            @Copy.canceled += instance.OnCopy;
+            @Paste.started += instance.OnPaste;
+            @Paste.performed += instance.OnPaste;
+            @Paste.canceled += instance.OnPaste;
+            @ExactPaste.started += instance.OnExactPaste;
+            @ExactPaste.performed += instance.OnExactPaste;
+            @ExactPaste.canceled += instance.OnExactPaste;
+            @CheckClipboard.started += instance.OnCheckClipboard;
+            @CheckClipboard.performed += instance.OnCheckClipboard;
+            @CheckClipboard.canceled += instance.OnCheckClipboard;
         }
 
         private void UnregisterCallbacks(IEditorHotKeyActions instance)
@@ -4096,6 +4656,15 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @RaycastTurningPoint.started -= instance.OnRaycastTurningPoint;
             @RaycastTurningPoint.performed -= instance.OnRaycastTurningPoint;
             @RaycastTurningPoint.canceled -= instance.OnRaycastTurningPoint;
+            @RaycastTrackMulti.started -= instance.OnRaycastTrackMulti;
+            @RaycastTrackMulti.performed -= instance.OnRaycastTrackMulti;
+            @RaycastTrackMulti.canceled -= instance.OnRaycastTrackMulti;
+            @RaycastNoteMulti.started -= instance.OnRaycastNoteMulti;
+            @RaycastNoteMulti.performed -= instance.OnRaycastNoteMulti;
+            @RaycastNoteMulti.canceled -= instance.OnRaycastNoteMulti;
+            @RaycastTurningPointMulti.started -= instance.OnRaycastTurningPointMulti;
+            @RaycastTurningPointMulti.performed -= instance.OnRaycastTurningPointMulti;
+            @RaycastTurningPointMulti.canceled -= instance.OnRaycastTurningPointMulti;
             @CreateTrack.started -= instance.OnCreateTrack;
             @CreateTrack.performed -= instance.OnCreateTrack;
             @CreateTrack.canceled -= instance.OnCreateTrack;
@@ -4156,6 +4725,21 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
             @Save.started -= instance.OnSave;
             @Save.performed -= instance.OnSave;
             @Save.canceled -= instance.OnSave;
+            @Cut.started -= instance.OnCut;
+            @Cut.performed -= instance.OnCut;
+            @Cut.canceled -= instance.OnCut;
+            @Copy.started -= instance.OnCopy;
+            @Copy.performed -= instance.OnCopy;
+            @Copy.canceled -= instance.OnCopy;
+            @Paste.started -= instance.OnPaste;
+            @Paste.performed -= instance.OnPaste;
+            @Paste.canceled -= instance.OnPaste;
+            @ExactPaste.started -= instance.OnExactPaste;
+            @ExactPaste.performed -= instance.OnExactPaste;
+            @ExactPaste.canceled -= instance.OnExactPaste;
+            @CheckClipboard.started -= instance.OnCheckClipboard;
+            @CheckClipboard.performed -= instance.OnCheckClipboard;
+            @CheckClipboard.canceled -= instance.OnCheckClipboard;
         }
 
         public void RemoveCallbacks(IEditorHotKeyActions instance)
@@ -4227,6 +4811,9 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         void OnRaycastTrack(InputAction.CallbackContext context);
         void OnRaycastNote(InputAction.CallbackContext context);
         void OnRaycastTurningPoint(InputAction.CallbackContext context);
+        void OnRaycastTrackMulti(InputAction.CallbackContext context);
+        void OnRaycastNoteMulti(InputAction.CallbackContext context);
+        void OnRaycastTurningPointMulti(InputAction.CallbackContext context);
         void OnCreateTrack(InputAction.CallbackContext context);
         void OnCreateNote(InputAction.CallbackContext context);
         void OnCreateTurningPoint(InputAction.CallbackContext context);
@@ -4247,5 +4834,10 @@ public partial class @Takana3InputSettings: IInputActionCollection2, IDisposable
         void OnToLeftGrid(InputAction.CallbackContext context);
         void OnToRightGrid(InputAction.CallbackContext context);
         void OnSave(InputAction.CallbackContext context);
+        void OnCut(InputAction.CallbackContext context);
+        void OnCopy(InputAction.CallbackContext context);
+        void OnPaste(InputAction.CallbackContext context);
+        void OnExactPaste(InputAction.CallbackContext context);
+        void OnCheckClipboard(InputAction.CallbackContext context);
     }
 }

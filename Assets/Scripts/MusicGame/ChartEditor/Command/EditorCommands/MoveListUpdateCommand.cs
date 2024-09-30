@@ -25,8 +25,8 @@ public class MoveListUpdateCommand : ICommand
     {
         int index = moveList.IndexOf(original);
         moveList[index] = updated;
-        TrackLineManager.Instance.SelectedMoveList = moveList;
-        TrackLineManager.Instance.SelectedItem = updated;
+        TrackLineManager.Instance.RemoveSelectedItem(moveList, original);
+        TrackLineManager.Instance.AddSelectedItem(moveList, updated);
         EditingLevelManager.Instance.AskForResetField();
         EditPanelManager.Instance.AskForRender();
     }
@@ -35,8 +35,8 @@ public class MoveListUpdateCommand : ICommand
     {
         int index = moveList.IndexOf(updated);
         moveList[index] = original;
-        TrackLineManager.Instance.SelectedMoveList = moveList;
-        TrackLineManager.Instance.SelectedItem = original;
+        TrackLineManager.Instance.RemoveSelectedItem(moveList, updated);
+        TrackLineManager.Instance.AddSelectedItem(moveList, original);
         EditingLevelManager.Instance.AskForResetField();
         EditPanelManager.Instance.AskForRender();
     }

@@ -28,6 +28,16 @@ public class SlideController : BaseNoteController
         }
     }
 
+    public override bool IsHighlight
+    {
+        get => _isHighlight;
+        set
+        {
+            highlight.IsHighlight = value;
+            _isHighlight = value;
+        }
+    }
+
     // Private
     private float Current => TimeProvider.Instance.ChartTime;
 
@@ -36,12 +46,11 @@ public class SlideController : BaseNoteController
     private bool isJudged = false;
     private InputInfo inputInfo;
     private InputInfo realTimeInfo;
+    private bool _isHighlight = false;
 
     // Static
 
-
     // Defined Functions
-
     public override void InfoInit(BaseNote note, InputInfo inputInfo)
     {
         if (note is Slide slide) _slide = slide;
@@ -83,23 +92,11 @@ public class SlideController : BaseNoteController
     {
         GameWidth = GameWidth;
         GamePos = _slide.GetY(Current);
-        //float posY = Camera.main.G2WPosY(_slide.GetY(Current));
-        //transform.localPosition = new(0, posY);
     }
 
     public void HandleInputInfo()
     {
         if (!isJudged && Current >= _slide.InputInfo.TimeInput) HandleInput(inputInfo.TimeInput);
-    }
-
-    public override void Highlight()
-    {
-        highlight.Highlight();
-    }
-
-    public override void Dehighlight()
-    {
-        highlight.Dehighlight();
     }
 
     // System Functions

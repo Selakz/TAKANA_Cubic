@@ -1,8 +1,8 @@
-using Takana3.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using Takana3.Settings;
 using UnityEngine;
 using static Takana3.MusicGame.Values;
 
@@ -19,18 +19,22 @@ public class ChartReader
     private int ptr = 0; // 谱面行数指针
     private int g_ID = 0; // 通过自增为每个元件赋予ID
     private bool isOffsetDone = false;
+    private bool isLayerNameDone = false;
+    private bool isLayerOrderDone = false;
     private bool isChartProcess = false;
     private Tap g_Tap; // 全局press指针
     private Slide g_Slide; // 全局press指针
     private Hold g_Hold; // 全局thold指针
     private Track g_Track; // 全局track指针
     private JudgeLine g_Line; // 全局judgeline指针
+    private LayerInfo layerInfo = new(); // 编辑器下产出图层信息
+    private Dictionary<int, int> layerLiteralToActual = new();
 
     // Static
     // 看来有些表达式之后不太能写成常量的样子...
     private const string uInt = @"\d+", Int = @"-?\d+", uFloat = @"\d+(?:\.\d+)?", Float = @"-?\d+(?:\.\d+)?", Bool = @"(?:True|true|False|false)";
     private const string Curve = @"(?:u|s|si|so|sb|sa)";
-    private const string Color = @"(?:t|r|b|d)";
+    //private const string Color = @"(?:t|r|b|d)";
     private enum Regexes
     {
         Empty,
@@ -41,9 +45,10 @@ public class ChartReader
         Slide, SlideS,
         Hold, HoldS, Scale,
         Camera, Plot,
+        LayerName, LayerOrder
     }
 
-    // TODO: 整理正则表达式信息
+    // TODO: 整理正则表达式信息（不是哥们我之前怎么就没有用扩展方法呢我请问了？？？）
     private readonly Dictionary<Regexes, string> regexes = new(){
         {Regexes.Empty, @"^\s*$"},
         {Regexes.Offset, @$"^\s*offset\s*\(\s*({uInt})\s*\);"},
@@ -55,7 +60,7 @@ public class ChartReader
         {Regexes.Speed, @$"^\s*speed\s*\(((?:\s*{uInt},\s*{Float},)*(?:\s*{uInt},\s*{Float}))\s*\)\s*;"},
         {Regexes.Trail, @$"^\s*trail\s*\(((?:\s*{uInt},\s*{Float},)*(?:\s*{uInt},\s*{Float}))\s*\)\s*;"},
 
-        // 理论上原游戏只需要用到以下9个表达式
+        // 理论上原游戏只需要用到以下的表达式
         {Regexes.Track, @$"^\s*track\s*\(\s*({uInt}),\s*({uInt}),\s*({Float}),\s*({Float})\s*\)\s*;"},
         {Regexes.LPos, @$"^\s*lpos\s*\(((?:\s*{uInt},\s*{Float},\s*{Curve},)*(?:\s*{uInt},\s*{Float},\s*{Curve}))\s*\)\s*;"},
         {Regexes.RPos, @$"^\s*rpos\s*\(((?:\s*{uInt},\s*{Float},\s*{Curve},)*(?:\s*{uInt},\s*{Float},\s*{Curve}))\s*\)\s*;"},
@@ -65,14 +70,16 @@ public class ChartReader
         {Regexes.SlideS, @$"^\s*slide\s*\(\s*({uInt}),\s*({Float})\s*\)\s*;"},
         {Regexes.Hold, @$"^\s*hold\s*\(\s*({uInt}),\s*({uInt})\s*\)\s*;"},
         {Regexes.HoldS, @$"^\s*hold\s*\(\s*({uInt}),\s*({uInt}),\s*({Float})\s*\)\s*;"},
+        {Regexes.LayerName, @$"^\s*layername\s*\(((?:\s*{uInt},\s*\S*,)*(?:\s*{uInt},\s*\S*))\s*\)\s*;" },
+        {Regexes.LayerOrder, @$"^\s*layerorder\s*\(((?:\s*{uInt},)*(?:\s*{uInt}))\s*\)\s*;" },
 
         {Regexes.Scale, @$"^\s*scale\s*\(((?:\s*{uInt},\s*{Float},)*(?:\s*{uInt},\s*{Float}))\s*\)\s*;"},
-        {Regexes.Camera, @$""},
-        {Regexes.Plot, @$""},
+        {Regexes.Camera, @$"camera"},
+        {Regexes.Plot, @$"plot"},
     };
 
     private readonly HashSet<Regexes> BaseRegex = new(){
-        Regexes.Empty, Regexes.Offset, Regexes.Split, Regexes.Custom,
+        Regexes.Empty, Regexes.Offset, Regexes.Split, Regexes.Custom, Regexes.LayerName, Regexes.LayerOrder,
         Regexes.UTap, Regexes.UTapS, Regexes.Track, Regexes.Camera, Regexes.Plot,
     };
 
@@ -110,11 +117,13 @@ public class ChartReader
         return chartInfo;
     }
 
-    public static ChartInfo ReadExternal(string path, int difficulty, MusicSetting setting)
+    public static ChartInfo ReadExternal(string path, int difficulty, MusicSetting setting, out LayerInfo layerInfo)
     {
         var rawChart = File.ReadAllText($"{path}/{difficulty}.dlf");
-        ChartInfo chartInfo = new ChartReader().InClassRead(rawChart);
+        ChartReader chartReader = new();
+        ChartInfo chartInfo = chartReader.InClassRead(rawChart);
         chartInfo.Initialize(setting);
+        layerInfo = chartReader.layerInfo;
         return chartInfo;
     }
 
@@ -155,6 +164,8 @@ public class ChartReader
                             Regexes.Offset => CaseOffset,
                             Regexes.Split => CaseSplit,
                             Regexes.Custom => CaseCustom,
+                            Regexes.LayerName => CaseLayerName,
+                            Regexes.LayerOrder => CaseLayerOrder,
                             _ => AssertError
                         };
                     }
@@ -764,6 +775,50 @@ public class ChartReader
     private void CasePlot(Match match)
     {
         // Plot line read when finished relative functions.
+    }
+
+    private void CaseLayerName(Match match)
+    {
+        if (isLayerNameDone && isChartProcess) AssertError("Wrong layer line position.");
+        string[] nameLine = match.Groups[1].Value.Split(',');
+
+        List<string> names = new();
+
+        // 读取名称并排序
+        List<(int literal, string name)> layers = new();
+        for (int i = 0; i < nameLine.Length; i += 2)
+        {
+            int literal = int.Parse(nameLine[i]);
+            string name = nameLine[i + 1].Trim();
+            if (literal < 3) AssertError("Illegal layer number.");
+            layers.Add((literal, name));
+        }
+        layers.Sort((a, b) => a.literal.CompareTo(b.literal));
+        for (int i = 0; i < layers.Count; i++)
+        {
+            layerLiteralToActual[layers[i].literal] = i + 3;
+            names.Add(layers[i].name);
+        }
+        layerInfo.LayerNames = names;
+        isLayerNameDone = true;
+    }
+
+    private void CaseLayerOrder(Match match)
+    {
+        if (isLayerOrderDone && isChartProcess) AssertError("Wrong layer line position.");
+        string[] orderLine = match.Groups[1].Value.Split(',');
+        List<int> layerOrder = new();
+
+        // 读取各轨道的图层
+        for (int i = 0; i < orderLine.Length; i++)
+        {
+            int num = int.Parse(orderLine[i]);
+            if (num < 3) layerOrder.Add(num);
+            else if (layerLiteralToActual.ContainsKey(num)) layerOrder.Add(layerLiteralToActual[num]);
+            else layerOrder.Add(0);
+        }
+        layerInfo.TrackBelongings = layerOrder;
+        isLayerOrderDone = true;
     }
 
     private void AssertError(string message)

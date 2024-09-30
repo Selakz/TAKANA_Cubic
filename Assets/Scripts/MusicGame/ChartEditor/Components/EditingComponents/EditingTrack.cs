@@ -8,57 +8,62 @@ public class EditingTrack : EditingComponent
 
     public override SelectTarget Type => SelectTarget.Track;
 
+    public override bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value) return;
+            if (Track.Controller != null)
+            {
+                Track.Controller.IsHighlight = value;
+            }
+            _isSelected = value;
+        }
+    }
+
     public int Layer { get; set; } = 0;
 
-    public bool IsLineShown { get; private set; }
-
     // Private
+    private bool _isSelected = false;
+    private bool isLayerEventAdd = false;
 
     // Static
 
     // Defined Functions
     public EditingTrack(Track track) : base(track) { }
 
-    public void ShowLine()
-    {
-        if (IsLineShown) return;
-        IsLineShown = true;
-        TrackLineManager.Instance.Decorate(Track);
-        Debug.Log($"track {Id} shows line.");
-    }
-
-    public void HideLine()
-    {
-        if (!IsLineShown) return;
-        IsLineShown = false;
-        Debug.Log($"track {Id} hides line.");
-    }
-
     public override bool Instantiate()
     {
+        if (!isLayerEventAdd)
+        {
+            EventManager.AddListener(EventManager.EventName.ChangeTrackLayer, OnSelectedLayerChanged);
+            isLayerEventAdd = true;
+        }
         if (TimeProvider.Instance.ChartTime > Track.TimeEnd + TimeAfterEnd) return true;
         else
         {
             Track.Instantiate();
-            if (IsSelected) Track.Controller.Highlight();
+            if (IsSelected) Track.Controller.IsHighlight = true;
+            if (TrackLayerManager.Instance != null)
+            {
+                OnSelectedLayerChanged(TrackLayerManager.Instance.SelectedLayer);
+            }
             return true;
         }
     }
 
-    public override void Select()
+    public void OnSelectedLayerChanged(object oLayer)
     {
-        if (IsSelected) return;
-        IsSelected = true;
-        if (Track.Controller != null) Track.Controller.Highlight();
-        Debug.Log($"track {Id} selected.");
-    }
-
-    public override void Unselect()
-    {
-        if (!IsSelected) return;
-        IsSelected = false;
-        if (Track.Controller != null) Track.Controller.Dehighlight();
-        HideLine();
-        Debug.Log($"track {Id} unselected.");
+        int layer = (int)oLayer;
+        if (Track.Controller != null)
+        {
+            if (layer == 0 || Layer == 0 || layer == Layer) Track.Controller.IsHidden = false;
+            else
+            {
+                Track.Controller.IsHidden = true;
+                SelectManager.Instance.UnselectTrack(Id);
+            }
+        }
     }
 }

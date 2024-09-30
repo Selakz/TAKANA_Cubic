@@ -5,6 +5,7 @@ public abstract class BaseNoteController : MonoBehaviour
     // Serializable and Public
     public abstract BaseNote Info { get; }
     public abstract float GameWidth { get; protected set; }
+    public abstract bool IsHighlight { get; set; }
 
     [SerializeField] protected SpriteRenderer sprite;
     [SerializeField] protected GameObject hitEffect;
@@ -15,6 +16,4 @@ public abstract class BaseNoteController : MonoBehaviour
     public abstract void SpriteInit();
     public abstract void UpdatePos();
     public abstract bool HandleInput(float timeInput);
-    public abstract void Highlight();
-    public abstract void Dehighlight();
 }

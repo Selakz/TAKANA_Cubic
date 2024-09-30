@@ -1,5 +1,4 @@
 using Takana3.Settings;
-using UnityEngine;
 
 public class EditingTap : EditingNote
 {
@@ -28,7 +27,7 @@ public class EditingTap : EditingNote
                     return true;
             }
         }
-        if (IsSelected) Note.Controller.Highlight();
+        Note.Controller.IsHighlight = IsSelected;
         return true;
     }
 }
@@ -60,7 +59,7 @@ public class EditingSlide : EditingNote
                     return true;
             }
         }
-        if (IsSelected) Note.Controller.Highlight();
+        Note.Controller.IsHighlight = IsSelected;
         return true;
     }
 }
@@ -105,7 +104,7 @@ public class EditingHold : EditingNote
                     }
             }
         }
-        if (IsSelected) Note.Controller.Highlight();
+        Note.Controller.IsHighlight = IsSelected;
         return true;
     }
 }

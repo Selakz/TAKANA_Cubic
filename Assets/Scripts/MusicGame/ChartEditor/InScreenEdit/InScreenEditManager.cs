@@ -21,7 +21,13 @@ public class InScreenEditManager : MonoBehaviour
         if (Camera.main.ContainsScreenPoint(Input.mousePosition) && SelectManager.Instance.SelectedTracks.Count == 1)
         {
             // 构建新Note的信息
-            var track = SelectManager.Instance.SelectedTracks[0].Track;
+            var editingTrack = SelectManager.Instance.SelectedTracks[0];
+            if (editingTrack.Layer == 1)
+            {
+                HeaderMessage.Show("装饰层轨道禁止放置Note", HeaderMessage.MessageType.Info);
+                return;
+            }
+            var track = editingTrack.Track;
             var gamePoint = Camera.main.T3ScreenToGamePoint(Input.mousePosition);
             if (GridManager.Instance.IsTGridShow) gamePoint = GridManager.Instance.GetAttachedGamePoint(gamePoint);
             var time = GameYToTime(TimeProvider.Instance.ChartTime, EditingLevelManager.Instance.MusicSetting.Speed, gamePoint.y);
@@ -83,42 +89,27 @@ public class InScreenEditManager : MonoBehaviour
             CommandManager.Instance.Add(new CreateTrackCommand(track));
             SelectManager.Instance.SelectTarget = SelectTarget.Track;
             SelectManager.Instance.SelectTrack(track.Id);
-            EditPanelManager.Instance.Render();
         }
     }
 
     private static void DeleteNote()
     {
-        if (SelectManager.Instance.SelectedNotes.Count == 1)
+        List<ICommand> commands = new();
+        foreach (var note in SelectManager.Instance.SelectedNotes)
         {
-            CommandManager.Instance.Add(new DeleteNoteCommand(SelectManager.Instance.SelectedNotes[0].Note));
+            commands.Add(new DeleteNoteCommand(note.Note));
         }
-        else if (SelectManager.Instance.SelectedNotes.Count > 1)
-        {
-            List<ICommand> commands = new();
-            foreach (var note in SelectManager.Instance.SelectedNotes)
-            {
-                commands.Add(new DeleteNoteCommand(note.Note));
-            }
-            CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Note"));
-        }
+        CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Note"));
     }
 
     private static void DeleteTrack()
     {
-        if (SelectManager.Instance.SelectedTracks.Count == 1)
+        List<ICommand> commands = new();
+        foreach (var track in SelectManager.Instance.SelectedTracks)
         {
-            CommandManager.Instance.Add(new DeleteTrackCommand(SelectManager.Instance.SelectedTracks[0].Track));
+            commands.Add(new DeleteTrackCommand(track.Track));
         }
-        else if (SelectManager.Instance.SelectedTracks.Count > 1)
-        {
-            List<ICommand> commands = new();
-            foreach (var track in SelectManager.Instance.SelectedTracks)
-            {
-                commands.Add(new DeleteTrackCommand(track.Track));
-            }
-            CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Track"));
-        }
+        CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Track"));
     }
 
     private static void NoteToNext()
@@ -317,11 +308,6 @@ public class InScreenEditManager : MonoBehaviour
     void Awake()
     {
         _instance = this;
-    }
-
-    void Start()
-    {
-
     }
 
     void Update()

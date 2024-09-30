@@ -118,7 +118,7 @@ public class ChartInfo
     }
 
     /// <summary> 转换为Takana3简单语法的dlf谱面文件 </summary>
-    public string ToSimpleDLF()
+    public string ToSimpleDLF(LayerInfo layerInfo = null)
     {
         // TODO: 将构造下发到各个元件的ToString()中
         StringBuilder ret = new($"offset({Mathf.RoundToInt(Offset * 1000f)});\n");
@@ -126,6 +126,7 @@ public class ChartInfo
         {
             ret.AppendLine($"{pair.Key} : {pair.Value};");
         }
+        if (layerInfo != null) ret.Append(layerInfo.ToString());
         ret.AppendLine("-");
 
         List<Track> tracks = new();

@@ -9,6 +9,17 @@ public class CreateNoteCommand : ICommand
 
     public CreateNoteCommand(INote note)
     {
+        if (note is BaseNote baseNote)
+        {
+            if (baseNote.TimeJudge < baseNote.BelongingTrack.TimeInstantiate || baseNote.TimeJudge > baseNote.BelongingTrack.TimeEnd)
+            {
+                throw new System.Exception("illegal judge time");
+            }
+            if (baseNote is Hold hold && hold.TimeEnd > hold.BelongingTrack.TimeEnd)
+            {
+                throw new System.Exception("illegal hold end time");
+            }
+        }
         this.note = note;
     }
 

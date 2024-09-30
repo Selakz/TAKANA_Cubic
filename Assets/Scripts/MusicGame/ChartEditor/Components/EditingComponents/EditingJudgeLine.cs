@@ -3,6 +3,7 @@ public class EditingJudgeLine : EditingComponent
     // Serializable and Public
     public JudgeLine JudgeLine => Component as JudgeLine;
     public override SelectTarget Type => SelectTarget.Others;
+    public override bool IsSelected { get => false; set => throw new System.NotImplementedException(); }
 
     // Private
 
@@ -14,15 +15,5 @@ public class EditingJudgeLine : EditingComponent
     public override bool Instantiate()
     {
         return Component.Instantiate();
-    }
-
-    public override void Select()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override void Unselect()
-    {
-        throw new System.NotImplementedException();
     }
 }

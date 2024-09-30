@@ -71,4 +71,9 @@ public class Slide : BaseNote
             TimeInput = TimeJudge,
         };
     }
+
+    public override BaseNote Clone(int id, float timeJudge, Track belongingTrack)
+    {
+        return new Slide(id, Type, timeJudge, belongingTrack);
+    }
 }

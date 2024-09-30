@@ -7,7 +7,22 @@ public abstract class EditingNote : EditingComponent
 
     public override SelectTarget Type => SelectTarget.Note;
 
+    public override bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value) return;
+            if (Note.Controller != null)
+            {
+                Note.Controller.IsHighlight = value;
+            }
+            _isSelected = value;
+        }
+    }
+
     // Private
+    private bool _isSelected = false;
 
     // Static
 
@@ -15,18 +30,4 @@ public abstract class EditingNote : EditingComponent
     public EditingNote(BaseNote baseNote) : base(baseNote) { }
 
     public override abstract bool Instantiate();
-
-    public override void Select()
-    {
-        if (IsSelected) return;
-        IsSelected = true;
-        if (Note.Controller != null) Note.Controller.Highlight();
-    }
-
-    public override void Unselect()
-    {
-        if (!IsSelected) return;
-        IsSelected = false;
-        if (Note.Controller != null) Note.Controller.Dehighlight();
-    }
 }

@@ -14,7 +14,7 @@ public abstract class EditingComponent : IComponent
 
     // Self Properties
     public abstract SelectTarget Type { get; }
-    public bool IsSelected { get; protected set; }
+    public abstract bool IsSelected { get; set; }
 
     // Private
 
@@ -26,7 +26,7 @@ public abstract class EditingComponent : IComponent
         Component = component;
     }
 
-    public void Initialize(MusicSetting setting)
+    public virtual void Initialize(MusicSetting setting)
     {
         Component.Initialize(setting);
     }
@@ -43,12 +43,6 @@ public abstract class EditingComponent : IComponent
             _ => null,
         };
     }
-
-    /// <summary> 一般情况下仅由SelectManager调用 </summary>
-    public abstract void Select();
-
-    /// <summary> 一般情况下仅由SelectManager调用 </summary>
-    public abstract void Unselect();
 
     public abstract bool Instantiate();
 }

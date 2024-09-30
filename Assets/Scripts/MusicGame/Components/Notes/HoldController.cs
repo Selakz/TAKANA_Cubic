@@ -44,7 +44,16 @@ public class HoldController : BaseNoteController
         }
     }
 
-
+    public override bool IsHighlight
+    {
+        get => _isHighlight;
+        set
+        {
+            holdHighlight.IsHighlight = value;
+            holdStartHighlight.IsHighlight = value;
+            _isHighlight = value;
+        }
+    }
 
 
     // Private
@@ -60,6 +69,7 @@ public class HoldController : BaseNoteController
     private float lastTimeRelease = 0f;
     private HoldInputInfo inputInfo;
     private HoldInputInfo realTimeInfo;
+    private bool _isHighlight = false;
 
     // Static?
     Vector2 defaultPosition;
@@ -114,26 +124,16 @@ public class HoldController : BaseNoteController
         {
             GamePos = _hold.GetY(Current);
             GameLength = _hold.GetScale(Current);
-            //float posY = Camera.main.G2WPosY(_hold.GetY(Current));
-            //transform.localPosition = new(0, posY);
-            //scalePart.localScale = defaultScale * new Vector2(1, _hold.GetScale(Current));
-            //scalePart.localPosition = defaultPosition * new Vector2(1, _hold.GetScale(Current));
         }
         else if (Current < _hold.TimeJudge && isJudged)
         {
             GamePos = 0f;
             GameLength = _hold.GetScale(Current) + _hold.GetY(Current);
-            //transform.localPosition = new(0, 0);
-            //scalePart.localScale = defaultScale * new Vector2(1, _hold.GetScale(Current) + _hold.GetY(Current));
-            //scalePart.localPosition = defaultPosition * new Vector2(1, _hold.GetScale(Current) + _hold.GetY(Current));
         }
         else if (Current >= _hold.TimeJudge && Current < _hold.TimeEnd)
         {
             GamePos = 0f;
             GameLength = _hold.GetScale(Current);
-            //transform.localPosition = new(0, 0);
-            //scalePart.localScale = defaultScale * new Vector2(1, _hold.GetScale(Current));
-            //scalePart.localPosition = defaultPosition * new Vector2(1, _hold.GetScale(Current));
         }
     }
 
@@ -214,18 +214,6 @@ public class HoldController : BaseNoteController
         else Continue();
     }
 
-    public override void Highlight()
-    {
-        holdHighlight.Highlight();
-        holdStartHighlight.Highlight();
-    }
-
-    public override void Dehighlight()
-    {
-        holdHighlight.Dehighlight();
-        holdStartHighlight.Dehighlight();
-    }
-
     // System Functions
     void Start()
     {
@@ -261,13 +249,9 @@ public class HoldController : BaseNoteController
             {
                 holdStartSprite.gameObject.SetActive(false);
             }
-
-
             HandleFail();
-
             if (isAuto) HandleInputInfo();
         }
-
         UpdatePos();
     }
 }

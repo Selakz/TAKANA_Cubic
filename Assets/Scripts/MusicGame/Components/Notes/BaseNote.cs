@@ -62,4 +62,6 @@ public abstract class BaseNote : INote
     }
 
     public abstract InputInfo GetInput();
+
+    public abstract BaseNote Clone(int id, float timeJudge, Track belongingTrack);
 }

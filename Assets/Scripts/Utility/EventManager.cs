@@ -27,6 +27,8 @@ public class EventManager : MonoBehaviour
         UpdateText,
         /// <summary> 无参 </summary>
         TurningPointUnselect,
+        /// <summary> 传入int：选中的图层 </summary>
+        ChangeTrackLayer,
     };
 
     // Private

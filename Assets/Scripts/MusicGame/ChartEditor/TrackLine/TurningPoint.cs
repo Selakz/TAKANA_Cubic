@@ -9,7 +9,28 @@ public class TurningPoint : MonoBehaviour
     [SerializeField] private EdgeCollider2D edgeCollider;
     [SerializeField] private LineRenderer lineRenderer;
 
-    public bool IsSelected { get; private set; } = false;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (value)
+            {
+                highlight.IsHighlight = true;
+                lineRenderer.material.color = new Color(0.38f, 0.60f, 0.82f);
+                TrackLineManager.Instance.AddSelectedItem(moveList, moveList[index]);
+            }
+            else
+            {
+                highlight.IsHighlight = false;
+                lineRenderer.material.color = Color.white;
+                TrackLineManager.Instance.RemoveSelectedItem(moveList, moveList[index]);
+            }
+            _isSelected = value;
+        }
+    }
+
+    public (float time, float x, string curve) Item => moveList[index];
 
     // Private
     private bool IsStart => index == 0;
@@ -17,6 +38,7 @@ public class TurningPoint : MonoBehaviour
 
     private BaseTrackMoveList moveList;
     private int index;
+    private bool _isSelected = false;
 
     // Static
     private const string prefabPath = "Prefabs/EditorUI/TurningPoint";
@@ -33,29 +55,6 @@ public class TurningPoint : MonoBehaviour
         return ret;
 
         static void GetPrefab() { if (prefab == null) prefab = MyResources.Load<GameObject>(prefabPath); }
-    }
-
-    public void Select()
-    {
-        if (!IsSelected)
-        {
-            EventManager.Trigger(EventManager.EventName.TurningPointUnselect);
-            IsSelected = true;
-            highlight.Highlight();
-            lineRenderer.material.color = new Color(0.38f, 0.60f, 0.82f);
-            TrackLineManager.Instance.SelectedMoveList = moveList;
-            TrackLineManager.Instance.SelectedItem = moveList[index];
-        }
-    }
-
-    public void Unselect()
-    {
-        if (IsSelected)
-        {
-            IsSelected = false;
-            highlight.Dehighlight();
-            lineRenderer.material.color = Color.white;
-        }
     }
 
     public void Initialize(BaseTrackMoveList moveList, int index)
@@ -99,12 +98,12 @@ public class TurningPoint : MonoBehaviour
             if (IsStart)
             {
                 CommandManager.Instance.Add(new UpdateTrackStartCommand(TrackLineManager.Instance.Track, updatedTime));
-                TrackLineManager.Instance.SelectedItem = moveList[index];
+                IsSelected = true;
             }
             else if (IsEnd)
             {
                 CommandManager.Instance.Add(new UpdateTrackEndCommand(TrackLineManager.Instance.Track, updatedTime));
-                TrackLineManager.Instance.SelectedItem = moveList[index];
+                IsSelected = true;
             }
             else
             {
@@ -122,11 +121,12 @@ public class TurningPoint : MonoBehaviour
     // System Functions
     void Awake()
     {
-        EventManager.AddListener(EventManager.EventName.TurningPointUnselect, Unselect);
+        EventManager.AddListener(EventManager.EventName.TurningPointUnselect, () => IsSelected = false);
     }
 
     void Update()
     {
+        // TODO: 把这些都移到TrackLineManager中执行
         if (IsSelected)
         {
             if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToggleLineCurve))
@@ -140,7 +140,7 @@ public class TurningPoint : MonoBehaviour
             }
             if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Delete))
             {
-                if (IsEnd) HeaderMessage.Show("无法删除尾结点", HeaderMessage.MessageType.Warn);
+                if (IsEnd || IsStart) HeaderMessage.Show("无法删除头尾结点", HeaderMessage.MessageType.Warn);
                 else CommandManager.Instance.Add(new MoveListDeleteCommand(moveList, moveList[index]));
             }
             if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToLeft))

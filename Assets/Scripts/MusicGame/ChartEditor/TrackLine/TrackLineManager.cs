@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using static Takana3.MusicGame.Values;
 
@@ -28,6 +29,9 @@ public class TrackLineManager : MonoBehaviour
     private float Current => TimeProvider.Instance.ChartTime;
 
     private BaseNoteMoveList moveList;
+    private readonly List<(float time, float x, string curve)> selectedLeftItems = new();
+    private readonly List<(float time, float x, string curve)> selectedRightItems = new();
+    private readonly List<ICommand> turningPointCommands = new();
 
     // Static
     private static TrackLineManager _instance;
@@ -47,12 +51,12 @@ public class TrackLineManager : MonoBehaviour
         for (int i = 0; i < track.LMoveList.Count; i++)
         {
             var point = TurningPoint.DirectInstantiate(track.LMoveList, i, pointsParent);
-            if (track.LMoveList == SelectedMoveList && track.LMoveList[i] == SelectedItem) point.Select();
+            if (selectedLeftItems.Contains(track.LMoveList[i])) point.IsSelected = true;
         }
         for (int i = 0; i < track.RMoveList.Count; i++)
         {
             var point = TurningPoint.DirectInstantiate(track.RMoveList, i, pointsParent);
-            if (track.RMoveList == SelectedMoveList && track.RMoveList[i] == SelectedItem) point.Select();
+            if (selectedRightItems.Contains(track.RMoveList[i])) point.IsSelected = true;
         }
     }
 
@@ -64,8 +68,25 @@ public class TrackLineManager : MonoBehaviour
             Destroy(pointsParent.GetChild(i).gameObject);
         }
         Track = null;
+        selectedLeftItems.Clear();
+        selectedRightItems.Clear();
         SelectedMoveList = null;
     }
+
+    public void AddSelectedItem(BaseTrackMoveList moveList, (float time, float x, string curve) item)
+    {
+        if (moveList == Track.LMoveList && !selectedLeftItems.Contains(item)) selectedLeftItems.Add(item);
+        else if (moveList == Track.RMoveList && !selectedRightItems.Contains(item)) selectedRightItems.Add(item);
+    }
+
+    public void RemoveSelectedItem(BaseTrackMoveList moveList, (float time, float x, string curve) item)
+    {
+        if (moveList == Track.LMoveList) selectedLeftItems.Remove(item);
+        else if (moveList == Track.RMoveList) selectedRightItems.Remove(item);
+    }
+
+    /// <summary> 将TurningPoint中触发的指令集中起来，便于作为BatchCommand执行 </summary>
+    public void AddCommand(ICommand command) => turningPointCommands.Add(command);
 
     private void SpriteInit()
     {
@@ -93,6 +114,12 @@ public class TrackLineManager : MonoBehaviour
 
     void Update()
     {
+        if (turningPointCommands.Count > 0)
+        {
+            CommandManager.Instance.Add(new BatchCommand(turningPointCommands.ToArray(), "批量修改结点信息"));
+            turningPointCommands.Clear();
+        }
+
         if (Track != null)
         {
             UpdatePos();
@@ -111,6 +138,38 @@ public class TrackLineManager : MonoBehaviour
                 bool isLeft = baseX < (leftX + rightX) / 2;
                 (float time, float x, string curve) newItem = (baseTime, GridManager.Instance.IsXGridShow ? gamePoint.x : baseX, "u");
                 CommandManager.Instance.Add(new MoveListInsertCommand(isLeft ? Track.LMoveList : Track.RMoveList, newItem));
+            }
+            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Copy))
+            {
+                if (selectedLeftItems.Count > 0 || selectedRightItems.Count > 0)
+                {
+                    CopyPasteManager.Instance.CopyTurningPoints(selectedLeftItems, selectedRightItems, Track);
+                }
+            }
+            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Cut))
+            {
+                if (selectedLeftItems.Count > 0 || selectedRightItems.Count > 0)
+                {
+                    CopyPasteManager.Instance.CopyTurningPoints(selectedLeftItems, selectedRightItems, Track);
+                    List<ICommand> commands = new();
+                    try
+                    {
+                        foreach (var leftItem in selectedLeftItems)
+                        {
+                            commands.Add(new MoveListDeleteCommand(Track.LMoveList, leftItem));
+                        }
+                        foreach (var rightItem in selectedRightItems)
+                        {
+                            commands.Add(new MoveListDeleteCommand(Track.RMoveList, rightItem));
+                        }
+                    }
+                    catch
+                    {
+                        HeaderMessage.Show("剪切失败", HeaderMessage.MessageType.Warn);
+                        return;
+                    }
+                    CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "剪切结点"));
+                }
             }
         }
     }

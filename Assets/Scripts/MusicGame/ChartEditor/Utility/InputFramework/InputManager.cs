@@ -1,19 +1,22 @@
 // Modified from Arcade-Plus: https://github.com/yojohanshinwataikei/Arcade-plus
 
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
-using static UnityEngine.InputSystem.InputActionRebindingExtensions;
-using System.Collections.Generic;
-using TMPro;
 
 public class InputManager : MonoBehaviour
 {
     public Takana3InputSettings Controls;
+
     public Takana3InputSettings.EditorHotKeyActions Hotkeys { get => Controls.EditorHotKey; }
+
     public Takana3InputSettings.KeyboardActions KeyboardPlayInputs { get => Controls.Keyboard; } // Project DL的PC端电脑游玩方案
+
+    /// <summary> 如果把它设为false，则IsHotkeyActionPressed/Pressing将一定返回false </summary>
+    public bool IsInputEnabled { get; set; } = true;
+
     public EventSystem EventSystem;
 
     public static InputManager Instance { get; private set; }
@@ -56,7 +59,7 @@ public class InputManager : MonoBehaviour
 
     public bool IsHotkeyActionPressed(InputAction action)
     {
-        if (IsFocusingOnTextField() || rebindFinishedThisFrame)
+        if (IsFocusingOnTextField() || rebindFinishedThisFrame || !IsInputEnabled)
         {
             return false;
         }
@@ -65,7 +68,7 @@ public class InputManager : MonoBehaviour
 
     public bool IsHotkeyActionPressing(InputAction action)
     {
-        if (IsFocusingOnTextField() || rebindFinishedThisFrame)
+        if (IsFocusingOnTextField() || rebindFinishedThisFrame || !IsInputEnabled)
         {
             return false;
         }

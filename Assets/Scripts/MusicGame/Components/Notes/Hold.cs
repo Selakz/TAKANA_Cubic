@@ -91,4 +91,9 @@ public class Hold : BaseNote
             ReleaseTimes = new(),
         };
     }
+
+    public override BaseNote Clone(int id, float timeJudge, Track belongingTrack)
+    {
+        return new Hold(id, Type, timeJudge, belongingTrack, timeJudge + TimeEnd - TimeJudge);
+    }
 }
