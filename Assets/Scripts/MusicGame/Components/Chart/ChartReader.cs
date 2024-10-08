@@ -33,7 +33,7 @@ public class ChartReader
     // Static
     // 看来有些表达式之后不太能写成常量的样子...
     private const string uInt = @"\d+", Int = @"-?\d+", uFloat = @"\d+(?:\.\d+)?", Float = @"-?\d+(?:\.\d+)?", Bool = @"(?:True|true|False|false)";
-    private const string Curve = @"(?:u|s|si|so|sb|sa)";
+    private const string Curve = @"(?:\S{1,2})";
     //private const string Color = @"(?:t|r|b|d)";
     private enum Regexes
     {

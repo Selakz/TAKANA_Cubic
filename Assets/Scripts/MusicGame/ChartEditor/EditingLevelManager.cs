@@ -163,7 +163,7 @@ public class EditingLevelManager : MonoBehaviour
         }
         if (GlobalSetting.IsForcePauseAllowed)
         {
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ForcePause))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.EditorBasic.ForcePause))
             {
                 if (!isPaused && Camera.main.ContainsScreenPoint(Input.mousePosition))
                 {
@@ -173,8 +173,8 @@ public class EditingLevelManager : MonoBehaviour
             }
         }
 
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Pause)) TogglePause();
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Save)) SaveProject();
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.EditorBasic.Pause)) TogglePause();
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.EditorBasic.Save)) SaveProject();
 
         // 鼠标滚轮控制歌曲进度
         float y = Mouse.current.scroll.ReadValue().y;

@@ -166,8 +166,8 @@ public class CommandManager : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Undo)) Undo();
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Redo)) Redo();
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.EditorBasic.Undo)) Undo();
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.EditorBasic.Redo)) Redo();
         UndoClickable = undoList.Count != 0;
         RedoClickable = redoList.Count != 0;
     }

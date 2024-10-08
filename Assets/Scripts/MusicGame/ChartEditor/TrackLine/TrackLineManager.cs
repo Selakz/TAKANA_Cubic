@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static Takana3.MusicGame.Values;
 
 public class TrackLineManager : MonoBehaviour
@@ -7,6 +9,8 @@ public class TrackLineManager : MonoBehaviour
     // Serializable and Public
     [SerializeField] Transform indicator;
     [SerializeField] Transform pointsParent;
+    [SerializeField] GameObject headerCurveTextObject;
+    [SerializeField] TMP_Text currentCurveText;
 
     public static TrackLineManager Instance => _instance;
     public Track Track { get; private set; }
@@ -20,6 +24,8 @@ public class TrackLineManager : MonoBehaviour
         }
     }
 
+    public int CurrentEaseId { get; private set; } = 1;
+
     // 以下两个属性，只是用于在重新渲染的时候决定要选中哪个点
     public BaseTrackMoveList SelectedMoveList { get; set; }
 
@@ -32,9 +38,13 @@ public class TrackLineManager : MonoBehaviour
     private readonly List<(float time, float x, string curve)> selectedLeftItems = new();
     private readonly List<(float time, float x, string curve)> selectedRightItems = new();
     private readonly List<ICommand> turningPointCommands = new();
+    private bool isCheckPressing = false;
 
     // Static
     private static TrackLineManager _instance;
+
+    public static Dictionary<InputAction, int> ActionToEaseId { get; private set; }
+    public static Dictionary<InputAction, string> ActionToEaseType { get; private set; }
 
     // Defined Functions
     public void Decorate(Track track)
@@ -105,11 +115,22 @@ public class TrackLineManager : MonoBehaviour
     void Awake()
     {
         _instance = this;
-    }
-
-    void Start()
-    {
-
+        ActionToEaseId = new()
+        {
+            {InputManager.Instance.CurveSwitch.SwitchToSine, 1 }, {InputManager.Instance.CurveSwitch.SwitchToQuad, 2 },
+            {InputManager.Instance.CurveSwitch.SwitchToCubic, 3 }, {InputManager.Instance.CurveSwitch.SwitchToQuart, 4 },
+            {InputManager.Instance.CurveSwitch.SwitchToQuint, 5 }, {InputManager.Instance.CurveSwitch.SwitchToExpo, 6 },
+            {InputManager.Instance.CurveSwitch.SwitchToCirc, 7 }, {InputManager.Instance.CurveSwitch.SwitchToBack, 8 },
+            {InputManager.Instance.CurveSwitch.SwitchToElastic, 9 }, {InputManager.Instance.CurveSwitch.SwitchToBounce, 0 },
+        };
+        ActionToEaseType = new()
+        {
+            {InputManager.Instance.CurveSwitch.SwitchToSine, "Sine" }, {InputManager.Instance.CurveSwitch.SwitchToQuad, "Quad" },
+            {InputManager.Instance.CurveSwitch.SwitchToCubic, "Cubic" }, {InputManager.Instance.CurveSwitch.SwitchToQuart, "Quart" },
+            {InputManager.Instance.CurveSwitch.SwitchToQuint, "Quint" }, {InputManager.Instance.CurveSwitch.SwitchToExpo, "Expo" },
+            {InputManager.Instance.CurveSwitch.SwitchToCirc, "Circ" }, {InputManager.Instance.CurveSwitch.SwitchToBack, "Back" },
+            {InputManager.Instance.CurveSwitch.SwitchToElastic, "Elastic" }, {InputManager.Instance.CurveSwitch.SwitchToBounce, "Bounce" },
+        };
     }
 
     void Update()
@@ -123,7 +144,7 @@ public class TrackLineManager : MonoBehaviour
         if (Track != null)
         {
             UpdatePos();
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.CreateTurningPoint))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CreateTurningPoint))
             {
                 var gamePoint = Camera.main.T3ScreenToGamePoint(Input.mousePosition);
                 float baseX = gamePoint.x;
@@ -139,14 +160,14 @@ public class TrackLineManager : MonoBehaviour
                 (float time, float x, string curve) newItem = (baseTime, GridManager.Instance.IsXGridShow ? gamePoint.x : baseX, "u");
                 CommandManager.Instance.Add(new MoveListInsertCommand(isLeft ? Track.LMoveList : Track.RMoveList, newItem));
             }
-            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Copy))
+            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Copy))
             {
                 if (selectedLeftItems.Count > 0 || selectedRightItems.Count > 0)
                 {
                     CopyPasteManager.Instance.CopyTurningPoints(selectedLeftItems, selectedRightItems, Track);
                 }
             }
-            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Cut))
+            else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Cut))
             {
                 if (selectedLeftItems.Count > 0 || selectedRightItems.Count > 0)
                 {
@@ -170,6 +191,30 @@ public class TrackLineManager : MonoBehaviour
                     }
                     CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "剪切结点"));
                 }
+            }
+        }
+
+        if (InputManager.Instance.IsHotkeyActionPressing(InputManager.Instance.CurveSwitch.CheckCurve))
+        {
+            if (!isCheckPressing)
+            {
+                headerCurveTextObject.SetActive(true);
+                isCheckPressing = true;
+            }
+        }
+        else if (isCheckPressing)
+        {
+            headerCurveTextObject.SetActive(false);
+            isCheckPressing = false;
+        }
+        foreach (var action in ActionToEaseId.Keys)
+        {
+            if (InputManager.Instance.IsHotkeyActionPressed(action))
+            {
+                CurrentEaseId = ActionToEaseId[action];
+                HeaderMessage.Show($"切换至{ActionToEaseType[action]}类缓动曲线族", HeaderMessage.MessageType.Info);
+                currentCurveText.text = $"当前选中曲线族：{ActionToEaseType[action]}";
+                return;
             }
         }
     }

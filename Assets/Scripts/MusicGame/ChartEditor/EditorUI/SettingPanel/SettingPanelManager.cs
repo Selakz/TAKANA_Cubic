@@ -7,11 +7,17 @@ public class SettingPanelManager : MonoBehaviour
 {
     // Serializable and Public
     [SerializeField] private Toggle isCopyToClipboardAllowedToggle;
+
     [SerializeField] private Toggle isAutoSaveAllowedToggle;
     [SerializeField] private TMP_InputField autoSaveIntervalInputField;
+
     [SerializeField] private Toggle isForcePauseAllowedToggle;
+
     [SerializeField] private Toggle isInitialTrackLengthNotToEndToggle;
     [SerializeField] private TMP_InputField initialTrackLengthInputField;
+
+    [SerializeField] private Toggle isReverseCurveNameToggle;
+
     [SerializeField] private List<Selectable> selectables;
 
     public static SettingPanelManager Instance => _instance;
@@ -35,6 +41,7 @@ public class SettingPanelManager : MonoBehaviour
         isInitialTrackLengthNotToEndToggle.isOn = setting.IsInitialTrackLengthNotToEnd;
         initialTrackLength = setting.InitialTrackLength_Ms;
         initialTrackLengthInputField.text = setting.InitialTrackLength_Ms.ToString();
+        isReverseCurveNameToggle.isOn = setting.IsReverseCurveName;
     }
 
     public void ToggleCopyToClipboardAllowed()
@@ -85,6 +92,13 @@ public class SettingPanelManager : MonoBehaviour
 
         }
         initialTrackLengthInputField.text = initialTrackLength.ToString();
+    }
+
+    public void ToggleReverseCurveName()
+    {
+        EditingLevelManager.Instance.GlobalSetting.IsReverseCurveName = isReverseCurveNameToggle.isOn;
+        EditPanelManager.Instance.Render();
+        // 以后其他会显示缓动名称的地方的修改
     }
 
     // System Functions

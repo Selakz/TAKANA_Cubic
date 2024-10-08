@@ -8,11 +8,13 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
-    public Takana3InputSettings Controls;
+    public T3EditorInput EditorControls;
 
-    public Takana3InputSettings.EditorHotKeyActions Hotkeys { get => Controls.EditorHotKey; }
+    public T3EditorInput.EditorBasicActions EditorBasic { get => EditorControls.EditorBasic; }
 
-    public Takana3InputSettings.KeyboardActions KeyboardPlayInputs { get => Controls.Keyboard; } // Project DL的PC端电脑游玩方案
+    public T3EditorInput.InScreenEditActions InScreenEdit { get => EditorControls.InScreenEdit; }
+
+    public T3EditorInput.CurveSwitchActions CurveSwitch { get => EditorControls.CurveSwitch; }
 
     /// <summary> 如果把它设为false，则IsHotkeyActionPressed/Pressing将一定返回false </summary>
     public bool IsInputEnabled { get; set; } = true;
@@ -25,7 +27,7 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
-        Controls ??= new();
+        EditorControls ??= new();
         Instance = this;
     }
     public void OnEnable()
@@ -33,12 +35,12 @@ public class InputManager : MonoBehaviour
         //var rebinds = PlayerPrefs.GetString("hotkeyRebinding");
         //Debug.Log($"hotkeyRebinding:{rebinds}");
         //Hotkeys.Get().LoadBindingOverridesFromJson(rebinds);
-        Controls.Enable();
+        EditorControls.Enable();
     }
 
     public void OnDisable()
     {
-        Controls.Disable();
+        EditorControls.Disable();
     }
 
     private bool IsFocusingOnTextField()

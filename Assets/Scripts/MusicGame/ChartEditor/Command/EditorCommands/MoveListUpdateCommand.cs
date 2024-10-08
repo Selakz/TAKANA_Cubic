@@ -28,7 +28,7 @@ public class MoveListUpdateCommand : ICommand
         TrackLineManager.Instance.RemoveSelectedItem(moveList, original);
         TrackLineManager.Instance.AddSelectedItem(moveList, updated);
         EditingLevelManager.Instance.AskForResetField();
-        EditPanelManager.Instance.AskForRender();
+        EditPanelManager.Instance.Refresh();
     }
 
     public void Undo()

@@ -29,6 +29,9 @@ namespace Takana3.Settings
         /// <summary> 为非正数时长度将自动与乐曲末尾对齐 </summary>
         [DefaultValue(3000)] public int InitialTrackLength_Ms { get; set; } = 3000;
 
+        /// <summary> 设置是否 </summary>
+        [DefaultValue(false)] public bool IsReverseCurveName { get; set; } = false;
+
         public static EditorGlobalSetting Load()
         {
             if (!File.Exists(path)) new EditorGlobalSetting().Save();

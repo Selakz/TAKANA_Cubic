@@ -7,5 +7,6 @@
   "AutoSaveInterval_Minute": 1,
   "IsForcePauseAllowed": false,
   "IsInitialTrackLengthNotToEnd": false,
-  "InitialTrackLength_Ms": 3000
+  "InitialTrackLength_Ms": 3000,
+  "IsReverseCurveName": false
 }

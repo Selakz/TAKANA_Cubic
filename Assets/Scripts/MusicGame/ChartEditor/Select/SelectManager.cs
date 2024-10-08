@@ -315,31 +315,31 @@ public class SelectManager : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastTrack))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastTrack))
         {
             Raycast(SelectTarget.Track);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastNote))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastNote))
         {
             Raycast(SelectTarget.Note);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastTurningPoint))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastTurningPoint))
         {
             Raycast(SelectTarget.TurningPoint);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastTrackMulti))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastTrackMulti))
         {
             RaycastMulti(SelectTarget.Track);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastNoteMulti))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastNoteMulti))
         {
             RaycastMulti(SelectTarget.Note);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.RaycastTurningPointMulti))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.RaycastTurningPointMulti))
         {
             RaycastMulti(SelectTarget.TurningPoint);
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Copy))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Copy))
         {
             switch (SelectTarget)
             {
@@ -360,7 +360,7 @@ public class SelectManager : MonoBehaviour
             }
 
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Cut))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Cut))
         {
             switch (SelectTarget)
             {

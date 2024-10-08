@@ -80,7 +80,7 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
         if (moveList[lastIndex + 1].time - moveList[lastIndex].time == 0) return new(moveList[lastIndex + 1].x, 0, 0);
         float departX = moveList[lastIndex].x, destX = moveList[lastIndex + 1].x;
         float t = (current - moveList[lastIndex].time) / (moveList[lastIndex + 1].time - moveList[lastIndex].time);
-        return new(CurveCalculator.CalcCurveCoord(departX, destX, t, moveList[lastIndex].curve), 0, 0);
+        return new(CurveCalculator.GetEaseByName(moveList[lastIndex].curve).CalcCoord(departX, destX, t), 0, 0);
     }
 
     /// <summary> 当插入时间在[timeStart, timeEnd]外时，不予插入，返回false </summary>

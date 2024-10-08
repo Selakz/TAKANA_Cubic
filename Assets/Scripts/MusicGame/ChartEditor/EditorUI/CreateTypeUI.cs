@@ -48,15 +48,15 @@ public class CreateTypeUI : MonoBehaviour, IPointerClickHandler, ICanEnableUI
     // System Functions
     void Update()
     {
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.SwitchToTap))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.SwitchToTap))
         {
             if (createType == NoteType.Tap) Select();
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.SwitchToSlide))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.SwitchToSlide))
         {
             if (createType == NoteType.Slide) Select();
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.SwitchToHold))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.SwitchToHold))
         {
             if (createType == NoteType.Hold) Select();
         }

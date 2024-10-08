@@ -94,6 +94,7 @@ public class InScreenEditManager : MonoBehaviour
 
     private static void DeleteNote()
     {
+        if (SelectManager.Instance.SelectedNotes.Count == 0) return;
         List<ICommand> commands = new();
         foreach (var note in SelectManager.Instance.SelectedNotes)
         {
@@ -104,6 +105,7 @@ public class InScreenEditManager : MonoBehaviour
 
     private static void DeleteTrack()
     {
+        if (SelectManager.Instance.SelectedTracks.Count == 0) return;
         List<ICommand> commands = new();
         foreach (var track in SelectManager.Instance.SelectedTracks)
         {
@@ -312,15 +314,15 @@ public class InScreenEditManager : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.CreateNote))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CreateNote))
         {
             CreateNote();
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.CreateTrack))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CreateTrack))
         {
             CreateTrack();
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Delete))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Delete))
         {
             switch (SelectManager.Instance.SelectTarget)
             {
@@ -334,56 +336,56 @@ public class InScreenEditManager : MonoBehaviour
                     break;
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToNext))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNext))
         {
             if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 NoteToNext();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToPrevious))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPrevious))
         {
             if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 NoteToPrevious();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToNextBeat))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNextBeat))
         {
             if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 NoteToNextBeat();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToPreviousBeat))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPreviousBeat))
         {
             if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 NoteToPreviousBeat();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.HoldEndToNext))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToNext))
         {
             if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 HoldEndToNext();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.HoldEndToPrevious))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToPrevious))
         {
             if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 HoldEndToPrevious();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.HoldEndToNextBeat))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToNextBeat))
         {
             if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {
                 HoldEndToNextBeat();
             }
         }
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.HoldEndToPreviousBeat))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToPreviousBeat))
         {
             if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
             {

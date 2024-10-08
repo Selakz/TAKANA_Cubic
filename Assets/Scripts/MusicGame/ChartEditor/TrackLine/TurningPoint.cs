@@ -79,6 +79,12 @@ public class TurningPoint : MonoBehaviour
 
     private string GetNextCurveLabel(string label)
     {
+        if (label == "u") return "s";
+        if (label == "s") return CurveCalculator.GetEaseById(TrackLineManager.Instance.CurrentEaseId * 10 + 2).GetString();
+        if (label[1] == 'i') return label[0] + "o";
+        if (label[1] == 'o') return label[0] + "b";
+        if (label[1] == 'b') return label[0] + "a";
+        if (label[1] == 'a') return "u";
         return label switch
         {
             "u" => "s",
@@ -129,7 +135,7 @@ public class TurningPoint : MonoBehaviour
         // TODO: 把这些都移到TrackLineManager中执行
         if (IsSelected)
         {
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToggleLineCurve))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.CurveSwitch.ToggleLineCurve))
             {
                 if (!IsEnd)
                 {
@@ -138,24 +144,24 @@ public class TurningPoint : MonoBehaviour
                     CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
                 }
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Delete))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Delete))
             {
                 if (IsEnd || IsStart) HeaderMessage.Show("无法删除头尾结点", HeaderMessage.MessageType.Warn);
                 else CommandManager.Instance.Add(new MoveListDeleteCommand(moveList, moveList[index]));
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToLeft))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToLeft))
             {
                 var original = moveList[index];
                 var updated = (original.time, original.x - 0.1f, original.curve);
                 CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToRight))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToRight))
             {
                 var original = moveList[index];
                 var updated = (original.time, original.x + 0.1f, original.curve);
                 CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToLeftGrid))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToLeftGrid))
             {
                 if (GridManager.Instance.IsXGridShow)
                 {
@@ -164,7 +170,7 @@ public class TurningPoint : MonoBehaviour
                     CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
                 }
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToRightGrid))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToRightGrid))
             {
                 if (GridManager.Instance.IsXGridShow)
                 {
@@ -173,17 +179,17 @@ public class TurningPoint : MonoBehaviour
                     CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
                 }
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToNext))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNext))
             {
                 float updatedTime = moveList[index].time + 0.010f;
                 UpdateTime(updatedTime);
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToPrevious))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPrevious))
             {
                 float updatedTime = moveList[index].time - 0.010f;
                 UpdateTime(updatedTime);
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToNextBeat))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNextBeat))
             {
                 if (GridManager.Instance.IsTGridShow)
                 {
@@ -191,12 +197,31 @@ public class TurningPoint : MonoBehaviour
                     UpdateTime(updatedTime);
                 }
             }
-            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ToPreviousBeat))
+            if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPreviousBeat))
             {
                 if (GridManager.Instance.IsTGridShow)
                 {
                     float updatedTime = GridManager.Instance.GetNearestTGridTime(moveList[index].time - 0.001f).floored;
                     UpdateTime(updatedTime);
+                }
+            }
+            foreach (var action in TrackLineManager.ActionToEaseId.Keys)
+            {
+                if (InputManager.Instance.IsHotkeyActionPressed(action))
+                {
+                    if (!IsEnd)
+                    {
+                        Eases originalEase = CurveCalculator.GetEaseByName(Item.curve);
+                        int id = TrackLineManager.ActionToEaseId[action] * 10 + originalEase.GetMoveId();
+                        Eases newEase = CurveCalculator.GetEaseById(id);
+                        if (newEase != originalEase)
+                        {
+                            var original = moveList[index];
+                            var updated = (original.time, original.x, newEase.GetString());
+                            CommandManager.Instance.Add(new MoveListUpdateCommand(moveList, original, updated));
+                        }
+                    }
+                    return;
                 }
             }
         }

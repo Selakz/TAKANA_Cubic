@@ -273,7 +273,7 @@ public class CopyPasteManager : MonoBehaviour
 
     void Update()
     {
-        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.Paste))
+        if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Paste))
         {
             var position = Input.mousePosition;
             if (Camera.main.ContainsScreenPoint(position))
@@ -288,7 +288,7 @@ public class CopyPasteManager : MonoBehaviour
                 else if (templateLeftPoints.Count + templateRightPoints.Count != 0) PasteTurningPoints(time);
             }
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.ExactPaste))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ExactPaste))
         {
             var position = Input.mousePosition;
             if (Camera.main.ContainsScreenPoint(position))
@@ -301,7 +301,7 @@ public class CopyPasteManager : MonoBehaviour
                 else if (templateLeftPoints.Count + templateRightPoints.Count != 0) PasteExactTurningPoints(time);
             }
         }
-        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.Hotkeys.CheckClipboard))
+        else if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CheckClipboard))
         {
             HeaderMessage.Show(GetClipboardDescription(), HeaderMessage.MessageType.Info);
         }

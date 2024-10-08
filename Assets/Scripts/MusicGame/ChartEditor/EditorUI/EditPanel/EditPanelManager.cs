@@ -32,6 +32,36 @@ public class EditPanelManager : MonoBehaviour
         RebuildLayout();
     }
 
+    /// <summary> 让编辑面板里的内容各自重新渲染 </summary>
+    public void Refresh()
+    {
+        RenderTitle();
+        switch (SelectManager.Instance.SelectTarget)
+        {
+            case SelectTarget.Track or SelectTarget.TurningPoint:
+                selectNoteList.gameObject.SetActive(false);
+                selectTrackList.gameObject.SetActive(true);
+                for (int i = 0; i < selectTrackList.childCount; i++)
+                {
+                    var content = selectTrackList.GetChild(i).GetComponent<EditTrackContent>();
+                    content.Initialize(content.Track);
+                }
+                break;
+            case SelectTarget.Note:
+                selectNoteList.gameObject.SetActive(true);
+                selectTrackList.gameObject.SetActive(false);
+                for (int i = 0; i < selectNoteList.childCount; i++)
+                {
+                    var content = selectNoteList.GetChild(i).GetComponent<EditNoteContent>();
+                    content.Initialize(content.Note);
+                }
+                break;
+            default:
+                Debug.LogError("SelectTarget error in SelectManager");
+                break;
+        }
+    }
+
     /// <summary> 重新构建编辑面板的内容 </summary>
     public void Render()
     {

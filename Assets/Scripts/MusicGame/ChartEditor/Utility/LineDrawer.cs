@@ -21,9 +21,10 @@ public static class LineDrawer
         }
         else
         {
+            var ease = CurveCalculator.GetEaseByName(label);
             for (float i = start.y; i < end.y; i += precision)
             {
-                points.Add(new(CurveCalculator.CalcCurveCoord(start.x, end.x, (i - start.y) / (end.y - start.y), label), i, z));
+                points.Add(new(ease.CalcCoord(start.x, end.x, (i - start.y) / (end.y - start.y)), i, z));
             }
         }
         points.Add(new(end.x, end.y, z));
@@ -47,9 +48,10 @@ public static class LineDrawer
         }
         else
         {
+            var ease = CurveCalculator.GetEaseByName(label);
             for (float i = start.y; i < end.y; i += precision)
             {
-                points.Add(new(CurveCalculator.CalcCurveCoord(start.x, end.x, (i - start.y) / (end.y - start.y), label), i));
+                points.Add(new(ease.CalcCoord(start.x, end.x, (i - start.y) / (end.y - start.y)), i));
             }
         }
         points.Add(new(end.x, end.y));
