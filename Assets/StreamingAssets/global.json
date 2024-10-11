@@ -8,5 +8,6 @@
   "IsForcePauseAllowed": false,
   "IsInitialTrackLengthNotToEnd": false,
   "InitialTrackLength_Ms": 3000,
-  "IsReverseCurveName": false
+  "IsReverseCurveName": false,
+  "Resolution": "1920x1080"
 }

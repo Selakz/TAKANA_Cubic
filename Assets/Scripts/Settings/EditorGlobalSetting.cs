@@ -32,6 +32,8 @@ namespace Takana3.Settings
         /// <summary> …Ë÷√ «∑Ò </summary>
         [DefaultValue(false)] public bool IsReverseCurveName { get; set; } = false;
 
+        [DefaultValue("1920x1080")] public string Resolution { get; set; }
+
         public static EditorGlobalSetting Load()
         {
             if (!File.Exists(path)) new EditorGlobalSetting().Save();
