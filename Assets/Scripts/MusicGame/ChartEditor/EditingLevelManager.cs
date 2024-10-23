@@ -44,7 +44,7 @@ public class EditingLevelManager : MonoBehaviour
             && RawChartInfo.ComponentList["Instantiate", componentIndex].TimeInstantiate < Current)
         {
             var item = RawChartInfo.ComponentList["Instantiate", componentIndex];
-            if (item.IsInitialized) item.Instantiate(); // TODO: 挺有问题的这个，之后找找怎么修！！
+            item.Instantiate();
             componentIndex++;
         }
     }
@@ -137,11 +137,6 @@ public class EditingLevelManager : MonoBehaviour
         EventManager.Trigger(EventManager.EventName.LevelInit);
     }
 
-    void Start()
-    {
-
-    }
-
     void OnDisable()
     {
         // 以一种只能说可行的方式清空了原谱面的所有游戏物体
@@ -194,6 +189,6 @@ public class EditingLevelManager : MonoBehaviour
 
     void LateUpdate()
     {
-        InstantiateComponents();
+        if (!shouldResetField && shouldResetFieldTo < 0) InstantiateComponents();
     }
 }

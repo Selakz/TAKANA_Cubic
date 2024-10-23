@@ -488,18 +488,9 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "SwitchToTap",
+                    "name": "SwitchCreateType",
                     "type": "Value",
                     "id": "c3766596-d1d6-4d2a-96cd-6515e41601de",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "SwitchToSlide",
-                    "type": "Value",
-                    "id": "c021c04a-8ead-4c53-b258-6f582b8e852b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -509,15 +500,6 @@
                     "name": "ToNext",
                     "type": "Value",
                     "id": "b91780aa-8e82-44d3-a884-660aeab9ab38",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "SwitchToHold",
-                    "type": "Value",
-                    "id": "e02d8576-4f78-48f6-bcb8-d6794633874c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1281,18 +1263,18 @@
                     "interactions": "HotKey",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchToTap",
+                    "action": "SwitchCreateType",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "key",
                     "id": "2b6b2097-e32d-4bbb-b4b9-93d269d2729e",
-                    "path": "<Keyboard>/1",
+                    "path": "<Keyboard>/backquote",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchToTap",
+                    "action": "SwitchCreateType",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1303,7 +1285,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchToTap",
+                    "action": "SwitchCreateType",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1314,7 +1296,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchToTap",
+                    "action": "SwitchCreateType",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1325,62 +1307,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SwitchToTap",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "c728dbbf-8140-4c87-83c4-5e67a03de5a4",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToSlide",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "3330485b-19a6-49b5-9ff0-4137cc3a574e",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToSlide",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "055c5ef0-a863-4f41-9e2d-98aae5fbe623",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToSlide",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "f1c10f88-e911-47d3-a6c5-f2730debf257",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToSlide",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "a5d916fc-adeb-4416-a25c-5b959dc0ec54",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToSlide",
+                    "action": "SwitchCreateType",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1491,61 +1418,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToNext",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "42f0ea64-bb8c-4105-a7f9-a66a18a42fe5",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToHold",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "072354f7-1da7-4c93-9e94-b26aa5169187",
-                    "path": "<Keyboard>/3",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToHold",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "23e85383-e97e-44fc-9d2e-4fca557aca88",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToHold",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "c81054d2-6c39-4741-83b3-38a9cf535ba5",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToHold",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "5f8d66e6-03c5-4bca-b416-410d0aa66c93",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwitchToHold",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

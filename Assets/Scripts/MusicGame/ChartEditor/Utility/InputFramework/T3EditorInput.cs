@@ -510,18 +510,9 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""SwitchToTap"",
+                    ""name"": ""SwitchCreateType"",
                     ""type"": ""Value"",
                     ""id"": ""c3766596-d1d6-4d2a-96cd-6515e41601de"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""SwitchToSlide"",
-                    ""type"": ""Value"",
-                    ""id"": ""c021c04a-8ead-4c53-b258-6f582b8e852b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -531,15 +522,6 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""name"": ""ToNext"",
                     ""type"": ""Value"",
                     ""id"": ""b91780aa-8e82-44d3-a884-660aeab9ab38"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""SwitchToHold"",
-                    ""type"": ""Value"",
-                    ""id"": ""e02d8576-4f78-48f6-bcb8-d6794633874c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1303,18 +1285,18 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""interactions"": ""HotKey"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchToTap"",
+                    ""action"": ""SwitchCreateType"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": ""key"",
                     ""id"": ""2b6b2097-e32d-4bbb-b4b9-93d269d2729e"",
-                    ""path"": ""<Keyboard>/1"",
+                    ""path"": ""<Keyboard>/backquote"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchToTap"",
+                    ""action"": ""SwitchCreateType"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1325,7 +1307,7 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchToTap"",
+                    ""action"": ""SwitchCreateType"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1336,7 +1318,7 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchToTap"",
+                    ""action"": ""SwitchCreateType"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1347,62 +1329,7 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchToTap"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Key With Modifiers"",
-                    ""id"": ""c728dbbf-8140-4c87-83c4-5e67a03de5a4"",
-                    ""path"": ""KeyWithModifiers"",
-                    ""interactions"": ""HotKey"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToSlide"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""key"",
-                    ""id"": ""3330485b-19a6-49b5-9ff0-4137cc3a574e"",
-                    ""path"": ""<Keyboard>/2"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToSlide"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier1"",
-                    ""id"": ""055c5ef0-a863-4f41-9e2d-98aae5fbe623"",
-                    ""path"": ""<Keyboard>/ctrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToSlide"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier2"",
-                    ""id"": ""f1c10f88-e911-47d3-a6c5-f2730debf257"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToSlide"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier3"",
-                    ""id"": ""a5d916fc-adeb-4416-a25c-5b959dc0ec54"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToSlide"",
+                    ""action"": ""SwitchCreateType"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -1513,61 +1440,6 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ToNext"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Key With Modifiers"",
-                    ""id"": ""42f0ea64-bb8c-4105-a7f9-a66a18a42fe5"",
-                    ""path"": ""KeyWithModifiers"",
-                    ""interactions"": ""HotKey"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToHold"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""key"",
-                    ""id"": ""072354f7-1da7-4c93-9e94-b26aa5169187"",
-                    ""path"": ""<Keyboard>/3"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier1"",
-                    ""id"": ""23e85383-e97e-44fc-9d2e-4fca557aca88"",
-                    ""path"": ""<Keyboard>/ctrl"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier2"",
-                    ""id"": ""c81054d2-6c39-4741-83b3-38a9cf535ba5"",
-                    ""path"": ""<Keyboard>/alt"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToHold"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""modifier3"",
-                    ""id"": ""5f8d66e6-03c5-4bca-b416-410d0aa66c93"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""SwitchToHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -4407,10 +4279,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         m_InScreenEdit_CreateNote = m_InScreenEdit.FindAction("CreateNote", throwIfNotFound: true);
         m_InScreenEdit_CreateTurningPoint = m_InScreenEdit.FindAction("CreateTurningPoint", throwIfNotFound: true);
         m_InScreenEdit_Delete = m_InScreenEdit.FindAction("Delete", throwIfNotFound: true);
-        m_InScreenEdit_SwitchToTap = m_InScreenEdit.FindAction("SwitchToTap", throwIfNotFound: true);
-        m_InScreenEdit_SwitchToSlide = m_InScreenEdit.FindAction("SwitchToSlide", throwIfNotFound: true);
+        m_InScreenEdit_SwitchCreateType = m_InScreenEdit.FindAction("SwitchCreateType", throwIfNotFound: true);
         m_InScreenEdit_ToNext = m_InScreenEdit.FindAction("ToNext", throwIfNotFound: true);
-        m_InScreenEdit_SwitchToHold = m_InScreenEdit.FindAction("SwitchToHold", throwIfNotFound: true);
         m_InScreenEdit_ToPrevious = m_InScreenEdit.FindAction("ToPrevious", throwIfNotFound: true);
         m_InScreenEdit_ToNextBeat = m_InScreenEdit.FindAction("ToNextBeat", throwIfNotFound: true);
         m_InScreenEdit_ToPreviousBeat = m_InScreenEdit.FindAction("ToPreviousBeat", throwIfNotFound: true);
@@ -4591,10 +4461,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_InScreenEdit_CreateNote;
     private readonly InputAction m_InScreenEdit_CreateTurningPoint;
     private readonly InputAction m_InScreenEdit_Delete;
-    private readonly InputAction m_InScreenEdit_SwitchToTap;
-    private readonly InputAction m_InScreenEdit_SwitchToSlide;
+    private readonly InputAction m_InScreenEdit_SwitchCreateType;
     private readonly InputAction m_InScreenEdit_ToNext;
-    private readonly InputAction m_InScreenEdit_SwitchToHold;
     private readonly InputAction m_InScreenEdit_ToPrevious;
     private readonly InputAction m_InScreenEdit_ToNextBeat;
     private readonly InputAction m_InScreenEdit_ToPreviousBeat;
@@ -4626,10 +4494,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         public InputAction @CreateNote => m_Wrapper.m_InScreenEdit_CreateNote;
         public InputAction @CreateTurningPoint => m_Wrapper.m_InScreenEdit_CreateTurningPoint;
         public InputAction @Delete => m_Wrapper.m_InScreenEdit_Delete;
-        public InputAction @SwitchToTap => m_Wrapper.m_InScreenEdit_SwitchToTap;
-        public InputAction @SwitchToSlide => m_Wrapper.m_InScreenEdit_SwitchToSlide;
+        public InputAction @SwitchCreateType => m_Wrapper.m_InScreenEdit_SwitchCreateType;
         public InputAction @ToNext => m_Wrapper.m_InScreenEdit_ToNext;
-        public InputAction @SwitchToHold => m_Wrapper.m_InScreenEdit_SwitchToHold;
         public InputAction @ToPrevious => m_Wrapper.m_InScreenEdit_ToPrevious;
         public InputAction @ToNextBeat => m_Wrapper.m_InScreenEdit_ToNextBeat;
         public InputAction @ToPreviousBeat => m_Wrapper.m_InScreenEdit_ToPreviousBeat;
@@ -4688,18 +4554,12 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
             @Delete.started += instance.OnDelete;
             @Delete.performed += instance.OnDelete;
             @Delete.canceled += instance.OnDelete;
-            @SwitchToTap.started += instance.OnSwitchToTap;
-            @SwitchToTap.performed += instance.OnSwitchToTap;
-            @SwitchToTap.canceled += instance.OnSwitchToTap;
-            @SwitchToSlide.started += instance.OnSwitchToSlide;
-            @SwitchToSlide.performed += instance.OnSwitchToSlide;
-            @SwitchToSlide.canceled += instance.OnSwitchToSlide;
+            @SwitchCreateType.started += instance.OnSwitchCreateType;
+            @SwitchCreateType.performed += instance.OnSwitchCreateType;
+            @SwitchCreateType.canceled += instance.OnSwitchCreateType;
             @ToNext.started += instance.OnToNext;
             @ToNext.performed += instance.OnToNext;
             @ToNext.canceled += instance.OnToNext;
-            @SwitchToHold.started += instance.OnSwitchToHold;
-            @SwitchToHold.performed += instance.OnSwitchToHold;
-            @SwitchToHold.canceled += instance.OnSwitchToHold;
             @ToPrevious.started += instance.OnToPrevious;
             @ToPrevious.performed += instance.OnToPrevious;
             @ToPrevious.canceled += instance.OnToPrevious;
@@ -4785,18 +4645,12 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
             @Delete.started -= instance.OnDelete;
             @Delete.performed -= instance.OnDelete;
             @Delete.canceled -= instance.OnDelete;
-            @SwitchToTap.started -= instance.OnSwitchToTap;
-            @SwitchToTap.performed -= instance.OnSwitchToTap;
-            @SwitchToTap.canceled -= instance.OnSwitchToTap;
-            @SwitchToSlide.started -= instance.OnSwitchToSlide;
-            @SwitchToSlide.performed -= instance.OnSwitchToSlide;
-            @SwitchToSlide.canceled -= instance.OnSwitchToSlide;
+            @SwitchCreateType.started -= instance.OnSwitchCreateType;
+            @SwitchCreateType.performed -= instance.OnSwitchCreateType;
+            @SwitchCreateType.canceled -= instance.OnSwitchCreateType;
             @ToNext.started -= instance.OnToNext;
             @ToNext.performed -= instance.OnToNext;
             @ToNext.canceled -= instance.OnToNext;
-            @SwitchToHold.started -= instance.OnSwitchToHold;
-            @SwitchToHold.performed -= instance.OnSwitchToHold;
-            @SwitchToHold.canceled -= instance.OnSwitchToHold;
             @ToPrevious.started -= instance.OnToPrevious;
             @ToPrevious.performed -= instance.OnToPrevious;
             @ToPrevious.canceled -= instance.OnToPrevious;
@@ -5017,10 +4871,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         void OnCreateNote(InputAction.CallbackContext context);
         void OnCreateTurningPoint(InputAction.CallbackContext context);
         void OnDelete(InputAction.CallbackContext context);
-        void OnSwitchToTap(InputAction.CallbackContext context);
-        void OnSwitchToSlide(InputAction.CallbackContext context);
+        void OnSwitchCreateType(InputAction.CallbackContext context);
         void OnToNext(InputAction.CallbackContext context);
-        void OnSwitchToHold(InputAction.CallbackContext context);
         void OnToPrevious(InputAction.CallbackContext context);
         void OnToNextBeat(InputAction.CallbackContext context);
         void OnToPreviousBeat(InputAction.CallbackContext context);

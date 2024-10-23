@@ -16383,9 +16383,6 @@ MonoBehaviour:
   cover: {fileID: 66376173}
   CanAndToEnables:
   - {fileID: 8919260025147830367}
-  - {fileID: 2106204859}
-  - {fileID: 2091136770}
-  - {fileID: 1150890134}
   - {fileID: 791025194}
   - {fileID: 1718505320}
   - {fileID: 1410369840}
@@ -16483,9 +16480,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 1150890132}
-  others:
-  - {fileID: 2106204859}
-  - {fileID: 2091136770}
   createType: 4
 --- !u!1 &1154056008
 GameObject:
@@ -19494,6 +19488,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1730196217}
   - {fileID: 1429835627}
   - {fileID: 2106204856}
   - {fileID: 2091136767}
@@ -24519,6 +24514,57 @@ MonoBehaviour:
   effectVolumeSlider: {fileID: 1611114009}
   effectVolumeText: {fileID: 921343680}
   bpmListParent: {fileID: 1147915825}
+--- !u!1 &1730196215
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1730196217}
+  - component: {fileID: 1730196216}
+  m_Layer: 5
+  m_Name: CreateTypeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1730196216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730196215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97237aacb0e9d494aaef6eb237ac41f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  createTap: {fileID: 2106204859}
+  createSlide: {fileID: 2091136770}
+  createHold: {fileID: 1150890134}
+--- !u!224 &1730196217
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730196215}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1387687181}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1734574207
 GameObject:
   m_ObjectHideFlags: 0
@@ -27892,6 +27938,7 @@ MonoBehaviour:
   - {fileID: 1758724631}
   - {fileID: 2008934146}
   - {fileID: 2136774811}
+  - {fileID: 1730196215}
 --- !u!1 &1910821228
 GameObject:
   m_ObjectHideFlags: 0
@@ -31099,9 +31146,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 2091136768}
-  others:
-  - {fileID: 2106204859}
-  - {fileID: 1150890134}
   createType: 5
 --- !u!1 &2098955908
 GameObject:
@@ -31361,9 +31405,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 2106204857}
-  others:
-  - {fileID: 2091136770}
-  - {fileID: 1150890134}
   createType: 3
 --- !u!1 &2111630496
 GameObject:
