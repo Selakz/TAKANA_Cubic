@@ -663,6 +663,24 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""Mirror"",
+                    ""type"": ""Value"",
+                    ""id"": ""050c0034-26cd-4a94-a69a-eb34e4198100"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""MirrorCopy"",
+                    ""type"": ""Value"",
+                    ""id"": ""e0b01bd5-ac47-43b2-995b-c2dad7ad8b13"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""CheckClipboard"",
                     ""type"": ""Value"",
                     ""id"": ""7a2fe0d1-409b-4c23-aaea-878496398b00"",
@@ -2927,6 +2945,116 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
                     ""action"": ""CheckClipboard"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""90a2fd7d-c171-4476-988b-dd5998dc36ea"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirror"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""c1e3c552-6af0-4306-955f-0f1a46353cd4"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirror"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""04294640-374c-4582-bc40-ec4c06424c9d"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirror"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""c9343702-ec82-46ec-a41b-063bc4172eac"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirror"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""d74af075-0a62-4916-89dc-01917dfe0947"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirror"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Key With Modifiers"",
+                    ""id"": ""d52f4e69-898f-40bb-acd7-4bee2eea5943"",
+                    ""path"": ""KeyWithModifiers"",
+                    ""interactions"": ""HotKey(needModifier1=true,needModifier3=true)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MirrorCopy"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""key"",
+                    ""id"": ""abcfe0e7-38ec-4a1a-94e1-96c7daca4f44"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MirrorCopy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier1"",
+                    ""id"": ""57a3d77a-a83a-4e59-aef6-71340caa3958"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MirrorCopy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier2"",
+                    ""id"": ""cac45cfe-ba99-4352-a66d-e5b96d22c9cc"",
+                    ""path"": ""<Keyboard>/alt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MirrorCopy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""modifier3"",
+                    ""id"": ""1982b8b2-37b4-4381-982d-6ff8ba0a07fe"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MirrorCopy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -4296,6 +4424,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         m_InScreenEdit_Copy = m_InScreenEdit.FindAction("Copy", throwIfNotFound: true);
         m_InScreenEdit_Paste = m_InScreenEdit.FindAction("Paste", throwIfNotFound: true);
         m_InScreenEdit_ExactPaste = m_InScreenEdit.FindAction("ExactPaste", throwIfNotFound: true);
+        m_InScreenEdit_Mirror = m_InScreenEdit.FindAction("Mirror", throwIfNotFound: true);
+        m_InScreenEdit_MirrorCopy = m_InScreenEdit.FindAction("MirrorCopy", throwIfNotFound: true);
         m_InScreenEdit_CheckClipboard = m_InScreenEdit.FindAction("CheckClipboard", throwIfNotFound: true);
         // CurveSwitch
         m_CurveSwitch = asset.FindActionMap("CurveSwitch", throwIfNotFound: true);
@@ -4478,6 +4608,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_InScreenEdit_Copy;
     private readonly InputAction m_InScreenEdit_Paste;
     private readonly InputAction m_InScreenEdit_ExactPaste;
+    private readonly InputAction m_InScreenEdit_Mirror;
+    private readonly InputAction m_InScreenEdit_MirrorCopy;
     private readonly InputAction m_InScreenEdit_CheckClipboard;
     public struct InScreenEditActions
     {
@@ -4511,6 +4643,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         public InputAction @Copy => m_Wrapper.m_InScreenEdit_Copy;
         public InputAction @Paste => m_Wrapper.m_InScreenEdit_Paste;
         public InputAction @ExactPaste => m_Wrapper.m_InScreenEdit_ExactPaste;
+        public InputAction @Mirror => m_Wrapper.m_InScreenEdit_Mirror;
+        public InputAction @MirrorCopy => m_Wrapper.m_InScreenEdit_MirrorCopy;
         public InputAction @CheckClipboard => m_Wrapper.m_InScreenEdit_CheckClipboard;
         public InputActionMap Get() { return m_Wrapper.m_InScreenEdit; }
         public void Enable() { Get().Enable(); }
@@ -4605,6 +4739,12 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
             @ExactPaste.started += instance.OnExactPaste;
             @ExactPaste.performed += instance.OnExactPaste;
             @ExactPaste.canceled += instance.OnExactPaste;
+            @Mirror.started += instance.OnMirror;
+            @Mirror.performed += instance.OnMirror;
+            @Mirror.canceled += instance.OnMirror;
+            @MirrorCopy.started += instance.OnMirrorCopy;
+            @MirrorCopy.performed += instance.OnMirrorCopy;
+            @MirrorCopy.canceled += instance.OnMirrorCopy;
             @CheckClipboard.started += instance.OnCheckClipboard;
             @CheckClipboard.performed += instance.OnCheckClipboard;
             @CheckClipboard.canceled += instance.OnCheckClipboard;
@@ -4696,6 +4836,12 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
             @ExactPaste.started -= instance.OnExactPaste;
             @ExactPaste.performed -= instance.OnExactPaste;
             @ExactPaste.canceled -= instance.OnExactPaste;
+            @Mirror.started -= instance.OnMirror;
+            @Mirror.performed -= instance.OnMirror;
+            @Mirror.canceled -= instance.OnMirror;
+            @MirrorCopy.started -= instance.OnMirrorCopy;
+            @MirrorCopy.performed -= instance.OnMirrorCopy;
+            @MirrorCopy.canceled -= instance.OnMirrorCopy;
             @CheckClipboard.started -= instance.OnCheckClipboard;
             @CheckClipboard.performed -= instance.OnCheckClipboard;
             @CheckClipboard.canceled -= instance.OnCheckClipboard;
@@ -4888,6 +5034,8 @@ public partial class @T3EditorInput: IInputActionCollection2, IDisposable
         void OnCopy(InputAction.CallbackContext context);
         void OnPaste(InputAction.CallbackContext context);
         void OnExactPaste(InputAction.CallbackContext context);
+        void OnMirror(InputAction.CallbackContext context);
+        void OnMirrorCopy(InputAction.CallbackContext context);
         void OnCheckClipboard(InputAction.CallbackContext context);
     }
     public interface ICurveSwitchActions
