@@ -5,124 +5,123 @@ using UnityEngine.UI;
 
 public class SettingPanelManager : MonoBehaviour
 {
-    // Serializable and Public
-    [SerializeField] private Toggle isCopyToClipboardAllowedToggle;
+	// Serializable and Public
+	[SerializeField] private Toggle isCopyToClipboardAllowedToggle;
 
-    [SerializeField] private Toggle isAutoSaveAllowedToggle;
-    [SerializeField] private TMP_InputField autoSaveIntervalInputField;
+	[SerializeField] private TMP_Dropdown curveSeriesDropdown;
 
-    [SerializeField] private Toggle isForcePauseAllowedToggle;
+	[SerializeField] private Toggle isAutoSaveAllowedToggle;
+	[SerializeField] private TMP_InputField autoSaveIntervalInputField;
 
-    [SerializeField] private Toggle isInitialTrackLengthNotToEndToggle;
-    [SerializeField] private TMP_InputField initialTrackLengthInputField;
+	[SerializeField] private Toggle isForcePauseAllowedToggle;
 
-    [SerializeField] private Toggle isReverseCurveNameToggle;
+	[SerializeField] private Toggle isInitialTrackLengthNotToEndToggle;
+	[SerializeField] private TMP_InputField initialTrackLengthInputField;
 
-    [SerializeField] private List<Selectable> selectables;
+	[SerializeField] private Toggle isReverseCurveNameToggle;
 
-    public static SettingPanelManager Instance => _instance;
+	[SerializeField] private List<Selectable> selectables;
 
-    // Private
-    private int autoSaveinterval;
-    private int initialTrackLength;
+	public static SettingPanelManager Instance => _instance;
 
-    // Static
-    private static SettingPanelManager _instance;
+	// Private
+	private int autoSaveInterval;
+	private int initialTrackLength;
 
-    // Defined Functions
-    public void ReadSettings()
-    {
-        var setting = EditingLevelManager.Instance.GlobalSetting;
-        isCopyToClipboardAllowedToggle.isOn = setting.IsCopyToClipboardAllowed;
-        isAutoSaveAllowedToggle.isOn = setting.IsAutoSaveAllowed;
-        autoSaveinterval = setting.AutoSaveInterval_Minute;
-        autoSaveIntervalInputField.text = setting.AutoSaveInterval_Minute.ToString();
-        isForcePauseAllowedToggle.isOn = setting.IsForcePauseAllowed;
-        isInitialTrackLengthNotToEndToggle.isOn = setting.IsInitialTrackLengthNotToEnd;
-        initialTrackLength = setting.InitialTrackLength_Ms;
-        initialTrackLengthInputField.text = setting.InitialTrackLength_Ms.ToString();
-        isReverseCurveNameToggle.isOn = setting.IsReverseCurveName;
-    }
+	// Static
+	private static SettingPanelManager _instance;
 
-    public void ToggleCopyToClipboardAllowed()
-    {
-        EditingLevelManager.Instance.GlobalSetting.IsCopyToClipboardAllowed = isCopyToClipboardAllowedToggle.isOn;
-    }
+	// Defined Functions
+	public void ReadSettings()
+	{
+		var setting = EditingLevelManager.Instance.GlobalSetting;
+		isCopyToClipboardAllowedToggle.isOn = setting.IsCopyToClipboardAllowed;
+		curveSeriesDropdown.value = setting.DefaultCurveSeries;
+		isAutoSaveAllowedToggle.isOn = setting.IsAutoSaveAllowed;
+		autoSaveInterval = setting.AutoSaveInterval_Minute;
+		autoSaveIntervalInputField.text = setting.AutoSaveInterval_Minute.ToString();
+		isForcePauseAllowedToggle.isOn = setting.IsForcePauseAllowed;
+		isInitialTrackLengthNotToEndToggle.isOn = setting.IsInitialTrackLengthNotToEnd;
+		initialTrackLength = setting.InitialTrackLength_Ms;
+		initialTrackLengthInputField.text = setting.InitialTrackLength_Ms.ToString();
+		isReverseCurveNameToggle.isOn = setting.IsReverseCurveName;
+	}
 
-    public void ToggleAutoSaveAllowed()
-    {
-        EditingLevelManager.Instance.GlobalSetting.IsAutoSaveAllowed = isAutoSaveAllowedToggle.isOn;
-    }
+	public void OnCurveSeriesChanged()
+	{
+		EditingLevelManager.Instance.GlobalSetting.DefaultCurveSeries = curveSeriesDropdown.value;
+	}
 
-    public void OnAutoSaveIntervalEndEdit()
-    {
-        if (int.TryParse(autoSaveIntervalInputField.text, out int newInterval))
-        {
-            if (newInterval > 0)
-            {
-                autoSaveinterval = newInterval;
-                EditingLevelManager.Instance.GlobalSetting.AutoSaveInterval_Minute = newInterval;
-                return;
-            }
+	public void ToggleCopyToClipboardAllowed()
+	{
+		EditingLevelManager.Instance.GlobalSetting.IsCopyToClipboardAllowed = isCopyToClipboardAllowedToggle.isOn;
+	}
 
-        }
-        autoSaveIntervalInputField.text = autoSaveinterval.ToString();
-    }
+	public void ToggleAutoSaveAllowed()
+	{
+		EditingLevelManager.Instance.GlobalSetting.IsAutoSaveAllowed = isAutoSaveAllowedToggle.isOn;
+	}
 
-    public void ToggleForcePauseAllowed()
-    {
-        EditingLevelManager.Instance.GlobalSetting.IsForcePauseAllowed = isForcePauseAllowedToggle.isOn;
-    }
+	public void OnAutoSaveIntervalEndEdit()
+	{
+		if (int.TryParse(autoSaveIntervalInputField.text, out int newInterval))
+		{
+			if (newInterval > 0)
+			{
+				autoSaveInterval = newInterval;
+				EditingLevelManager.Instance.GlobalSetting.AutoSaveInterval_Minute = newInterval;
+				return;
+			}
+		}
 
-    public void ToggleInitialTrackLengthToEnd()
-    {
-        EditingLevelManager.Instance.GlobalSetting.IsInitialTrackLengthNotToEnd = isInitialTrackLengthNotToEndToggle.isOn;
-    }
+		autoSaveIntervalInputField.text = autoSaveInterval.ToString();
+	}
 
-    public void OnInitialTrackLengthEndEdit()
-    {
-        if (int.TryParse(initialTrackLengthInputField.text, out int newLength))
-        {
-            if (newLength > 0)
-            {
-                initialTrackLength = newLength;
-                EditingLevelManager.Instance.GlobalSetting.InitialTrackLength_Ms = newLength;
-                return;
-            }
+	public void ToggleForcePauseAllowed()
+	{
+		EditingLevelManager.Instance.GlobalSetting.IsForcePauseAllowed = isForcePauseAllowedToggle.isOn;
+	}
 
-        }
-        initialTrackLengthInputField.text = initialTrackLength.ToString();
-    }
+	public void ToggleInitialTrackLengthToEnd()
+	{
+		EditingLevelManager.Instance.GlobalSetting.IsInitialTrackLengthNotToEnd =
+			isInitialTrackLengthNotToEndToggle.isOn;
+	}
 
-    public void ToggleReverseCurveName()
-    {
-        EditingLevelManager.Instance.GlobalSetting.IsReverseCurveName = isReverseCurveNameToggle.isOn;
-        EditPanelManager.Instance.Render();
-        // 以后其他会显示缓动名称的地方的修改
-    }
+	public void OnInitialTrackLengthEndEdit()
+	{
+		if (int.TryParse(initialTrackLengthInputField.text, out int newLength))
+		{
+			if (newLength > 0)
+			{
+				initialTrackLength = newLength;
+				EditingLevelManager.Instance.GlobalSetting.InitialTrackLength_Ms = newLength;
+				return;
+			}
+		}
 
-    // System Functions
-    void Awake()
-    {
-        _instance = this;
-    }
+		initialTrackLengthInputField.text = initialTrackLength.ToString();
+	}
 
-    void OnEnable()
-    {
-        ReadSettings();
-        foreach (var item in selectables)
-        {
-            item.interactable = true;
-        }
-    }
+	public void ToggleReverseCurveName()
+	{
+		EditingLevelManager.Instance.GlobalSetting.IsReverseCurveName = isReverseCurveNameToggle.isOn;
+		EditPanelManager.Instance.Render();
+		// 以后其他会显示缓动名称的地方的修改
+	}
 
-    void Start()
-    {
+	// System Functions
+	void Awake()
+	{
+		_instance = this;
+	}
 
-    }
-
-    void Update()
-    {
-
-    }
+	void OnEnable()
+	{
+		ReadSettings();
+		foreach (var item in selectables)
+		{
+			item.interactable = true;
+		}
+	}
 }

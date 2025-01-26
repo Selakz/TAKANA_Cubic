@@ -10,8 +10,7 @@ namespace Takana3.Settings
 		private static readonly string path = Path.Combine(Application.streamingAssetsPath, "global.json");
 
 		public bool IsCopyToClipboardAllowed { get; set; } = true;
-
-		// TODO: 用上这个配置项啊
+		
 		public int DefaultCurveSeries { get; set; } = 0;
 
 		public float TrackOpacity { get; set; } = 1.0f;
