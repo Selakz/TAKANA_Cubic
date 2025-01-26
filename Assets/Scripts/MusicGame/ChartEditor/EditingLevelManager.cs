@@ -65,7 +65,7 @@ public class EditingLevelManager : MonoBehaviour
 		RawChartInfo.Initialize(MusicSetting);
 		defaultJudgeLine = RawChartInfo.ComponentList[0].Component as JudgeLine;
 		chartStatusManager.Reset(RawChartInfo.ToChartInfo(), MusicSetting);
-
+		TimeProvider.Instance.Volume = SingleSetting.MusicVolumePercent / 100f;
 		IsPaused = true;
 	}
 

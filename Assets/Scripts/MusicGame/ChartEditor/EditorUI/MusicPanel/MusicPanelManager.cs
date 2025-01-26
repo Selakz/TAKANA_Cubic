@@ -46,14 +46,14 @@ public class MusicPanelManager : MonoBehaviour
 	{
 		TimeProvider.Instance.Volume = musicVolumeSlider.value / 100f;
 		musicVolumeText.text = Mathf.RoundToInt(musicVolumeSlider.value).ToString();
-		EditingLevelManager.Instance.GlobalSetting.HitSoundVolumePercent = (int)musicVolumeSlider.value;
+		EditingLevelManager.Instance.SingleSetting.MusicVolumePercent = (int)musicVolumeSlider.value;
 	}
 
 	public void OnEffectVolumeChange()
 	{
 		HitSoundManager.Instance.Volume = effectVolumeSlider.value / 100f;
 		effectVolumeText.text = Mathf.RoundToInt(effectVolumeSlider.value).ToString();
-		EditingLevelManager.Instance.SingleSetting.MusicVolumePercent = (int)effectVolumeSlider.value;
+		EditingLevelManager.Instance.GlobalSetting.HitSoundVolumePercent = (int)effectVolumeSlider.value;
 	}
 
 	// System Functions
@@ -62,13 +62,11 @@ public class MusicPanelManager : MonoBehaviour
 		_instance = this;
 
 		int musicVolume = EditingLevelManager.Instance.SingleSetting.MusicVolumePercent;
-		TimeProvider.Instance.Volume = musicVolume / 100f;
 		musicVolumeSlider.SetValueWithoutNotify(musicVolume);
 		musicVolumeText.text = Mathf.RoundToInt(musicVolume).ToString();
 		musicVolumeSlider.interactable = true;
 
 		int effectVolume = EditingLevelManager.Instance.GlobalSetting.HitSoundVolumePercent;
-		// HitSoundManager.Instance.Volume = effectVolume / 100f; 在HitSoundManager自己的Awake()中实现
 		effectVolumeSlider.SetValueWithoutNotify(effectVolume);
 		effectVolumeText.text = Mathf.RoundToInt(effectVolume).ToString();
 		effectVolumeSlider.interactable = true;
