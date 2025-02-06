@@ -126,10 +126,10 @@ public class BaseTrackMoveList : IMoveList, IEnumerable<(float time, float x, st
 		StringBuilder sb = new("(");
 		for (int i = 0; i < moveList.Count - 2; i++)
 		{
-			sb.Append($"{Mathf.RoundToInt(moveList[i].time * 1000f)}, {moveList[i].x}, {moveList[i].curve}, ");
+			sb.Append($"{Mathf.RoundToInt(moveList[i].time * 1000f)}, {moveList[i].x:0.00}, {moveList[i].curve}, ");
 		}
 
-		sb.Append($"{Mathf.RoundToInt(moveList[^2].time * 1000f)}, {moveList[^2].x}, {moveList[^2].curve});");
+		sb.Append($"{Mathf.RoundToInt(moveList[^2].time * 1000f)}, {moveList[^2].x:0.00}, {moveList[^2].curve});");
 		return sb.ToString();
 	}
 
