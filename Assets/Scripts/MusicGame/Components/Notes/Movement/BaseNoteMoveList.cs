@@ -1,118 +1,140 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using MusicGame.Components.Movement;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static Takana3.MusicGame.Values;
 
-/// <summary>
-/// 基本的记录Note垂直运动信息的列表，也可用于计算hold的长度
-/// </summary>
-public class BaseNoteMoveList : INoteMoveList
+namespace MusicGame.Components.Notes.Movement
 {
-    // 还可以有CurveNoteMoveList、RandomNoteMoveList...?
+	// TODO: FIXME: A little weird if having speed variation.
+	public class BaseNoteMoveList : INoteMovement, IMoveList<V1LSMoveItem>
+	{
+		public static string TypeMark => "baseNoteMoveList";
 
-    // Serializable and Public
-    public int Count => moveList.Count;
+		private readonly V1LSMoveList moveList;
+		private T3Time timeJudge;
 
-    /// <summary> 表示该List是否已经初始化完全 </summary>
-    public bool IsRaw => moveList == null;
+		public T3Time TimeJudge
+		{
+			get => timeJudge;
+			set
+			{
+				timeJudge = value;
+				moveList.BaseTime = timeJudge;
+			}
+		}
 
-    public (float time, float y) this[int index] => moveList[index];
+		public event Action OnMovementUpdated = delegate { };
 
-    // Private
-    private readonly List<(float time, float y)> rawMoveList = null; // 存下初始的列表，以便游戏中途修改速度时重新生成moveList
-    private List<(float time, float y)> moveList = null;
-    private readonly float timeStart = -TimePreAnimation; // Note超过TimeJudge时还应模拟其离开判定线的过程，因此不用记录TimeJudge
-    private int lastIndex = 0;
+		public int Count => moveList.Count;
 
-    // Defined Functions
-    public BaseNoteMoveList(float timeJudge, float speedRate = 1.0f, float timeStart = -TimePreAnimation) // 一般MoveList
-    {
-        rawMoveList = new()
-        {
-            (timeStart, speedRate * (timeJudge - timeStart)),
-            (timeJudge, 0),
-        };
-        this.timeStart = timeStart;
-    }
+		public BaseNoteMoveList(T3Time timeJudge)
+		{
+			this.timeJudge = timeJudge;
+			moveList = new(timeJudge, 0);
+			moveList.OnMovementUpdated += OnMovementUpdated.Invoke;
+		}
 
-    public BaseNoteMoveList(List<(float time, float y)> moveList, float timeJudge, bool isRaw, float timeStart = -TimePreAnimation) // trail和speedtrail的MoveList
-    {
-        List<(float time, float y)> list = new(moveList);
-        list.Insert(0, (timeStart, moveList[0].y));
-        list.Add((timeJudge, 0));
-        if (isRaw) rawMoveList = list;
-        else this.moveList = list;
-        this.timeStart = timeStart;
-    }
+		public BaseNoteMoveList(IEnumerable<V1LSMoveItem> items, T3Time timeJudge)
+		{
+			this.timeJudge = timeJudge;
+			moveList = new(items, timeJudge, 0);
+		}
 
-    public BaseNoteMoveList(List<(float time, float speedRate)> speedList, float timeJudge, float timeStart = -TimePreAnimation) // speed的MoveList
-    {
-        speedList.Insert(0, (timeStart, speedList[0].speedRate));
-        speedList.Add((timeJudge, 1));
-        rawMoveList = new();
-        float currentY = 0; // 倒序计算某时刻note所在位置
-        rawMoveList.Add((timeJudge, currentY)); // TimeJudge时,note一定在判定线上
-        for (int i = speedList.Count - 2; i >= 0; i--)
-        {
-            currentY += speedList[i].speedRate * (speedList[i + 1].time - speedList[i].time);
-            rawMoveList.Add((speedList[i].time, currentY));
-        }
-        currentY += speedList[0].speedRate * (speedList[0].time - timeStart);
-        rawMoveList.Add((timeStart, currentY));
-        rawMoveList.Reverse(); // 把倒序顺过来
-        this.timeStart = timeStart;
-    }
+		public float GetPos(T3Time time)
+		{
+			return -moveList.GetPos(time);
+		}
 
-    public Vector3 GetPos(float current)
-    {
-        Assert.IsFalse(IsRaw);
-        if (current < timeStart) return new(0, moveList[0].y, 0);
-        // 更新lastIndex的位置
-        if (moveList[lastIndex].time > current) lastIndex = 0;
-        while (lastIndex < moveList.Count - 2 && moveList[lastIndex + 1].time < current) lastIndex++;
-        // 计算y值
-        float departY = moveList[lastIndex].y, destY = moveList[lastIndex + 1].y;
-        float t = (current - moveList[lastIndex].time) / (moveList[lastIndex + 1].time - moveList[lastIndex].time);
-        return new(0, Mathf.LerpUnclamped(departY, destY, t), 0);
-    }
+		public bool Insert(V1LSMoveItem item)
+		{
+			return moveList.Insert(item);
+		}
 
-    public void FixRaw(float speed)
-    {
-        if (rawMoveList == null) return; // 说明初始化时是直接初始化的moveList，即其与speed无关
-        moveList = new(rawMoveList);
-        float actualSpeed = ActualSpeed(speed);
-        for (int i = 0; i < moveList.Count; i++)
-        {
-            float actualPos = actualSpeed * rawMoveList[i].y;
-            moveList[i] = (rawMoveList[i].time, actualPos);
-        }
-    }
+		public bool Remove(T3Time time)
+		{
+			return moveList.Remove(time);
+		}
 
-    public float CalcTimeInstantiate(float speed) // 该方法只在该List作为moveList时有意义
-    {
-        var actualSpeed = IsRaw ? ActualSpeed(speed) : 1.0f;
-        var list = IsRaw ? rawMoveList : moveList;
-        float ret = -TimePreAnimation;
+		public bool Contains(V1LSMoveItem item)
+		{
+			return moveList.Contains(item);
+		}
 
-        if (LowHeightLimit <= list[0].y && list[0].y <= UpHeightLimit) return list[0].time;
+		public bool TryGet(T3Time time, out V1LSMoveItem item)
+		{
+			return moveList.TryGet(time, out item);
+		}
 
-        for (int i = 0; i < list.Count - 1; i++)
-        {
-            float y1 = actualSpeed * list[i].y;
-            float y2 = actualSpeed * list[i + 1].y;
-            if (y1 >= UpHeightLimit && y2 < UpHeightLimit)
-            {
-                float t = (y1 - UpHeightLimit) / (y1 - y2);
-                ret = Mathf.Lerp(list[i].time, list[i + 1].time, t);
-                break;
-            }
-            else if (y1 <= LowHeightLimit && y2 > LowHeightLimit)
-            {
-                float t = (y1 - LowHeightLimit) / (y1 - y2);
-                ret = Mathf.Lerp(list[i].time, list[i + 1].time, t);
-                break;
-            }
-        }
-        return ret;
-    }
+		public IMovement<float> Clone(T3Time timeOffset, float positionOffset)
+		{
+			return new BaseNoteMoveList(
+				moveList.Clone(timeOffset, positionOffset) as V1LSMoveList, TimeJudge + timeOffset);
+		}
+
+		public T3Time FirstTimeWhen(float edge, bool lesserThan)
+		{
+			for (int i = 0; i < moveList.Count; i++)
+			{
+				float pos = GetPos(moveList[i].Time);
+				if (lesserThan ? pos <= edge : pos >= edge)
+				{
+					if (i == 0)
+					{
+						if (lesserThan ? moveList[0].Speed <= 0 : moveList[0].Speed >= 0)
+						{
+							return T3Time.MinValue;
+						}
+
+						return moveList[0].Time - (edge - pos) / moveList[0].Speed;
+					}
+
+					float lastPos = GetPos(moveList[i - 1].Time);
+					float t = (edge - lastPos) / (pos - lastPos);
+					return Mathf.Lerp(moveList[i - 1].Time, moveList[i].Time, t);
+				}
+			}
+
+			if (lesserThan ? moveList[^1].Speed <= 0 : moveList[^1].Speed >= 0) return T3Time.MaxValue;
+			return moveList[^1].Time + (GetPos(moveList[^1].Time) - edge) / moveList[^1].Speed;
+		}
+
+		public bool IsDefault()
+		{
+			return Count == 1 && Mathf.Abs(moveList[0].Time - TimeJudge) <= 1 &&
+			       Mathf.Approximately(moveList[0].Speed, 1f);
+		}
+
+		public IEnumerator<V1LSMoveItem> GetEnumerator()
+		{
+			return moveList.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public JToken GetSerializationToken()
+		{
+			var baseToken = moveList.GetSerializationToken();
+			var token = new JObject
+			{
+				["timeJudge"] = TimeJudge.Milli,
+				["list"] = baseToken["list"]
+			};
+			return token;
+		}
+
+		public static BaseNoteMoveList Deserialize(JToken token)
+		{
+			if (token is not JContainer container) return default;
+			T3Time timeJudge = container["timeJudge"]!.Value<int>();
+			var list = container["list"]!.Select(a => V1LSMoveItem.Parse(a.Value<string>()));
+			return new BaseNoteMoveList(list, timeJudge);
+		}
+	}
 }

@@ -46,10 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 108d4c3e9e88d4d43a3fe22c494b80fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite: {fileID: 3637309668029424523}
-  hitEffect: {fileID: 2116650265251027523, guid: 37154161fea2a814fa7734dd41636718, type: 3}
+  spriteRenderer: {fileID: 3637309668029424523}
   boxCollider: {fileID: 2596287484133604487}
-  highlight: {fileID: 6036277880016814302}
 --- !u!61 &2596287484133604487
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -93,7 +91,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 0.5}
   m_EdgeRadius: 0
 --- !u!1 &4553275617780012087
 GameObject:
@@ -105,7 +103,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8067903728555301917}
   - component: {fileID: 3637309668029424523}
-  - component: {fileID: 6036277880016814302}
   m_Layer: 7
   m_Name: Sprite
   m_TagString: Untagged
@@ -123,7 +120,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.5, z: 1.0707}
+  m_LocalScale: {x: 1, y: 1, z: 1.0707}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2388898775805373254}
@@ -168,29 +165,15 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 16
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d4df995835dddd147a6fba8af463b775, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 1, y: 0.1}
+  m_Size: {x: 1, y: 0.16875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6036277880016814302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4553275617780012087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61f865dfcbaba0c46a1024b1dabf6d48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightSprite: {fileID: 21300000, guid: 9df7a6302723d15469705748dcfa7fe4, type: 3}
-  highlightLayer: 17

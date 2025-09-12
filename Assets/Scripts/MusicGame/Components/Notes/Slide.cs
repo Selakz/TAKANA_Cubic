@@ -1,79 +1,89 @@
-using Takana3.Settings;
+using System.Collections.Generic;
+using System.Linq;
+using MusicGame.ChartEditor.EditingComponents;
+using MusicGame.Components.Notes.Movement;
+using MusicGame.Components.Tracks;
+using MusicGame.Gameplay;
+using MusicGame.Gameplay.Level;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.MVC;
+using T3Framework.Runtime.Setting;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Pool;
 
-[System.Serializable]
-public class Slide : BaseNote
+namespace MusicGame.Components.Notes
 {
-    // Serializable and Public
-    [SerializeField] private GameObject slidePrefab;
+	public class Slide : BaseNote, IControllerRetrievable<SlideController>
+	{
+		public static string TypeMark => "slide";
 
-    // Private
+		private static readonly LazyPrefab lazyPrefab = new("Prefabs/Slide", "SlidePrefab_OnLoad");
+		public override GameObject Prefab => lazyPrefab;
 
-    // Defined Functions
-    public Slide(int id, NoteType type, float timeJudge, Track belongingTrack, float speedRate = 1.0f)
-        : base(id, type, type.GetJudgeType(), timeJudge, belongingTrack, speedRate) { }
+		public SlideController Controller { get; set; }
 
-    internal override float CalcTimeInstantiate(float speed, bool isSet = false)
-    {
-        float result = moveList.CalcTimeInstantiate(speed);
-        if (isSet) TimeInstantiate = result;
-        return result;
-    }
+		public override bool IsPresent => Controller && Controller.Object.activeSelf;
 
-    public override void Initialize(MusicSetting setting)
-    {
-        if (ThisObject != null) Object.Destroy(ThisObject);
-        else
-        {
-            JudgeInfo = Type.GetJudgeInfo();
-            slidePrefab = Type.GetGameObject();
-        }
-        CalcTimeInstantiate(setting.Speed, true);
-        moveList.FixRaw(setting.Speed);
-        IsInitialized = true;
+		private static readonly ObjectPool<SlideController> pool = new(
+			() => Object.Instantiate<GameObject>(lazyPrefab).GetComponent<SlideController>(),
+			null,
+			controller => controller.Destroy(),
+			controller => Object.Destroy(controller.gameObject));
 
-        if (NoteType.USlide.UNoteTypes().Contains(Type)) BelongingTrack.TimeInstantiate = TimeInstantiate - 0.0001f;
-        else TimeInstantiate = Mathf.Max(TimeInstantiate, BelongingTrack.TimeInstantiate + 0.0001f);
+		public Slide(T3Time timeJudge, ITrack belongingTrack)
+			: base(timeJudge, belongingTrack)
+		{
+			TimeInstantiate = Mathf.Min(
+				Movement.FirstTimeWhen(ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold, true),
+				Movement.FirstTimeWhen(ISingletonSetting<PlayfieldSetting>.Instance.LowerThreshold, false));
+		}
 
-        InputInfo = setting.Mode switch
-        {
-            GameMode.Common => null,
-            GameMode.Auto => GetInput(),
-            _ => InputInfo,
-        };
-    }
+		public override bool Generate()
+		{
+			if (IsPresent) return false;
+			Controller = pool.Get();
+			Controller.Init(this);
+			Controller.Object.SetActive(true);
+			return true;
+		}
 
-    public override bool HandleInput(float timeInput)
-    {
-        if (Controller == null) return false;
-        return Controller.HandleInput(timeInput);
-    }
+		public override bool Destroy()
+		{
+			if (!IsPresent) return false;
+			pool.Release(Controller);
+			return true;
+		}
 
-    public override bool Instantiate()
-    {
-        Assert.IsTrue(IsInitialized);
-        if (ThisObject != null) return true;
+		public override BaseNote Clone(T3Time timeJudge, ITrack belongingTrack)
+		{
+			var newSlide = new Slide(timeJudge, belongingTrack)
+			{
+				Movement = (INoteMovement)Movement.Clone(timeJudge - TimeJudge, 0),
+				Properties = new JObject(Properties)
+			};
+			return newSlide;
+		}
 
-        ThisObject = Object.Instantiate(slidePrefab);
-        Assert.IsNotNull(BelongingTrack.ThisObject);
-        ThisObject.transform.SetParent(BelongingTrack.ThisObject.transform, false);
-        Controller = ThisObject.GetComponent<SlideController>();
-        Controller.InfoInit(this, InputInfo);
-        return true;
-    }
+		public static Slide Deserialize(JToken token, object context)
+		{
+			if (token is not JContainer container) return default;
+			T3Time timeJudge = container["timeJudge"]!.Value<int>();
+			var components = (context as IEnumerable<IComponent>)!;
+			var component = components.First(a => a.Id == container["track"]!.Value<int>());
+			// TODO: Temporary code, fix it by setting Parent property int
+			var belongingTrack = component is EditingTrack track ? track.Track : component as ITrack;
 
-    public override InputInfo GetInput()
-    {
-        return new InputInfo()
-        {
-            Note = this,
-            TimeInput = TimeJudge,
-        };
-    }
-
-    public override BaseNote Clone(int id, float timeJudge, Track belongingTrack)
-    {
-        return new Slide(id, Type, timeJudge, belongingTrack);
-    }
+			return new Slide(timeJudge, belongingTrack)
+			{
+				Id = container["id"]!.Value<int>(),
+				Movement = container.TryGetValue("movement", out JToken movementToken)
+					? (INoteMovement)ISerializable.Deserialize(movementToken)
+					: new BaseNoteMoveList(timeJudge),
+				Properties = container.TryGetValue("properties", out JObject propertiesToken) ? propertiesToken : new()
+			};
+		}
+	}
 }

@@ -1,67 +1,134 @@
-using Takana3.Settings;
+using MusicGame.Components.Notes.Movement;
+using MusicGame.Components.Tracks;
+using MusicGame.Gameplay;
+using MusicGame.Gameplay.Level;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.MVC;
+using T3Framework.Runtime.Setting;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static Takana3.MusicGame.Values;
 
-/// <summary>
-/// 代表基本类型的Note：下落式，一定附着在一个Track上，在TimeJudge时落到对应判定线
-/// </summary>
-public abstract class BaseNote : INote
+namespace MusicGame.Components.Notes
 {
-    // Implement IComponent
-    public int Id { get; }
-    public bool IsInitialized { get; protected set; } = false;
-    public GameObject ThisObject { get; protected set; } = null;
-    public float TimeInstantiate { get; protected set; } = -TimePreAnimation;
+	/// <summary>
+	/// Representing basic note: attached to a <see cref="ITrack"/>, should be hit on <see cref="TimeJudge"/>.
+	/// </summary>
+	public abstract class BaseNote : INote, IChildOf<ITrack>
+	{
+		/// <summary> Modifying id is allowed, but should be careful. </summary>
+		public int Id { get; set; }
 
-    // Implement INote
-    public NoteType Type { get; }
-    public JudgeType JudgeType { get; }
-    public float TimeJudge { get; }
-    public JudgeInfo JudgeInfo { get; protected set; }
+		public abstract GameObject Prefab { get; }
 
-    // Self Properties
-    public BaseNoteController Controller { get; protected set; } = null;
-    public Track BelongingTrack { get; internal set; }
-    public InputInfo InputInfo { get; set; } = null;
+		public Vector3 Position { get; set; }
 
-    // Private
-    protected INoteMoveList moveList;
+		/// <summary> The time to instantiate view layer object. </summary>
+		public T3Time TimeInstantiate
+		{
+			get => Mathf.Max(Parent.TimeInstantiate, timeInstantiate);
+			protected set => timeInstantiate = value;
+		}
 
-    // Defined Functions
-    public BaseNote(int id, NoteType type, JudgeType judgeType, float timeJudge, Track belongingTrack, float speedRate = 1.0f)
-    {
-        Id = id;
-        Type = type;
-        JudgeType = judgeType;
-        TimeJudge = timeJudge;
-        BelongingTrack = belongingTrack;
+		public virtual T3Time TimeEnd
+		{
+			get => TimeJudge;
+			set => TimeJudge = value;
+		}
 
-        moveList = new BaseNoteMoveList(timeJudge, speedRate);
-    }
+		public T3Time TimeJudge
+		{
+			get => timeJudge;
+			set
+			{
+				timeJudge = value;
+				movement.TimeJudge = timeJudge;
+			}
+		}
 
-    /// <summary> 计算并可设置该Note在speed下的<see cref="TimeInstantiate"/> </summary>
-    internal abstract float CalcTimeInstantiate(float speed, bool isSet = false);
+		public ITrack Parent
+		{
+			get => parent;
+			set
+			{
+				parent = value;
+				ResetTimeInstantiate();
+			}
+		}
 
-    public abstract void Initialize(MusicSetting setting);
+		IComponent IComponent.Parent
+		{
+			get => Parent;
+			set
+			{
+				if (value is not ITrack track)
+				{
+					Debug.LogError($"BaseNote's Parent should be {nameof(ITrack)}");
+					return;
+				}
 
-    public abstract bool HandleInput(float timeInput);
+				Parent = track;
+			}
+		}
 
-    public abstract bool Instantiate();
+		MonoBehaviour IControllerRetrievable.Controller => (this as IControllerRetrievable<MonoBehaviour>)?.Controller;
 
-    /// <summary> 获得当前时间该Note的游戏坐标y值：需在调用<see cref="Initialize(MusicSetting)"/>之后使用 </summary>
-    public float GetY(float current)
-    {
-        Assert.IsTrue(IsInitialized);
-        return moveList.GetPos(current).y;
-    }
+		public abstract bool IsPresent { get; }
 
-    public void SetMoveList(INoteMoveList moveList)
-    {
-        this.moveList = moveList;
-    }
+		public INoteMovement Movement
+		{
+			get => movement;
+			set
+			{
+				if (movement is not null) movement.OnMovementUpdated -= ResetTimeInstantiate;
+				movement = value;
+				movement.OnMovementUpdated += ResetTimeInstantiate;
+				ResetTimeInstantiate();
+			}
+		}
 
-    public abstract InputInfo GetInput();
+		public JObject Properties { get; set; }
 
-    public abstract BaseNote Clone(int id, float timeJudge, Track belongingTrack);
+		// Private
+		private T3Time timeInstantiate;
+		private T3Time timeJudge;
+		private ITrack parent;
+		private INoteMovement movement;
+
+		// Defined Functions
+		protected BaseNote(T3Time timeJudge, ITrack parent)
+		{
+			Id = IComponent.GetUniqueId();
+			this.parent = parent;
+			Properties = new();
+			this.timeJudge = timeJudge;
+			Movement = new BaseNoteMoveList(timeJudge);
+		}
+
+		public abstract BaseNote Clone(T3Time timeJudge, ITrack belongingTrack);
+
+		public abstract bool Generate();
+
+		public abstract bool Destroy();
+
+		protected virtual void ResetTimeInstantiate()
+		{
+			TimeInstantiate = Mathf.Min(
+				Movement.FirstTimeWhen(ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold, true),
+				Movement.FirstTimeWhen(ISingletonSetting<PlayfieldSetting>.Instance.LowerThreshold, false));
+		}
+
+		public virtual JToken GetSerializationToken()
+		{
+			// ReSharper disable once UseObjectOrCollectionInitializer
+			var token = new JObject();
+			token.Add("id", Id);
+			token.Add("timeJudge", TimeJudge.Milli);
+			token.Add("track", Parent.Id);
+			token.AddIf("movement", Movement.Serialize(true),
+				!(Movement is BaseNoteMoveList baseNoteMoveList && baseNoteMoveList.IsDefault()));
+			token.AddIf("properties", Properties, Properties.Count > 0);
+			return token;
+		}
+	}
 }

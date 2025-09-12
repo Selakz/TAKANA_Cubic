@@ -1,489 +1,332 @@
 using System.Collections.Generic;
+using System.Linq;
+using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.EditingComponents;
+using MusicGame.ChartEditor.InScreenEdit.Commands;
+using MusicGame.ChartEditor.InScreenEdit.Grid;
+using MusicGame.ChartEditor.Level;
+using MusicGame.ChartEditor.Message;
+using MusicGame.ChartEditor.Select;
+using MusicGame.Components.Movement;
+using MusicGame.Components.Notes;
+using MusicGame.Components.Tracks;
+using MusicGame.Components.Tracks.Movement;
+using MusicGame.Gameplay.Level;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.Input;
+using T3Framework.Runtime.Setting;
+using T3Framework.Static.Easing;
 using UnityEngine;
-using static Takana3.MusicGame.Values;
 
-public class InScreenEditManager : MonoBehaviour
+// ReSharper disable MemberCanBeMadeStatic.Local
+namespace MusicGame.ChartEditor.InScreenEdit
 {
-	// Serializable and Public
-	[SerializeField] private Transform noteIndicator;
-
-	public static InScreenEditManager Instance => _instance;
-	public NoteType CreateType { get; set; } = NoteType.Tap;
-
-	// Private
-
-	// Static
-	private static InScreenEditManager _instance;
-
-	// Defined Functions
-	private void CreateNote()
+	// TODO: Extract interface
+	public class InScreenEditManager : MonoBehaviour
 	{
-		if (Camera.main.ContainsScreenPoint(Input.mousePosition) && SelectManager.Instance.SelectedTracks.Count == 1)
+		// Enum
+		public enum CreateNoteType
 		{
-			// 构建新Note的信息
-			var editingTrack = SelectManager.Instance.SelectedTracks[0];
-			if (editingTrack.Layer == 1)
-			{
-				HeaderMessage.Show("装饰层轨道禁止放置Note", HeaderMessage.MessageType.Info);
+			Tap,
+			Slide,
+			Hold
+		}
+
+		// Serializable and Public
+		public static InScreenEditManager Instance { get; private set; }
+		public static ITimeRetriever FallbackTimeRetriever { get; } = new DefaultTimeRetriever();
+		public static IWidthRetriever FallbackWidthRetriever { get; } = new DefaultWidthRetriever();
+
+		public ITimeRetriever TimeRetriever { get; set; } = FallbackTimeRetriever;
+
+		public IWidthRetriever WidthRetriever { get; set; } = FallbackWidthRetriever;
+
+		public CreateNoteType NoteType { get; set; } = CreateNoteType.Tap;
+
+		// Private
+
+		// Static
+
+		// Defined Functions
+		private void CreateNote()
+		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
+			    ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack)
 				return;
-			}
 
 			var track = editingTrack.Track;
-			var gamePoint = Camera.main.T3ScreenToGamePoint(Input.mousePosition);
-			if (GridManager.Instance.IsTGridShow) gamePoint = GridManager.Instance.GetAttachedGamePoint(gamePoint);
-			var time = GameYToTime(TimeProvider.Instance.ChartTime, EditingLevelManager.Instance.MusicSetting.Speed,
-				gamePoint.y);
-			if (time < track.TimeInstantiate || time > track.TimeEnd + 0.0005f)
+			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePoint);
+			var time = TimeRetriever.GetTimeStart(gamePoint);
+			if (time < track.TimeInstantiate || time > track.TimeEnd)
 			{
 				HeaderMessage.Show("尝试创建的时间在所选轨道的时间范围外", HeaderMessage.MessageType.Warn);
 				return;
 			}
 
-			BaseNote note;
-			switch (CreateType)
+			INote note;
+			switch (NoteType)
 			{
-				case NoteType.Tap:
-					note = new Tap(EditingLevelManager.Instance.RawChartInfo.NewId, NoteType.Tap, time, track);
+				case CreateNoteType.Tap:
+					note = new Tap(time, track);
 					break;
-				case NoteType.Slide:
-					note = new Slide(EditingLevelManager.Instance.RawChartInfo.NewId, NoteType.Slide, time, track);
+				case CreateNoteType.Slide:
+					note = new Slide(time, track);
 					break;
-				case NoteType.Hold:
-					float timeEnd;
-					if (GridManager.Instance.IsTGridShow)
-						timeEnd = GridManager.Instance.GetNearestTGridTime(time + 0.001f).ceiled;
-					else timeEnd = time + 1f;
-					if (timeEnd > track.TimeEnd)
-					{
-						if (time + 0.001f < track.TimeEnd) timeEnd = track.TimeEnd;
-						else
-						{
-							HeaderMessage.Show("尝试创建的时间在所选轨道的时间范围外", HeaderMessage.MessageType.Warn);
-							return;
-						}
-					}
-
-					note = new Hold(EditingLevelManager.Instance.RawChartInfo.NewId, NoteType.Hold, time, track,
-						timeEnd);
+				case CreateNoteType.Hold:
+					T3Time timeEnd = Mathf.Min(TimeRetriever.GetHoldTimeEnd(gamePoint), track.TimeEnd);
+					note = new Hold(time, timeEnd, track);
 					break;
 				default:
 					throw new System.Exception("Unhandled create type");
 			}
 
-			CommandManager.Instance.Add(new CreateNoteCommand(note));
-		}
-	}
-
-	private static void CreateTrack()
-	{
-		if (Camera.main.ContainsScreenPoint(Input.mousePosition))
-		{
-			SelectManager.Instance.UnselectAll();
-			// 构建新Track的信息
-			var gamePoint = Camera.main.T3ScreenToGamePoint(Input.mousePosition);
-			float inputX = gamePoint.x;
-			if (GridManager.Instance.IsTGridShow) gamePoint = GridManager.Instance.GetAttachedGamePoint(gamePoint);
-			var timeStart = GameYToTime(TimeProvider.Instance.ChartTime,
-				EditingLevelManager.Instance.MusicSetting.Speed, gamePoint.y);
-			float left = gamePoint.x - 1f, right = gamePoint.x + 1f;
-			if (GridManager.Instance.IsXGridShow) (left, right) = GridManager.Instance.GetNearestXGridPos(inputX);
-			float timeEnd;
-			if (EditingLevelManager.Instance.GlobalSetting.IsInitialTrackLengthNotToEnd)
+			if (!EventManager.Instance.InvokeVeto("Edit_QueryPlaceNote", note, out var reasons))
 			{
-				timeEnd = timeStart + EditingLevelManager.Instance.GlobalSetting.InitialTrackLength_Ms / 1000f;
-			}
-			else
-			{
-				timeEnd = TimeProvider.Instance.AudioToChartTime(TimeProvider.Instance.AudioLength);
+				HeaderMessage.Show(reasons.FirstOrDefault(), HeaderMessage.MessageType.Warn);
+				return;
 			}
 
-			Track track = new(EditingLevelManager.Instance.RawChartInfo.NewId, TrackType.Common, timeStart, timeEnd,
-				left, right, true, false, false, EditingLevelManager.Instance.defaultJudgeLine);
-			CommandManager.Instance.Add(new CreateTrackCommand(track));
-			SelectManager.Instance.SelectTarget = SelectTarget.Track;
-			SelectManager.Instance.SelectTrack(track.Id);
-		}
-	}
-
-	private static void DeleteNote()
-	{
-		if (SelectManager.Instance.SelectedNotes.Count == 0) return;
-		List<ICommand> commands = new();
-		foreach (var note in SelectManager.Instance.SelectedNotes)
-		{
-			commands.Add(new DeleteNoteCommand(note.Note));
+			CommandManager.Instance.Add(new AddComponentsCommand(note));
 		}
 
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Note"));
-	}
-
-	private static void DeleteTrack()
-	{
-		if (SelectManager.Instance.SelectedTracks.Count == 0) return;
-		List<ICommand> commands = new();
-		foreach (var track in SelectManager.Instance.SelectedTracks)
+		private void NoteToNext()
 		{
-			commands.Add(new DeleteTrackCommand(track.Track));
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量删除Track"));
-	}
-
-	private static void NoteToNext()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
+			var notes = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingNote);
+			var noteToNextDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance;
+			List<UpdateComponentArg> args = new();
+			foreach (var editingNote in notes)
 			{
-				float newTime = note.Note.TimeJudge + 0.010f;
-				commands.Add(new UpdateNoteCommand(note.Note, ConstructNewNote(note.Note, newTime)));
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Note"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void NoteToPrevious()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				float newTime = note.Note.TimeJudge - 0.010f;
-				commands.Add(new UpdateNoteCommand(note.Note, ConstructNewNote(note.Note, newTime)));
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Note"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void NoteToNextBeat()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				float newTime = GridManager.Instance.GetNearestTGridTime(note.Note.TimeJudge + 0.001f).ceiled;
-				commands.Add(new UpdateNoteCommand(note.Note, ConstructNewNote(note.Note, newTime)));
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Note"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void NoteToPreviousBeat()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				float newTime = GridManager.Instance.GetNearestTGridTime(note.Note.TimeJudge - 0.001f).floored;
-				commands.Add(new UpdateNoteCommand(note.Note, ConstructNewNote(note.Note, newTime)));
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Note"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static BaseNote ConstructNewNote(BaseNote note, float newTime)
-	{
-		return note switch
-		{
-			Tap tap => new Tap(tap.Id, NoteType.Tap, newTime, tap.BelongingTrack),
-			Slide slide => new Slide(slide.Id, NoteType.Slide, newTime, slide.BelongingTrack),
-			Hold hold => new Hold(hold.Id, NoteType.Hold, newTime, hold.BelongingTrack,
-				newTime + hold.TimeEnd - hold.TimeJudge),
-			_ => throw new System.Exception("Error selecting note type"),
-		};
-	}
-
-	private static void HoldEndToNext()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				if (note is EditingHold hold)
+				var note = (editingNote as EditingNote)!.Note;
+				UpdateComponentArg arg;
+				if (note is Hold hold)
 				{
-					float newEnd = hold.Hold.TimeEnd + 0.010f;
-					commands.Add(new UpdateNoteCommand(note.Note, ConstructNewEndHold(hold.Hold, newEnd)));
+					var actualDistance = Mathf.Min(hold.Parent.TimeEnd - hold.TimeEnd, noteToNextDistance);
+					arg = new(hold,
+						h =>
+						{
+							(h as Hold)!.TimeJudge += actualDistance;
+							(h as Hold)!.TimeEnd += actualDistance;
+						},
+						h =>
+						{
+							(h as Hold)!.TimeJudge -= actualDistance;
+							(h as Hold)!.TimeEnd -= actualDistance;
+						});
+				}
+				else
+				{
+					var actualDistance = Mathf.Min(note.Parent.TimeEnd - note.TimeJudge, noteToNextDistance);
+					arg = new(note,
+						n => { (n as BaseNote)!.TimeJudge += actualDistance; },
+						n => { (n as BaseNote)!.TimeJudge -= actualDistance; });
+				}
+
+				args.Add(arg);
+			}
+
+			if (args.Count > 0)
+			{
+				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
+			}
+		}
+
+		private void NoteToPrevious()
+		{
+			var notes = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingNote);
+			var noteToPreviousDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance;
+			List<UpdateComponentArg> args = new();
+			foreach (var editingNote in notes)
+			{
+				var note = (editingNote as EditingNote)!.Note;
+				var actualDistance = Mathf.Min(note.TimeJudge - note.Parent.TimeInstantiate, noteToPreviousDistance);
+				UpdateComponentArg arg;
+				if (note is Hold hold)
+				{
+					arg = new(hold,
+						h =>
+						{
+							(h as Hold)!.TimeJudge -= actualDistance;
+							(h as Hold)!.TimeEnd -= actualDistance;
+						},
+						h =>
+						{
+							(h as Hold)!.TimeJudge += actualDistance;
+							(h as Hold)!.TimeEnd += actualDistance;
+						});
+				}
+				else
+				{
+					arg = new(note,
+						n => { (n as BaseNote)!.TimeJudge -= actualDistance; },
+						n => { (n as BaseNote)!.TimeJudge += actualDistance; });
+				}
+
+				args.Add(arg);
+			}
+
+			if (args.Count > 0)
+			{
+				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
+			}
+		}
+
+		private void NoteToNextBeat()
+		{
+			if (TimeRetriever is not GridTimeRetriever timeRetriever) return;
+			var notes = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingNote);
+			List<UpdateComponentArg> args = new();
+			foreach (var editingNote in notes)
+			{
+				var note = (editingNote as EditingNote)!.Note;
+				UpdateComponentArg arg;
+				if (note is Hold hold)
+				{
+					var updatedTime = Mathf.Min(note.Parent.TimeEnd, timeRetriever.GetCeilTime(hold.TimeEnd));
+					var actualDistance = updatedTime - hold.TimeEnd;
+					arg = new(hold,
+						h =>
+						{
+							(h as Hold)!.TimeJudge += actualDistance;
+							(h as Hold)!.TimeEnd += actualDistance;
+						},
+						h =>
+						{
+							(h as Hold)!.TimeJudge -= actualDistance;
+							(h as Hold)!.TimeEnd -= actualDistance;
+						});
+				}
+				else
+				{
+					var updatedTime = Mathf.Min(note.Parent.TimeEnd, timeRetriever.GetCeilTime(note.TimeJudge));
+					var actualDistance = updatedTime - note.TimeJudge;
+					arg = new(note,
+						n => { (n as BaseNote)!.TimeJudge += actualDistance; },
+						n => { (n as BaseNote)!.TimeJudge -= actualDistance; });
+				}
+
+				args.Add(arg);
+			}
+
+			if (args.Count > 0)
+			{
+				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
+			}
+		}
+
+		private void NoteToPreviousBeat()
+		{
+			if (TimeRetriever is not GridTimeRetriever timeRetriever) return;
+			var notes = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingNote);
+			List<UpdateComponentArg> args = new();
+			foreach (var editingNote in notes)
+			{
+				var note = (editingNote as EditingNote)!.Note;
+				var updatedTime =
+					Mathf.Max(note.Parent.TimeInstantiate, timeRetriever.GetFloorTime(note.TimeJudge));
+				var actualDistance = note.TimeJudge - updatedTime;
+				UpdateComponentArg arg;
+				if (note is Hold hold)
+				{
+					arg = new(hold,
+						h =>
+						{
+							(h as Hold)!.TimeJudge -= actualDistance;
+							(h as Hold)!.TimeEnd -= actualDistance;
+						},
+						h =>
+						{
+							(h as Hold)!.TimeJudge += actualDistance;
+							(h as Hold)!.TimeEnd += actualDistance;
+						});
+				}
+				else
+				{
+					arg = new(note,
+						n => { (n as BaseNote)!.TimeJudge -= actualDistance; },
+						n => { (n as BaseNote)!.TimeJudge += actualDistance; });
+				}
+
+				args.Add(arg);
+			}
+
+			if (args.Count > 0)
+			{
+				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
+			}
+		}
+
+		private void CreateTrack()
+		{
+			ISelectManager.Instance.UnselectAll();
+			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(Input.mousePosition);
+			var timeStart = TimeRetriever.GetTimeStart(gamePoint);
+			var timeEnd = TimeRetriever.GetTrackTimeEnd(gamePoint);
+			float width = WidthRetriever.GetWidth(gamePoint), pos = WidthRetriever.GetPosition(gamePoint);
+			float left = pos - width / 2, right = pos + width / 2;
+			IEnumerable<V1EMoveItem> leftItems = new V1EMoveItem[]
+				{ new(timeStart, left, Eases.Unmove), new(timeEnd, left, Eases.Unmove) };
+			IEnumerable<V1EMoveItem> rightItems = new V1EMoveItem[]
+				{ new(timeStart, right, Eases.Unmove), new(timeEnd, right, Eases.Unmove) };
+			Track track = new(timeStart, timeEnd, IEditingChartManager.Instance.DefaultJudgeLine)
+			{
+				Movement = new TrackEdgeMovement(leftItems, rightItems)
+			};
+			if (!EventManager.Instance.InvokeVeto("InScreenEdit_QueryPlaceTrack", track, out var reasons))
+			{
+				HeaderMessage.Show(reasons.FirstOrDefault(), HeaderMessage.MessageType.Warn);
+				return;
+			}
+
+			CommandManager.Instance.Add(new AddComponentsCommand(track));
+			ISelectManager.Instance.Select(track.Id);
+		}
+
+		private void Delete()
+		{
+			if (!EventManager.Instance.InvokeVeto("Edit_QueryDelete", out _)) return;
+
+			var toDelete = ISelectManager.Instance.SelectedTargets.Values.ToList();
+			bool hasTrack = false;
+			int noteCount = 0;
+			foreach (var component in ISelectManager.Instance.SelectedTargets.Values)
+			{
+				if (!EventManager.Instance.InvokeVeto("Edit_QueryDelete", component, out _))
+				{
+					toDelete.Remove(component);
+					continue;
+				}
+
+				if (component is EditingTrack)
+				{
+					hasTrack = true;
+					noteCount += IEditingChartManager.Instance.GetChildrenComponents(component.Id)
+						.Count(c => c is EditingNote);
 				}
 			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
 
-		if (commands.Count == 0) return;
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Hold"));
-		EditPanelManager.Instance.Render();
-	}
+			if (toDelete.Count == 0) return;
 
-	private static void HoldEndToPrevious()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
+			CommandManager.Instance.Add(new DeleteComponentsCommand(toDelete));
+			if (hasTrack && noteCount > 0)
 			{
-				if (note is EditingHold hold)
-				{
-					float newEnd = hold.Hold.TimeEnd - 0.010f;
-					commands.Add(new UpdateNoteCommand(note.Note, ConstructNewEndHold(hold.Hold, newEnd)));
-				}
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		if (commands.Count == 0) return;
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Hold"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void HoldEndToNextBeat()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				if (note is EditingHold hold)
-				{
-					float newEnd = GridManager.Instance.GetNearestTGridTime(hold.Hold.TimeEnd + 0.001f).ceiled;
-					commands.Add(new UpdateNoteCommand(note.Note, ConstructNewEndHold(hold.Hold, newEnd)));
-				}
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		if (commands.Count == 0) return;
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Hold"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void HoldEndToPreviousBeat()
-	{
-		List<ICommand> commands = new();
-		try
-		{
-			foreach (var note in SelectManager.Instance.SelectedNotes)
-			{
-				if (note is EditingHold hold)
-				{
-					float newEnd = GridManager.Instance.GetNearestTGridTime(hold.Hold.TimeEnd - 0.001f).floored;
-					commands.Add(new UpdateNoteCommand(note.Note, ConstructNewEndHold(hold.Hold, newEnd)));
-				}
-			}
-		}
-		catch (System.Exception)
-		{
-			HeaderMessage.Show("移动失败，请检查时间边界", HeaderMessage.MessageType.Warn);
-			return;
-		}
-
-		if (commands.Count == 0) return;
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), "批量修改Hold"));
-		EditPanelManager.Instance.Render();
-	}
-
-	private static void MirrorTrack(bool isCopy)
-	{
-		if (SelectManager.Instance.SelectedTracks.Count == 0) return;
-		List<ICommand> commands = new();
-		List<int> toSelectIds = new();
-		foreach (var track in SelectManager.Instance.SelectedTracks)
-		{
-			var newTrack = track.Track.Clone(EditingLevelManager.Instance.RawChartInfo.NewId, track.TimeInstantiate,
-				track.Track.GetX(track.TimeInstantiate, true));
-			for (int i = 0; i < newTrack.LMoveList.Count; i++)
-			{
-				newTrack.LMoveList[i] = GetMirroredItem(newTrack.LMoveList[i]);
-			}
-
-			for (int i = 0; i < newTrack.RMoveList.Count; i++)
-			{
-				newTrack.RMoveList[i] = GetMirroredItem(newTrack.RMoveList[i]);
-			}
-
-			(newTrack.LMoveList, newTrack.RMoveList) = (newTrack.RMoveList, newTrack.LMoveList);
-			commands.Add(new CreateTrackCommand(newTrack));
-
-			if (!isCopy)
-			{
-				commands.Add(new DeleteTrackCommand(track.Track));
-			}
-
-			toSelectIds.Add(newTrack.Id);
-		}
-
-		CommandManager.Instance.Add(new BatchCommand(commands.ToArray(), isCopy ? "批量镜像并复制Track" : "批量镜像Track"));
-		SelectManager.Instance.SelectTarget = SelectTarget.Track;
-		foreach (var selectId in toSelectIds)
-		{
-			SelectManager.Instance.SelectTrack(selectId);
-		}
-
-		return;
-
-		(float time, float x, string curve) GetMirroredItem((float time, float x, string curve) item)
-		{
-			return (item.time, -item.x, item.curve);
-		}
-	}
-
-	private static Hold ConstructNewEndHold(Hold hold, float newEnd)
-	{
-		return new Hold(hold.Id, NoteType.Hold, hold.TimeJudge, hold.BelongingTrack, newEnd);
-	}
-
-	// System Functions
-	void Awake()
-	{
-		_instance = this;
-	}
-
-	void Update()
-	{
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CreateNote))
-		{
-			CreateNote();
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.CreateTrack))
-		{
-			CreateTrack();
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Delete))
-		{
-			switch (SelectManager.Instance.SelectTarget)
-			{
-				case SelectTarget.Track:
-					DeleteTrack();
-					break;
-				case SelectTarget.Note:
-					DeleteNote();
-					break;
+				HeaderMessage.Show($"同时删除了{noteCount}个Note", HeaderMessage.MessageType.Info);
 			}
 		}
 
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNext))
+		// System Functions
+		void OnEnable()
 		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				NoteToNext();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPrevious))
-		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				NoteToPrevious();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToNextBeat))
-		{
-			if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				NoteToNextBeat();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.ToPreviousBeat))
-		{
-			if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				NoteToPreviousBeat();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToNext))
-		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				HoldEndToNext();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToPrevious))
-		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				HoldEndToPrevious();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToNextBeat))
-		{
-			if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				HoldEndToNextBeat();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.HoldEndToPreviousBeat))
-		{
-			if (GridManager.Instance.IsTGridShow && SelectManager.Instance.SelectTarget == SelectTarget.Note)
-			{
-				HoldEndToPreviousBeat();
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.Mirror))
-		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Track)
-			{
-				MirrorTrack(false);
-			}
-		}
-
-		if (InputManager.Instance.IsHotkeyActionPressed(InputManager.Instance.InScreenEdit.MirrorCopy))
-		{
-			if (SelectManager.Instance.SelectTarget == SelectTarget.Track)
-			{
-				MirrorTrack(true);
-			}
+			Instance = this;
+			InputManager.Instance.Register("InScreenEdit", "CreateNote", _ => CreateNote());
+			InputManager.Instance.Register("InScreenEdit", "ToNext", _ => NoteToNext());
+			InputManager.Instance.Register("InScreenEdit", "ToPrevious", _ => NoteToPrevious());
+			InputManager.Instance.Register("InScreenEdit", "ToNextBeat", _ => NoteToNextBeat());
+			InputManager.Instance.Register("InScreenEdit", "ToPreviousBeat", _ => NoteToPreviousBeat());
+			InputManager.Instance.Register("InScreenEdit", "CreateTrack", _ => CreateTrack());
+			InputManager.Instance.Register("InScreenEdit", "Delete", _ => Delete());
 		}
 	}
 }

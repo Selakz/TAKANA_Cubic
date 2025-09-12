@@ -1,0 +1,19 @@
+{
+  "name": "T3Framework",
+  "rootNamespace": "",
+  "references": [
+    "GUID:75469ad4d38634e559750d17036d5f7c",
+    "GUID:6055be8ebefd69e48b49212b09b47b2f",
+    "GUID:b3f49edfedc855a48aa1a9e5d3cba438",
+    "GUID:e769319ec9bdb7d428e0c483233c87b3"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

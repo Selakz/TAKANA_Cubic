@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.addressables": "1.21.21",
     "com.unity.device-simulator.devices": "1.0.0",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.rider": "3.0.34",

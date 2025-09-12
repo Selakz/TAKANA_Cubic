@@ -46,10 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa7d7bbdc84bc48428ab94c2e8a7c9c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite: {fileID: 3637309668029424523}
-  hitEffect: {fileID: 2116650265251027523, guid: 37154161fea2a814fa7734dd41636718, type: 3}
+  spriteRenderer: {fileID: 3637309668029424523}
   boxCollider: {fileID: 3077253944161205004}
-  highlight: {fileID: 2258158922847029440}
 --- !u!61 &3077253944161205004
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -168,13 +166,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 19
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0e3d5659e7b1a8c4ca4abba25ead50c8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 1, y: 0.1}
+  m_Size: {x: 1, y: 0.15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

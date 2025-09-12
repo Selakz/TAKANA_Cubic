@@ -1,106 +1,146 @@
-using Takana3.Settings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MusicGame.Components.JudgeLines;
+using MusicGame.Components.Movement;
+using MusicGame.Components.Tracks.Movement;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.MVC;
 using UnityEngine;
-using UnityEngine.Assertions;
-using static Takana3.MusicGame.Values;
+using UnityEngine.Pool;
+using Object = UnityEngine.Object;
 
-/// <summary>
-/// 基本的Track类型：只能在x轴方向上移动，两边界分别独立运动
-/// </summary>
-[System.Serializable]
-public class Track : ITrack
+namespace MusicGame.Components.Tracks
 {
-	// Implement IComponent
-	public int Id { get; }
-	public bool IsInitialized { get; private set; } = false;
-	public GameObject ThisObject { get; private set; } = null;
-	public float TimeInstantiate { get; set; } = -TimePreAnimation;
-
-	// Implement ITrack
-	public TrackType Type { get; }
-	public float TimeEnd { get; set; }
-	public bool IsVisible { get; }
-	public bool IsPreAnimate { get; }
-	public bool IsPostAnimate { get; }
-
-	// Self Properties
-	public TrackController Controller { get; private set; } = null;
-	public JudgeLine BelongingLine { get; }
-	public MultiSortList<BaseNote> Notes { get; set; }
-	public BaseTrackMoveList LMoveList { get; set; }
-	public BaseTrackMoveList RMoveList { get; set; }
-
-	public Track(int id, TrackType trackType, float timeStart, float timeEnd, float leftX, float rightX, bool isVisible,
-		bool isPreAnimate, bool isPostAnimate, JudgeLine belongingLine)
+	/// <summary>
+	/// Basic track type: only its x-axis moves.
+	/// </summary>
+	public class Track : ITrack, IControllerRetrievable<TrackController>, IChildOf<IJudgeLine>
 	{
-		Id = id;
-		Type = trackType;
-		TimeInstantiate = timeStart;
-		TimeEnd = timeEnd;
-		IsVisible = isVisible;
-		IsPreAnimate = isPreAnimate;
-		IsPostAnimate = isPostAnimate;
-		BelongingLine = belongingLine;
+		// Public
+		public static string TypeMark => "track";
 
-		LMoveList = new(leftX, timeStart, timeEnd);
-		RMoveList = new(rightX, timeStart, timeEnd);
-		Notes = new();
-	}
+		public int Id { get; set; }
 
-	public void Initialize(MusicSetting setting)
-	{
-		if (ThisObject != null) Object.Destroy(ThisObject);
-		Notes.AddSort("ID", (BaseNote x, BaseNote y) => x.Id.CompareTo(y.Id));
-		Notes.AddSort("Judge", (BaseNote x, BaseNote y) => x.TimeJudge.CompareTo(y.TimeJudge));
-		IsInitialized = true;
-	}
+		private static readonly LazyPrefab lazyPrefab = new("Prefabs/Track", "TrackPrefab_OnLoad");
+		public GameObject Prefab => lazyPrefab;
 
-	public bool Instantiate()
-	{
-		Assert.IsTrue(IsInitialized);
-		if (ThisObject != null) return true;
-		ThisObject = Object.Instantiate(Type.GetPrefab(), BelongingLine.ThisObject.transform, false);
-		Controller = ThisObject.GetComponent<TrackController>();
-		Controller.InfoInit(this);
-		return true;
-	}
+		public Vector3 Position { get; set; }
 
-	/// <summary> 获得当前时间该Track的游戏坐标x值；需在调用<see cref="Initialize(MusicSetting)"/>之后使用 </summary>
-	public float GetX(float current, bool isLeft)
-	{
-		Assert.IsTrue(IsInitialized);
-		if (isLeft) return LMoveList.GetPos(current).x;
-		else return RMoveList.GetPos(current).x;
-	}
-
-	public Track Clone(int id, float timeStart, float leftStart)
-	{
-		Track track = new(id++, Type, timeStart, timeStart + TimeEnd - TimeInstantiate, GetX(TimeEnd, true),
-			GetX(TimeEnd, false), true, false, false, BelongingLine)
+		public T3Time TimeInstantiate
 		{
-			// 克隆运动列表
-			LMoveList = LMoveList.Clone(timeStart, leftStart),
-			RMoveList = RMoveList.Clone(timeStart,
-				leftStart + GetX(TimeInstantiate, false) - GetX(TimeInstantiate, true))
-		};
-		// 克隆轨道上的所有Note
-		foreach (var note in Notes)
-		{
-			track.Notes.AddItem(note.Clone(id++, note.TimeJudge + timeStart - TimeInstantiate, track));
+			get => Mathf.Max(timeInstantiate, Parent.TimeInstantiate);
+			set => timeInstantiate = value;
 		}
 
-		// 调整RawChartInfo的id
-		if (EditingLevelManager.Instance != null)
+		public T3Time TimeEnd { get; set; }
+
+		public float Width { get; set; }
+
+		public TrackController Controller { get; set; } = null;
+
+		MonoBehaviour IControllerRetrievable.Controller => Controller;
+
+		public IJudgeLine Parent { get; set; }
+
+		IComponent IComponent.Parent
 		{
-			try
+			get => Parent;
+			set
 			{
-				EditingLevelManager.Instance.RawChartInfo.NewId = id;
-			}
-			catch
-			{
-				throw new System.Exception("在复制轨道时发生不正确的id赋值情况");
+				if (value is not IJudgeLine judgeLine)
+				{
+					Debug.LogError($"Track's Parent should be {nameof(IJudgeLine)}");
+					return;
+				}
+
+				Parent = judgeLine;
 			}
 		}
 
-		return track;
+		public bool IsPresent => Controller && Controller.Object;
+
+		public ITrackMovement Movement { get; set; }
+
+		public JObject Properties { get; set; }
+
+		// Private
+		private T3Time timeInstantiate;
+
+		private static readonly ObjectPool<TrackController> pool = new(
+			() => Object.Instantiate<GameObject>(lazyPrefab).GetComponent<TrackController>(),
+			null,
+			controller => controller.Destroy(),
+			controller => Object.Destroy(controller.gameObject));
+
+		// Functions
+		public Track(T3Time timeStart, T3Time timeEnd, IJudgeLine parent)
+		{
+			Id = IComponent.GetUniqueId();
+			Parent = parent;
+			TimeInstantiate = timeStart;
+			TimeEnd = timeEnd;
+			Properties = new();
+		}
+
+		public bool Generate()
+		{
+			if (IsPresent) return false;
+			Controller = pool.Get();
+			Controller.Init(this);
+			Controller.Object.SetActive(true);
+			return true;
+		}
+
+		public bool Destroy()
+		{
+			if (!IsPresent) return false;
+			pool.Release(Controller);
+			return true;
+		}
+
+		public Track Clone(T3Time timeStart, float xOffset)
+		{
+			Track track = new(timeStart, timeStart + TimeEnd - TimeInstantiate, Parent)
+			{
+				Movement = Movement.Clone(timeStart - TimeInstantiate, xOffset)
+			};
+			return track;
+		}
+
+		public JToken GetSerializationToken()
+		{
+			// ReSharper disable once UseObjectOrCollectionInitializer
+			var token = new JObject();
+			token.Add("id", Id);
+			token.Add("timeStart", TimeInstantiate.Milli);
+			token.Add("timeEnd", TimeEnd.Milli);
+			token.Add("line", Parent.Id);
+			token.Add("movement", Movement.Serialize(true));
+			token.AddIf("properties", Properties, Properties.Count > 0);
+			return token;
+		}
+
+		public static Track Deserialize(JToken token, object context)
+		{
+			if (token is not JContainer container) return default;
+			T3Time timeStart = container["timeStart"]!.Value<int>();
+			T3Time timeEnd = container["timeEnd"]!.Value<int>();
+			var components = (context as IEnumerable<IComponent>)!;
+			IJudgeLine belongingLine =
+				components.Where(a => a.Id == container["line"]!.Value<int>()).ToList()[0] as IJudgeLine;
+
+			return new Track(timeStart, timeEnd, belongingLine)
+			{
+				Id = container["id"]!.Value<int>(),
+				Movement = container.TryGetValue("movement", out JToken movementToken)
+					? (ITrackMovement)ISerializable.Deserialize(movementToken)
+					: new TrackEdgeMovement(Array.Empty<V1EMoveItem>(), Array.Empty<V1EMoveItem>()),
+				Properties = container.TryGetValue("properties", out JObject propertiesToken) ? propertiesToken : new()
+			};
+		}
 	}
 }

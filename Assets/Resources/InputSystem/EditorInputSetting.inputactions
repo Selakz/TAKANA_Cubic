@@ -398,15 +398,6 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "RaycastTrack",
-                    "type": "Value",
-                    "id": "35e68072-8282-40e3-97c8-5ac1337bc3f8",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "RaycastNote",
                     "type": "Value",
                     "id": "e47ac1ba-37f0-41aa-9128-cdf54a2ffc88",
@@ -416,18 +407,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "RaycastTurningPoint",
+                    "name": "RaycastTrack",
                     "type": "Value",
-                    "id": "2f79375e-e2df-4390-91d1-0167bfd1a620",
+                    "id": "35e68072-8282-40e3-97c8-5ac1337bc3f8",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
-                    "name": "RaycastTrackMulti",
+                    "name": "RaycastNode",
                     "type": "Value",
-                    "id": "4699df0c-4d99-4978-95b5-62cb690ac09b",
+                    "id": "2f79375e-e2df-4390-91d1-0167bfd1a620",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -443,18 +434,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "RaycastTurningPointMulti",
+                    "name": "RaycastTrackMulti",
                     "type": "Value",
-                    "id": "43eb1019-16e6-4a4b-9cc7-e70bd0763547",
+                    "id": "4699df0c-4d99-4978-95b5-62cb690ac09b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
                 },
                 {
-                    "name": "CreateTrack",
+                    "name": "RaycastNodeMulti",
                     "type": "Value",
-                    "id": "a21b474a-f6c4-499f-b95c-e89a72d6ee91",
+                    "id": "43eb1019-16e6-4a4b-9cc7-e70bd0763547",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -470,7 +461,16 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "CreateTurningPoint",
+                    "name": "CreateTrack",
+                    "type": "Value",
+                    "id": "56780e09-e425-46ad-9d78-381bdac3950c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "CreateNode",
                     "type": "Value",
                     "id": "752d78b0-aef9-4115-94e2-55d39c9fe48b",
                     "expectedControlType": "",
@@ -666,6 +666,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "ToggleDummy",
+                    "type": "Value",
+                    "id": "65d7eef3-539e-430b-89b5-8246bd7912e0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -781,67 +790,12 @@
                 },
                 {
                     "name": "Key With Modifiers",
-                    "id": "4a03baa6-9c09-4c9c-891d-70ce7c8b839d",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey(needModifier3=true)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNote",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "345f6900-2714-4ce2-92a3-9dd439edf7ad",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "37bec526-2953-45f4-b821-24366ccdb5f2",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "d2841ce3-cbaf-4632-99bc-f5bacaf57a6e",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "5746e03f-5e5a-449a-be85-122cbd632621",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
                     "id": "da4b2cf1-0a44-4777-af05-7cd40b124dce",
                     "path": "KeyWithModifiers",
                     "interactions": "HotKey(needModifier2=true)",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPoint",
+                    "action": "RaycastNode",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -852,7 +806,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPoint",
+                    "action": "RaycastNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -863,7 +817,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPoint",
+                    "action": "RaycastNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -874,7 +828,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPoint",
+                    "action": "RaycastNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -885,7 +839,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPoint",
+                    "action": "RaycastNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -946,67 +900,12 @@
                 },
                 {
                     "name": "Key With Modifiers",
-                    "id": "b567352c-e0e7-4687-82c7-3362cc43ec96",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey(needModifier1=true,needModifier3=true)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNoteMulti",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "678fa08a-53aa-409f-8507-c6e686aad401",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNoteMulti",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "565664b2-af79-47d1-9d14-0cde6dc0cd08",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNoteMulti",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "55f15e1c-c015-4e13-b22c-71344074c420",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNoteMulti",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "a48794b1-c2e0-4e4f-b9f6-ac1c8da12f43",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RaycastNoteMulti",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
                     "id": "05b02a02-3888-4c2d-a937-014b049c1d32",
                     "path": "KeyWithModifiers",
                     "interactions": "HotKey(needModifier1=true,needModifier2=true)",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPointMulti",
+                    "action": "RaycastNodeMulti",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -1017,7 +916,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPointMulti",
+                    "action": "RaycastNodeMulti",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1028,7 +927,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPointMulti",
+                    "action": "RaycastNodeMulti",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1039,7 +938,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPointMulti",
+                    "action": "RaycastNodeMulti",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1050,117 +949,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RaycastTurningPointMulti",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "532c01ee-336b-4ada-88ab-967b4f5b0e0c",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey(needModifier3=true)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateTrack",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "f207db2a-126a-4378-880e-aff55fd3ba25",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "c1f6c54f-e9b9-418a-984b-85046ee985f4",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "37903513-f490-4e31-b60f-62cb445d6e26",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "4af66747-b45f-4cf9-995c-132efd480cc6",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateTrack",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "b08a5d78-c36b-4687-a2b1-c0413d98a069",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateNote",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "eab58afb-5e69-4fe8-8546-45f7438a37c7",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "25e90ce1-5310-463e-a148-2cf51f0745ed",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "52f52883-80e7-4b0a-bb11-e15eb33b44a1",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateNote",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "8baa538e-a0de-4a19-8046-82d64eca7a0f",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CreateNote",
+                    "action": "RaycastNodeMulti",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1171,7 +960,7 @@
                     "interactions": "HotKey(needModifier2=true)",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateTurningPoint",
+                    "action": "CreateNode",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -1182,7 +971,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateTurningPoint",
+                    "action": "CreateNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1193,7 +982,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateTurningPoint",
+                    "action": "CreateNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1204,7 +993,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateTurningPoint",
+                    "action": "CreateNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1215,7 +1004,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateTurningPoint",
+                    "action": "CreateNode",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -3033,6 +2822,281 @@
                     "action": "MirrorCopy",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "4a03baa6-9c09-4c9c-891d-70ce7c8b839d",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNote",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "345f6900-2714-4ce2-92a3-9dd439edf7ad",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "37bec526-2953-45f4-b821-24366ccdb5f2",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "d2841ce3-cbaf-4632-99bc-f5bacaf57a6e",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "5746e03f-5e5a-449a-be85-122cbd632621",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "b567352c-e0e7-4687-82c7-3362cc43ec96",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier1=true,needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNoteMulti",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "678fa08a-53aa-409f-8507-c6e686aad401",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNoteMulti",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "565664b2-af79-47d1-9d14-0cde6dc0cd08",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNoteMulti",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "55f15e1c-c015-4e13-b22c-71344074c420",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNoteMulti",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "a48794b1-c2e0-4e4f-b9f6-ac1c8da12f43",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaycastNoteMulti",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "b08a5d78-c36b-4687-a2b1-c0413d98a069",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateNote",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "eab58afb-5e69-4fe8-8546-45f7438a37c7",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "25e90ce1-5310-463e-a148-2cf51f0745ed",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "52f52883-80e7-4b0a-bb11-e15eb33b44a1",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "8baa538e-a0de-4a19-8046-82d64eca7a0f",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "4a2bc9c9-bfe1-4f7a-bc01-aa940ba037cb",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "06a88812-c5f4-4df2-a4d5-bf7d7dea2192",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "409112b1-e786-49b8-ae41-ff9011ba1fca",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "7fc324ca-0a07-4c5a-ad5c-d352470273ed",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "659f387a-90b5-4609-9d5c-7918cb968ab5",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "6313e817-40c5-4eba-8a80-6ba3eda2013a",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDummy",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "7d2607ad-746f-43f0-bde4-c43c797a8b58",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDummy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "748c2c54-fa42-4632-b2d5-6c788cfa3510",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDummy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "fd91928a-b110-4b6c-b39c-8b89f5442f4a",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDummy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "eb579635-7c27-4668-b68b-b15d234780bd",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDummy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -3041,7 +3105,7 @@
             "id": "88c2ce78-91e4-455a-be1a-91896b3419b2",
             "actions": [
                 {
-                    "name": "ToggleLineCurve",
+                    "name": "ChangeNodeState",
                     "type": "Value",
                     "id": "703b079e-4d90-4b56-be5c-8ebaeabfbf3d",
                     "expectedControlType": "",
@@ -3157,7 +3221,7 @@
                     "interactions": "HotKey",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleLineCurve",
+                    "action": "ChangeNodeState",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -3168,7 +3232,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleLineCurve",
+                    "action": "ChangeNodeState",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -3179,7 +3243,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleLineCurve",
+                    "action": "ChangeNodeState",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -3190,7 +3254,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleLineCurve",
+                    "action": "ChangeNodeState",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -3201,7 +3265,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleLineCurve",
+                    "action": "ChangeNodeState",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

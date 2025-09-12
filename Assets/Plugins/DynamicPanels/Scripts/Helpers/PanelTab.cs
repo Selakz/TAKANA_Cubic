@@ -6,291 +6,274 @@ using UnityEngine.UI;
 
 namespace DynamicPanels
 {
-    [DisallowMultipleComponent]
-    public class PanelTab : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
-    {
-        internal class InternalSettings
-        {
-            private readonly PanelTab tab;
-            public readonly RectTransform RectTransform;
+	[DisallowMultipleComponent]
+	public class PanelTab : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+	{
+		internal class InternalSettings
+		{
+			private readonly PanelTab tab;
+			public readonly RectTransform RectTransform;
 
-            public InternalSettings(PanelTab tab)
-            {
-                this.tab = tab;
-                RectTransform = (RectTransform)tab.transform;
-            }
+			public InternalSettings(PanelTab tab)
+			{
+				this.tab = tab;
+				RectTransform = (RectTransform)tab.transform;
+			}
 
-            public bool IsBeingDetached { get { return tab.pointerId != PanelManager.NON_EXISTING_TOUCH; } }
+			public bool IsBeingDetached
+			{
+				get { return tab.pointerId != PanelManager.NON_EXISTING_TOUCH; }
+			}
 
-            public void Initialize(Panel panel, RectTransform content)
-            {
-                tab.m_panel = panel;
-                tab.Content = content;
-            }
+			public void Initialize(Panel panel, RectTransform content)
+			{
+				tab.m_panel = panel;
+				tab.Content = content;
+			}
 
-            public void ChangeCloseButtonVisibility(bool isVisible)
-            {
-                if (tab.closeButton && isVisible != tab.closeButton.gameObject.activeSelf)
-                {
-                    tab.closeButton.gameObject.SetActive(isVisible);
+			public void ChangeCloseButtonVisibility(bool isVisible)
+			{
+				if (tab.closeButton && isVisible != tab.closeButton.gameObject.activeSelf)
+				{
+					tab.closeButton.gameObject.SetActive(isVisible);
 
-                    float tabSizeDelta = tab.closeButton.GetComponent<LayoutElement>().preferredWidth;
-                    tab.GetComponent<LayoutElement>().preferredWidth += isVisible ? tabSizeDelta : -tabSizeDelta;
-                }
-            }
+					float tabSizeDelta = tab.closeButton.GetComponent<LayoutElement>().preferredWidth;
+					tab.GetComponent<LayoutElement>().preferredWidth += isVisible ? tabSizeDelta : -tabSizeDelta;
+				}
+			}
 
-            public void Stop()
-            {
-                if (tab.pointerId != PanelManager.NON_EXISTING_TOUCH)
-                {
-                    tab.ResetBackgroundColor();
-                    tab.pointerId = PanelManager.NON_EXISTING_TOUCH;
+			public void Stop()
+			{
+				if (tab.pointerId != PanelManager.NON_EXISTING_TOUCH)
+				{
+					tab.ResetBackgroundColor();
+					tab.pointerId = PanelManager.NON_EXISTING_TOUCH;
 
-                    PanelNotificationCenter.Internal.TabDragStateChanged(tab, false);
-                }
-            }
+					PanelNotificationCenter.Internal.TabDragStateChanged(tab, false);
+				}
+			}
 
-            public void SetActive(bool activeState) { tab.SetActive(activeState); }
-        }
+			public void SetActive(bool activeState)
+			{
+				tab.SetActive(activeState);
+			}
+		}
 
 #pragma warning disable 0649
-        [SerializeField]
-        private Image background;
+		[SerializeField] private Image background;
 
-        [SerializeField]
-        private Image iconHolder;
+		[SerializeField] private Image iconHolder;
 
-        [SerializeField]
-        private TMP_Text nameHolder;
+		[SerializeField] private TMP_Text nameHolder;
 
-        [SerializeField]
-        private MaterialIcon materialIconHolder;
+		[SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private Button closeButton;
+		[SerializeField] private float activeWidth;
 
-        [SerializeField]
-        private float activeWidth;
-
-        [SerializeField]
-        private float inactiveWidth;
+		[SerializeField] private float inactiveWidth;
 #pragma warning restore 0649
 
-        internal InternalSettings Internal { get; private set; }
-        private RectTransform rect;
+		internal InternalSettings Internal { get; private set; }
+		private RectTransform rect;
 
-        private string m_id = null;
-        public string ID
-        {
-            get { return m_id; }
-            set
-            {
-                if (!string.IsNullOrEmpty(value) && m_id != value)
-                {
-                    PanelNotificationCenter.Internal.TabIDChanged(this, m_id, value);
-                    m_id = value;
-                }
-            }
-        }
+		private string m_id = null;
 
-        private Panel m_panel;
-        public Panel Panel { get { return m_panel; } }
+		public string ID
+		{
+			get { return m_id; }
+			set
+			{
+				if (!string.IsNullOrEmpty(value) && m_id != value)
+				{
+					PanelNotificationCenter.Internal.TabIDChanged(this, m_id, value);
+					m_id = value;
+				}
+			}
+		}
 
-        public int Index
-        {
-            get { return m_panel.GetTabIndex(this); }
-            set { m_panel.AddTab(this, value); }
-        }
+		private Panel m_panel;
 
-        public RectTransform Content { get; private set; }
+		public Panel Panel
+		{
+			get { return m_panel; }
+		}
 
-        private Vector2 m_minSize;
-        public Vector2 MinSize
-        {
-            get { return m_minSize; }
-            set
-            {
-                if (m_minSize != value)
-                {
-                    m_minSize = value;
-                    m_panel.Internal.RecalculateMinSize();
-                }
-            }
-        }
+		public int Index
+		{
+			get { return m_panel.GetTabIndex(this); }
+			set { m_panel.AddTab(this, value); }
+		}
 
-        public Sprite Icon
-        {
-            get { return iconHolder != null ? iconHolder.sprite : null; }
-            set
-            {
-                if (iconHolder != null)
-                {
-                    iconHolder.gameObject.SetActive(value != null);
-                    iconHolder.sprite = value;
-                }
-            }
-        }
+		public RectTransform Content { get; private set; }
 
-        public string Label
-        {
-            get { return nameHolder != null ? nameHolder.text : null; }
-            set
-            {
-                if (nameHolder != null && value != null)
-                    nameHolder.text = value;
-            }
-        }
+		private Vector2 m_minSize;
 
-        public string MaterialIconCode
-        {
-            get { return materialIconHolder != null ? materialIconHolder.text : null; }
-            set
-            {
-                if (materialIconHolder != null)
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        materialIconHolder.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        materialIconHolder.gameObject.SetActive(true);
-                        materialIconHolder.iconUnicode = value;
-                    }
-                }
-            }
-        }
+		public Vector2 MinSize
+		{
+			get { return m_minSize; }
+			set
+			{
+				if (m_minSize != value)
+				{
+					m_minSize = value;
+					m_panel.Internal.RecalculateMinSize();
+				}
+			}
+		}
 
-        private int pointerId = PanelManager.NON_EXISTING_TOUCH;
+		public Sprite Icon
+		{
+			get { return iconHolder != null ? iconHolder.sprite : null; }
+			set
+			{
+				if (iconHolder != null)
+				{
+					iconHolder.gameObject.SetActive(value != null);
+					iconHolder.sprite = value;
+				}
+			}
+		}
 
-        private void Awake()
-        {
-            m_minSize = new Vector2(100f, 100f);
-            Internal = new InternalSettings(this);
-            rect = GetComponent<RectTransform>();
+		public string Label
+		{
+			get { return nameHolder != null ? nameHolder.text : null; }
+			set
+			{
+				if (nameHolder != null && value != null)
+					nameHolder.text = value;
+			}
+		}
 
-            iconHolder.preserveAspect = true;
+		private int pointerId = PanelManager.NON_EXISTING_TOUCH;
 
-            closeButton.onClick.AddListener(() => PanelNotificationCenter.Internal.TabClosed(this));
-        }
+		private void Awake()
+		{
+			m_minSize = new Vector2(100f, 100f);
+			Internal = new InternalSettings(this);
+			rect = GetComponent<RectTransform>();
 
-        private void Start()
-        {
-            if (string.IsNullOrEmpty(m_id))
-                ID = System.Guid.NewGuid().ToString();
-        }
+			iconHolder.preserveAspect = true;
 
-        private void OnEnable()
-        {
-            pointerId = PanelManager.NON_EXISTING_TOUCH;
-        }
+			closeButton.onClick.AddListener(() => PanelNotificationCenter.Internal.TabClosed(this));
+		}
 
-        private void OnDestroy()
-        {
-            PanelNotificationCenter.Internal.TabIDChanged(this, m_id, null);
-        }
+		private void Start()
+		{
+			if (string.IsNullOrEmpty(m_id))
+				ID = System.Guid.NewGuid().ToString();
+		}
 
-        public void AttachTo(Panel panel, int tabIndex = -1)
-        {
-            panel.AddTab(Content, tabIndex);
-        }
+		private void OnEnable()
+		{
+			pointerId = PanelManager.NON_EXISTING_TOUCH;
+		}
 
-        public Panel Detach()
-        {
-            return m_panel.DetachTab(this);
-        }
+		private void OnDestroy()
+		{
+			PanelNotificationCenter.Internal.TabIDChanged(this, m_id, null);
+		}
 
-        public void Destroy()
-        {
-            m_panel.RemoveTab(this);
-        }
+		public void AttachTo(Panel panel, int tabIndex = -1)
+		{
+			panel.AddTab(Content, tabIndex);
+		}
 
-        private void SetActive(bool activeState)
-        {
-            if (!Content)
-                m_panel.Internal.RemoveTab(m_panel.GetTabIndex(this), true);
-            else
-            {
-                if (activeState)
-                {
-                    background.color = m_panel.TabSelectedColor;
-                    nameHolder.color = m_panel.TabSelectedTextColor;
-                    nameHolder.gameObject.SetActive(true);
-                    rect.sizeDelta = new Vector2(activeWidth, rect.sizeDelta.x);
-                }
-                else
-                {
-                    background.color = m_panel.TabNormalColor;
-                    nameHolder.color = m_panel.TabNormalTextColor;
-                    nameHolder.gameObject.SetActive(false);
-                    rect.sizeDelta = new Vector2(inactiveWidth, rect.sizeDelta.x);
-                }
+		public Panel Detach()
+		{
+			return m_panel.DetachTab(this);
+		}
 
-                Content.gameObject.SetActive(activeState);
-            }
-        }
+		public void Destroy()
+		{
+			m_panel.RemoveTab(this);
+		}
 
-        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
-        {
-            if (!Content)
-                m_panel.Internal.RemoveTab(m_panel.GetTabIndex(this), true);
-            else
-                m_panel.ActiveTab = m_panel.GetTabIndex(this);
-        }
+		private void SetActive(bool activeState)
+		{
+			if (!Content)
+				m_panel.Internal.RemoveTab(m_panel.GetTabIndex(this), true);
+			else
+			{
+				if (activeState)
+				{
+					background.color = m_panel.TabSelectedColor;
+					nameHolder.color = m_panel.TabSelectedTextColor;
+					nameHolder.gameObject.SetActive(true);
+					rect.sizeDelta = new Vector2(activeWidth, rect.sizeDelta.x);
+				}
+				else
+				{
+					background.color = m_panel.TabNormalColor;
+					nameHolder.color = m_panel.TabNormalTextColor;
+					nameHolder.gameObject.SetActive(false);
+					rect.sizeDelta = new Vector2(inactiveWidth, rect.sizeDelta.x);
+				}
 
-        void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
-        {
-            // Cancel drag event if panel is already being dragged by another pointer,
-            // or PanelManager does not want the panel to be dragged at that moment
-            if (!PanelManager.Instance.OnBeginPanelTabTranslate(this, eventData))
-            {
-                eventData.pointerDrag = null;
-                return;
-            }
+				Content.gameObject.SetActive(activeState);
+			}
+		}
 
-            pointerId = eventData.pointerId;
+		void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+		{
+			if (!Content)
+				m_panel.Internal.RemoveTab(m_panel.GetTabIndex(this), true);
+			else
+				m_panel.ActiveTab = m_panel.GetTabIndex(this);
+		}
 
-            background.color = m_panel.TabDetachingColor;
-            nameHolder.color = m_panel.TabDetachingTextColor;
+		void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+		{
+			// Cancel drag event if panel is already being dragged by another pointer,
+			// or PanelManager does not want the panel to be dragged at that moment
+			if (!PanelManager.Instance.OnBeginPanelTabTranslate(this, eventData))
+			{
+				eventData.pointerDrag = null;
+				return;
+			}
 
-            PanelNotificationCenter.Internal.TabDragStateChanged(this, true);
-        }
+			pointerId = eventData.pointerId;
 
-        void IDragHandler.OnDrag(PointerEventData eventData)
-        {
-            if (eventData.pointerId != pointerId)
-            {
-                eventData.pointerDrag = null;
-                return;
-            }
+			background.color = m_panel.TabDetachingColor;
+			nameHolder.color = m_panel.TabDetachingTextColor;
 
-            PanelManager.Instance.OnPanelTabTranslate(this, eventData);
-        }
+			PanelNotificationCenter.Internal.TabDragStateChanged(this, true);
+		}
 
-        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
-        {
-            if (eventData.pointerId != pointerId)
-                return;
+		void IDragHandler.OnDrag(PointerEventData eventData)
+		{
+			if (eventData.pointerId != pointerId)
+			{
+				eventData.pointerDrag = null;
+				return;
+			}
 
-            pointerId = PanelManager.NON_EXISTING_TOUCH;
-            ResetBackgroundColor();
+			PanelManager.Instance.OnPanelTabTranslate(this, eventData);
+		}
 
-            PanelManager.Instance.OnEndPanelTabTranslate(this, eventData);
-            PanelNotificationCenter.Internal.TabDragStateChanged(this, false);
-        }
+		void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+		{
+			if (eventData.pointerId != pointerId)
+				return;
 
-        private void ResetBackgroundColor()
-        {
-            if (m_panel.ActiveTab == m_panel.GetTabIndex(this))
-            {
-                background.color = m_panel.TabSelectedColor;
-                nameHolder.color = m_panel.TabSelectedTextColor;
-            }
-            else
-            {
-                background.color = m_panel.TabNormalColor;
-                nameHolder.color = m_panel.TabNormalTextColor;
-            }
-        }
-    }
+			pointerId = PanelManager.NON_EXISTING_TOUCH;
+			ResetBackgroundColor();
+
+			PanelManager.Instance.OnEndPanelTabTranslate(this, eventData);
+			PanelNotificationCenter.Internal.TabDragStateChanged(this, false);
+		}
+
+		private void ResetBackgroundColor()
+		{
+			if (m_panel.ActiveTab == m_panel.GetTabIndex(this))
+			{
+				background.color = m_panel.TabSelectedColor;
+				nameHolder.color = m_panel.TabSelectedTextColor;
+			}
+			else
+			{
+				background.color = m_panel.TabNormalColor;
+				nameHolder.color = m_panel.TabNormalTextColor;
+			}
+		}
+	}
 }

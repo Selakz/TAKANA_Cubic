@@ -1,8 +1,11 @@
-public interface ICommand
+namespace MusicGame.ChartEditor.Command
 {
-    public string Name { get; }
+	public interface ICommand
+	{
+		public string Name { get; }
 
-    public void Do();
+		public void Do();
 
-    public void Undo();
+		public void Undo();
+	}
 }

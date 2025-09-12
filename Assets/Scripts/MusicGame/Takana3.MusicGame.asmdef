@@ -1,11 +1,11 @@
 {
-    "name": "Takana3.MusicGame",
+    "name": "MusicGame",
     "rootNamespace": "",
     "references": [
-        "GUID:d8ae57fc1ab98e640805cd2328d47045",
         "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:39a05a7bd4fef654995b6a9f132263ff",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ecd59b5e46f61bf4cb7cec319f49c161",
+        "GUID:b3f49edfedc855a48aa1a9e5d3cba438"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

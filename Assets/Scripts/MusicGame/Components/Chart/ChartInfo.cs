@@ -1,164 +1,135 @@
-using Takana3.Settings;
+#nullable enable
+
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
-using System.Text;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Extensions;
 
-/// <summary>
-/// 通用谱面信息
-/// </summary>
-public class ChartInfo
+namespace MusicGame.Components.Chart
 {
-    public float Offset { get; } = 0f;
-    public Dictionary<JudgeType, MultiSortList<INote>> NoteDict { get; }
-    public MultiSortList<IComponent> ComponentList { get; } // 同样包括Note在内
-    public Dictionary<string, string> CustomInfo { get; }
+	public class ChartInfo : IEnumerable<IComponent>, ISerializable
+	{
+		public static string TypeMark => "chart";
 
-    // 快速获取各类note的数量
-    public int this[NoteType type]
-    {
-        get
-        {
-            int sum = 0;
-            foreach (var pair in NoteDict)
-            {
-                foreach (var note in pair.Value)
-                {
-                    if (note.Type == type) sum++;
-                }
-            }
-            return sum;
-        }
-    }
-    public int NoteSum
-    {
-        get
-        {
-            int sum = 0;
-            foreach (var pair in NoteDict)
-            {
-                sum += pair.Value.Count;
-            }
-            return sum;
-        }
-    }
-    public int UNoteSum
-    {
-        get
-        {
-            int sum = 0;
-            foreach (var type in NoteType.UTap.UNoteTypes())
-            {
-                sum += this[type];
-            }
-            return sum;
-        }
-    }
-    public int TNoteSum
-    {
-        get
-        {
-            int sum = 0;
-            foreach (var type in NoteType.Tap.TNoteTypes())
-            {
-                sum += this[type];
-            }
-            return sum;
-        }
-    }
+		public JObject Properties { get; set; }
 
-    public ChartInfo(float offset, Dictionary<JudgeType, List<INote>> noteDict, MultiSortList<IComponent> componentList, Dictionary<string, string> customInfo)
-    {
-        Offset = offset;
-        NoteDict = new();
-        ComponentList = componentList;
-        CustomInfo = new(customInfo);
+		public IComponent? this[int id] => componentDict.ContainsKey(id) ? componentDict[id] : null;
 
-        foreach (var pair in noteDict)
-        {
-            MultiSortList<INote> list = new(pair.Value);
-            list.AddSort("Judge", (INote x, INote y) => x.TimeJudge.CompareTo(y.TimeJudge));
-            list.AddSort("ID", (INote x, INote y) => x.Id.CompareTo(y.Id));
-            NoteDict.Add(pair.Key, list);
-        }
-        ComponentList.AddSort("ID", (IComponent x, IComponent y) => x.Id.CompareTo(y.Id));
-    }
+		private readonly Dictionary<int, IComponent> componentDict;
+		private readonly SortedDictionary<IComponent, int> components;
 
-    public ChartInfo(RawChartInfo rawChartInfo)
-    {
-        Offset = rawChartInfo.Offset;
-        NoteDict = new(rawChartInfo.NoteDict);
-        ComponentList = new();
-        foreach (var component in rawChartInfo.ComponentList)
-        {
-            ComponentList.AddItem(component.Component);
-        }
-        CustomInfo = new(rawChartInfo.CustomInfo);
-    }
+		public ChartInfo()
+		{
+			Properties = new();
+			componentDict = new();
+			components = new(Comparer<IComponent>.Create(
+				(x, y) => (x.TimeInstantiate, x.Id).CompareTo((y.TimeInstantiate, y.Id))));
+		}
 
-    /// <summary>
-    /// 在开始调用谱面前使用这个方法处理一些初始化事项
-    /// </summary>
-    public void Initialize(MusicSetting setting)
-    {
-        foreach (var component in ComponentList)
-        {
-            component.Initialize(setting);
-        }
-        foreach (var pair in NoteDict)
-        {
-            pair.Value.AddSort("Instantiate", (INote x, INote y) => x.TimeInstantiate.CompareTo(y.TimeInstantiate));
-        }
-        ComponentList.AddSort("Instantiate", (IComponent x, IComponent y) => x.TimeInstantiate.CompareTo(y.TimeInstantiate));
-    }
+		public ChartInfo(IEnumerable<IComponent> components)
+			: this()
+		{
+			foreach (var component in components)
+			{
+				AddComponent(component);
+			}
+		}
 
-    public RawChartInfo ToRawChartInfo()
-    {
-        return new(this);
-    }
+		public ChartInfo(T3Time offset, IEnumerable<IComponent> components)
+			: this(components)
+		{
+			Properties.Add("offset", offset.ToString());
+		}
 
-    /// <summary> 转换为Takana3简单语法的dlf谱面文件 </summary>
-    public string ToSimpleDLF(LayerInfo layerInfo = null)
-    {
-        // TODO: 将构造下发到各个元件的ToString()中
-        StringBuilder ret = new($"offset({Mathf.RoundToInt(Offset * 1000f)});\n");
-        foreach (var pair in CustomInfo)
-        {
-            ret.AppendLine($"{pair.Key} : {pair.Value};");
-        }
-        if (layerInfo != null) ret.Append(layerInfo.ToString());
-        ret.AppendLine("-");
+		public bool TryGetComponent(int id, out IComponent component)
+		{
+			return componentDict.TryGetValue(id, out component);
+		}
 
-        List<Track> tracks = new();
-        foreach (var component in ComponentList)
-        {
-            if (component is Track track) tracks.Add(track);
-        }
-        tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
-        foreach (var track in tracks)
-        {
+		public bool Contains(int id)
+		{
+			return componentDict.ContainsKey(id);
+		}
 
-            // track本体
-            float lPosEnd = track.LMoveList[^1].x;
-            float rPosEnd = track.RMoveList[^1].x;
-            ret.AppendLine($"track({Mathf.RoundToInt(track.TimeInstantiate * 1000f)}, {Mathf.RoundToInt(track.TimeEnd * 1000f)}, {lPosEnd:0.00}, {rPosEnd:0.00});");
-            // track运动列表
-            ret.AppendLine($"lpos{track.LMoveList}");
-            ret.AppendLine($"rpos{track.RMoveList}");
-            // track附属note
-            for (int i = 0; i < track.Notes.Count; i++)
-            {
-                ret.AppendLine(
-                    track.Notes["Judge", i] switch
-                    {
-                        Tap tap => $"\ttap({Mathf.RoundToInt(tap.TimeJudge * 1000f)});",
-                        Slide slide => $"\tslide({Mathf.RoundToInt(slide.TimeJudge * 1000f)});",
-                        Hold hold => $"\thold({Mathf.RoundToInt(hold.TimeJudge * 1000f)}, {Mathf.RoundToInt(hold.TimeEnd * 1000f)});",
-                        _ => string.Empty
-                    }
-                );
-            }
-        }
-        return ret.ToString();
-    }
+		public bool Contains(IComponent component)
+		{
+			return components.ContainsKey(component);
+		}
+
+		public IComponent? AddComponent(IComponent component)
+		{
+			IComponent? previous = null;
+			if (componentDict.TryGetValue(component.Id, out var value))
+			{
+				previous = value;
+			}
+
+			componentDict[component.Id] = component;
+			if (previous is not null) components.Remove(previous);
+			components[component] = component.Id;
+			return previous;
+		}
+
+		public bool RemoveComponent(int id)
+		{
+			if (componentDict.ContainsKey(id))
+			{
+				components.Remove(componentDict[id]);
+				componentDict.Remove(id);
+				return true;
+			}
+
+			return false;
+		}
+
+		public IEnumerator<IComponent> GetEnumerator()
+		{
+			return components.Keys.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public JToken GetSerializationToken()
+		{
+			var list = new JArray();
+			foreach (var component in componentDict.Values)
+			{
+				// if(component is not )
+				list.Add(component.Serialize(true));
+			}
+
+			var token = new JObject
+			{
+				["properties"] = Properties,
+				["components"] = list
+			};
+			return token;
+		}
+
+		public static ChartInfo Deserialize(JToken token)
+		{
+			IComponent.ResetId();
+			if (token is not JContainer container) return new(Array.Empty<IComponent>());
+			JObject properties = container.TryGetValue("properties", out JObject propsToken) ? propsToken : new();
+			List<IComponent> components = new();
+			int maxId = 0;
+			foreach (var componentToken in token["components"]!)
+			{
+				var component = (IComponent)ISerializable.Deserialize(componentToken, components);
+				components.Add(component);
+				maxId = Math.Max(maxId, component.Id);
+			}
+
+			IComponent.SetIdMinValue(maxId + 1);
+			return new(components)
+			{
+				Properties = properties
+			};
+		}
+	}
 }

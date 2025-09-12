@@ -1,130 +1,215 @@
-using System;
+#nullable enable
+
+using MusicGame.Components.Chart;
+using MusicGame.Gameplay.Level;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.MVC;
+using T3Framework.Runtime.Setting;
 using UnityEngine;
-using static Takana3.MusicGame.Values;
 
-public class TrackController : MonoBehaviour
+namespace MusicGame.Components.Tracks
 {
-    // Serializable and Public
-    [SerializeField] private Highlight2D highlight;
-    [SerializeField] private Transform sprite;
-    [SerializeField] private Transform leftLine;
-    [SerializeField] private Transform rightLine;
-    [SerializeField] private Transform laneBeam;
-    [SerializeField] private Animator laneBeamAnimator;
-    [SerializeField] private BoxCollider2D boxCollider;
+	public class TrackController : MonoBehaviour, IModifiableView2D, IController<Track>
+	{
+		// Serializable and Public
+		[SerializeField] private SpriteRenderer trackFace = default!;
+		[SerializeField] private Transform sprite = default!;
+		[SerializeField] private Transform leftLine = default!;
+		[SerializeField] private Transform rightLine = default!;
+		[SerializeField] private BoxCollider2D boxCollider = default!;
+		[SerializeField] private Transform childrenRoot = default!;
 
-    public Track Info => _track;
-    public float GameWidth
-    {
-        get => Camera.main.W2GPosX(sprite.localScale.x);
-        private set
-        {
-            sprite.localScale = new(Camera.main.G2WPosX(value), sprite.localScale.y);
-            leftLine.localPosition = new(Camera.main.G2WPosX(-value / 2), 0);
-            rightLine.localPosition = new(Camera.main.G2WPosX(value / 2), 0);
-            boxCollider.size = new(Mathf.Max(Camera.main.G2WPosX(value), Camera.main.G2WPosX(0.5f)), boxCollider.size.y);
-        }
-    }
-    public float GamePos
-    {
-        get => Camera.main.W2GPosX(transform.localPosition.x);
-        private set
-        {
-            transform.localPosition = new(Camera.main.G2WPosX(value), 0);
-        }
-    }
+		public Track Model { get; private set; } = default!;
 
-    public bool IsHighlight
-    {
-        get => _isHighlight;
-        set
-        {
-            if (_isHighlight == value) return;
-            if (value) highlight.IsHighlight = true;
-            else highlight.IsHighlight = false;
-            _isHighlight = value;
-        }
-    }
+		public IModel GenericModel => Model;
 
-    public bool IsHidden
-    {
-        get => _isHidden;
-        set
-        {
-            if (_isHidden == value) return; // 暂时的，理论上该考虑非IsVisible的轨道，但目前也用不到啊
-            sprite.gameObject.SetActive(!value);
-            leftLine.gameObject.SetActive(!value);
-            rightLine.gameObject.SetActive(!value);
-            boxCollider.enabled = !value;
-            _isHidden = value;
-        }
-    }
+		public GameObject Object => gameObject;
 
-    // Private
-    private float Current => TimeProvider.Instance.ChartTime;
+		public Modifier<Vector2> PositionModifier { get; private set; } = default!;
 
-    private Track _track;
-    private bool _isHighlight = false;
-    private bool _isHidden = false;
+		public Modifier<Vector2> ScaleModifier { get; private set; } = default!;
 
-    // Defined Functions
-    public void InfoInit(Track track)
-    {
-        _track = track;
-    }
+		public Modifier<float> RotationModifier { get; private set; } = default!;
 
-    private void SpriteInit()
-    {
-        sprite.localScale = new(Camera.main.G2WPosX(1f), Camera.main.G2WPosY(30f));
-        laneBeam.localScale = new(1, 0.1f);
-        leftLine.localScale = new(Camera.main.G2WPosX(0.015f), Camera.main.G2WPosY(30f));
-        rightLine.localScale = new(Camera.main.G2WPosX(0.015f), Camera.main.G2WPosY(30f));
-        boxCollider.size = new(Camera.main.G2WPosX(1f), Camera.main.G2WPosY(30f));
+		public Modifier<Sprite> SpriteModifier { get; private set; } = default!;
 
-        if (!_track.IsVisible || Current > _track.TimeEnd)
-        {
-            sprite.gameObject.SetActive(false);
-            leftLine.gameObject.SetActive(false);
-            rightLine.gameObject.SetActive(false);
-        }
-    }
+		public Modifier<Color> ColorModifier { get; private set; } = default!;
 
-    private void UpdatePosAndWidth()
-    {
-        float lx = _track.GetX(Current, true), rx = _track.GetX(Current, false);
-        GameWidth = Math.Abs(lx - rx);
-        GamePos = (lx + rx) / 2;
-    }
+		public Modifier<int> SortingOrderModifier { get; private set; } = default!;
 
-    public void LaneHitEffect(JudgeResult judgeResult)
-    {
-        laneBeam.gameObject.SetActive(true);
-        if (laneBeam.gameObject.activeInHierarchy) laneBeamAnimator.Play(0);
-    }
+		public Modifier<bool> ColliderEnabledModifier { get; private set; } = default!;
 
-    // System Functions
-    void Start()
-    {
-        SpriteInit();
-        UpdatePosAndWidth();
-    }
+		public float GameWidth
+		{
+			get => sprite.localScale.x;
+			private set
+			{
+				Model.Width = value;
+				sprite.localScale = new(value, sprite.localScale.y);
+				leftLine.localPosition = new(-value / 2, 0);
+				rightLine.localPosition = new(value / 2, 0);
+				boxCollider.size = new(Mathf.Max(value, 0.5f), boxCollider.size.y);
+			}
+		}
 
-    void Update()
-    {
-        UpdatePosAndWidth();
+		public float GamePos
+		{
+			get => transform.localPosition.x;
+			private set
+			{
+				Model.Position = new(value, 0);
+				transform.localPosition = new(value, 0);
+			}
+		}
 
-        if (Current > _track.TimeEnd + TimeAfterEnd)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        else if (Current > _track.TimeEnd)
-        {
-            sprite.gameObject.SetActive(false);
-            leftLine.gameObject.SetActive(false);
-            rightLine.gameObject.SetActive(false);
-            boxCollider.enabled = false;
-            return;
-        }
-    }
+		public bool IsHidden
+		{
+			get => isHidden;
+			set
+			{
+				if (isHidden == value) return;
+				isHidden = value;
+				sprite.gameObject.SetActive(!value);
+				leftLine.gameObject.SetActive(!value);
+				rightLine.gameObject.SetActive(!value);
+				ColliderEnabledModifier.Register(enabled => !value && enabled, int.MaxValue);
+			}
+		}
+
+		// Private
+		private static float Current => LevelManager.Instance.Music.ChartTime;
+		private bool isHidden = false;
+		private Sprite defaultTrackFaceSprite = default!;
+
+		// Defined Functions
+		public void Init(Track model)
+		{
+			Model = model;
+			if (Model.Parent is IControllerRetrievable<MonoBehaviour> r)
+			{
+				var parentTransform = r.Controller.transform;
+				var parentChildrenRoot = parentTransform.Find("ChildrenRoot");
+				transform.SetParent(parentChildrenRoot, false);
+			}
+		}
+
+		public void Destroy()
+		{
+			// Released to pool
+			foreach (Transform children in childrenRoot)
+			{
+				if (children.TryGetComponent(out IModelRetrievable r))
+				{
+					r.GenericModel.Destroy();
+				}
+			}
+
+			Model.Controller = null;
+			gameObject.SetActive(false);
+			gameObject.transform.SetParent(LevelManager.Instance.PoolingStorage);
+		}
+
+		private void SpriteInit()
+		{
+			sprite.localScale = new(1f, 30f);
+			leftLine.localScale = new(0.015f, 30f);
+			rightLine.localScale = new(0.015f, 30f);
+			boxCollider.size = new(1f, 30f);
+			IsHidden = Model.TimeInstantiate > Current || Current > Model.TimeEnd;
+		}
+
+		// Event Handlers
+		private void LevelOnReset(T3Time chartTime)
+		{
+			if (chartTime < Model.TimeInstantiate ||
+			    chartTime > Model.TimeEnd + ISingletonSetting<PlayfieldSetting>.Instance.TimeAfterEnd)
+			{
+				Model.Destroy();
+			}
+		}
+
+		private void ChartOnUpdate(ChartInfo chartInfo)
+		{
+			if (!chartInfo.Contains(Model.Id))
+			{
+				Model.Destroy();
+			}
+		}
+
+		// System Functions
+		void Awake()
+		{
+			PositionModifier = new Modifier<Vector2>(
+				() => new(GamePos, 0),
+				position => GamePos = position.x,
+				_ => new());
+			ScaleModifier = new Modifier<Vector2>(
+				() => new(GameWidth, 0),
+				scale => GameWidth = scale.x,
+				_ => new());
+			// TODO: RotationModifier
+			defaultTrackFaceSprite = trackFace.sprite;
+			SpriteModifier = new Modifier<Sprite>(
+				() => trackFace.sprite,
+				value => trackFace.sprite = value,
+				_ => defaultTrackFaceSprite
+			);
+			ColorModifier = new Modifier<Color>(
+				() => trackFace.color,
+				value => trackFace.color = value,
+				_ => ISingletonSetting<PlayfieldSetting>.Instance.TrackFaceDefaultColor);
+			SortingOrderModifier = new Modifier<int>(
+				() => trackFace.sortingOrder,
+				value => trackFace.sortingOrder = value,
+				_ => 0);
+			ColliderEnabledModifier = new Modifier<bool>(
+				() => boxCollider.enabled,
+				value =>
+				{
+					if (value == boxCollider.enabled) return;
+					boxCollider.enabled = value;
+				},
+				_ => true);
+
+			SpriteInit();
+		}
+
+		void OnEnable()
+		{
+			EventManager.Instance.AddListener<T3Time>("Level_OnReset", LevelOnReset);
+			EventManager.Instance.AddListener<ChartInfo>("Chart_OnUpdate", ChartOnUpdate);
+
+			PositionModifier.Register(
+				_ => new(Model.Movement.GetPos(Current), 0),
+				0);
+			ScaleModifier.Register(
+				_ => new(Model.Movement.GetWidth(Current), 0),
+				0);
+			Update();
+		}
+
+		void OnDisable()
+		{
+			EventManager.Instance.RemoveListener<T3Time>("Level_OnReset", LevelOnReset);
+			EventManager.Instance.RemoveListener<ChartInfo>("Chart_OnUpdate", ChartOnUpdate);
+		}
+
+		void Update()
+		{
+			PositionModifier.Update();
+			ScaleModifier.Update();
+			// RotationModifier.Update();
+			SpriteModifier.Update();
+			ColorModifier.Update();
+			SortingOrderModifier.Update();
+			// TODO: Encapsulate this into a modifier? split trackLine and trackFace's controller?
+			IsHidden = Model.TimeInstantiate > Current || Current > Model.TimeEnd;
+
+			if (Current > Model.TimeEnd + ISingletonSetting<PlayfieldSetting>.Instance.TimeAfterEnd)
+			{
+				Model.Destroy();
+			}
+		}
+	}
 }

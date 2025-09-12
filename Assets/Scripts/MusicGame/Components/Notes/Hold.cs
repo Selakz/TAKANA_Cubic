@@ -1,99 +1,112 @@
-using Takana3.Settings;
+using System.Collections.Generic;
+using System.Linq;
+using MusicGame.ChartEditor.EditingComponents;
+using MusicGame.Components.Notes.Movement;
+using MusicGame.Components.Tracks;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.MVC;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Pool;
 
-[System.Serializable]
-public class Hold : BaseNote
+namespace MusicGame.Components.Notes
 {
-    // Serializable and Public
-    public float TimeEnd { get; } // Hold最终结束的时间
+	public class Hold : BaseNote, IControllerRetrievable<HoldController>
+	{
+		public static string TypeMark => "hold";
 
-    [SerializeField] private GameObject holdPrefab;
+		private static readonly LazyPrefab lazyPrefab = new("Prefabs/Hold", "HoldPrefab_OnLoad");
+		public override GameObject Prefab => lazyPrefab;
 
-    // Private
-    private INoteMoveList scaleList;
+		public sealed override T3Time TimeEnd
+		{
+			get => timeEnd;
+			set
+			{
+				timeEnd = value;
+				TailMovement.TimeJudge = value;
+			}
+		}
 
-    public Hold(int id, NoteType type, float timeJudge, Track belongingTrack, float timeEnd, float speedRate = 1.0f)
-        : base(id, type, type.GetJudgeType(), timeJudge, belongingTrack, speedRate)
-    {
-        TimeEnd = timeEnd;
-        scaleList = new BaseNoteMoveList(timeEnd, speedRate, timeJudge);
-    }
+		public HoldController Controller { get; set; }
 
-    internal override float CalcTimeInstantiate(float speed, bool isSet)
-    {
-        // TODO: 有点问题。结合movelist和scalelist计算
-        float result = moveList.CalcTimeInstantiate(speed);
-        if (isSet) TimeInstantiate = result;
-        return result;
-    }
+		public override bool IsPresent => Controller && Controller.Object.activeSelf;
 
-    public override void Initialize(MusicSetting setting)
-    {
-        if (ThisObject != null) Object.Destroy(ThisObject);
-        else
-        {
-            JudgeInfo = Type.GetJudgeInfo();
-            holdPrefab = Type.GetGameObject();
-        }
-        moveList.FixRaw(setting.Speed);
-        scaleList.FixRaw(setting.Speed);
-        CalcTimeInstantiate(setting.Speed, true);
+		public INoteMovement TailMovement { get; set; }
 
-        IsInitialized = true;
+		private T3Time timeEnd;
 
-        TimeInstantiate = Mathf.Max(TimeInstantiate, BelongingTrack.TimeInstantiate + 0.0001f);
+		private static readonly ObjectPool<HoldController> pool = new(
+			() => Object.Instantiate<GameObject>(lazyPrefab).GetComponent<HoldController>(),
+			null,
+			controller => controller.Destroy(),
+			controller => Object.Destroy(controller.gameObject));
 
-        InputInfo = setting.Mode switch
-        {
-            GameMode.Common => null,
-            GameMode.Auto => GetInput(),
-            _ => InputInfo,
-        };
-    }
+		public Hold(T3Time timeJudge, float timeEnd, ITrack belongingTrack)
+			: base(timeJudge, belongingTrack)
+		{
+			this.timeEnd = timeEnd;
+			TailMovement = new BaseNoteMoveList(timeEnd);
+		}
 
-    public override bool HandleInput(float timeInput)
-    {
-        if (Controller == null) return false;
-        return Controller.HandleInput(timeInput);
-    }
+		public override bool Generate()
+		{
+			if (IsPresent) return false;
+			Controller = pool.Get();
+			Controller.Init(this);
+			Controller.Object.SetActive(true);
+			return true;
+		}
 
-    public override bool Instantiate()
-    {
-        Assert.IsTrue(IsInitialized);
-        if (ThisObject != null) return true;
+		public override bool Destroy()
+		{
+			if (!IsPresent) return false;
+			pool.Release(Controller);
+			return true;
+		}
 
-        ThisObject = Object.Instantiate(holdPrefab);
-        Assert.IsNotNull(BelongingTrack.ThisObject);
-        ThisObject.transform.SetParent(BelongingTrack.ThisObject.transform, false);
-        Controller = ThisObject.GetComponent<HoldController>();
-        Controller.InfoInit(this, InputInfo as HoldInputInfo);
-        return true;
-    }
+		public override BaseNote Clone(T3Time timeJudge, ITrack belongingTrack)
+		{
+			return new Hold(timeJudge, timeJudge + TimeEnd - TimeJudge, belongingTrack)
+			{
+				Movement = (INoteMovement)Movement.Clone(timeJudge - TimeJudge, 0),
+				TailMovement = (INoteMovement)TailMovement.Clone(timeJudge - TimeJudge, 0),
+				Properties = new JObject(Properties)
+			};
+		}
 
-    public float GetScale(float current)
-    {
-        Assert.IsTrue(IsInitialized);
-        return scaleList.GetPos(current).y;
-    }
+		public override JToken GetSerializationToken()
+		{
+			var token = (base.GetSerializationToken() as JObject)!;
+			token.Add("timeEnd", TimeEnd.Milli);
+			token.AddIf("tailMovement", TailMovement.Serialize(true),
+				!(Movement is BaseNoteMoveList baseNoteMoveList && baseNoteMoveList.IsDefault()));
+			return token;
+		}
 
-    public void SetScaleList(INoteMoveList scaleList)
-    {
-        this.scaleList = scaleList;
-    }
+		public static Hold Deserialize(JToken token, object context)
+		{
+			if (token is not JContainer container) return default;
+			T3Time timeJudge = container["timeJudge"]!.Value<int>();
+			T3Time timeEnd = container["timeEnd"]!.Value<int>();
+			var components = (context as IEnumerable<IComponent>)!;
+			var component = components.First(a => a.Id == container["track"]!.Value<int>());
+			// TODO: Temporary code, fix it by setting Parent property int
+			var belongingTrack = component is EditingTrack track ? track.Track : component as ITrack;
 
-    public override InputInfo GetInput()
-    {
-        return new HoldInputInfo()
-        {
-            Note = this,
-            TimeInput = TimeJudge,
-            ReleaseTimes = new(),
-        };
-    }
-
-    public override BaseNote Clone(int id, float timeJudge, Track belongingTrack)
-    {
-        return new Hold(id, Type, timeJudge, belongingTrack, timeJudge + TimeEnd - TimeJudge);
-    }
+			return new Hold(timeJudge, timeEnd, belongingTrack)
+			{
+				Id = container["id"]!.Value<int>(),
+				Movement = container.TryGetValue("movement", out JToken movementToken)
+					? (INoteMovement)ISerializable.Deserialize(movementToken)
+					: new BaseNoteMoveList(timeJudge),
+				TailMovement = container.TryGetValue("movement", out JToken tailMovementToken)
+					? (INoteMovement)ISerializable.Deserialize(tailMovementToken)
+					: new BaseNoteMoveList(timeEnd),
+				Properties = container.TryGetValue("properties", out JObject propertiesToken) ? propertiesToken : new()
+			};
+		}
+	}
 }

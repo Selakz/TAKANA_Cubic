@@ -1,123 +1,209 @@
+using System;
 using System.Collections.Generic;
-using Takana3.MusicGame.LevelSelect;
+using System.Linq;
+using MusicGame.ChartEditor.EditingComponents;
+using MusicGame.ChartEditor.Level;
+using MusicGame.ChartEditor.TrackLayer.UI;
+using MusicGame.Components.Notes;
+using MusicGame.Gameplay.Level;
+using Newtonsoft.Json.Linq;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.ListRender;
+using T3Framework.Runtime.Setting;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TrackLayerManager : MonoBehaviour
+namespace MusicGame.ChartEditor.TrackLayer
 {
-    // Serializable and Public
-    [SerializeField] private TMP_Dropdown layerDropdown;
-    [SerializeField] private Button addNewLayerButton;
-    [SerializeField] private GameObject newLayerNameObject;
-    [SerializeField] private TMP_InputField newLayerNameInputField;
-    [SerializeField] private Button newLayerNameConfirmButton;
-    [SerializeField] private Button newLayerNameCancelButton;
+	/// <summary>
+	/// Guarantees a layer with id 0 and a fixed name.
+	/// </summary>
+	public class TrackLayerManager : MonoBehaviour
+	{
+		// Serializable and Public
+		[SerializeField] private ListRendererInt listRenderer;
+		[SerializeField] private TMP_InputField newLayerNameInputField;
+		[SerializeField] private Button addNewLayerButton;
 
-    public static TrackLayerManager Instance => _instance;
+		public static TrackLayerManager Instance { get; private set; }
 
-    public int SelectedLayer => layerDropdown.value;
+		public ListRendererInt ListRenderer => listRenderer;
 
-    public LayerInfo LayerInfo { get; private set; }
+		public LayerInfo FallbackLayerInfo
+		{
+			get
+			{
+				foreach (var go in ListRenderer.Values)
+				{
+					if (go.TryGetComponent<EditLayerContent>(out var content) &&
+					    content.LayerInfo.Id == ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerId)
+					{
+						return content.LayerInfo;
+					}
+				}
 
-    // Private
+				throw new NullReferenceException("No default layer found");
+			}
+		}
 
-    // Static
-    private static TrackLayerManager _instance;
+		// Private
 
-    // Defined Functions
-    /// <summary> 从原谱面文件获取LayerInfo </summary>
-    public void LoadLayer()
-    {
-        var levelInfo = InfoReader.ReadInfo<LevelInfo>();
-        LayerInfo = levelInfo == null ? new() : levelInfo.LayerInfo;
-    }
+		// Static
+		private static int newLayerId = 0;
 
-    /// <summary> 从EditingLevelManager处更新LayerInfo </summary>
-    public void UpdateLayer()
-    {
-        LayerInfo.TrackBelongings.Clear();
-        var info = EditingLevelManager.Instance.RawChartInfo;
-        foreach (var component in info.ComponentList)
-        {
-            if (component is EditingTrack track)
-            {
-                LayerInfo.TrackBelongings.Add(track.Layer);
-            }
-        }
-    }
+		// Defined Functions
+		/// <summary> If not found, return <see cref="FallbackLayerInfo"/> </summary>
+		public bool TryGetLayer(int id, out LayerInfo layerInfo)
+		{
+			foreach (var go in ListRenderer.Values)
+			{
+				if (go.TryGetComponent<EditLayerContent>(out var content) && content.LayerInfo.Id == id)
+				{
+					layerInfo = content.LayerInfo;
+					return true;
+				}
+			}
 
-    /// <summary> 如果已有相同名称的图层则添加失败 </summary>
-    public bool AddLayer(string layerName)
-    {
-        if (layerName != string.Empty && !LayerInfo.LayerNames.Contains(layerName))
-        {
-            LayerInfo.LayerNames.Add(layerName);
-            layerDropdown.options = GetOptions();
-            layerDropdown.SetValueWithoutNotify(layerDropdown.options.Count - 1);
-            EditPanelManager.Instance.Render();
-            return true;
-        }
-        return false;
-    }
+			layerInfo = FallbackLayerInfo;
+			return false;
+		}
 
-    public List<TMP_Dropdown.OptionData> GetOptions()
-    {
-        List<TMP_Dropdown.OptionData> options = new()
-        {
-            new TMP_Dropdown.OptionData { text = "默认" },
-            new TMP_Dropdown.OptionData { text = "装饰" },
-            new TMP_Dropdown.OptionData { text = "基础" }
-        };
-        foreach (var name in LayerInfo.LayerNames)
-        {
-            options.Add(new TMP_Dropdown.OptionData { text = name });
-        }
-        return options;
-    }
+		public IEnumerable<LayerInfo> GetAllLayers()
+		{
+			foreach (var go in ListRenderer.Values)
+			{
+				if (go.TryGetComponent<EditLayerContent>(out var content))
+				{
+					yield return content.LayerInfo;
+				}
+			}
+		}
 
-    public void OnLayerValueChanged()
-    {
-        EventManager.Trigger(EventManager.EventName.ChangeTrackLayer, SelectedLayer);
-    }
+		public int GetSiblingIndex(int layerId)
+		{
+			int result = -1;
+			foreach (var pair in ListRenderer)
+			{
+				if (pair.Value.TryGetComponent<EditLayerContent>(out var content) && content.LayerInfo.Id == layerId)
+				{
+					result = ListRenderer.GetSiblingIndex(pair.Key);
+					break;
+				}
+			}
 
-    public void OnAddNewLayerPressed()
-    {
-        newLayerNameObject.SetActive(true);
-        newLayerNameInputField.text = $"Layer{LayerInfo.LayerNames.Count + 2}";
-        InputManager.Instance.IsInputEnabled = false;
-    }
+			return result;
+		}
 
-    public void OnNewLayerNameConfirmPressed()
-    {
-        if (!AddLayer(newLayerNameInputField.text))
-        {
-            HeaderMessage.Show("添加图层失败，请重新输入名称", HeaderMessage.MessageType.Warn);
-        }
-        else
-        {
-            newLayerNameObject.SetActive(false);
-            InputManager.Instance.IsInputEnabled = true;
-        }
-    }
+		public void SaveLayersToChart()
+		{
+			var chart = LevelManager.Instance.LevelInfo.Chart;
+			chart.Properties.Set(new JArray(GetAllLayers().Select(layer => layer.GetSerializationToken())),
+				"editorconfig", "layers");
+		}
 
-    public void OnNewLayerNameCancelPressed()
-    {
-        newLayerNameObject.SetActive(false);
-    }
+		// Event Handlers
+		private void LevelOnLoad(LevelInfo levelInfo)
+		{
+			ListRenderer.Clear();
+			var chart = levelInfo.Chart;
+			var layers = chart.Properties.Get("editorconfig", new JObject()).Get("layers");
+			bool hasDefaultLayer = false;
+			if (layers is JArray layerList)
+			{
+				for (var i = 0; i < layerList.Count; i++)
+				{
+					var layerToken = layerList[i];
+					var layer = LayerInfo.Deserialize(layerToken);
+					if (layer.Id == ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerId)
+					{
+						hasDefaultLayer = true;
+						layer.Name = ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerName;
+					}
 
-    // System Functions
-    void Awake()
-    {
-        _instance = this;
-    }
+					var content = listRenderer.Add<EditLayerContent>(i);
+					content.ListOrder = i;
+					content.LayerInfo = layer;
+					newLayerId = Mathf.Max(newLayerId, layer.Id, i);
+				}
+			}
 
-    void OnEnable()
-    {
-        LoadLayer();
-        layerDropdown.interactable = true;
-        layerDropdown.options = GetOptions();
-        layerDropdown.SetValueWithoutNotify(0);
-        EditingLevelManager.Instance.RawChartInfo.SetLayers(LayerInfo);
-    }
+			if (!hasDefaultLayer)
+			{
+				var defaultContent =
+					listRenderer.Add<EditLayerContent>(ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerId);
+				LayerInfo defaultLayer = new()
+				{
+					Id = ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerId,
+					Name = ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerName,
+					Color = ISingletonSetting<TrackLayerSetting>.Instance.DefaultColor,
+					IsDecoration = false,
+					IsSelected = true
+				};
+				defaultContent.ListOrder = ISingletonSetting<TrackLayerSetting>.Instance.DefaultLayerId;
+				defaultContent.LayerInfo = defaultLayer;
+			}
+		}
+
+		private void VetoPlaceNote(VetoArg arg, INote note)
+		{
+			if (note.Parent is null) return;
+			if (IEditingChartManager.Instance.Chart.TryGetComponent(note.Parent.Id, out var parent) &&
+			    parent is EditingTrack editingTrack &&
+			    editingTrack.GetLayer().IsDecoration)
+			{
+				arg.Veto("该轨道位于装饰图层，无法放置Note");
+			}
+		}
+
+		private void OnAddNewLayerButtonPressed()
+		{
+			string layerName = newLayerNameInputField.text;
+			if (string.IsNullOrEmpty(layerName)) return;
+			newLayerNameInputField.SetTextWithoutNotify(string.Empty);
+			newLayerId++;
+			LayerInfo newLayer = new()
+			{
+				Id = newLayerId,
+				Name = layerName,
+				Color = ISingletonSetting<TrackLayerSetting>.Instance.DefaultColor,
+				IsDecoration = false,
+				IsSelected = true
+			};
+			var content = listRenderer.Add<EditLayerContent>(newLayerId);
+			content.ListOrder = newLayerId;
+			content.LayerInfo = newLayer;
+			SaveLayersToChart();
+			IEditingChartManager.Instance.UpdateProperties();
+		}
+
+		// System Functions
+		void Awake()
+		{
+			addNewLayerButton.onClick.AddListener(OnAddNewLayerButtonPressed);
+			listRenderer.Init(new()
+			{
+				[typeof(EditLayerContent)] =
+					new LazyPrefab("Prefabs/EditorUI/TrackLayer/EditLayerContent", "EditLayerContentPrefab_OnLoad")
+			});
+		}
+
+		void OnEnable()
+		{
+			Instance = this;
+			EventManager.Instance.AddListener<GameObject>("TrackPrefab_OnLoad",
+				go => go.AddComponent<TrackLayerHandler>());
+			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
+			EventManager.Instance.AddVetoListener<INote>("Edit_QueryPlaceNote", VetoPlaceNote);
+		}
+
+		void OnDisable()
+		{
+			EventManager.Instance.RemoveListener<GameObject>("TrackPrefab_OnLoad",
+				go => go.AddComponent<TrackLayerHandler>());
+			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
+			EventManager.Instance.RemoveVetoListener<INote>("Edit_QueryPlaceNote", VetoPlaceNote);
+		}
+	}
 }
