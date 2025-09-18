@@ -94,25 +94,30 @@ namespace MusicGame.ChartEditor.Level
 			var result = Enumerable.Empty<EditingComponent>();
 			if (!Chart.Contains(id)) return result;
 			result = result.Append(Chart[id] as EditingComponent);
-			if (Chart[id]!.Parent is not null)
-			{
-				subComponents[Chart[id].Parent.Id].Remove(Chart[id] as EditingComponent);
-			}
-
+			// 1. Get children components recursively (also removed its children)
 			if (subComponents.TryGetValue(id, out var components))
 			{
 				result = components.Aggregate(result,
 					(current, component) => current.Concat(RemoveInternal(component.Id)));
 			}
 
-			Chart.RemoveComponent(id);
+			// 2. Remove it from its parent
+			var parent = Chart[id]!.Parent;
+			if (parent is not null && subComponents.ContainsKey(parent.Id))
+			{
+				subComponents[parent.Id] = subComponents[parent.Id].Where(component => component.Id != id).ToHashSet();
+			}
+
+			// 3. Remove it from subComponents
 			subComponents.Remove(id);
+			// 4. Remove it from chart
+			Chart.RemoveComponent(id);
 			return result;
 		}
 
 		public IEnumerable<EditingComponent> RemoveComponent(int id)
 		{
-			var result = RemoveInternal(id);
+			var result = RemoveInternal(id).ToList();
 			InvokeUpdate();
 			return result;
 		}
@@ -120,9 +125,9 @@ namespace MusicGame.ChartEditor.Level
 		public IEnumerable<EditingComponent> RemoveComponents(IEnumerable<int> ids)
 		{
 			IEnumerable<EditingComponent> result = Enumerable.Empty<EditingComponent>();
-			result = ids.Aggregate(result, (current, id) => current.Concat(RemoveInternal(id)));
+			result = ids.Aggregate(result, (current, id) => current.Concat(RemoveInternal(id))).ToList();
 			List<IComponent> editingComponents = result.Cast<IComponent>().ToList();
-			editingComponents = IComponent.TopologicalSort(editingComponents);
+			editingComponents = IComponent.TopologicalSort(editingComponents).ToList();
 			InvokeUpdate();
 			return editingComponents.Cast<EditingComponent>();
 		}
@@ -170,6 +175,7 @@ namespace MusicGame.ChartEditor.Level
 			bool isDefaultJudgeLineSet = false;
 
 			Chart = levelInfo.Chart;
+			subComponents.Clear();
 			var components = Chart.ToList();
 			foreach (var editingComponent in components.Select(Encapsulate))
 			{

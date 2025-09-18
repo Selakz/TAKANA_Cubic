@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using MusicGame.Gameplay.Level;
+using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,40 +13,13 @@ namespace MusicGame.ChartEditor.Command
 	public class CommandManager : MonoBehaviour
 	{
 		// Serializable and Public
-		[SerializeField] private Button undoButton, redoButton;
+		[SerializeField] private Button undoButton;
+		[SerializeField] private Button redoButton;
 		[SerializeField] private uint bufferSize = 200;
 
 		public static CommandManager Instance { get; private set; }
 
 		// Private
-		private bool _undoClickable, _redoClickable;
-
-		private bool UndoClickable
-		{
-			get => _undoClickable;
-			set
-			{
-				if (_undoClickable != value)
-				{
-					undoButton.interactable = value;
-					_undoClickable = value;
-				}
-			}
-		}
-
-		private bool RedoClickable
-		{
-			get => _redoClickable;
-			set
-			{
-				if (_redoClickable != value)
-				{
-					redoButton.interactable = value;
-					_redoClickable = value;
-				}
-			}
-		}
-
 		private readonly LinkedList<ICommand> undoList = new();
 		private readonly LinkedList<ICommand> redoList = new();
 		private ICommand preparing = null;
@@ -70,6 +45,7 @@ namespace MusicGame.ChartEditor.Command
 			}
 
 			redoList.Clear();
+			UpdateState();
 		}
 
 		public void Undo()
@@ -92,6 +68,7 @@ namespace MusicGame.ChartEditor.Command
 			Debug.Log($"Undo Command: {cmd.Name}");
 			cmd.Undo();
 			redoList.AddLast(cmd);
+			UpdateState();
 		}
 
 		public void Redo()
@@ -109,6 +86,7 @@ namespace MusicGame.ChartEditor.Command
 			Debug.Log($"Redo Command: {cmd.Name}");
 			cmd.Do();
 			undoList.AddLast(cmd);
+			UpdateState();
 		}
 
 		public void Cancel()
@@ -125,6 +103,7 @@ namespace MusicGame.ChartEditor.Command
 			Cancel();
 			undoList.Clear();
 			redoList.Clear();
+			UpdateState();
 		}
 
 		public void SetBufferSize(uint size)
@@ -141,6 +120,8 @@ namespace MusicGame.ChartEditor.Command
 					undoList.RemoveFirst();
 				}
 			}
+
+			UpdateState();
 		}
 
 		public void Prepare(ICommand command)
@@ -168,20 +149,38 @@ namespace MusicGame.ChartEditor.Command
 				redoList.Clear();
 				preparing = null;
 			}
+
+			UpdateState();
+		}
+
+		private void UpdateState()
+		{
+			undoButton.interactable = undoList.Count > 0;
+			redoButton.interactable = redoList.Count > 0;
+		}
+
+		// Event Handlers
+		private void LevelOnLoad(LevelInfo levelInfo)
+		{
+			undoList.Clear();
+			redoList.Clear();
+			UpdateState();
 		}
 
 		// System Functions
 		void OnEnable()
 		{
 			Instance = this;
+			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
+
 			InputManager.Instance.RegisterCanceled("EditorBasic", "Undo", _ => Undo());
 			InputManager.Instance.RegisterCanceled("EditorBasic", "Redo", _ => Redo());
+			UpdateState();
 		}
 
-		void Update()
+		void OnDisable()
 		{
-			UndoClickable = undoList.Count != 0;
-			RedoClickable = redoList.Count != 0;
+			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 		}
 	}
 }

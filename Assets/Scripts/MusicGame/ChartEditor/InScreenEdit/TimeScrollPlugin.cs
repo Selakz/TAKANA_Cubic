@@ -30,6 +30,12 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				for (int i = 0; i < scrollSensitivity; i++)
 				{
 					var next = forward ? timeRetriever.GetCeilTime(current) : timeRetriever.GetFloorTime(current);
+					if (next <= 0 || next > LevelManager.Instance.Music.AudioLength)
+					{
+						current = next;
+						break;
+					}
+
 					if (Mathf.Abs(next - current) < 3) i--;
 					current = next;
 				}
