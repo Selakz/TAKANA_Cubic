@@ -71,9 +71,9 @@ namespace MusicGame.ChartEditor.EditPanel
 		private void OnPositionInputFieldEndEdit(string content)
 		{
 			V1EMoveItem v1e = (V1EMoveItem)MoveItem;
-			if (float.TryParse(content, out float newPosition) &&
-			    !Mathf.Approximately(newPosition, moveItem.Position))
+			if (float.TryParse(content, out float newPosition))
 			{
+				if (Mathf.Approximately(newPosition, moveItem.Position)) return;
 				OnMoveItemUpdated?.Invoke(MoveItem, new V1EMoveItem(v1e.Time, newPosition, v1e.Ease));
 			}
 			else
