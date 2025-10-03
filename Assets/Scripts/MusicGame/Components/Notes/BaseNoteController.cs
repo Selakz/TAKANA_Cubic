@@ -8,7 +8,8 @@ using UnityEngine;
 
 namespace MusicGame.Components.Notes
 {
-	public abstract class BaseNoteController<T> : MonoBehaviour, IModifiableView2D, IController<T> where T : BaseNote
+	public abstract class BaseNoteController<T> : MonoBehaviour, IModifiableView2D, IColliderView2D, IController<T>
+		where T : BaseNote
 	{
 		// Serializable and Public
 		[SerializeField] protected SpriteRenderer spriteRenderer = default!;
@@ -30,6 +31,8 @@ namespace MusicGame.Components.Notes
 		public Modifier<Color> ColorModifier { get; private set; } = default!;
 
 		public Modifier<int> SortingOrderModifier { get; protected set; } = default!;
+
+		public Modifier<bool> ColliderEnabledModifier { get; private set; } = default!;
 
 		// Private
 		private Sprite defaultSprite = default!;
@@ -99,6 +102,14 @@ namespace MusicGame.Components.Notes
 				() => spriteRenderer.sortingOrder,
 				order => spriteRenderer.sortingOrder = order,
 				_ => 0);
+			ColliderEnabledModifier = new Modifier<bool>(
+				() => boxCollider.enabled,
+				value =>
+				{
+					if (value == boxCollider.enabled) return;
+					boxCollider.enabled = value;
+				},
+				_ => true);
 		}
 
 		protected virtual void Update()
@@ -109,6 +120,7 @@ namespace MusicGame.Components.Notes
 			ColorModifier.Update();
 			PositionModifier.Update();
 			SortingOrderModifier.Update();
+			ColliderEnabledModifier.Update();
 		}
 	}
 }

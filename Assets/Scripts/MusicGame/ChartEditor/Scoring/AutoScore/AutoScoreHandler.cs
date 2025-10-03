@@ -74,9 +74,9 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 			EventManager.Instance.AddListener<T3Time>("Level_OnReset", LevelOnReset);
 			StopComboAnimation();
 			hasStartComboTriggered = LevelManager.Instance.Music.ChartTime > Model.Note.TimeJudge;
-			if (modelRetrievable is IModifiableView2D view)
+			if (modelRetrievable is IModifiableView2D modifiableView)
 			{
-				view.ColorModifier.Register(
+				modifiableView.ColorModifier.Register(
 					color => LevelManager.Instance.Music.ChartTime < Model.Note.TimeJudge
 						? Model.Note.Properties.Get("isDummy", false)
 							? new Color(color.r, color.g, color.b,
@@ -84,7 +84,7 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 							: color
 						: Color.clear,
 					AutoScorePriority);
-				view.PositionModifier.Register(
+				modifiableView.PositionModifier.Register(
 					value =>
 					{
 						if (LevelManager.Instance.Music.ChartTime <= Model.Note.TimeJudge) return value;
@@ -96,15 +96,27 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 					},
 					AutoScorePriority);
 			}
+
+			if (modelRetrievable is IColliderView2D colliderView)
+			{
+				colliderView.ColliderEnabledModifier.Register(
+					_ => LevelManager.Instance.Music.ChartTime <= Model.Note.TimeJudge,
+					AutoScorePriority);
+			}
 		}
 
 		void OnDisable()
 		{
 			EventManager.Instance.RemoveListener<T3Time>("Level_OnReset", LevelOnReset);
-			if (modelRetrievable is IModifiableView2D view)
+			if (modelRetrievable is IModifiableView2D modifiableView)
 			{
-				view.ColorModifier.Unregister(AutoScorePriority);
-				view.PositionModifier.Unregister(AutoScorePriority);
+				modifiableView.ColorModifier.Unregister(AutoScorePriority);
+				modifiableView.PositionModifier.Unregister(AutoScorePriority);
+			}
+
+			if (modelRetrievable is IColliderView2D colliderView)
+			{
+				colliderView.ColliderEnabledModifier.Unregister(AutoScorePriority);
 			}
 		}
 

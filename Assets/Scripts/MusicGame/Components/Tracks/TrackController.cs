@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace MusicGame.Components.Tracks
 {
-	public class TrackController : MonoBehaviour, IModifiableView2D, IController<Track>
+	public class TrackController : MonoBehaviour, IModifiableView2D, IColliderView2D, IController<Track>
 	{
 		// Serializable and Public
 		[SerializeField] private SpriteRenderer trackFace = default!;
