@@ -27,7 +27,8 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				var scrollSensitivity = ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity;
 				bool forward = y * scrollSensitivity > 0;
 				scrollSensitivity = Mathf.Abs(scrollSensitivity);
-				for (int i = 0; i < scrollSensitivity; i++)
+				// Forced to have a liminality to prevent endless loop...
+				for (int i = 0, liminal = 0; i < scrollSensitivity && liminal < 100; i++)
 				{
 					var next = forward ? timeRetriever.GetCeilTime(current) : timeRetriever.GetFloorTime(current);
 					if (next <= 0 || next > LevelManager.Instance.Music.AudioLength)
@@ -36,8 +37,16 @@ namespace MusicGame.ChartEditor.InScreenEdit
 						break;
 					}
 
-					if (Mathf.Abs(next - current) < 3) i--;
-					current = next;
+					if (Mathf.Abs(next - current) < 1)
+					{
+						i--;
+						liminal++;
+						current = next + (forward ? 1 : -1);
+					}
+					else
+					{
+						current = next;
+					}
 				}
 
 				EventManager.Instance.Invoke("Level_OnReset", current);
