@@ -42,10 +42,9 @@ namespace MusicGame.ChartEditor.Level.UI
 			difficultyToggle.interactable = true;
 			levelInputField.interactable = true;
 			difficultyText.fontStyle = levelInfo.Difficulty == difficulty ? FontStyles.Bold : FontStyles.Normal;
-			if (levelInfo.SongInfo.Difficulties.TryGetValue(difficulty, out var difficultyInfo))
-			{
-				levelInputField.text = difficultyInfo.LevelDisplay;
-			}
+			levelInputField.text = levelInfo.SongInfo.Difficulties.TryGetValue(difficulty, out var difficultyInfo)
+				? difficultyInfo.LevelDisplay
+				: "00";
 		}
 
 		private void OnDifficultyToggleValueChanged(bool isOn)
