@@ -206,5 +206,10 @@ namespace MusicGame.ChartEditor.TrackLine.TrackDecorator
 			rightMoveListDecorator?.Init
 				(false, Model.TimeInstantiate, Model.Movement.Movement2, LevelManager.Instance.LevelSpeed.SpeedRate);
 		}
+
+		void OnDestroy()
+		{
+			if (Model != null) Model.Movement.OnTrackMovementUpdated -= TrackMovementUpdated;
+		}
 	}
 }

@@ -56,34 +56,39 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		// Event Handlers
 		private void TrackMirror()
 		{
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack) return;
+			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack) return;
 			if (!EventManager.Instance.InvokeVeto("Edit_QueryMirror", out _)) return;
-			var command = new UpdateComponentsCommand(new UpdateComponentArg(
-				editingTrack,
-				track => Mirror((track as EditingTrack)!),
-				track => Mirror((track as EditingTrack)!)
-			));
+			var args = ISelectManager.Instance.SelectedTargets.Values.OfType<EditingTrack>()
+				.Select(c => new UpdateComponentArg(
+					c,
+					track => Mirror((track as EditingTrack)!),
+					track => Mirror((track as EditingTrack)!)));
+			var command = new UpdateComponentsCommand(args);
 			CommandManager.Instance.Add(command);
 		}
 
 		private void TrackMirrorCopy()
 		{
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack) return;
-			var newTrack = editingTrack.Track.Clone(editingTrack.Track.TimeInstantiate, 0);
-			var newEditingTrack = new EditingTrack(newTrack)
+			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack) return;
+			List<IComponent> cloneComponents = new();
+			foreach (var editingTrack in ISelectManager.Instance.SelectedTargets.Values.OfType<EditingTrack>())
 			{
-				Properties = new JObject(editingTrack.Properties)
-			};
-			Mirror(newEditingTrack);
-			List<IComponent> cloneComponents = new() { newEditingTrack };
-			if (IEditingChartManager.Instance != null)
-			{
-				var children = IEditingChartManager.Instance.GetChildrenComponents(editingTrack.Id);
-				foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
+				var newTrack = editingTrack.Track.Clone(editingTrack.Track.TimeInstantiate, 0);
+				var newEditingTrack = new EditingTrack(newTrack)
 				{
-					var newTime = note.Note.TimeJudge;
-					var newNote = note.Note.Clone(newTime, newTrack);
-					cloneComponents.Add(newNote);
+					Properties = new JObject(editingTrack.Properties)
+				};
+				Mirror(newEditingTrack);
+				cloneComponents.Add(newEditingTrack);
+				if (IEditingChartManager.Instance != null)
+				{
+					var children = IEditingChartManager.Instance.GetChildrenComponents(editingTrack.Id);
+					foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
+					{
+						var newTime = note.Note.TimeJudge;
+						var newNote = note.Note.Clone(newTime, newTrack);
+						cloneComponents.Add(newNote);
+					}
 				}
 			}
 
