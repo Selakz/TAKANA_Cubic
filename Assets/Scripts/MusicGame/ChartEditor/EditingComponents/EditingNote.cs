@@ -1,5 +1,7 @@
 using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.Components.Notes;
+using MusicGame.Components.Tracks;
+using T3Framework.Runtime;
 
 public abstract class EditingNote : EditingComponent
 {
@@ -14,4 +16,6 @@ public abstract class EditingNote : EditingComponent
 	protected EditingNote(BaseNote baseNote) : base(baseNote)
 	{
 	}
+
+	public abstract EditingNote Clone(T3Time newTime, ITrack newTrack);
 }

@@ -1,12 +1,16 @@
 using MusicGame.Components.Notes;
+using MusicGame.Components.Tracks;
 using MusicGame.Gameplay.Level;
 using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
 
 namespace MusicGame.ChartEditor.EditingComponents
 {
 	public class EditingTap : EditingNote
 	{
 		public new static string TypeMark => "e_tap";
+
+		public Tap Tap => Note as Tap;
 
 		public EditingTap(Tap tap) : base(tap)
 		{
@@ -32,11 +36,21 @@ namespace MusicGame.ChartEditor.EditingComponents
 			};
 			return editingTap;
 		}
+
+		public override EditingNote Clone(T3Time newTime, ITrack newTrack)
+		{
+			return new EditingTap(Tap.Clone(newTime, newTrack) as Tap)
+			{
+				Properties = new(Properties)
+			};
+		}
 	}
 
 	public class EditingSlide : EditingNote
 	{
 		public new static string TypeMark => "e_slide";
+
+		public Slide Slide => Note as Slide;
 
 		public EditingSlide(Slide tap) : base(tap)
 		{
@@ -61,6 +75,14 @@ namespace MusicGame.ChartEditor.EditingComponents
 				Properties = GetEditorConfig(token)
 			};
 			return editingSlide;
+		}
+
+		public override EditingNote Clone(T3Time newTime, ITrack newTrack)
+		{
+			return new EditingSlide(Slide.Clone(newTime, newTrack) as Slide)
+			{
+				Properties = new(Properties)
+			};
 		}
 	}
 
@@ -93,6 +115,14 @@ namespace MusicGame.ChartEditor.EditingComponents
 				Properties = GetEditorConfig(token)
 			};
 			return editingHold;
+		}
+
+		public override EditingNote Clone(T3Time newTime, ITrack newTrack)
+		{
+			return new EditingHold(Hold.Clone(newTime, newTrack) as Hold)
+			{
+				Properties = new(Properties)
+			};
 		}
 	}
 }

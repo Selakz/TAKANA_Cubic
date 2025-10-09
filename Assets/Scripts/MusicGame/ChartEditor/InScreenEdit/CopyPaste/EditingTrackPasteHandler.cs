@@ -52,7 +52,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			List<IComponent> cloneComponents = new();
 			foreach (var track in tracks)
 			{
-				var newTrack = track.Track.Clone(time + track.TimeInstantiate - baseTime, left - baseLeft);
+				var newTrack = track.Clone(time + track.TimeInstantiate - baseTime, left - baseLeft);
 				cloneComponents.Add(newTrack);
 
 				if (IEditingChartManager.Instance != null)
@@ -61,7 +61,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 					foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
 					{
 						var newTime = time + note.Note.TimeJudge - baseTime;
-						var newNote = note.Note.Clone(newTime, newTrack);
+						var newNote = note.Clone(newTime, newTrack.Track);
 						cloneComponents.Add(newNote);
 					}
 				}

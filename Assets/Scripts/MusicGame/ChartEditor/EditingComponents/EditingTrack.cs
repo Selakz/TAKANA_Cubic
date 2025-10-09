@@ -1,7 +1,7 @@
 using MusicGame.Components.Tracks;
-using MusicGame.Gameplay;
 using MusicGame.Gameplay.Level;
 using Newtonsoft.Json.Linq;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
 
 namespace MusicGame.ChartEditor.EditingComponents
@@ -47,6 +47,14 @@ namespace MusicGame.ChartEditor.EditingComponents
 				Properties = GetEditorConfig(token)
 			};
 			return editingTrack;
+		}
+
+		public EditingTrack Clone(T3Time timeStart, float xOffset)
+		{
+			return new EditingTrack(Track.Clone(timeStart, xOffset))
+			{
+				Properties = new JObject(Properties)
+			};
 		}
 	}
 }

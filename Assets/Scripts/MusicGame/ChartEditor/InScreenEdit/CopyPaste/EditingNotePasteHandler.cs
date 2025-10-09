@@ -66,7 +66,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 					return false;
 				}
 
-				cloneComponents.Add(note.Clone(newTime, track));
+				cloneComponents.Add(editingNote.Clone(newTime, track));
 			}
 
 			CommandManager.Instance.Add(new AddComponentsCommand(cloneComponents));
