@@ -8302,7 +8302,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 125
+  m_SortingOrder: 500
   m_Sprite: {fileID: 21300000, guid: 9c26419c3cb1829419d8f1b7e34c78e6, type: 3}
   m_Color: {r: 0.5019608, g: 0, b: 0.5019608, a: 1}
   m_FlipX: 0
@@ -34184,7 +34184,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 22
+  m_SortingOrder: 500
   m_TargetDisplay: 0
 --- !u!1 &2080089492
 GameObject:
