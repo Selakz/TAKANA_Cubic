@@ -14,7 +14,7 @@ namespace MusicGame.Gameplay.Level.UI
 		// Event Handlers
 		private void LevelOnLoad(LevelInfo levelInfo)
 		{
-			coverImage.texture = levelInfo.Cover;
+			if (levelInfo.Cover != null) coverImage.texture = levelInfo.Cover;
 		}
 
 		// System Functions
