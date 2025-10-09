@@ -37,11 +37,11 @@ namespace MusicGame.ChartEditor.InScreenEdit
 						break;
 					}
 
-					if (Mathf.Abs(next - current) < 1)
+					if (Mathf.Abs(next - current) <= 1)
 					{
 						i--;
 						liminal++;
-						current = next + (forward ? 1 : -1);
+						current = next + (forward ? liminal : -liminal);
 					}
 					else
 					{
