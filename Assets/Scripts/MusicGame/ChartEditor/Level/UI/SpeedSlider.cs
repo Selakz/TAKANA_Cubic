@@ -35,7 +35,7 @@ namespace MusicGame.ChartEditor.Level.UI
 			speedSlider.interactable = true;
 			if (levelInfo.Preference is EditorPreference preference)
 			{
-				Speed = preference.Speed;
+				Speed = Mathf.Approximately(preference.Speed, 0) ? 1.0f : preference.Speed;
 			}
 		}
 
