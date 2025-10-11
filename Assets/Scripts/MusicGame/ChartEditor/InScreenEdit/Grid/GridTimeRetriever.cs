@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using MusicGame.ChartEditor.Level;
-using MusicGame.Gameplay;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -61,10 +60,12 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public T3Time GetTimeStart(Vector3 position)
 		{
 			T3Time time = ITimeRetriever.GetCorrespondingTime(position.y);
-			var ceilTime = BpmList.GetCeilTime(time, GridDivision, out _);
-			var floorTime = BpmList.GetFloorTime(time, GridDivision, out _);
+			var ceilTime = BpmList.GetCeilTime(time, GridDivision, out var ceilIndex);
+			var floorTime = BpmList.GetFloorTime(time, GridDivision, out var floorIndex);
 			var ceilDistance = Mathf.Abs(ceilTime - time);
 			var floorDistance = Mathf.Abs(floorTime - time);
+			if (ceilDistance == floorDistance && ceilIndex - floorIndex is 0 or 2)
+				return time;
 			if (ceilDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance &&
 			    floorDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance)
 				return time;

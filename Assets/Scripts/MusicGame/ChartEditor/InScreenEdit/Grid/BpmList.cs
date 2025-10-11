@@ -42,7 +42,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			float timePerGrid = 60f / bpmList.Values[index] / gridDivision;
 			gridIndexSinceLastBpm = Mathf.FloorToInt((time - bpmList.Keys[index]) / timePerGrid);
 			var result = bpmList.Keys[index] + gridIndexSinceLastBpm * timePerGrid;
-			if (result == time)
+			while (result == time)
 			{
 				if (gridIndexSinceLastBpm > 0)
 				{
@@ -136,7 +136,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public void Add(KeyValuePair<T3Time, float> item)
 		{
 			OnBpmListUpdate.Invoke();
-			bpmList[item.Key] = item.Value;
+			var value = Mathf.Max(item.Value, 1f);
+			bpmList[item.Key] = value;
 		}
 
 		public void Clear()
@@ -168,6 +169,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		public void Add(T3Time key, float value)
 		{
+			value = Mathf.Max(value, 1f);
 			bpmList[key] = value;
 			OnBpmListUpdate.Invoke();
 		}
