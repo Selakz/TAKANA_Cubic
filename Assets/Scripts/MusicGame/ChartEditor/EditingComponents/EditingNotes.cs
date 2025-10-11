@@ -18,7 +18,7 @@ namespace MusicGame.ChartEditor.EditingComponents
 
 		public override bool Generate()
 		{
-			if (LevelManager.Instance.Music.ChartTime <= Note.TimeJudge)
+			if (LevelManager.Instance.Music.ChartTime <= Note.TimeEnd)
 			{
 				return Note.Generate();
 			}
@@ -58,7 +58,7 @@ namespace MusicGame.ChartEditor.EditingComponents
 
 		public override bool Generate()
 		{
-			if (LevelManager.Instance.Music.ChartTime <= Note.TimeJudge)
+			if (LevelManager.Instance.Music.ChartTime <= Note.TimeEnd)
 			{
 				return Note.Generate();
 			}
@@ -98,7 +98,7 @@ namespace MusicGame.ChartEditor.EditingComponents
 
 		public override bool Generate()
 		{
-			if (LevelManager.Instance.Music.ChartTime <= Note.TimeJudge)
+			if (LevelManager.Instance.Music.ChartTime <= Note.TimeEnd)
 			{
 				return Note.Generate();
 			}
