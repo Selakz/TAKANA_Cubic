@@ -19,7 +19,7 @@ namespace MusicGame.ChartEditor.Level
 			width = Mathf.Max(MinimumWindowWidth, width);
 			var height = width * 9 / 16;
 			Screen.SetResolution(width, height, false);
-			ISingletonSetting<EditorSetting>.Instance.WindowWidth = width;
+			ISingletonSetting<EditorSetting>.Instance.WindowWidth.Value = width;
 			ISingletonSetting<EditorSetting>.SaveInstance();
 		}
 

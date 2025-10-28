@@ -29,21 +29,21 @@ namespace MusicGame.ChartEditor.Level.UI
 		{
 			if (int.TryParse(content, out int autoSaveInterval) && autoSaveInterval > 0)
 			{
-				ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval = autoSaveInterval * 60000;
+				ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value = autoSaveInterval * 60000;
 				ISingletonSetting<EditorSetting>.SaveInstance();
 				autoSavePlugin.AutoSaveInterval = autoSaveInterval * 60000;
 				return;
 			}
 
 			autoSaveIntervalInputField.text =
-				(ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval / 60000).ToString();
+				(ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value / 60000).ToString();
 		}
 
 		private void OnScrollSensitivityInputFieldEndEdit(string content)
 		{
 			if (int.TryParse(content, out int scrollSensitivity))
 			{
-				ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity = scrollSensitivity;
+				ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity.Value = scrollSensitivity;
 				ISingletonSetting<EditorSetting>.SaveInstance();
 				return;
 			}
@@ -53,7 +53,7 @@ namespace MusicGame.ChartEditor.Level.UI
 
 		private void OnDefaultEaseDropdownValueChanged(int choice)
 		{
-			ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId = easeIds[choice];
+			ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId.Value = easeIds[choice];
 			ISingletonSetting<TrackLineSetting>.SaveInstance();
 		}
 
@@ -91,7 +91,7 @@ namespace MusicGame.ChartEditor.Level.UI
 		void OnEnable()
 		{
 			autoSaveIntervalInputField.SetTextWithoutNotify(
-				(ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval / 60000).ToString());
+				(ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value / 60000).ToString());
 			scrollSensitivityInputField.SetTextWithoutNotify(
 				ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity.ToString());
 			for (int i = 0; i < easeIds.Length; ++i)

@@ -14,6 +14,8 @@ namespace T3Framework.Runtime.Input
 
 		public static InputManager Instance { get; private set; }
 
+		public bool GlobalInputEnabled { get; set; } = true;
+
 		// Private
 
 		// Static
@@ -52,7 +54,7 @@ namespace T3Framework.Runtime.Input
 		{
 			return context =>
 			{
-				if (!IsFocusingOnTextField()) callback(context);
+				if (GlobalInputEnabled && !IsFocusingOnTextField()) callback(context);
 			};
 		}
 

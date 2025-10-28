@@ -20,7 +20,7 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 		{
 			set
 			{
-				ISingletonSetting<TrackLayerSetting>.Instance.SelectLayerOpacityRatio = value / 100f;
+				ISingletonSetting<TrackLayerSetting>.Instance.SelectLayerOpacityRatio.Value = value / 100f;
 				ISingletonSetting<TrackLayerSetting>.SaveInstance();
 				trackOpacitySlider.value = value;
 				trackOpacityText.text = value.ToString();

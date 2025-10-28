@@ -23,7 +23,7 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 		// Event Handlers
 		private void LevelOnLoad(LevelInfo levelInfo)
 		{
-			var easeId = ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId;
+			var easeId = ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId.Value;
 			easeId = Mathf.Clamp(easeId, 0, 9);
 			TrackMovementEditingManager.Instance.CurrentEaseId = easeId;
 		}

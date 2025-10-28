@@ -27,7 +27,7 @@ namespace MusicGame.ChartEditor.Level.UI
 		{
 			resolutionDropdown.onValueChanged.AddListener(OnResolutionDropdownValueChanged);
 			windowWidths = resolutionDropdown.SetOptions(
-				ISingletonSetting<EditorSetting>.Instance.WindowWidthChoices,
+				ISingletonSetting<EditorSetting>.Instance.WindowWidthChoices.Value,
 				width => $"{width}x{width * 9 / 16}");
 			for (int i = 0; i < windowWidths.Length; i++)
 			{

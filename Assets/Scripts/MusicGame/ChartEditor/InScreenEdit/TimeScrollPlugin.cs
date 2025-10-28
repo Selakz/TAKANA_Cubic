@@ -5,6 +5,7 @@ using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.Input;
 using T3Framework.Runtime.Setting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,7 +17,8 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		// System Functions
 		void Update()
 		{
-			if (LevelManager.Instance.Music.Clip == null) return;
+			// Manually judge
+			if (!InputManager.Instance.GlobalInputEnabled || LevelManager.Instance.Music.Clip == null) return;
 
 			float y = Mouse.current.scroll.ReadValue().y;
 			if (y == 0) return;
@@ -24,7 +26,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			    InScreenEditManager.Instance.TimeRetriever is GridTimeRetriever timeRetriever)
 			{
 				var current = LevelManager.Instance.Music.ChartTime;
-				var scrollSensitivity = ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity;
+				var scrollSensitivity = ISingletonSetting<EditorSetting>.Instance.ScrollSensitivity.Value;
 				bool forward = y * scrollSensitivity > 0;
 				scrollSensitivity = Mathf.Abs(scrollSensitivity);
 				// Forced to have a liminality to prevent endless loop...

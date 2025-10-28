@@ -1,4 +1,5 @@
 using T3Framework.Runtime.Serialization.Yaml;
+using T3Framework.Static.Event;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -11,6 +12,7 @@ namespace T3Framework.Runtime.Setting
 			.WithTypeConverter(new T3TimeYamlConverter())
 			.WithTypeConverter(new ColorYamlConverter())
 			.WithTypeConverter(new I18NStringYamlConverter())
+			.WithTypeConverter(new NotifiablePropertySerializer())
 			.WithNamingConvention(CamelCaseNamingConvention.Instance)
 			.Build();
 
@@ -18,6 +20,7 @@ namespace T3Framework.Runtime.Setting
 			.WithTypeConverter(new T3TimeYamlConverter())
 			.WithTypeConverter(new ColorYamlConverter())
 			.WithTypeConverter(new I18NStringYamlConverter())
+			.WithTypeConverter(new NotifiablePropertySerializer())
 			.WithNamingConvention(CamelCaseNamingConvention.Instance)
 			.IgnoreUnmatchedProperties()
 			.Build();

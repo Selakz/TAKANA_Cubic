@@ -19,10 +19,10 @@ namespace MusicGame.ChartEditor.Level
 
 		public T3Time AutoSaveInterval
 		{
-			get => Mathf.Max(60000, ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval);
+			get => Mathf.Max(60000, ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value);
 			set
 			{
-				ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval = value;
+				ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value = value;
 				timer.TimeDelta = value;
 				timer.Reset();
 			}

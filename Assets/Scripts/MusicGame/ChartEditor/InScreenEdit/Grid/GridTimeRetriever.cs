@@ -66,8 +66,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			var floorDistance = Mathf.Abs(floorTime - time);
 			if (ceilDistance == floorDistance && ceilIndex - floorIndex is 0 or 2)
 				return time;
-			if (ceilDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance &&
-			    floorDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance)
+			if (ceilDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance.Value &&
+			    floorDistance > ISingletonSetting<InScreenEditSetting>.Instance.TimeSnapDistance.Value)
 				return time;
 			return ceilDistance > floorDistance ? floorTime : ceilTime;
 		}

@@ -20,7 +20,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		private void HoldEndToNext()
 		{
 			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
-			var noteToNextDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance;
+			var noteToNextDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance.Value;
 			List<UpdateComponentArg> args = new();
 			foreach (var editingHold in holds)
 			{
@@ -41,7 +41,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		private void HoldEndToPrevious()
 		{
 			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
-			var noteToPreviousDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance;
+			var noteToPreviousDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance.Value;
 			List<UpdateComponentArg> args = new();
 			foreach (var editingHold in holds)
 			{

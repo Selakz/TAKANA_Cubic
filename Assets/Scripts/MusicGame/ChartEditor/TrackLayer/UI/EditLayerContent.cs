@@ -232,10 +232,10 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 		void OnEnable()
 		{
 			var paletteCount = Mathf.Min(
-				ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Count, MaximumPaletteCount);
+				ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value.Count, MaximumPaletteCount);
 			for (var i = 0; i < paletteCount; i++)
 			{
-				var colorDefinition = ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions[i];
+				var colorDefinition = ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value[i];
 				var button = paletteRenderer.Add<PaletteButton>(i);
 				button.PaletteColor = colorDefinition;
 				button.OnColorClicked += OnPaletteButtonClicked;
