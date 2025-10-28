@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Select.Selectables;
@@ -8,7 +9,6 @@ using MusicGame.Components.Chart;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.Event;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace MusicGame.ChartEditor.Select
 {
@@ -24,7 +24,7 @@ namespace MusicGame.ChartEditor.Select
 		private ChartInfo chart = default!;
 
 		// Static
-		private static readonly Dictionary<string, UnityAction<GameObject>> registerSelectable = new()
+		private static readonly Dictionary<string, Action<GameObject>> registerSelectable = new()
 		{
 			["TapPrefab_OnLoad"] = go => go.AddComponent<TapSelectable>(),
 			["SlidePrefab_OnLoad"] = go => go.AddComponent<SlideSelectable>(),

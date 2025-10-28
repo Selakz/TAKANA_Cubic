@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
+// ReSharper disable InconsistentNaming
 // Modified from StarryFramework. I think it has improvement space but whatever.
 namespace T3Framework.Runtime.Event
 {
@@ -13,27 +13,37 @@ namespace T3Framework.Runtime.Event
 
 	internal class EventInfo : IEvent
 	{
-		public readonly UnityEvent Event = new();
+		public event Action Event;
+
+		public void Invoke() => Event?.Invoke();
 	}
 
 	internal class EventInfo<T> : IEvent
 	{
-		public readonly UnityEvent<T> Event = new();
+		public event Action<T> Event;
+
+		public void Invoke(T arg) => Event?.Invoke(arg);
 	}
 
 	internal class EventInfo<T1, T2> : IEvent
 	{
-		public readonly UnityEvent<T1, T2> Event = new();
+		public event Action<T1, T2> Event;
+
+		public void Invoke(T1 arg1, T2 arg2) => Event?.Invoke(arg1, arg2);
 	}
 
 	internal class EventInfo<T1, T2, T3> : IEvent
 	{
-		public readonly UnityEvent<T1, T2, T3> Event = new();
+		public event Action<T1, T2, T3> Event;
+
+		public void Invoke(T1 arg1, T2 arg2, T3 arg3) => Event?.Invoke(arg1, arg2, arg3);
 	}
 
 	internal class EventInfo<T1, T2, T3, T4> : IEvent
 	{
-		public readonly UnityEvent<T1, T2, T3, T4> Event = new();
+		public event Action<T1, T2, T3, T4> Event;
+
+		public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4) => Event?.Invoke(arg1, arg2, arg3, arg4);
 	}
 
 	#endregion
@@ -85,7 +95,7 @@ namespace T3Framework.Runtime.Event
 
 		#region AddListener
 
-		public void AddListener(string eventName, UnityAction action)
+		public void AddListener(string eventName, Action action)
 		{
 			string eventFullName = GetFullName(eventName);
 
@@ -102,10 +112,10 @@ namespace T3Framework.Runtime.Event
 
 			eventInfoDict[eventName][eventFullName]++;
 
-			(eventDict[eventFullName] as EventInfo)!.Event.AddListener(action);
+			(eventDict[eventFullName] as EventInfo)!.Event += action;
 		}
 
-		public void AddListener<T>(string eventName, UnityAction<T> action)
+		public void AddListener<T>(string eventName, Action<T> action)
 		{
 			string eventFullName = GetFullName<T>(eventName);
 
@@ -122,10 +132,10 @@ namespace T3Framework.Runtime.Event
 
 			eventInfoDict[eventName][eventFullName]++;
 
-			(eventDict[eventFullName] as EventInfo<T>)!.Event.AddListener(action);
+			(eventDict[eventFullName] as EventInfo<T>)!.Event += action;
 		}
 
-		public void AddListener<T1, T2>(string eventName, UnityAction<T1, T2> action)
+		public void AddListener<T1, T2>(string eventName, Action<T1, T2> action)
 		{
 			string eventFullName = GetFullName<T1, T2>(eventName);
 
@@ -142,10 +152,10 @@ namespace T3Framework.Runtime.Event
 
 			eventInfoDict[eventName][eventFullName]++;
 
-			(eventDict[eventFullName] as EventInfo<T1, T2>)!.Event.AddListener(action);
+			(eventDict[eventFullName] as EventInfo<T1, T2>)!.Event += action;
 		}
 
-		public void AddListener<T1, T2, T3>(string eventName, UnityAction<T1, T2, T3> action)
+		public void AddListener<T1, T2, T3>(string eventName, Action<T1, T2, T3> action)
 		{
 			string eventFullName = GetFullName<T1, T2, T3>(eventName);
 
@@ -162,10 +172,10 @@ namespace T3Framework.Runtime.Event
 
 			eventInfoDict[eventName][eventFullName]++;
 
-			(eventDict[eventFullName] as EventInfo<T1, T2, T3>)!.Event.AddListener(action);
+			(eventDict[eventFullName] as EventInfo<T1, T2, T3>)!.Event += action;
 		}
 
-		public void AddListener<T1, T2, T3, T4>(string eventName, UnityAction<T1, T2, T3, T4> action)
+		public void AddListener<T1, T2, T3, T4>(string eventName, Action<T1, T2, T3, T4> action)
 		{
 			string eventFullName = GetFullName<T1, T2, T3, T4>(eventName);
 
@@ -182,64 +192,64 @@ namespace T3Framework.Runtime.Event
 
 			eventInfoDict[eventName][eventFullName]++;
 
-			(eventDict[eventFullName] as EventInfo<T1, T2, T3, T4>)!.Event.AddListener(action);
+			(eventDict[eventFullName] as EventInfo<T1, T2, T3, T4>)!.Event += action;
 		}
 
 		#endregion
 
 		#region RemoveListener
 
-		public void RemoveListener(string eventName, UnityAction action)
+		public void RemoveListener(string eventName, Action action)
 		{
 			string eventFullName = GetFullName(eventName);
 
 			if (!eventDict.TryGetValue(eventFullName, out var value)) return;
 
-			(value as EventInfo)!.Event.RemoveListener(action);
+			(value as EventInfo)!.Event -= action;
 
 			eventInfoDict[eventName][eventFullName]--;
 		}
 
-		public void RemoveListener<T>(string eventName, UnityAction<T> action)
+		public void RemoveListener<T>(string eventName, Action<T> action)
 		{
 			string eventFullName = GetFullName<T>(eventName);
 
 			if (!eventDict.TryGetValue(eventFullName, out var value)) return;
 
-			(value as EventInfo<T>)!.Event.RemoveListener(action);
+			(value as EventInfo<T>)!.Event -= action;
 
 			eventInfoDict[eventName][eventFullName]--;
 		}
 
-		public void RemoveListener<T1, T2>(string eventName, UnityAction<T1, T2> action)
+		public void RemoveListener<T1, T2>(string eventName, Action<T1, T2> action)
 		{
 			string eventFullName = GetFullName<T1, T2>(eventName);
 
 			if (!eventDict.TryGetValue(eventFullName, out var value)) return;
 
-			(value as EventInfo<T1, T2>)!.Event.RemoveListener(action);
+			(value as EventInfo<T1, T2>)!.Event -= action;
 
 			eventInfoDict[eventName][eventFullName]--;
 		}
 
-		public void RemoveListener<T1, T2, T3>(string eventName, UnityAction<T1, T2, T3> action)
+		public void RemoveListener<T1, T2, T3>(string eventName, Action<T1, T2, T3> action)
 		{
 			string eventFullName = GetFullName<T1, T2, T3>(eventName);
 
 			if (!eventDict.TryGetValue(eventFullName, out var value)) return;
 
-			(value as EventInfo<T1, T2, T3>)!.Event.RemoveListener(action);
+			(value as EventInfo<T1, T2, T3>)!.Event -= action;
 
 			eventInfoDict[eventName][eventFullName]--;
 		}
 
-		public void RemoveListener<T1, T2, T3, T4>(string eventName, UnityAction<T1, T2, T3, T4> action)
+		public void RemoveListener<T1, T2, T3, T4>(string eventName, Action<T1, T2, T3, T4> action)
 		{
 			string eventFullName = GetFullName<T1, T2, T3, T4>(eventName);
 
 			if (!eventDict.TryGetValue(eventFullName, out var value)) return;
 
-			(value as EventInfo<T1, T2, T3, T4>)!.Event.RemoveListener(action);
+			(value as EventInfo<T1, T2, T3, T4>)!.Event -= action;
 
 			eventInfoDict[eventName][eventFullName]--;
 		}
@@ -254,7 +264,7 @@ namespace T3Framework.Runtime.Event
 
 			if (eventDict.TryGetValue(eventFullName, out var value))
 			{
-				(value as EventInfo)!.Event?.Invoke();
+				(value as EventInfo)!.Invoke();
 			}
 		}
 
@@ -264,7 +274,7 @@ namespace T3Framework.Runtime.Event
 
 			if (eventDict.TryGetValue(eventFullName, out var value))
 			{
-				(value as EventInfo<T>)!.Event?.Invoke(t);
+				(value as EventInfo<T>)!.Invoke(t);
 			}
 		}
 
@@ -274,7 +284,7 @@ namespace T3Framework.Runtime.Event
 
 			if (eventDict.TryGetValue(eventFullName, out var value))
 			{
-				(value as EventInfo<T1, T2>)!.Event?.Invoke(t1, t2);
+				(value as EventInfo<T1, T2>)!.Invoke(t1, t2);
 			}
 		}
 
@@ -284,7 +294,7 @@ namespace T3Framework.Runtime.Event
 
 			if (eventDict.TryGetValue(eventFullName, out var value))
 			{
-				(value as EventInfo<T1, T2, T3>)!.Event?.Invoke(t1, t2, t3);
+				(value as EventInfo<T1, T2, T3>)!.Invoke(t1, t2, t3);
 			}
 		}
 
@@ -294,109 +304,40 @@ namespace T3Framework.Runtime.Event
 
 			if (eventDict.TryGetValue(eventFullName, out var value))
 			{
-				(value as EventInfo<T1, T2, T3, T4>)!.Event?.Invoke(t1, t2, t3, t4);
+				(value as EventInfo<T1, T2, T3, T4>)!.Invoke(t1, t2, t3, t4);
 			}
-		}
-
-		#endregion
-
-		#region InvokePeriod
-
-		/// <summary>
-		/// Invoke the following events sequentially: <br/>
-		/// {module}_Before{action} <br/>
-		/// {module}_On{action} <br/>
-		/// {module}_After{action} <br/>
-		/// </summary>
-		public void InvokePeriod(string module, string action)
-		{
-			Invoke($"{module}_Before{action}");
-			Invoke($"{module}_On{action}");
-			Invoke($"{module}_After{action}");
-		}
-
-		/// <summary>
-		/// Invoke the following events sequentially: <br/>
-		/// {module}_Before{action} <br/>
-		/// {module}_On{action} <br/>
-		/// {module}_After{action} <br/>
-		/// </summary>
-		public void InvokePeriod<T1>(string module, string action, T1 t1)
-		{
-			Invoke($"{module}_Before{action}", t1);
-			Invoke($"{module}_On{action}", t1);
-			Invoke($"{module}_After{action}", t1);
-		}
-
-		/// <summary>
-		/// Invoke the following events sequentially: <br/>
-		/// {module}_Before{action} <br/>
-		/// {module}_On{action} <br/>
-		/// {module}_After{action} <br/>
-		/// </summary>
-		public void InvokePeriod<T1, T2>(string module, string action, T1 t1, T2 t2)
-		{
-			Invoke($"{module}_Before{action}", t1, t2);
-			Invoke($"{module}_On{action}", t1, t2);
-			Invoke($"{module}_After{action}", t1, t2);
-		}
-
-		/// <summary>
-		/// Invoke the following events sequentially: <br/>
-		/// {module}_Before{action} <br/>
-		/// {module}_On{action} <br/>
-		/// {module}_After{action} <br/>
-		/// </summary>
-		public void InvokePeriod<T1, T2, T3>(string module, string action, T1 t1, T2 t2, T3 t3)
-		{
-			Invoke($"{module}_Before{action}", t1, t2, t3);
-			Invoke($"{module}_On{action}", t1, t2, t3);
-			Invoke($"{module}_After{action}", t1, t2, t3);
-		}
-
-		/// <summary>
-		/// Invoke the following events sequentially: <br/>
-		/// {module}_Before{action} <br/>
-		/// {module}_On{action} <br/>
-		/// {module}_After{action} <br/>
-		/// </summary>
-		public void InvokePeriod<T1, T2, T3, T4>(string module, string action, T1 t1, T2 t2, T3 t3, T4 t4)
-		{
-			Invoke($"{module}_Before{action}", t1, t2, t3, t4);
-			Invoke($"{module}_On{action}", t1, t2, t3, t4);
-			Invoke($"{module}_After{action}", t1, t2, t3, t4);
 		}
 
 		#endregion
 
 		#region AddVetoListener
 
-		public void AddVetoListener(string eventName, UnityAction<VetoArg> action)
+		public void AddVetoListener(string eventName, Action<VetoArg> action)
 			=> AddListener(eventName, action);
 
-		public void AddVetoListener<T>(string eventName, UnityAction<VetoArg, T> action)
+		public void AddVetoListener<T>(string eventName, Action<VetoArg, T> action)
 			=> AddListener(eventName, action);
 
-		public void AddVetoListener<T1, T2>(string eventName, UnityAction<VetoArg, T1, T2> action)
+		public void AddVetoListener<T1, T2>(string eventName, Action<VetoArg, T1, T2> action)
 			=> AddListener(eventName, action);
 
-		public void AddVetoListener<T1, T2, T3>(string eventName, UnityAction<VetoArg, T1, T2, T3> action)
+		public void AddVetoListener<T1, T2, T3>(string eventName, Action<VetoArg, T1, T2, T3> action)
 			=> AddListener(eventName, action);
 
 		#endregion
 
 		#region RemoveVetoListener
 
-		public void RemoveVetoListener(string eventName, UnityAction<VetoArg> action)
+		public void RemoveVetoListener(string eventName, Action<VetoArg> action)
 			=> RemoveListener(eventName, action);
 
-		public void RemoveVetoListener<T>(string eventName, UnityAction<VetoArg, T> action)
+		public void RemoveVetoListener<T>(string eventName, Action<VetoArg, T> action)
 			=> RemoveListener(eventName, action);
 
-		public void RemoveVetoListener<T1, T2>(string eventName, UnityAction<VetoArg, T1, T2> action)
+		public void RemoveVetoListener<T1, T2>(string eventName, Action<VetoArg, T1, T2> action)
 			=> RemoveListener(eventName, action);
 
-		public void RemoveVetoListener<T1, T2, T3>(string eventName, UnityAction<VetoArg, T1, T2, T3> action)
+		public void RemoveVetoListener<T1, T2, T3>(string eventName, Action<VetoArg, T1, T2, T3> action)
 			=> RemoveListener(eventName, action);
 
 		#endregion

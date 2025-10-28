@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.Level;
@@ -9,7 +10,6 @@ using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace MusicGame.ChartEditor.Scoring.AutoScore
 {
@@ -31,7 +31,7 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 		// Static
 		private const double MaxScore = 1_000_000;
 
-		private Dictionary<string, UnityAction<GameObject>> registerHandler;
+		private Dictionary<string, Action<GameObject>> registerHandler;
 
 		// Defined Functions
 		private void AddComboInternal(int id)
