@@ -9,6 +9,7 @@ namespace T3Framework.Runtime.Extensions
 {
 	public static class UnityExtension
 	{
+		// Color
 		public static string ToHexAlphaTuple(this Color color)
 		{
 			int r = Mathf.RoundToInt(color.r * 255);
@@ -17,6 +18,16 @@ namespace T3Framework.Runtime.Extensions
 			return $"({r:X2}{g:X2}{b:X2}, {color.a:0.00})";
 		}
 
+		public static Color Inverse(this Color color, bool inverseAlpha = false)
+		{
+			float r = 1 - color.r;
+			float g = 1 - color.g;
+			float b = 1 - color.b;
+			float a = inverseAlpha ? 1 - color.a : color.a;
+			return new Color(r, g, b, a);
+		}
+
+		// Dropdown
 		public static T[] SetOptions<T>(
 			this TMP_Dropdown dropdown, List<T> options, Func<T, string> optionTextConverter)
 		{
