@@ -74,3 +74,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/Logs/*
 
 /.idea/
+
+# NuGet packages, should be restored with NuGet for Unity
+/[Aa]ssets/[Pp]ackages
+/[Aa]ssets/[Pp]ackages.meta
