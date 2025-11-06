@@ -31,49 +31,39 @@ namespace MusicGame.Components
 		public static void SetIdMinValue(int id) => maxId = Math.Max(maxId, id);
 
 		/// <summary> Topologically sort the given components by their parents. </summary>
-		public static List<IComponent> TopologicalSort(List<IComponent> components)
+		public static List<IComponent> TopologicalSort(IEnumerable<IComponent> components)
 		{
-			var graph = new Dictionary<IComponent, HashSet<IComponent>>();
-			var inDegree = new Dictionary<IComponent, int>();
-			foreach (var component in components)
-			{
-				graph[component] = new HashSet<IComponent>();
-				inDegree[component] = 0;
-			}
-
-			foreach (var component in components)
+			// The given components must be a directed forest but not a normal directed graph
+			var componentSet = new Dictionary<int, IComponent>
+				(components.Select(c => new KeyValuePair<int, IComponent>(c.Id, c)));
+			var childrenSet = new Dictionary<int, HashSet<IComponent>>();
+			var queue = new Queue<IComponent>();
+			var result = new List<IComponent>();
+			foreach (var component in componentSet.Values)
 			{
 				var parent = component.Parent;
-				if (parent != null && graph.ContainsKey(parent))
+				if (parent is null || !componentSet.ContainsKey(parent.Id)) queue.Enqueue(component);
+				else
 				{
-					graph[parent].Add(component);
-					inDegree[component]++;
+					if (!childrenSet.ContainsKey(parent.Id)) childrenSet[parent.Id] = new();
+					childrenSet[parent.Id].Add(component);
 				}
 			}
 
-			var queue = new Queue<IComponent>();
-			foreach (var comp in components.Where(comp => inDegree[comp] == 0))
-			{
-				queue.Enqueue(comp);
-			}
-
-			var result = new List<IComponent>();
 			while (queue.Count > 0)
 			{
 				var current = queue.Dequeue();
 				result.Add(current);
-
-				foreach (var child in graph[current])
+				if (childrenSet.TryGetValue(current.Id, out var children))
 				{
-					inDegree[child]--;
-					if (inDegree[child] == 0)
+					foreach (var child in children)
 					{
 						queue.Enqueue(child);
 					}
 				}
 			}
 
-			if (result.Count != components.Count)
+			if (result.Count != componentSet.Count)
 			{
 				throw new InvalidOperationException("In topological sort: Circular dependency detected.");
 			}

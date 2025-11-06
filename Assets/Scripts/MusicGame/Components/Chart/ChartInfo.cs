@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Extensions;
@@ -97,9 +98,9 @@ namespace MusicGame.Components.Chart
 		public JToken GetSerializationToken()
 		{
 			var list = new JArray();
-			foreach (var component in componentDict.Values)
+			var sortedComponents = IComponent.TopologicalSort(componentDict.Values);
+			foreach (var component in sortedComponents)
 			{
-				// if(component is not )
 				list.Add(component.Serialize(true));
 			}
 
