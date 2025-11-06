@@ -1,4 +1,6 @@
+#if UNITY_STANDALONE_WIN
 using System.Windows.Forms;
+#endif
 using T3Framework.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,7 +22,9 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		public void OnPointerClick(PointerEventData eventData)
 		{
+#if UNITY_STANDALONE_WIN
 			Clipboard.SetText(time.ToString());
+#endif
 			if (TimingInputField.Current != null)
 			{
 				TimingInputField.Current.text = time.ToString();
