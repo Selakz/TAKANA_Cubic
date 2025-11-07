@@ -18,7 +18,7 @@ namespace MusicGame.Utility.AutoUpdate
 	{
 		private const SemVersionStyles VersionStyles = SemVersionStyles.AllowV | SemVersionStyles.OptionalPatch;
 
-		private const string HelperFileName = "AutoUpdateHelper.exe";
+		private const string HelperFileName = "TakanaAutoUpdateHelper.exe";
 
 		private const int TimeoutMilliseconds = 5000;
 
