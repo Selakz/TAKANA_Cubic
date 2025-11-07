@@ -68,7 +68,7 @@ namespace T3Framework.Runtime.ListRender
 
 				listItemPools.Add(pair.Key, new Lazy<ObjectPool<GameObject>>(
 					() => new ObjectPool<GameObject>(
-						() => Instantiate<GameObject>(pair.Value),
+						() => pair.Value.Instantiate(ParentTransform),
 						go => go.SetActive(true),
 						go => go.SetActive(false),
 						Destroy
@@ -93,7 +93,6 @@ namespace T3Framework.Runtime.ListRender
 			var type = typeof(T);
 			if (!listItemPools.ContainsKey(type)) return null;
 			var go = listItemPools[type].Value.Get();
-			go.transform.SetParent(parentTransform);
 			listItems.Add(key, go);
 			Sort();
 			return go.GetComponent<T>();
@@ -103,7 +102,6 @@ namespace T3Framework.Runtime.ListRender
 		{
 			if (!listItemPools.ContainsKey(type)) return null;
 			var go = listItemPools[type].Value.Get();
-			go.transform.SetParent(parentTransform);
 			listItems.Add(key, go);
 			Sort();
 			return (MonoBehaviour)go.GetComponent(type);
@@ -164,7 +162,7 @@ namespace T3Framework.Runtime.ListRender
 
 		public void RebuildLayout()
 		{
-			LayoutRebuilder.ForceRebuildLayoutImmediate(parentTransform);
+			LayoutRebuilder.ForceRebuildLayoutImmediate(ParentTransform);
 		}
 
 		public int GetSiblingIndex(TKey key)

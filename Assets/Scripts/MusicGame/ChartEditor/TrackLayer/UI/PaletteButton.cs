@@ -17,6 +17,7 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 			set
 			{
 				paletteColor = value;
+				if (button == null) button = GetComponent<Button>();
 				button.targetGraphic.color = paletteColor;
 			}
 		}

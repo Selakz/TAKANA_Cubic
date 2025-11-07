@@ -38,6 +38,7 @@ namespace MusicGame.ChartEditor.EditPanel
 			get => model;
 			set
 			{
+				Awake();
 				model = value;
 				nameTitle.Model = model;
 				timeStartInputField.SetTextWithoutNotify(model.Track.TimeInstantiate.ToString());
@@ -209,8 +210,14 @@ namespace MusicGame.ChartEditor.EditPanel
 		}
 
 		// System Functions
+		private bool hasAwaken = false;
+
 		void Awake()
 		{
+			// TODO: Replace with T3MonoBehaviour.EarlyAwake
+			if (hasAwaken) return;
+			hasAwaken = true;
+
 			movementContentPrefabs ??= new()
 			{
 				[typeof(TrackEdgeMovement)] = new LazyPrefab("Prefabs/EditorUI/EditPanel/EditEdgeMovementContent",

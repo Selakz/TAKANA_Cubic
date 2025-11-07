@@ -12,7 +12,15 @@ namespace T3Framework.Runtime.UI
 	{
 		[SerializeField] private int clickInterval = 3000;
 
-		public Button Button { get; private set; } = default!;
+		public Button Button
+		{
+			get
+			{
+				// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+				button ??= GetComponent<Button>();
+				return button;
+			}
+		}
 
 		public T3Time ClickInterval
 		{
@@ -23,6 +31,7 @@ namespace T3Framework.Runtime.UI
 		public event UnityAction? OnFirstClick;
 		public event UnityAction? OnSecondClick;
 
+		private Button button = default!;
 		private TriggerTimer timer = default!;
 		private bool hasFirstClicked = false;
 
@@ -52,7 +61,8 @@ namespace T3Framework.Runtime.UI
 		// System Functions
 		void Awake()
 		{
-			Button = GetComponent<Button>();
+			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+			button ??= GetComponent<Button>();
 			Button.onClick.AddListener(OnButtonClicked);
 			timer = new TriggerTimer(ClickInterval.Milli);
 			timer.OnTrigger += OnTimerTrigger;
