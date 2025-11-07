@@ -1,0 +1,51 @@
+#nullable enable
+
+using System.ComponentModel;
+using System.Reflection;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Setting;
+using TMPro;
+using UnityEngine;
+
+namespace MusicGame.Utility.Setting
+{
+	public class StringSettingItem : SingleValueSettingItem<string>
+	{
+		// Serializable and Public
+		[SerializeField] private TMP_Text descriptionText = default!;
+		[SerializeField] private TMP_InputField valueInputField = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputFieldRegistrar
+				(valueInputField, InputFieldRegistrar.RegisterTarget.OnEndEdit, OnValueInputFieldEndEdit)
+		};
+
+		protected override void InitializeSucceed()
+		{
+			var attribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
+			descriptionText.text = attribute is null ? string.Empty : attribute.Description;
+			valueInputField.text = DisplayValue;
+		}
+
+		protected override void InitializeFail()
+		{
+			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
+		}
+
+		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)
+		{
+			valueInputField.text = DisplayValue;
+		}
+
+		// Event Handlers
+		private void OnValueInputFieldEndEdit(string value)
+		{
+			if (DisplayValue == value) return;
+
+			DisplayValue = value;
+			Save();
+		}
+	}
+}

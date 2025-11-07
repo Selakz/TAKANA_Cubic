@@ -237,7 +237,7 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 			{
 				var colorDefinition = ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value[i];
 				var button = paletteRenderer.Add<PaletteButton>(i);
-				button.PaletteColor = colorDefinition;
+				button.PaletteColor = colorDefinition!.Value;
 				button.OnColorClicked += OnPaletteButtonClicked;
 			}
 		}

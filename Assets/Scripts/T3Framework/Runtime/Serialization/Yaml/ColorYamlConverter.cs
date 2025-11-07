@@ -11,7 +11,7 @@ namespace T3Framework.Runtime.Serialization.Yaml
 	{
 		public bool Accepts(Type type)
 		{
-			return type == typeof(Color);
+			return type == typeof(Color) || type == typeof(Color?);
 		}
 
 		public object ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
