@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -19,14 +20,20 @@ namespace T3Framework.Static.Event
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
+		public bool IsLastAssignmentNotified { get; private set; } = false;
+
+		public Func<T, T, bool> Comparer { get; set; } = EqualityComparer<T>.Default.Equals;
+
 		public T Value
 		{
 			get => innerValue;
 			set
 			{
-				if (!EqualityComparer<T>.Default.Equals(innerValue, value))
+				IsLastAssignmentNotified = false;
+				if (!Comparer.Invoke(innerValue, value))
 				{
 					innerValue = value;
+					IsLastAssignmentNotified = true;
 					OnPropertyChanged();
 				}
 			}
@@ -49,6 +56,11 @@ namespace T3Framework.Static.Event
 		public void ForceNotify()
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+		}
+
+		public void AddUpNotify()
+		{
+			if (!IsLastAssignmentNotified) ForceNotify();
 		}
 
 		public static implicit operator T(NotifiableProperty<T> property)

@@ -67,6 +67,7 @@ namespace T3Framework.Preset.ColorPicker
 			var targetHue = ColorMapHelper.GetPositionOfColor(Width, Height, color, out int x, out int y);
 			Color.RGBToHSV(color, out float _, out float s, out float _);
 			if (!Mathf.Approximately(s, 0)) hue = targetHue;
+			hueSlider.SetValueWithoutNotify(hueSlider.maxValue * hue);
 
 			UpdatePosition(new Vector2(x, y));
 		}

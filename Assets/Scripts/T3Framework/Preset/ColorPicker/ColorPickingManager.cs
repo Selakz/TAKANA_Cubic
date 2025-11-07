@@ -6,6 +6,7 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace T3Framework.Preset.ColorPicker
@@ -14,7 +15,8 @@ namespace T3Framework.Preset.ColorPicker
 	{
 		// Serializable and Public
 		[SerializeField] private ColorDataContainer colorDataContainer = default!;
-		[SerializeField] private Button closePanelButton = default!;
+		[SerializeField] private Button confirmButton = default!;
+		[SerializeField] private Button cancelButton = default!;
 		[SerializeField] private GameObject colorPickerPanel = default!;
 
 		public static ColorPickingManager Instance { get; private set; } = default!;
@@ -23,7 +25,8 @@ namespace T3Framework.Preset.ColorPicker
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new ButtonRegistrar(closePanelButton, OnClosePanelButtonClick)
+			new ButtonRegistrar(confirmButton, OnConfirmButtonClick),
+			new ButtonRegistrar(cancelButton, OnCancelButtonClick)
 		};
 
 		// Defined Functions
@@ -36,10 +39,16 @@ namespace T3Framework.Preset.ColorPicker
 		}
 
 		// Event Handlers
-		private void OnClosePanelButtonClick()
+		private void OnConfirmButtonClick()
 		{
 			colorPickerPanel.SetActive(false);
 			OnCloseDialog?.Invoke(colorDataContainer.Property.Value);
+			OnCloseDialog = null;
+		}
+
+		private void OnCancelButtonClick()
+		{
+			colorPickerPanel.SetActive(false);
 			OnCloseDialog = null;
 		}
 
