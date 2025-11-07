@@ -2,6 +2,7 @@ using System.ComponentModel;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
+using T3Framework.Static.Setting;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.InScreenEdit
@@ -13,13 +14,12 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		public NotifiableProperty<bool> IsInitialTrackLengthToEnd { get; set; } = new(true);
 
 		[Description("若上一项为false，则轨道的初始长度 | 单位：毫秒")]
+		[MinValue(100)]
 		public NotifiableProperty<T3Time> InitialTrackLength { get; set; } = new(3000);
 
 		[Description("当鼠标位置与最近的横向格线时间差小于该值时，将吸附到该格线上 | 单位：毫秒")]
+		[MinValue(0)]
 		public NotifiableProperty<T3Time> TimeSnapDistance { get; set; } = new(1000);
-
-		[Description("当鼠标位置与最近的纵向格线距离差小于该值时，将吸附到该格线上")]
-		public NotifiableProperty<float> WidthSnapDistance { get; set; } = new(0.5f);
 
 		[Description("单击 W 或 S 时 Note 移动的时间长度 | 单位：毫秒")]
 		public NotifiableProperty<T3Time> NoteNudgeDistance { get; set; } = new(10);

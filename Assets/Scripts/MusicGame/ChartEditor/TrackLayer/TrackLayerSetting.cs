@@ -3,6 +3,7 @@ using System.ComponentModel;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
+using T3Framework.Static.Setting;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLayer
@@ -17,7 +18,8 @@ namespace MusicGame.ChartEditor.TrackLayer
 		public NotifiableProperty<string> DefaultLayerName { get; set; } = new("默认图层");
 
 		[Description("图层可用的颜色定义")]
-		public NotifiableProperty<List<Color>> ColorDefinitions { get; set; } = new(new()
+		[MaxLength(16)]
+		public NotifiableProperty<List<Color?>> ColorDefinitions { get; set; } = new(new()
 		{
 			UnityParser.ParseHexAlphaTuple("(000000, 1.00)"),
 			UnityParser.ParseHexAlphaTuple("(303030, 1.00)"),
@@ -41,9 +43,13 @@ namespace MusicGame.ChartEditor.TrackLayer
 		public NotifiableProperty<Color> DefaultColor { get; set; } = new(Color.black);
 
 		[Description("选中的图层的透明度倍率，范围为[0, 1]")]
+		[MinValue(0)]
+		[MaxValue(1)]
 		public NotifiableProperty<float> SelectLayerOpacityRatio { get; set; } = new(1.0f);
 
 		[Description("未选中的图层的透明度倍率，范围为[0, 1]")]
+		[MinValue(0)]
+		[MaxValue(1)]
 		public NotifiableProperty<float> UnselectLayerOpacityRatio { get; set; } = new(0.1f);
 	}
 }

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
+using T3Framework.Static.Setting;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Level
@@ -18,12 +19,15 @@ namespace MusicGame.Gameplay.Level
 		public NotifiableProperty<Color> TrackFaceDefaultColor { get; set; } = new(Color.black);
 
 		[Description("Note下落时如果未被判定，则其视图层内容在判定时间之后延迟销毁的时间（非必要请勿修改）")]
+		[HideInGame]
 		public NotifiableProperty<int> TimeAfterEnd { get; set; } = new(2000);
 
 		[Description("当Note在1速下首次位于该高度以下时才会真正生成其视图层内容（非必要请勿修改）")]
+		[HideInGame]
 		public NotifiableProperty<float> UpperThreshold { get; set; } = new(8);
 
 		[Description("当Note在1速下首次位于该高度以上时才会真正生成其视图层内容（非必要请勿修改）")]
+		[HideInGame]
 		public NotifiableProperty<float> LowerThreshold { get; set; } = new(-5);
 	}
 }
