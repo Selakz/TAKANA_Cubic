@@ -2,7 +2,6 @@
 
 using System.ComponentModel;
 using T3Framework.Runtime.Event;
-using T3Framework.Static.Event;
 
 namespace T3Framework.Preset.Event
 {

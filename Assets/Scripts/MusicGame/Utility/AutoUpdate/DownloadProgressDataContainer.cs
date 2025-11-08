@@ -1,6 +1,6 @@
 #nullable enable
 
-using T3Framework.Static.Event;
+using T3Framework.Runtime.Event;
 
 namespace MusicGame.Utility.AutoUpdate
 {

@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using T3Framework.Runtime;
+using T3Framework.Static.Event;
 
-namespace T3Framework.Static.Event
+namespace T3Framework.Runtime.Event
 {
 	public abstract class NotifiableDataContainer<T> : T3MonoBehaviour
 	{

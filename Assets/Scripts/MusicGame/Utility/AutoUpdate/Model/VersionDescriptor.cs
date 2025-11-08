@@ -2,7 +2,6 @@
 
 using System;
 using Newtonsoft.Json;
-using T3Framework.Static.Event;
 
 namespace MusicGame.Utility.AutoUpdate.Model
 {
@@ -35,11 +34,5 @@ namespace MusicGame.Utility.AutoUpdate.Model
 		{
 			return HashCode.Combine(Version, Description, UpdateLog, UpdateDate);
 		}
-	}
-
-	/// <summary> It's quite a long name. </summary>
-	public class NullableVersionDescriptorDataContainer : NotifiableDataContainer<VersionDescriptor?>
-	{
-		public override VersionDescriptor? InitialValue => null;
 	}
 }

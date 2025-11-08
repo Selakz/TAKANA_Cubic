@@ -1,7 +1,7 @@
 #nullable enable
 
 using MusicGame.Utility.AutoUpdate.Model;
-using T3Framework.Static.Event;
+using T3Framework.Runtime.Event;
 using UnityEngine;
 
 namespace MusicGame.Utility.AutoUpdate
