@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2388898775805373254}
   - component: {fileID: -5420556287380895942}
-  - component: {fileID: 118874423244888436}
+  - component: {fileID: 8802143858117034792}
   m_Layer: 7
   m_Name: Hold
   m_TagString: Untagged
@@ -48,18 +48,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 3637309668029424523}
-  hitEffect: {fileID: 2116650265251027523, guid: 37154161fea2a814fa7734dd41636718, type: 3}
-  boxCollider: {fileID: 118874423244888436}
+  boxCollider: {fileID: 8802143858117034792}
   holdStartSpriteRenderer: {fileID: 6534122973021561282}
---- !u!61 &118874423244888436
-BoxCollider2D:
+--- !u!65 &8802143858117034792
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4084715830090435349}
-  m_Enabled: 1
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -68,34 +65,12 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.5}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0.5, z: 0.25}
 --- !u!1 &4553275617780012087
 GameObject:
   m_ObjectHideFlags: 0

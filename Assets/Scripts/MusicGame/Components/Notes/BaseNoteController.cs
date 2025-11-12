@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace MusicGame.Components.Notes
 {
-	public abstract class BaseNoteController<T> : MonoBehaviour, IModifiableView2D, IColliderView2D, IController<T>
+	public abstract class BaseNoteController<T> : MonoBehaviour, IModifiableView2D, IColliderView, IController<T>
 		where T : BaseNote
 	{
 		// Serializable and Public
 		[SerializeField] protected SpriteRenderer spriteRenderer = default!;
-		[SerializeField] protected BoxCollider2D boxCollider = default!;
+		[SerializeField] protected BoxCollider boxCollider = default!;
 
 		public T Model { get; private set; } = default!;
 
@@ -59,7 +59,7 @@ namespace MusicGame.Components.Notes
 			set
 			{
 				spriteRenderer.size = new(value, spriteRenderer.size.y);
-				boxCollider.size = new(value, boxCollider.size.y);
+				boxCollider.size = new(value, boxCollider.size.y, boxCollider.size.z);
 			}
 		}
 

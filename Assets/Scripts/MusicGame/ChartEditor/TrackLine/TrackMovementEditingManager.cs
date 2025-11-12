@@ -148,8 +148,7 @@ namespace MusicGame.ChartEditor.TrackLine
 			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(screenPoint)) return;
 			Ray ray = LevelManager.Instance.LevelCamera.ScreenPointToRay(screenPoint);
 			var layerMask = LayerMask.GetMask("Nodes");
-			var hit = Physics2D.Raycast(ray.origin, ray.direction, float.MaxValue, layerMask);
-			if (hit.transform != null)
+			if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, float.MaxValue, layerMask))
 			{
 				var node = hit.transform.parent.GetComponent<IMovementNode>();
 				node.IsSelected = true;

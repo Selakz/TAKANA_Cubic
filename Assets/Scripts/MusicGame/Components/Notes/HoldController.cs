@@ -1,5 +1,4 @@
 using MusicGame.Components.Chart;
-using MusicGame.Gameplay;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -37,7 +36,7 @@ namespace MusicGame.Components.Notes
 			{
 				spriteRenderer.size = new(spriteRenderer.size.x, value);
 				boxCollider.size = new(spriteRenderer.size.x, Mathf.Max(value, 0.5f));
-				boxCollider.offset = new(boxCollider.offset.x, value / 2);
+				boxCollider.center = new(boxCollider.center.x, value / 2, boxCollider.center.z);
 			}
 		}
 

@@ -2,7 +2,7 @@ using T3Framework.Runtime;
 
 namespace MusicGame.Components
 {
-	public interface IColliderView2D
+	public interface IColliderView
 	{
 		public Modifier<bool> ColliderEnabledModifier { get; }
 

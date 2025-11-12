@@ -97,7 +97,7 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 					AutoScorePriority);
 			}
 
-			if (modelRetrievable is IColliderView2D colliderView)
+			if (modelRetrievable is IColliderView colliderView)
 			{
 				colliderView.ColliderEnabledModifier.Register(
 					_ => LevelManager.Instance.Music.ChartTime <= Model.Note.TimeJudge,
@@ -114,7 +114,7 @@ namespace MusicGame.ChartEditor.Scoring.AutoScore
 				modifiableView.PositionModifier.Unregister(AutoScorePriority);
 			}
 
-			if (modelRetrievable is IColliderView2D colliderView)
+			if (modelRetrievable is IColliderView colliderView)
 			{
 				colliderView.ColliderEnabledModifier.Unregister(AutoScorePriority);
 			}

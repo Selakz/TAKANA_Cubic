@@ -10,14 +10,14 @@ using UnityEngine;
 
 namespace MusicGame.Components.Tracks
 {
-	public class TrackController : MonoBehaviour, IModifiableView2D, IColliderView2D, IController<Track>
+	public class TrackController : MonoBehaviour, IModifiableView2D, IColliderView, IController<Track>
 	{
 		// Serializable and Public
 		[SerializeField] private SpriteRenderer trackFace = default!;
 		[SerializeField] private Transform sprite = default!;
 		[SerializeField] private Transform leftLine = default!;
 		[SerializeField] private Transform rightLine = default!;
-		[SerializeField] private BoxCollider2D boxCollider = default!;
+		[SerializeField] private BoxCollider boxCollider = default!;
 		[SerializeField] private Transform childrenRoot = default!;
 
 		public Track Model { get; private set; } = default!;
@@ -49,7 +49,7 @@ namespace MusicGame.Components.Tracks
 				sprite.localScale = new(value, sprite.localScale.y);
 				leftLine.localPosition = new(-value / 2, 0);
 				rightLine.localPosition = new(value / 2, 0);
-				boxCollider.size = new(Mathf.Max(value, 0.5f), boxCollider.size.y);
+				boxCollider.size = new(Mathf.Max(value, 0.5f), boxCollider.size.y, boxCollider.size.z);
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace MusicGame.Components.Tracks
 			sprite.localScale = new(1f, 30f);
 			leftLine.localScale = new(0.015f, 30f);
 			rightLine.localScale = new(0.015f, 30f);
-			boxCollider.size = new(1f, 30f);
+			boxCollider.size = new(1f, 30f, boxCollider.size.z);
 			IsHidden = Model.TimeInstantiate > Current || Current > Model.TimeEnd;
 		}
 

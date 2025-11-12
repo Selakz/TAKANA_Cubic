@@ -98,7 +98,8 @@ namespace MusicGame.ChartEditor.TrackLine.MoveListDecorator
 						? existNode
 						: nodePool.Get();
 					node.transform.SetParent(transform);
-					node.Init(current.Value, currentPos, nextPos, current.Value.Ease);
+					node.IsEditable = IsEditable;
+					node.Init(current.Value, currentPos, nextPos);
 					nodes[current.Value.Time] = node;
 				}
 			}
@@ -110,7 +111,8 @@ namespace MusicGame.ChartEditor.TrackLine.MoveListDecorator
 					? existNode
 					: nodePool.Get();
 				node.transform.SetParent(transform);
-				node.Init(next.Value, lastPos, lastPos, next.Value.Ease);
+				node.IsEditable = IsEditable;
+				node.Init(next.Value, lastPos, lastPos);
 				nodes[next.Value.Time] = node;
 			}
 		}

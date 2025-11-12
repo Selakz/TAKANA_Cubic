@@ -17,7 +17,7 @@ namespace MusicGame.ChartEditor.Select
 	public static class SelectModeExtension
 	{
 		private const int MaxHitCount = 100;
-		private static readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[MaxHitCount];
+		private static readonly RaycastHit[] hitBuffer = new RaycastHit[MaxHitCount];
 		private static readonly IModel[] modelBuffer = new IModel[MaxHitCount];
 
 		private static readonly IComparer<IModel> idComparer = Comparer<IModel>.Create((a, b) => a.Id.CompareTo(b.Id));
@@ -25,7 +25,7 @@ namespace MusicGame.ChartEditor.Select
 		public static IEnumerable<IModel> DoRaycast(this RaycastMode raycastMode,
 			Ray ray, int layerMask, float distance = float.MaxValue)
 		{
-			var size = Physics2D.RaycastNonAlloc(ray.origin, ray.direction, hitBuffer, distance, layerMask);
+			var size = Physics.RaycastNonAlloc(ray.origin, ray.direction, hitBuffer, distance, layerMask);
 			switch (raycastMode)
 			{
 				case RaycastMode.OneByOne:
@@ -59,7 +59,6 @@ namespace MusicGame.ChartEditor.Select
 					if (count > 0) yield return modelBuffer[0];
 					yield break;
 				case RaycastMode.AllCasted:
-					Debug.Log(2);
 					for (int i = 0; i < size; i++)
 					{
 						if (hitBuffer[i].transform.TryGetComponent<IModelSelectable>(out var modelSelectable))
