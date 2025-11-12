@@ -1,12 +1,14 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.Message;
 using MusicGame.ChartEditor.Select;
 using MusicGame.ChartEditor.TrackLine.Commands;
 using MusicGame.Components.Movement;
+using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
 using UnityEngine;
 
@@ -67,10 +69,34 @@ namespace MusicGame.ChartEditor.TrackLine
 			}
 		}
 
+		private void EditQueryMirror(VetoArg arg)
+		{
+			if (TrackMovementEditingManager.Instance.TryGetDecorator(
+				    TrackMovementEditingManager.Instance.EditableDecorator, out var decorator))
+			{
+				if (decorator.MoveListDecorator1 != null && decorator.MoveListDecorator1.SelectedNodes.Any())
+				{
+					arg.Veto();
+				}
+
+				else if (decorator.MoveListDecorator2 != null && decorator.MoveListDecorator2.SelectedNodes.Any())
+				{
+					arg.Veto();
+				}
+			}
+		}
+
 		// System Functions
 		void OnEnable()
 		{
+			EventManager.Instance.AddVetoListener("Edit_QueryMirror", EditQueryMirror);
+
 			InputManager.Instance.Register("InScreenEdit", "Mirror", _ => NodeMirror());
+		}
+
+		void OnDisable()
+		{
+			EventManager.Instance.RemoveVetoListener("Edit_QueryMirror", EditQueryMirror);
 		}
 	}
 }
