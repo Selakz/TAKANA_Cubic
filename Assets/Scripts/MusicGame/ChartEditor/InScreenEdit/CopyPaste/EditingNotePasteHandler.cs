@@ -7,12 +7,15 @@ using MusicGame.ChartEditor.Select;
 using MusicGame.Components;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Extensions;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 {
 	public class EditingNotePasteHandler : IPasteHandler
 	{
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
+
 		public CopyPastePlugin CopyPaste { get; }
 
 		public EditingNotePasteHandler(CopyPastePlugin copyPastePlugin)
@@ -35,6 +38,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		public bool Paste(out string message)
 		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				message = string.Empty;
+				return false;
+			}
+
 			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack)
 			{
 				message = "需选中一条轨道以进行Note普通粘贴";
@@ -53,8 +63,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			float baseTime = notes[0].Note.TimeJudge;
 
 			List<IComponent> cloneComponents = new();
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 			foreach (var editingNote in notes)
 			{
@@ -76,6 +84,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		public bool ExactPaste(out string message)
 		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				message = string.Empty;
+				return false;
+			}
+
 			if (ISelectManager.Instance.SelectedTargets.Values.Any(c => c is EditingTrack))
 			{
 				message = "需无选中的轨道以进行Note原位粘贴";
@@ -93,8 +108,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			float baseTime = notes[0].Note.TimeJudge;
 
 			List<IComponent> cloneComponents = new();
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 			foreach (var editingNote in notes)
 			{

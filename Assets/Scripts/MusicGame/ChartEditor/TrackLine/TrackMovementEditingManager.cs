@@ -33,6 +33,8 @@ namespace MusicGame.ChartEditor.TrackLine
 		private readonly HashSet<int> enabledDecorators = new();
 		private bool isProtecting = false;
 
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
+
 		// Static
 		public Eases GetNextEase(Eases ease)
 		{
@@ -193,8 +195,19 @@ namespace MusicGame.ChartEditor.TrackLine
 			InputManager.Instance.Register("InScreenEdit", "ToPreviousBeat",
 				_ => DoCommand(decorator => decorator.ToPreviousBeat(), true));
 			InputManager.Instance.Register("InScreenEdit", "CreateNode",
-				_ => DoCommand(decorator => decorator.Create
-					(LevelManager.Instance.LevelCamera.ScreenToWorldPoint(Input.mousePosition)), false));
+				_ => DoCommand(decorator =>
+					{
+						var mousePoint = Input.mousePosition;
+						if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
+						    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint,
+							    out var gamePoint))
+						{
+							return EmptyCommand.Instance;
+						}
+
+						return decorator.Create(gamePoint);
+					},
+					false));
 			InputManager.Instance.Register("InScreenEdit", "Delete",
 				_ =>
 				{

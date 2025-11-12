@@ -1,4 +1,3 @@
-using MusicGame.Gameplay;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
@@ -15,6 +14,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		[SerializeField] private GameObject indicator;
 
 		// Private
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 
 		// Static
 
@@ -29,14 +29,18 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		// System Functions
 		void Update()
 		{
+			if (!indicator.activeSelf) return;
+
+			var levelCamera = LevelManager.Instance.LevelCamera;
 			var mousePosition = Input.mousePosition;
-			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePosition))
+			if (!levelCamera.ContainsScreenPoint(mousePosition))
 			{
 				indicator.transform.localPosition = new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold);
+				return;
 			}
-			else if (indicator.activeSelf)
+
+			if (indicator.activeSelf && levelCamera.ScreenToWorldPoint(gamePlane, mousePosition, out var gamePoint))
 			{
-				var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 				var time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 				var y = (time - LevelManager.Instance.Music.ChartTime) * LevelManager.Instance.LevelSpeed.SpeedRate;
 				indicator.transform.localPosition = new(0, y);

@@ -7,12 +7,15 @@ using MusicGame.ChartEditor.Level;
 using MusicGame.Components;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Extensions;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 {
 	public class EditingTrackPasteHandler : IPasteHandler
 	{
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
+
 		public CopyPastePlugin CopyPaste { get; }
 
 		public EditingTrackPasteHandler(CopyPastePlugin copyPastePlugin)
@@ -35,6 +38,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		public bool Paste(out string message)
 		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				message = string.Empty;
+				return false;
+			}
+
 			var tracks = CopyPaste.Clipboard.Where(c => c is EditingTrack).Cast<EditingTrack>().ToList();
 			if (tracks.Count == 0)
 			{
@@ -43,8 +53,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			}
 
 			tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 			float left = InScreenEditManager.Instance.WidthRetriever.GetAttachedPosition(gamePoint);
 			float baseTime = tracks[0].TimeInstantiate;
@@ -74,6 +82,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		public bool ExactPaste(out string message)
 		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				message = string.Empty;
+				return false;
+			}
+
 			var tracks = CopyPaste.Clipboard.Where(c => c is EditingTrack).Cast<EditingTrack>().ToList();
 			if (tracks.Count == 0)
 			{
@@ -82,8 +97,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			}
 
 			tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 			float baseTime = tracks[0].TimeInstantiate;
 			List<IComponent> cloneComponents = new();

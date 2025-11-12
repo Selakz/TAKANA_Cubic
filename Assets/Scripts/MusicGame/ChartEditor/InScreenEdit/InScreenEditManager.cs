@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
@@ -46,6 +47,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		public CreateNoteType NoteType { get; set; } = CreateNoteType.Tap;
 
 		// Private
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 
 		// Static
 
@@ -54,11 +56,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		{
 			var mousePoint = Input.mousePosition;
 			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
-			    ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack)
+			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
 				return;
+			}
+
+			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack) return;
 
 			var track = editingTrack.Track;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePoint);
 			var time = TimeRetriever.GetTimeStart(gamePoint);
 			if (time < track.TimeInstantiate || time > track.TimeEnd)
 			{
@@ -80,7 +85,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 					note = new Hold(time, timeEnd, track);
 					break;
 				default:
-					throw new System.Exception("Unhandled create type");
+					throw new Exception("Unhandled create type");
 			}
 
 			if (!EventManager.Instance.InvokeVeto("Edit_QueryPlaceNote", note, out var reasons))
@@ -260,8 +265,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 
 		private void CreateTrack()
 		{
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
+			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				return;
+			}
+
 			ISelectManager.Instance.UnselectAll();
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(Input.mousePosition);
 			var timeStart = TimeRetriever.GetTimeStart(gamePoint);
 			var timeEnd = TimeRetriever.GetTrackTimeEnd(gamePoint);
 			float width = WidthRetriever.GetWidth(gamePoint), pos = WidthRetriever.GetPosition(gamePoint);

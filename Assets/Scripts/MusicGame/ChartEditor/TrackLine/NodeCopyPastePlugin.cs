@@ -55,6 +55,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		public Track OriginalTrack { get; private set; }
 
 		// Private
+		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 		private readonly List<NodeCopyInfo> clipboard = new();
 
 		// Static
@@ -91,7 +92,13 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		public void Paste()
 		{
-			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(Input.mousePosition)) return;
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
+			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				return;
+			}
+
 			if (TrackMovementEditingManager.Instance.EditableDecorator == -1) return;
 
 			if (clipboard.Count == 0)
@@ -110,8 +117,6 @@ namespace MusicGame.ChartEditor.TrackLine
 			float baseTime = clipboard[0].MoveItem.Time;
 
 			List<IUpdateMovementArg> cloneArgs = new();
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 
 			foreach (var info in clipboard)
@@ -147,7 +152,13 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		public void ExactPaste()
 		{
-			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(Input.mousePosition)) return;
+			var mousePoint = Input.mousePosition;
+			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
+			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			{
+				return;
+			}
+
 			if (TrackMovementEditingManager.Instance.EditableDecorator == -1) return;
 
 			if (clipboard.Count == 0)
@@ -166,8 +177,6 @@ namespace MusicGame.ChartEditor.TrackLine
 			float baseTime = clipboard[0].MoveItem.Time;
 
 			List<IUpdateMovementArg> cloneArgs = new();
-			var mousePosition = Input.mousePosition;
-			var gamePoint = LevelManager.Instance.LevelCamera.ScreenToWorldPoint(mousePosition);
 			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
 			foreach (var info in clipboard)
 			{
