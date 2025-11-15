@@ -11,21 +11,30 @@ namespace T3Framework.Runtime.Event
 		// Serializable and Public
 		public abstract T InitialValue { get; }
 
+		protected virtual Func<T, T> Clamp => x => x;
+
 		protected virtual Func<T, T, bool> Comparer => EqualityComparer<T>.Default.Equals;
 
 		public NotifiableProperty<T> Property
 		{
 			get
 			{
-				property ??= new(InitialValue)
+				return property ??= new(InitialValue)
 				{
+					Clamp = Clamp,
 					Comparer = Comparer
 				};
-				return property;
 			}
 		}
 
 		// Private
 		private NotifiableProperty<T>? property;
+
+		// System Functions
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+			property?.Dispose();
+		}
 	}
 }
