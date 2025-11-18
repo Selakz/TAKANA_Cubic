@@ -49,6 +49,8 @@ namespace MusicGame.ChartEditor.TrackLine.TrackDecorator
 
 		public void UnselectAll();
 
+		public void Rerender();
+
 		ICommand ToLeft();
 
 		ICommand ToRight();

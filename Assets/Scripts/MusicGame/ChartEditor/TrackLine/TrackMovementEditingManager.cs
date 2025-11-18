@@ -1,7 +1,11 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.Select;
@@ -9,26 +13,38 @@ using MusicGame.ChartEditor.TrackLine.TrackDecorator;
 using MusicGame.Components;
 using MusicGame.Components.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Speed;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.Setting;
 using T3Framework.Static.Easing;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
-	public class TrackMovementEditingManager : MonoBehaviour
+	public class TrackMovementEditingManager : T3MonoBehaviour
 	{
 		// Serializable and Public
-		[SerializeField] private Transform decoratorRoot;
+		[SerializeField] private NotifiableDataContainer<ISpeed> speedContainer = default!;
+		[SerializeField] private Transform decoratorRoot = default!;
 
-		public static TrackMovementEditingManager Instance { get; private set; }
+		public static TrackMovementEditingManager Instance { get; private set; } = default!;
 
 		public int CurrentEaseId { get; set; } = 1;
 
 		public int EditableDecorator { get; private set; } = -1;
 
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new DataContainerRegistrar<ISpeed>(speedContainer, (_, _) => { Rerender().Forget(); })
+		};
+
 		// Private
+		private CancellationTokenSource? speedChangeTokenSource;
+
 		private readonly Dictionary<int, ITrackDecorator> decorators = new();
 		private readonly HashSet<int> enabledDecorators = new();
 		private bool isProtecting = false;
@@ -76,6 +92,28 @@ namespace MusicGame.ChartEditor.TrackLine
 			isProtecting = true;
 			yield return null;
 			isProtecting = false;
+		}
+
+		private async UniTaskVoid Rerender()
+		{
+			speedChangeTokenSource?.Cancel();
+			speedChangeTokenSource?.Dispose();
+			speedChangeTokenSource = new();
+
+			if (enabledDecorators.Count == 0) return;
+
+			try
+			{
+				var delayTime = ISingletonSetting<TrackLineSetting>.Instance.SpeedChangeRerenderDelay.Value;
+				await UniTask.WaitForSeconds(delayTime.Second);
+				foreach (var decorator in enabledDecorators.Select(id => decorators[id]))
+				{
+					decorator.Rerender();
+				}
+			}
+			catch (TimeoutException)
+			{
+			}
 		}
 
 		// Event Handlers
@@ -167,13 +205,15 @@ namespace MusicGame.ChartEditor.TrackLine
 		}
 
 		// System Functions
-		void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			Instance = this;
 		}
 
-		void OnEnable()
+		protected override void OnEnable()
 		{
+			base.OnEnable();
 			EventManager.Instance.AddListener("Selection_OnUpdate", SelectionOnUpdate);
 			EventManager.Instance.AddListener<ChartInfo>("Chart_OnUpdate", ChartOnUpdate);
 			EventManager.Instance.AddVetoListener<IComponent>("Edit_QueryDelete", VetoEditQueryDelete);
@@ -221,8 +261,9 @@ namespace MusicGame.ChartEditor.TrackLine
 			InputManager.Instance.Register("InScreenEdit", "RaycastNodeMulti", _ => OnRaycastNode(false));
 		}
 
-		void OnDisable()
+		protected override void OnDisable()
 		{
+			base.OnDisable();
 			EventManager.Instance.RemoveListener("Selection_OnUpdate", SelectionOnUpdate);
 			EventManager.Instance.RemoveListener<ChartInfo>("Chart_OnUpdate", ChartOnUpdate);
 			EventManager.Instance.RemoveVetoListener<IComponent>("Edit_QueryDelete", VetoEditQueryDelete);

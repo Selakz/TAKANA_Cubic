@@ -93,6 +93,16 @@ namespace MusicGame.ChartEditor.TrackLine.TrackDecorator
 			rightMoveListDecorator.UnselectAll();
 		}
 
+		public void Rerender()
+		{
+			indicator.localPosition = new(Model.Movement.GetPos(Model.TimeInstantiate), indicator.localPosition.y);
+			indicator.localScale = new(Model.Movement.GetWidth(Model.TimeInstantiate), 0.15f);
+			leftMoveListDecorator?.Init
+				(true, Model.TimeInstantiate, Model.Movement.Movement1, LevelManager.Instance.LevelSpeed.SpeedRate);
+			rightMoveListDecorator?.Init
+				(false, Model.TimeInstantiate, Model.Movement.Movement2, LevelManager.Instance.LevelSpeed.SpeedRate);
+		}
+
 		private ICommand To(IEnumerable<IUpdateMovementArg> args)
 		{
 			if (Model.Movement.Movement1 is IMoveList && Model.Movement.Movement2 is IMoveList)
@@ -183,12 +193,7 @@ namespace MusicGame.ChartEditor.TrackLine.TrackDecorator
 		private void TrackMovementUpdated()
 		{
 			alignerMoveList.BaseTime = Model.TimeInstantiate;
-			indicator.localPosition = new(Model.Movement.GetPos(Model.TimeInstantiate), indicator.localPosition.y);
-			indicator.localScale = new(Model.Movement.GetWidth(Model.TimeInstantiate), 0.15f);
-			leftMoveListDecorator.Init
-				(true, Model.TimeInstantiate, Model.Movement.Movement1, LevelManager.Instance.LevelSpeed.SpeedRate);
-			rightMoveListDecorator.Init
-				(false, Model.TimeInstantiate, Model.Movement.Movement2, LevelManager.Instance.LevelSpeed.SpeedRate);
+			Rerender();
 		}
 
 		// System Functions
@@ -201,10 +206,7 @@ namespace MusicGame.ChartEditor.TrackLine.TrackDecorator
 
 		void OnEnable()
 		{
-			leftMoveListDecorator?.Init
-				(true, Model.TimeInstantiate, Model.Movement.Movement1, LevelManager.Instance.LevelSpeed.SpeedRate);
-			rightMoveListDecorator?.Init
-				(false, Model.TimeInstantiate, Model.Movement.Movement2, LevelManager.Instance.LevelSpeed.SpeedRate);
+			Rerender();
 		}
 
 		void OnDestroy()

@@ -50,5 +50,9 @@ namespace MusicGame.ChartEditor.TrackLine
 		[Description("在编辑面板点击添加结点时，新结点与原结点的时间间隔 | 单位：毫秒")]
 		[MinValue(1)]
 		public NotifiableProperty<T3Time> AddNodeTimeDistance { get; set; } = new(100);
+
+		[Description("下落速度变化时，轨道线将会等待该时间后再重新渲染，以减少卡顿 | 单位：毫秒")]
+		[MinValue(0)]
+		public NotifiableProperty<T3Time> SpeedChangeRerenderDelay { get; set; } = new(1500);
 	}
 }
