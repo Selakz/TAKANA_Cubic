@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.IO;
 using MusicGame.ChartEditor.Message;
@@ -16,6 +18,9 @@ namespace MusicGame.ChartEditor.Level
 {
 	public class EditorLevelLoader : MonoBehaviour
 	{
+		// Serializable and Public
+		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
+
 		// Defined Functions
 		public void LoadLevel(string projectFolderPath, int difficulty = 0)
 		{
@@ -87,6 +92,9 @@ namespace MusicGame.ChartEditor.Level
 				Difficulty = difficulty
 			};
 
+			levelInfoContainer.Property.Value = levelInfo;
+			levelInfoContainer.Property.AddUpNotify();
+			// TODO: Delete this event
 			EventManager.Instance.Invoke("Level_OnLoad", levelInfo);
 			HeaderMessage.Show("º”‘ÿÕÍ≥…£°", HeaderMessage.MessageType.Success);
 #if !UNITY_EDITOR
@@ -111,7 +119,7 @@ namespace MusicGame.ChartEditor.Level
 				}
 				else if (File.Exists(targetPath) && targetPath.EndsWith(".t3proj"))
 				{
-					LoadLevel(Path.GetDirectoryName(targetPath));
+					LoadLevel(Path.GetDirectoryName(targetPath)!);
 				}
 			}
 		}

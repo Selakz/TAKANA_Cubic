@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.EditingComponents;
@@ -15,9 +17,9 @@ namespace MusicGame.ChartEditor.Level
 	public class EditingChartManager : MonoBehaviour, IEditingChartManager
 	{
 		// Serializable and Public
-		public IJudgeLine DefaultJudgeLine { get; private set; }
+		public IJudgeLine DefaultJudgeLine { get; private set; } = default!;
 
-		public ChartInfo Chart { get; private set; }
+		public ChartInfo Chart { get; private set; } = default!;
 
 		// Private
 		private readonly Dictionary<int, HashSet<EditingComponent>> subComponents = new();
@@ -38,7 +40,7 @@ namespace MusicGame.ChartEditor.Level
 			};
 		}
 
-		private bool CanAdd(EditingComponent component, IEnumerable<EditingComponent> supposedComponents = null)
+		private bool CanAdd(EditingComponent component, IEnumerable<EditingComponent>? supposedComponents = null)
 		{
 			if (Chart.Contains(component.Id) || component.Parent is null) return true;
 			supposedComponents ??= Enumerable.Empty<EditingComponent>();
@@ -93,7 +95,7 @@ namespace MusicGame.ChartEditor.Level
 		{
 			var result = Enumerable.Empty<EditingComponent>();
 			if (!Chart.Contains(id)) return result;
-			result = result.Append(Chart[id] as EditingComponent);
+			result = result.Append(Chart[id] as EditingComponent)!;
 			// 1. Get children components recursively (also removed its children)
 			if (subComponents.TryGetValue(id, out var components))
 			{
@@ -201,6 +203,8 @@ namespace MusicGame.ChartEditor.Level
 				AddComponent(judgeLine);
 				DefaultJudgeLine = judgeLine;
 			}
+
+			InvokeUpdate();
 		}
 
 		// System Functions

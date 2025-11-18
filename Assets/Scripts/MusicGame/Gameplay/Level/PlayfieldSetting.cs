@@ -29,8 +29,7 @@ namespace MusicGame.Gameplay.Level
 		public NotifiableProperty<int> TimeAfterEnd { get; set; } = new(2000);
 
 		[Description("当Note在1速下首次位于该高度以下时才会真正生成其视图层内容（非必要请勿修改）")]
-		[HideInGame]
-		public NotifiableProperty<float> UpperThreshold { get; set; } = new(8);
+		public NotifiableProperty<float> UpperThreshold { get; set; } = new(15);
 
 		[Description("当Note在1速下首次位于该高度以上时才会真正生成其视图层内容（非必要请勿修改）")]
 		[HideInGame]

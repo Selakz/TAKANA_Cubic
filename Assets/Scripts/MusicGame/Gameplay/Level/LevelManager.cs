@@ -1,22 +1,28 @@
 #nullable enable
 
 using System.Collections.Generic;
+using MusicGame.ChartEditor.Level;
 using MusicGame.Components;
 using MusicGame.Components.Chart;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Speed;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Level
 {
-	public class LevelManager : MonoBehaviour
+	public class LevelManager : T3MonoBehaviour
 	{
 		// Serializable and Public
 		[SerializeField] private GameAudioPlayer music = default!;
 		[SerializeField] private Camera levelCamera = default!;
 		[SerializeField] private Transform poolingStorage = default!;
+
+		// TODO: Refactor all who need levelInfo to use this container instead of calling instance
+		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
+		[SerializeField] private SpeedDataContainer speedContainer = default!;
 
 		public static LevelManager Instance { get; private set; } = default!;
 
@@ -30,6 +36,55 @@ namespace MusicGame.Gameplay.Level
 
 		public Transform PoolingStorage => poolingStorage;
 
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new DataContainerRegistrar<LevelInfo?>(levelInfoContainer, (_, _) =>
+			{
+				var levelInfo = levelInfoContainer.Property.Value;
+				if (levelInfo is null) return;
+
+				LevelInfo = levelInfo; // TODO: Delete this
+				if (levelInfo.Preference is EditorPreference preference)
+				{
+					speedContainer.Speed = preference.Speed;
+				}
+
+				if (componentEnumerator is not null)
+				{
+					componentEnumerator.Reset();
+					while (componentEnumerator.MoveNext())
+					{
+						componentEnumerator.Current?.Destroy();
+					}
+				}
+
+				componentEnumerator?.Dispose();
+				componentEnumerator = LevelInfo.Chart.GetEnumerator();
+				T3Time offset = LevelInfo.Chart.Properties.TryGetValue("offset", out var value)
+					? T3Time.Parse(value.ToString())
+					: 0;
+				Music.Load(levelInfo.Music, offset);
+				lastComponent = null;
+			}),
+			new DataContainerRegistrar<ISpeed>(speedContainer, (_, _) =>
+			{
+				// TODO: Delete this
+				LevelSpeed = speedContainer.Property.Value;
+
+				var levelInfo = levelInfoContainer.Property.Value;
+				if (levelInfo?.Preference is EditorPreference preference)
+				{
+					preference.Speed = speedContainer.Property.Value.Speed;
+				}
+
+				// TODO: Delete this
+				if (LevelInfo?.Preference is EditorPreference preference2)
+				{
+					preference2.Speed = speedContainer.Property.Value.Speed;
+				}
+			})
+		};
+
 		// Private
 		private IEnumerator<IComponent>? componentEnumerator;
 		private IComponent? lastComponent;
@@ -38,29 +93,6 @@ namespace MusicGame.Gameplay.Level
 		// TODO: Separate LevelManager -> LevelManager / StageManager / MusicPlayer 
 
 		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			LevelInfo = levelInfo;
-			LevelInfo.Chart = levelInfo.Chart;
-
-			if (componentEnumerator is not null)
-			{
-				componentEnumerator.Reset();
-				while (componentEnumerator.MoveNext())
-				{
-					componentEnumerator.Current?.Destroy();
-				}
-			}
-
-			componentEnumerator?.Dispose();
-			componentEnumerator = LevelInfo.Chart.GetEnumerator();
-			T3Time offset = LevelInfo.Chart.Properties.TryGetValue("offset", out var value)
-				? T3Time.Parse(value.ToString())
-				: 0;
-			Music.Load(levelInfo.Music, offset);
-			lastComponent = null;
-		}
-
 		private void LevelOnReset(T3Time chartTime)
 		{
 			Music.ChartTime = chartTime;
@@ -76,17 +108,6 @@ namespace MusicGame.Gameplay.Level
 		private void LevelOnResume()
 		{
 			Music.Play();
-		}
-
-		private void LevelBeforeSave(LevelInfo levelInfo)
-		{
-			levelInfo.LevelPath = LevelInfo.LevelPath;
-			levelInfo.Difficulty = LevelInfo.Difficulty;
-			levelInfo.Cover = LevelInfo.Cover;
-			levelInfo.Music = LevelInfo.Music;
-			levelInfo.Chart = LevelInfo.Chart;
-			levelInfo.SongInfo = LevelInfo.SongInfo;
-			levelInfo.Preference = LevelInfo.Preference;
 		}
 
 		private void ChartOnUpdate(ChartInfo chartInfo)
@@ -116,20 +137,19 @@ namespace MusicGame.Gameplay.Level
 			}
 		}
 
-		void OnEnable()
+		protected override void OnEnable()
 		{
+			base.OnEnable();
 			Instance = this;
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 			EventManager.Instance.AddListener<T3Time>("Level_OnReset", LevelOnReset);
 			EventManager.Instance.AddListener("Level_OnPause", LevelOnPause);
 			EventManager.Instance.AddListener("Level_OnResume", LevelOnResume);
-			EventManager.Instance.AddListener<LevelInfo>("Level_BeforeSave", LevelBeforeSave);
 			EventManager.Instance.AddListener<ChartInfo>("Chart_OnUpdate", ChartOnUpdate);
 		}
 
-		void OnDisable()
+		protected override void OnDisable()
 		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
+			base.OnDisable();
 			EventManager.Instance.RemoveListener<T3Time>("Level_OnReset", LevelOnReset);
 			EventManager.Instance.RemoveListener("Level_OnPause", LevelOnPause);
 			EventManager.Instance.RemoveListener("Level_OnResume", LevelOnResume);

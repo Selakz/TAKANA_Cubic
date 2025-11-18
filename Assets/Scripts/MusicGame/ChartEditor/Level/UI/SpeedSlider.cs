@@ -1,4 +1,9 @@
+#nullable enable
+
 using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Speed;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using TMPro;
 using UnityEngine;
@@ -6,63 +11,31 @@ using UnityEngine.UI;
 
 namespace MusicGame.ChartEditor.Level.UI
 {
-	public class SpeedSlider : MonoBehaviour
+	public class SpeedSlider : T3MonoBehaviour
 	{
 		// Serializable and Public
-		[SerializeField] private Slider speedSlider;
-		[SerializeField] private TMP_Text speedText;
+		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
+		[SerializeField] private SpeedDataContainer speedContainer = default!;
+		[SerializeField] private Slider speedSlider = default!;
+		[SerializeField] private TMP_Text speedText = default!;
 
-		// Private
-		private float Speed
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			set
+			new DataContainerRegistrar<LevelInfo?>(levelInfoContainer, (_, _) =>
 			{
-				LevelManager.Instance.LevelSpeed.Speed = value;
-				speedSlider.value = value * 10;
-				speedText.text = value.ToString("0.0");
-				// TODO: Move to LevelManager
-				EventManager.Instance.Invoke("Level_OnSpeedUpdate", LevelManager.Instance.LevelSpeed.SpeedRate);
-			}
-		}
-
-		// Static
-
-		// Defined Functions
-
-		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			speedSlider.interactable = true;
-			if (levelInfo.Preference is EditorPreference preference)
+				var levelInfo = levelInfoContainer.Property.Value;
+				speedSlider.interactable = levelInfo is not null;
+			}),
+			new DataContainerRegistrar<ISpeed>(speedContainer, (_, _) =>
 			{
-				Speed = Mathf.Approximately(preference.Speed, 0) ? 1.0f : preference.Speed;
-			}
-		}
-
-		private void OnSpeedSliderValueChanged(float value)
-		{
-			float speed = value / 10;
-			Speed = speed;
-			if (LevelManager.Instance.LevelInfo.Preference is EditorPreference preference)
+				speedSlider.SetValueWithoutNotify(speedContainer.Speed * 10);
+				speedText.text = speedContainer.Speed.ToString("0.0");
+			}),
+			new SliderRegistrar(speedSlider, value =>
 			{
-				preference.Speed = speed;
-			}
-		}
-
-		// System Functions
-		void Awake()
-		{
-			speedSlider.onValueChanged.AddListener(OnSpeedSliderValueChanged);
-		}
-
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
+				float speed = value / 10;
+				speedContainer.Speed = speed;
+			})
+		};
 	}
 }

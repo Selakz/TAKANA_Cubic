@@ -14,6 +14,12 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		[SerializeField] private RectTransform timingBlockTransform;
 		[SerializeField] private RectTransform timingBlockRoot;
 
+		public RectTransform TimingBlockRoot
+		{
+			get => timingBlockRoot;
+			set => timingBlockRoot = value;
+		}
+
 		// Private
 		private GridTimeRetriever timeRetriever;
 		private T3Time time;
@@ -43,8 +49,16 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		// System Functions
 		void Start()
 		{
-			timingBlockRoot = (RectTransform)GameObject.Find("/EditorCanvas/TimingBlocks").transform;
-			timingBlockTransform.SetParent(timingBlockRoot, false);
+			if (timingBlockRoot == null)
+			{
+				Debug.LogWarning("Timing block root is not set");
+				timingBlockTransform.gameObject.SetActive(false);
+			}
+			else
+			{
+				timingBlockTransform.SetParent(TimingBlockRoot, false);
+				timingBlockTransform.gameObject.SetActive(true);
+			}
 		}
 
 		void Update()

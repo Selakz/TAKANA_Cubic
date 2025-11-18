@@ -19,13 +19,13 @@ namespace MusicGame.ChartEditor.Level
 	public class EditorLevelSaver : MonoBehaviour
 	{
 		// Serializable and Public
+		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
 
 		// Defined Functions
 		// TODO: threading
 		public void SavePlayableChart(string? filePath = null)
 		{
-			LevelInfo levelInfo = new();
-			EventManager.Instance.Invoke("Level_BeforeSave", levelInfo);
+			var levelInfo = levelInfoContainer.Property.Value!;
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(levelInfo.LevelPath);
 			var chartName = projectSetting.GetChartFileName(levelInfo.Difficulty);
 			var token = GetPlayableChartInfo(levelInfo.Chart).GetSerializationToken();
@@ -36,8 +36,7 @@ namespace MusicGame.ChartEditor.Level
 
 		public void SaveEditorChart(string? filePath = null)
 		{
-			LevelInfo levelInfo = new();
-			EventManager.Instance.Invoke("Level_BeforeSave", levelInfo);
+			var levelInfo = levelInfoContainer.Property.Value!;
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(levelInfo.LevelPath);
 			var chartName = projectSetting.GetChartFileName(levelInfo.Difficulty);
 			var editingChartPath =
@@ -48,8 +47,7 @@ namespace MusicGame.ChartEditor.Level
 
 		public void SaveSettings()
 		{
-			LevelInfo levelInfo = new();
-			EventManager.Instance.Invoke("Level_BeforeSave", levelInfo);
+			var levelInfo = levelInfoContainer.Property.Value!;
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(levelInfo.LevelPath);
 			// 1. Save song info
 			var songInfoPath =
@@ -89,8 +87,7 @@ namespace MusicGame.ChartEditor.Level
 		{
 			InputManager.Instance.Register("EditorBasic", "Save", _ =>
 			{
-				// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-				if (LevelManager.Instance.LevelInfo is null) return;
+				if (levelInfoContainer.Property.Value is null) return;
 				try
 				{
 					SaveSettings();

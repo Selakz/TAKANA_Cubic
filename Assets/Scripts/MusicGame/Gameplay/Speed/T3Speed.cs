@@ -21,7 +21,8 @@ namespace MusicGame.Gameplay.Speed
 
 		public T3Speed(float speed)
 		{
-			this.speed = speed;
+			this.speed = 0;
+			Speed = speed;
 		}
 	}
 }

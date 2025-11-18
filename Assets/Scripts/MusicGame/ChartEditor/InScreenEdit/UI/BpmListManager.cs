@@ -25,12 +25,12 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 		{
 			if (oldTime != T3Time.MinValue)
 			{
-				gridTimeRetriever.BpmList.Remove(oldTime);
+				gridTimeRetriever.BpmList!.Remove(oldTime);
 			}
 
 			if (newTime != T3Time.MinValue)
 			{
-				gridTimeRetriever.BpmList.Add(newTime, bpm);
+				gridTimeRetriever.BpmList!.Add(newTime, bpm);
 			}
 		}
 
@@ -43,7 +43,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 			}
 
 			ListRenderer.Clear();
-			foreach (var pair in gridTimeRetriever.BpmList)
+			foreach (var pair in gridTimeRetriever.BpmList!)
 			{
 				var content = ListRenderer.Add<EditBpmContent>(pair.Key);
 				content.Init(pair.Key, pair.Value);

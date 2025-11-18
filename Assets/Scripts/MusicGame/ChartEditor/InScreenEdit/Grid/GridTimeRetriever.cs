@@ -1,7 +1,11 @@
+#nullable enable
+
 using System;
 using System.Linq;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Speed;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Setting;
@@ -12,15 +16,17 @@ using UnityEngine.UI;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class GridTimeRetriever : MonoBehaviour, ITimeRetriever
+	public class GridTimeRetriever : T3MonoBehaviour, ITimeRetriever
 	{
 		// Serializable and Public
-		[SerializeField] private Toggle toggle;
-		[SerializeField] private TMP_InputField gridDivisionInputField;
-		[SerializeField] private Transform timeGridRoot;
+		[SerializeField] private NotifiableDataContainer<ISpeed> speedContainer = default!;
+		[SerializeField] private Toggle toggle = default!;
+		[SerializeField] private TMP_InputField gridDivisionInputField = default!;
+		[SerializeField] private Transform timeGridRoot = default!;
+		[SerializeField] private RectTransform timingBlockRoot = default!;
 
 		public event Action OnBeforeResetGrid = delegate { };
-		public BpmList BpmList { get; private set; }
+		public BpmList? BpmList { get; private set; }
 
 		public int GridDivision
 		{
@@ -42,25 +48,35 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			}
 		}
 
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new DataContainerRegistrar<ISpeed>(speedContainer, (_, _) =>
+			{
+				var speedRate = speedContainer.Property.Value.SpeedRate;
+				upHeightTimeIncrement = ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold / speedRate;
+				ResetGrid();
+			})
+		};
+
 		// Private
 		private T3Time upHeightTimeIncrement;
 		private T3Time currentGridTime;
 		private int gridDivision = 1;
 
 		private readonly ObjectPool<TimeGridController> timeGridPool = new(
-			() => Instantiate<GameObject>(lazyPrefab).GetComponent<TimeGridController>(),
+			() => Instantiate<GameObject>(lazyPrefab!).GetComponent<TimeGridController>(),
 			grid => grid.gameObject.SetActive(true),
 			grid => grid.gameObject.SetActive(false),
 			grid => Destroy(grid.gameObject));
 
 		// Static
-		private static LazyPrefab lazyPrefab;
+		private static LazyPrefab? lazyPrefab;
 
 		// Defined Functions
 		public T3Time GetTimeStart(Vector3 position)
 		{
 			T3Time time = ITimeRetriever.GetCorrespondingTime(position.y);
-			var ceilTime = BpmList.GetCeilTime(time, GridDivision, out var ceilIndex);
+			var ceilTime = BpmList!.GetCeilTime(time, GridDivision, out var ceilIndex);
 			var floorTime = BpmList.GetFloorTime(time, GridDivision, out var floorIndex);
 			var ceilDistance = Mathf.Abs(ceilTime - time);
 			var floorDistance = Mathf.Abs(floorTime - time);
@@ -75,7 +91,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public T3Time GetHoldTimeEnd(Vector3 position)
 		{
 			T3Time time = GetTimeStart(position);
-			var ceilTime = BpmList.GetCeilTime(time, GridDivision, out _);
+			var ceilTime = BpmList!.GetCeilTime(time, GridDivision, out _);
 			return time == ceilTime ? BpmList.GetCeilTime(ceilTime + 1, GridDivision, out _) : ceilTime;
 		}
 
@@ -83,15 +99,15 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		{
 			return ISingletonSetting<InScreenEditSetting>.Instance.IsInitialTrackLengthToEnd
 				? LevelManager.Instance.Music.AudioLength
-				: BpmList.GetCeilTime(
+				: BpmList!.GetCeilTime(
 					ITimeRetriever.GetCorrespondingTime(position.y) +
 					ISingletonSetting<InScreenEditSetting>.Instance.InitialTrackLength,
 					GridDivision, out _);
 		}
 
-		public T3Time GetCeilTime(T3Time time) => BpmList.GetCeilTime(time, GridDivision, out _);
+		public T3Time GetCeilTime(T3Time time) => BpmList!.GetCeilTime(time, GridDivision, out _);
 
-		public T3Time GetFloorTime(T3Time time) => BpmList.GetFloorTime(time, GridDivision, out _);
+		public T3Time GetFloorTime(T3Time time) => BpmList!.GetFloorTime(time, GridDivision, out _);
 
 		public void ReleaseTimeGrid(TimeGridController timeGrid)
 		{
@@ -138,7 +154,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			ResetGrid();
 			if (LevelManager.Instance.LevelInfo.Preference is EditorPreference preference)
 			{
-				preference.BpmList = BpmList.ToDictionary();
+				preference.BpmList = BpmList!.ToDictionary();
 			}
 		}
 
@@ -163,12 +179,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		private void LevelOnReset(T3Time chartTime)
 		{
-			ResetGrid();
-		}
-
-		private void LevelOnSpeedUpdate(float speedRate)
-		{
-			upHeightTimeIncrement = ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold / speedRate;
 			ResetGrid();
 		}
 
@@ -197,8 +207,9 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		}
 
 		// System Functions
-		void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			toggle.onValueChanged.AddListener(OnToggleChanged);
 			gridDivisionInputField.onEndEdit.AddListener(OnGridDivisionInputFieldEndEdit);
 			lazyPrefab ??= new("Prefabs/EditorUI/InScreenEdit/TimeGrid", "TimeGridPrefab_OnLoad");
@@ -213,25 +224,25 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 					currentGridTime = BpmList.GetCeilTime(currentGridTime, GridDivision, out var gridIndex);
 					var timeGrid = timeGridPool.Get();
 					timeGrid.transform.SetParent(timeGridRoot);
+					timeGrid.TimingBlockRoot = timingBlockRoot;
 					timeGrid.Init(this, currentGridTime, GetColor(gridIndex));
 				}
 			}
 		}
 
-		void OnEnable()
+		protected override void OnEnable()
 		{
+			base.OnEnable();
 			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 			EventManager.Instance.AddListener<T3Time>("Level_OnReset", LevelOnReset);
-			EventManager.Instance.AddListener<float>("Level_OnSpeedUpdate", LevelOnSpeedUpdate);
 			OnToggleChanged(toggle.isOn);
-			LevelOnSpeedUpdate(LevelManager.Instance.LevelSpeed.SpeedRate);
 		}
 
-		void OnDisable()
+		protected override void OnDisable()
 		{
+			base.OnDisable();
 			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 			EventManager.Instance.RemoveListener<T3Time>("Level_OnReset", LevelOnReset);
-			EventManager.Instance.RemoveListener<float>("Level_OnSpeedUpdate", LevelOnSpeedUpdate);
 		}
 	}
 }
