@@ -103,13 +103,24 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			}
 		}
 
+		private void CreateHoldBetween()
+		{
+			var notes = ISelectManager.Instance.SelectedTargets.Values.Cast<EditingNote>().ToList();
+			if (notes.Count != 2) return;
+
+			var command = new CreateHoldBetweenCommand(notes[0].Note, notes[1].Note);
+			if (!command.SetInit()) return;
+			CommandManager.Instance.Add(command);
+		}
+
 		// System Functions
 		void OnEnable()
 		{
-			InputManager.Instance.Register("InScreenEdit", "HoldEndToNext", _ => HoldEndToNext());
-			InputManager.Instance.Register("InScreenEdit", "HoldEndToPrevious", _ => HoldEndToPrevious());
-			InputManager.Instance.Register("InScreenEdit", "HoldEndToNextBeat", _ => HoldEndToNextBeat());
-			InputManager.Instance.Register("InScreenEdit", "HoldEndToPreviousBeat", _ => HoldEndToPreviousBeat());
+			InputManager.Instance.Register("HoldEdit", "HoldEndToNext", _ => HoldEndToNext());
+			InputManager.Instance.Register("HoldEdit", "HoldEndToPrevious", _ => HoldEndToPrevious());
+			InputManager.Instance.Register("HoldEdit", "HoldEndToNextBeat", _ => HoldEndToNextBeat());
+			InputManager.Instance.Register("HoldEdit", "HoldEndToPreviousBeat", _ => HoldEndToPreviousBeat());
+			InputManager.Instance.Register("HoldEdit", "CreateHoldBetween", _ => CreateHoldBetween());
 		}
 	}
 }
