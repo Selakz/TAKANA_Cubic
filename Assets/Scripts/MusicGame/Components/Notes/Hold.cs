@@ -44,7 +44,7 @@ namespace MusicGame.Components.Notes
 			controller => controller.Destroy(),
 			controller => Object.Destroy(controller.gameObject));
 
-		public Hold(T3Time timeJudge, float timeEnd, ITrack belongingTrack)
+		public Hold(T3Time timeJudge, T3Time timeEnd, ITrack belongingTrack)
 			: base(timeJudge, belongingTrack)
 		{
 			this.timeEnd = timeEnd;
@@ -102,7 +102,7 @@ namespace MusicGame.Components.Notes
 				Movement = container.TryGetValue("movement", out JToken movementToken)
 					? (INoteMovement)ISerializable.Deserialize(movementToken)
 					: new BaseNoteMoveList(timeJudge),
-				TailMovement = container.TryGetValue("movement", out JToken tailMovementToken)
+				TailMovement = container.TryGetValue("tailMovement", out JToken tailMovementToken)
 					? (INoteMovement)ISerializable.Deserialize(tailMovementToken)
 					: new BaseNoteMoveList(timeEnd),
 				Properties = container.TryGetValue("properties", out JObject propertiesToken) ? propertiesToken : new()
