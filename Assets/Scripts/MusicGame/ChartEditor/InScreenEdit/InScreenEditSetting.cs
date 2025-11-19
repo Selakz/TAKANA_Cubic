@@ -24,6 +24,12 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		[Description("单击 W 或 S 时 Note 移动的时间长度 | 单位：毫秒")]
 		public NotifiableProperty<T3Time> NoteNudgeDistance { get; set; } = new(10);
 
+		[Description("是否显示时间指示器")]
+		public NotifiableProperty<bool> ShowTimeIndicator { get; set; } = new(true);
+
+		[Description("是否显示位置指示器")]
+		public NotifiableProperty<bool> ShowPositionIndicator { get; set; } = new(true);
+
 		[Description("四分音符（拍）的横向格线颜色 | 四个值代表颜色的RGBA，范围(0, 1)，请勿省略括号或Alpha值")]
 		public NotifiableProperty<Color> BeatColor { get; set; } = new(new(0.6f, 0, 0, 0.9f));
 
