@@ -6,6 +6,7 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -84,7 +85,7 @@ namespace T3Framework.Preset.ColorPicker
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (eventData.pointerCurrentRaycast.gameObject != rawImage.gameObject) return;
-			Updater.OnUpdate += OnUpdate;
+			ISingleton<Updater>.Instance.OnUpdate += OnUpdate;
 		}
 
 		// Need this to invoke OnBeginDrag and OnEndDrag
@@ -94,7 +95,7 @@ namespace T3Framework.Preset.ColorPicker
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
-			Updater.OnUpdate -= OnUpdate;
+			ISingleton<Updater>.Instance.OnUpdate -= OnUpdate;
 		}
 
 		private void OnSliderValueChanged(float value)

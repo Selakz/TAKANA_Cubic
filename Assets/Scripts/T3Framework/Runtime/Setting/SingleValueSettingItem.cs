@@ -107,7 +107,7 @@ namespace T3Framework.Runtime.Setting
 			}
 
 			// 2. See if the type implements ISingletonSetting
-			var singletonInterface = type.GetInterface("ISingletonSetting`1");
+			var singletonInterface = type.GetInterface("ISingleton`1");
 			if (singletonInterface is null)
 			{
 				Debug.LogWarning($"{fullClassName} is not a singleton setting class");
@@ -117,11 +117,18 @@ namespace T3Framework.Runtime.Setting
 			var genericArgs = singletonInterface.GetGenericArguments();
 			if (genericArgs[0] != type)
 			{
-				Debug.LogWarning($"{fullClassName} falsely implement ISingletonSetting<{genericArgs[0]}>");
+				Debug.LogWarning($"{fullClassName} falsely implement ISingleton<{genericArgs[0]}>");
 				return false;
 			}
 
-			SettingType = singletonInterface;
+			var singletonSettingInterface = type.GetInterface("ISingletonSetting`1");
+			if (singletonSettingInterface is null)
+			{
+				Debug.LogWarning($"{fullClassName} is not a singleton setting class");
+				return false;
+			}
+
+			SettingType = singletonSettingInterface;
 
 			// 3. Get the type's instance
 			var instanceProperty = singletonInterface.GetProperty(

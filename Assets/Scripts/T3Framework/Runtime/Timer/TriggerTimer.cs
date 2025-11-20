@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -41,16 +42,16 @@ namespace T3Framework.Runtime.Timer
 
 		public void Start()
 		{
-			Updater.OnUpdate -= Update;
+			ISingleton<Updater>.Instance.OnUpdate -= Update;
 			StartTime = ShouldIgnoreTimeScale ? Time.unscaledTime : Time.time;
 			State = TimerState.Active;
-			Updater.OnUpdate += Update;
+			ISingleton<Updater>.Instance.OnUpdate += Update;
 		}
 
 		public void Stop()
 		{
 			State = TimerState.Stop;
-			Updater.OnUpdate -= Update;
+			ISingleton<Updater>.Instance.OnUpdate -= Update;
 		}
 
 		public void Reset()
