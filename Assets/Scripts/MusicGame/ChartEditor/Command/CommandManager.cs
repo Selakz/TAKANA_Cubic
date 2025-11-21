@@ -173,8 +173,8 @@ namespace MusicGame.ChartEditor.Command
 			Instance = this;
 			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 
-			InputManager.Instance.RegisterCanceled("EditorBasic", "Undo", _ => Undo());
-			InputManager.Instance.RegisterCanceled("EditorBasic", "Redo", _ => Redo());
+			InputManager.Instance.Register("EditorBasic", "Undo", _ => Undo());
+			InputManager.Instance.Register("EditorBasic", "Redo", _ => Redo());
 			UpdateState();
 		}
 

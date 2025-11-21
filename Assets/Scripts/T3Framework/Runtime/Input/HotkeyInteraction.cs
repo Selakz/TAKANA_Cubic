@@ -6,61 +6,50 @@ using UnityEngine.InputSystem;
 
 namespace T3Framework.Runtime.Input
 {
+	/// <summary>
+	/// Start when key pressed and modifiers matched, perform when key released and modifiers matched, cancel when key released and modifiers not matched
+	/// </summary>
 #if UNITY_EDITOR
 	[InitializeOnLoad]
 #endif
-	// Note: since interaction can not change magnitude, please use action.inProgress instead of action.isPressed
 	public class HotKeyInteraction : IInputInteraction<KeyWithModifiersData>
 	{
 		public bool needModifier1;
 		public bool needModifier2;
 		public bool needModifier3;
 
-		private bool pressing = false;
-
 		public void Process(ref InputInteractionContext context)
 		{
 			KeyWithModifiersData data = context.ReadValue<KeyWithModifiersData>();
-			bool modifierMatched = (needModifier1 == data.modifier1) && (needModifier2 == data.modifier2) &&
-			                       (needModifier3 == data.modifier3);
-			if (pressing)
-			{
-				if (data.keyValue < InputSystem.settings.defaultButtonPressPoint)
-				{
-					pressing = false;
-					context.Canceled();
-				}
-			}
-			else if (modifierMatched)
-			{
-				if (data.keyValue >= InputSystem.settings.defaultButtonPressPoint)
-				{
-					pressing = true;
-					context.PerformedAndStayPerformed();
-				}
-				else if (data.keyValue > 0 && !context.isStarted)
-				{
-					context.Started();
-				}
-				else
-				{
-					context.Waiting();
-				}
-			}
-			else
-			{
-				if (data.keyValue >= InputSystem.settings.defaultButtonPressPoint)
-				{
-					pressing = true;
-				}
+			bool keyPressing = data.keyValue >= InputSystem.settings.defaultButtonPressPoint;
+			bool modifierMatched = needModifier1 == data.modifier1 &&
+			                       needModifier2 == data.modifier2 &&
+			                       needModifier3 == data.modifier3;
 
-				context.Waiting();
+			switch (context.phase)
+			{
+				case InputActionPhase.Waiting:
+					if (keyPressing && modifierMatched) context.Started();
+					break;
+				case InputActionPhase.Started:
+					if (!keyPressing)
+					{
+						if (modifierMatched) context.Performed();
+						else context.Canceled();
+					}
+
+					break;
+				case InputActionPhase.Performed:
+					break;
+				case InputActionPhase.Canceled:
+					break;
+				case InputActionPhase.Disabled:
+					break;
 			}
 		}
 
 		public void Reset()
 		{
-			pressing = false;
 		}
 
 		static HotKeyInteraction()
