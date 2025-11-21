@@ -71,7 +71,6 @@ GameObject:
   - component: {fileID: 36934208496541627}
   - component: {fileID: 4210001752234552179}
   - component: {fileID: 4060208825624729425}
-  - component: {fileID: 5977634125850614012}
   - component: {fileID: 5450350009257091390}
   m_Layer: 8
   m_Name: Line
@@ -145,23 +144,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5977634125850614012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6244995467373688787}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efd2a51a610a41b8b7b135046181f63e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inspectorScale: {x: 1, y: 1}
-  meshLineWidth: 0.05
-  meshLineScale: {x: 1, y: 1}
-  meshFilter: {fileID: 4210001752234552179}
-  meshRenderer: {fileID: 4060208825624729425}
 --- !u!64 &5450350009257091390
 MeshCollider:
   m_ObjectHideFlags: 0

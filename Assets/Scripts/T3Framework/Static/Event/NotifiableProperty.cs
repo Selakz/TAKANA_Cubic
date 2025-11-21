@@ -65,6 +65,7 @@ namespace T3Framework.Static.Event
 
 		public void ForceNotify()
 		{
+			IsLastAssignmentNotified = true;
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
 		}
 

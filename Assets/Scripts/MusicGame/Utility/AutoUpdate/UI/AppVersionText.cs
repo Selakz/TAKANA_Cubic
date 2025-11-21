@@ -1,5 +1,6 @@
 #nullable enable
 
+using Semver;
 using TMPro;
 using UnityEngine;
 
@@ -9,11 +10,20 @@ namespace MusicGame.Utility.AutoUpdate.UI
 	{
 		// Serializable and Public
 		[SerializeField] private TMP_Text versionText = default!;
+		[Header("Optional")] [SerializeField] private TMP_Text? prereleaseText;
 
 		// System Functions
 		void Start()
 		{
-			versionText.text = $"v{Application.version}";
+			if (SemVersion.TryParse(Application.version, out var version))
+			{
+				versionText.text = $"v{version.WithoutPrerelease()}";
+				if (prereleaseText != null)
+				{
+					prereleaseText.text =
+						$"{(string.IsNullOrEmpty(version.Prerelease) ? string.Empty : "-")}{version.Prerelease}";
+				}
+			}
 		}
 	}
 }

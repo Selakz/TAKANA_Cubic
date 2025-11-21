@@ -39,6 +39,8 @@ namespace T3Framework.Runtime
 
 		// Private
 		private EventTags? tags;
+		private IEventRegistrar[]? awakeRegistrars;
+		private IEventRegistrar[]? enableRegistrars;
 
 		// System Functions
 		protected virtual void Awake()
@@ -51,23 +53,27 @@ namespace T3Framework.Runtime
 				tags = new(gameObject, initialTags);
 			}
 
-			foreach (var registrar in AwakeRegistrars) registrar.Register();
+			awakeRegistrars ??= AwakeRegistrars;
+			foreach (var registrar in awakeRegistrars) registrar.Register();
 		}
 
 		protected virtual void OnEnable()
 		{
-			foreach (var registrar in EnableRegistrars) registrar.Register();
+			enableRegistrars ??= EnableRegistrars;
+			foreach (var registrar in enableRegistrars) registrar.Register();
 		}
 
 		protected virtual void OnDisable()
 		{
-			foreach (var registrar in EnableRegistrars) registrar.Unregister();
+			enableRegistrars ??= EnableRegistrars;
+			foreach (var registrar in enableRegistrars) registrar.Unregister();
 		}
 
 		protected virtual void OnDestroy()
 		{
-			foreach (var registrar in AwakeRegistrars) registrar.Unregister();
-			
+			awakeRegistrars ??= AwakeRegistrars;
+			foreach (var registrar in awakeRegistrars) registrar.Unregister();
+
 			tags?.Dispose();
 		}
 	}

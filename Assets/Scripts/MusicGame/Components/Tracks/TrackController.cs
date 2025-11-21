@@ -112,10 +112,10 @@ namespace MusicGame.Components.Tracks
 
 		private void SpriteInit()
 		{
-			sprite.localScale = new(1f, 30f);
-			leftLine.localScale = new(0.015f, 30f);
-			rightLine.localScale = new(0.015f, 30f);
-			boxCollider.size = new(1f, 30f, boxCollider.size.z);
+			sprite.localScale = new(1f, 100f);
+			leftLine.localScale = new(0.015f, 100f);
+			rightLine.localScale = new(0.015f, 100f);
+			boxCollider.size = new(1f, 100f, boxCollider.size.z);
 			IsHidden = Model.TimeInstantiate > Current || Current > Model.TimeEnd;
 		}
 

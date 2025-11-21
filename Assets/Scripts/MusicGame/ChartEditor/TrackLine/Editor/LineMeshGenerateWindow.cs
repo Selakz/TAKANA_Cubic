@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 #nullable enable
 
 using System;
@@ -124,3 +125,5 @@ namespace MusicGame.ChartEditor.TrackLine.Editor
 		}
 	}
 }
+
+#endif
