@@ -77,6 +77,7 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 			InputManager.Instance.Register("CurveSwitch", "SwitchToElastic", _ => ChangeEase(9));
 			InputManager.Instance.Register("CurveSwitch", "SwitchToBounce", _ => ChangeEase(0));
 			InputManager.Instance.RegisterStarted("CurveSwitch", "CheckCurve", _ => CheckEase());
+			InputManager.Instance.RegisterPerformed("CurveSwitch", "CheckCurve", _ => HideEase());
 			InputManager.Instance.RegisterCanceled("CurveSwitch", "CheckCurve", _ => HideEase());
 		}
 

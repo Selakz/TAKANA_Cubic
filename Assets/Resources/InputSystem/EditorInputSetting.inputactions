@@ -2729,11 +2729,11 @@
                 },
                 {
                     "name": "CheckCurve",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "17774e4a-4fb3-4aff-a1c9-d585b61b5044",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "SlowTap",
                     "initialStateCheck": true
                 }
             ],
@@ -3894,59 +3894,15 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Key With Modifiers",
-                    "id": "dee7514a-0dd1-49fb-9e9f-1b3bbfb58c90",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CheckCurve",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "0364ad11-8a50-44f1-983d-f3207aa261c3",
+                    "name": "",
+                    "id": "9a751a8b-5dea-4342-8249-4e37d493bee6",
                     "path": "<Keyboard>/minus",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "CheckCurve",
                     "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "5e6fdc6a-31a1-4f0c-8a24-eaf3fd606e10",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CheckCurve",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "48aa975c-8388-496d-bfea-ab42abb10733",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CheckCurve",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "838a7b70-b714-4948-bdef-24fafd921118",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "CheckCurve",
-                    "isComposite": false,
-                    "isPartOfComposite": true
+                    "isPartOfComposite": false
                 }
             ]
         },

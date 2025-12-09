@@ -23,7 +23,7 @@ namespace T3Framework.Runtime.Input
 		// Defined Functions
 		public void Register(string actionMapName, string actionName, Action<InputAction.CallbackContext> callback)
 		{
-			RegisterStarted(actionMapName, actionName, callback);
+			RegisterPerformed(actionMapName, actionName, callback);
 		}
 
 		public void RegisterStarted(string actionMapName, string actionName,
