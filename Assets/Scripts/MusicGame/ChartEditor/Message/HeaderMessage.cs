@@ -1,3 +1,6 @@
+using System;
+using T3Framework.Runtime.I18N;
+using T3Framework.Runtime.Log;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,7 +40,15 @@ namespace MusicGame.ChartEditor.Message
 		private void ShowException(string condition, string stackTrace, LogType logType)
 		{
 			if (logType is LogType.Error or LogType.Exception or LogType.Assert)
-				Show("出现未处理异常，请将日志汇报给作者", MessageType.Error);
+				Show(I18NSystem.GetText("App_Exception"), MessageType.Error);
+		}
+
+		private static void OnLogHeader(string message, Enum type)
+		{
+			var split = message.Split('|');
+			var text = I18NSystem.GetText(split[0], split[1..]);
+			MessageType msgType = type is T3LogType t ? t.ToType() : MessageType.Info;
+			Show(text, msgType);
 		}
 
 		// System Functions
@@ -45,11 +56,13 @@ namespace MusicGame.ChartEditor.Message
 		{
 			Instance = this;
 			Application.logMessageReceived += ShowException;
+			T3Logger.AddListener("Header", OnLogHeader);
 		}
 
 		void OnDisable()
 		{
 			Application.logMessageReceived -= ShowException;
+			T3Logger.RemoveListener("Header", OnLogHeader);
 		}
 	}
 
@@ -63,6 +76,17 @@ namespace MusicGame.ChartEditor.Message
 				HeaderMessage.MessageType.Error => new(1f, 0.4f, 0.4f, 0.7f),
 				HeaderMessage.MessageType.Success => new(0.4f, 1f, 0.4f, 0.7f),
 				HeaderMessage.MessageType.Info or _ => new(0.4f, 0.7f, 1f, 0.7f),
+			};
+		}
+
+		public static HeaderMessage.MessageType ToType(this T3LogType type)
+		{
+			return type switch
+			{
+				T3LogType.Warn => HeaderMessage.MessageType.Warn,
+				T3LogType.Error => HeaderMessage.MessageType.Error,
+				T3LogType.Success => HeaderMessage.MessageType.Success,
+				T3LogType.Info or _ => HeaderMessage.MessageType.Info,
 			};
 		}
 	}
