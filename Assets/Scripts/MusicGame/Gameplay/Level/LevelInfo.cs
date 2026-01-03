@@ -1,6 +1,6 @@
 #nullable enable
 
-using MusicGame.Components.Chart;
+using MusicGame.Gameplay.Chart;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Level
