@@ -1379,6 +1379,7 @@ GameObject:
   - component: {fileID: 6057724420650328067}
   - component: {fileID: 8434213156982041991}
   - component: {fileID: 6015290926523218734}
+  - component: {fileID: 3694239631337486963}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -1451,6 +1452,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3694239631337486963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4393030067994056912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 80
 --- !u!1 &4516298630409363347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1814,6 +1835,7 @@ GameObject:
   - component: {fileID: 1303657667314721868}
   - component: {fileID: 7390662659858495625}
   - component: {fileID: 3677904091583304300}
+  - component: {fileID: 6583988467683919711}
   m_Layer: 5
   m_Name: ColorPalette
   m_TagString: Untagged
@@ -1892,6 +1914,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentTransform: {fileID: 6740639090951324916}
+--- !u!114 &6583988467683919711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5748577282899877342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 80
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &5933797178697139515
 GameObject:
   m_ObjectHideFlags: 0
@@ -2128,7 +2170,6 @@ GameObject:
   - component: {fileID: 5011174275984264713}
   - component: {fileID: 3604774793167300971}
   - component: {fileID: 5562983182930681426}
-  - component: {fileID: 1861081911836350915}
   m_Layer: 5
   m_Name: EditLayerContent
   m_TagString: Untagged
@@ -2155,7 +2196,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 157.865, y: 0}
-  m_SizeDelta: {x: 315.73, y: 0}
+  m_SizeDelta: {x: 315.73, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3604774793167300971
 MonoBehaviour:
@@ -2169,16 +2210,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5fe2ff964bb40dda542525464e08a37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelectedToggle: {fileID: 8407110019957606266}
-  isDecorationToggle: {fileID: 2180627643488488140}
-  upLevelButton: {fileID: 4165039186702827402}
-  downLevelButton: {fileID: 6104722875538688447}
-  nameInputField: {fileID: 7337671344486258976}
+  <IsSelectedToggle>k__BackingField: {fileID: 8407110019957606266}
+  <IsDecorationToggle>k__BackingField: {fileID: 2180627643488488140}
+  <UpLevelButton>k__BackingField: {fileID: 4165039186702827402}
+  <DownLevelButton>k__BackingField: {fileID: 6104722875538688447}
+  <NameInputField>k__BackingField: {fileID: 7337671344486258976}
+  <RemoveButton>k__BackingField: {fileID: 8626115968626442884}
   paletteRenderer: {fileID: 3677904091583304300}
   colorPicker: {fileID: 2386361258044319578}
   colorPalette: {fileID: 5748577282899877342}
   colorSample: {fileID: 5600882024430574951}
-  removeButton: {fileID: 8626115968626442884}
 --- !u!114 &5562983182930681426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2205,20 +2246,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &1861081911836350915
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7786636695970399886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
-  m_VerticalFit: 2
 --- !u!1 &7857489852434135483
 GameObject:
   m_ObjectHideFlags: 0

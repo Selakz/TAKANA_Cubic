@@ -7,7 +7,9 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
 using MusicGame.Models.Track;
 using Newtonsoft.Json.Linq;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Static;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLayer
