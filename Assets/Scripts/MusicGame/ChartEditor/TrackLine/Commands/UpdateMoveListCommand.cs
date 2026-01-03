@@ -1,12 +1,13 @@
-using System;
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.InScreenEdit.Commands;
-using MusicGame.ChartEditor.Level;
-using MusicGame.Components.Movement;
-using MusicGame.Components.Tracks;
+using MusicGame.Gameplay.Chart;
+using MusicGame.Models.Track;
+using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime;
+using T3Framework.Static.Movement;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLine.Commands
@@ -14,53 +15,49 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 	/// <summary>
 	/// null OldItem means insertion; null NewItem means removal.
 	/// </summary>
-	public class UpdateMoveListArg : IUpdateMovementArg
+	public class UpdateMoveListArg
 	{
 		public bool IsFirst { get; }
 
-		public IMoveItem OldItem { get; }
+		public T3Time? OldTime { get; }
 
-		public IMoveItem NewItem { get; }
+		public IPositionMoveItem<float>? OldItem { get; set; }
 
-		// TODO: Finish actions
-		public Action<IMovement<float>> DoAction { get; private set; }
+		public KeyValuePair<T3Time, IPositionMoveItem<float>>? NewItem { get; }
 
-		public Action<IMovement<float>> UndoAction { get; private set; }
-
-		public UpdateMoveListArg(bool isFirst, IMoveItem oldItem, IMoveItem newItem)
+		public UpdateMoveListArg(bool isFirst, T3Time? oldTime, KeyValuePair<T3Time, IPositionMoveItem<float>>? newItem)
 		{
 			IsFirst = isFirst;
-			OldItem = oldItem;
+			OldTime = oldTime;
 			NewItem = newItem;
 		}
 	}
 
 
-	public class UpdateMoveListCommand : ISetInitCommand<Track>
+	public class UpdateMoveListCommand : ISetInitCommand<ChartComponent>
 	{
 		public string Name => "Update MoveList Time";
 
-		private Track track;
+		private ChartComponent? track;
+		private ITrack? model;
 		private readonly List<UpdateMoveListArg> args;
-		private bool hasExecuted;
+		private bool hasExecuted = false;
 		private T3Time oldTrackStartTime;
 		private T3Time newTrackStartTime = T3Time.MaxValue;
 		private T3Time oldTrackEndTime;
 		private T3Time newTrackEndTime = T3Time.MinValue;
-		private UpdateComponentsCommand updateTrackCommand;
 
-		public UpdateMoveListCommand(IEnumerable<IUpdateMovementArg> args)
+		public UpdateMoveListCommand(UpdateMoveListArg arg)
 		{
-			this.args = new();
-			foreach (var arg in args)
-			{
-				// TODO: Allow other IUpdateMovementArg
-				if (arg is not UpdateMoveListArg a) continue;
-				this.args.Add(a);
-			}
+			args = new() { arg };
 		}
 
-		public bool SetInit(Track track)
+		public UpdateMoveListCommand(IEnumerable<UpdateMoveListArg> args)
+		{
+			this.args = args.ToList();
+		}
+
+		public bool SetInit(ChartComponent track)
 		{
 			if (hasExecuted)
 			{
@@ -69,53 +66,66 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 			}
 
 			this.track = track;
-			if (track.Movement.Movement1 is not IMoveList moveList1 ||
-			    track.Movement.Movement2 is not IMoveList moveList2) return false;
+			if (track.Model is not ITrack m) return false;
+			model = m;
+
+			if (model.Movement.Movement1 is not ChartPosMoveList moveList1 ||
+			    model.Movement.Movement2 is not ChartPosMoveList moveList2) return false;
 			var enumerate = args.ToList();
 			foreach (var arg in enumerate)
 			{
 				var validateMoveList = arg.IsFirst ? moveList1 : moveList2;
 
 				// 0. Check if any old item does not exist.
-				if (arg.OldItem is not null &&
-				    (!validateMoveList.TryGet(arg.OldItem.Time, out var v) || !v.Equals(arg.OldItem)))
+				if (arg.OldTime is not null)
 				{
-					return false;
+					if (!validateMoveList.TryGet(arg.OldTime.Value, out var item)) return false;
+					arg.OldItem = item;
 				}
 
 				// 1. Check if any new item overwrites existing items.
-				bool isChangeTime = arg.NewItem is not null &&
-				                    (arg.OldItem is null || arg.NewItem.Time != arg.OldItem.Time);
-				if (isChangeTime && validateMoveList.TryGet(arg.NewItem.Time, out var existingItem))
+				bool isChangeTime = arg.NewItem is not null && arg.NewItem.Value.Key != arg.OldTime;
+				if (isChangeTime && validateMoveList.TryGet(arg.NewItem!.Value.Key, out _))
 				{
 					if (!args.Any(a =>
-						    a.IsFirst == arg.IsFirst && existingItem.Equals(a.OldItem) &&
-						    (a.NewItem is null || a.NewItem.Time != existingItem.Time)))
+						    a.IsFirst == arg.IsFirst &&
+						    a.OldTime == arg.NewItem.Value.Key &&
+						    (a.NewItem is null || a.NewItem.Value.Key != a.OldTime)))
 					{
 						return false;
 					}
 				}
 
 				// 2. Check if track's start/end time should change.
-				if (arg.OldItem is not null && arg.NewItem is not null && arg.OldItem.Time == track.TimeInstantiate)
+				if (arg.OldTime is not null && arg.NewItem is not null && arg.OldTime == model.TimeStart)
 				{
-					newTrackStartTime = Mathf.Min(newTrackStartTime, arg.NewItem.Time);
+					newTrackStartTime = Mathf.Min(newTrackStartTime, arg.NewItem.Value.Key);
 					var oppositeMoveList = arg.IsFirst ? moveList2 : moveList1;
-					if (oppositeMoveList.TryGet(track.TimeInstantiate, out var startItem) && !args.Any(a =>
-						    a.IsFirst == !arg.IsFirst && startItem.Equals(a.OldItem)))
+					if (oppositeMoveList.TryGet(model.TimeStart, out var startItem) &&
+					    !args.Any(a => a.IsFirst == !arg.IsFirst && a.OldTime == model.TimeStart))
 					{
-						args.Add(new(!arg.IsFirst, startItem, startItem.SetTime(newTrackStartTime)));
+						UpdateMoveListArg newArg = new(
+							!arg.IsFirst, model.TimeStart, new(newTrackStartTime, startItem))
+						{
+							OldItem = startItem
+						};
+						args.Add(newArg);
 					}
 				}
 
-				if (arg.OldItem is not null && arg.NewItem is not null && arg.OldItem.Time == track.TimeEnd)
+				if (arg.OldTime is not null && arg.NewItem is not null && arg.OldTime == model.TimeEnd)
 				{
-					newTrackEndTime = Mathf.Max(newTrackEndTime, arg.NewItem.Time);
+					newTrackEndTime = Mathf.Max(newTrackEndTime, arg.NewItem.Value.Key);
 					var oppositeMoveList = arg.IsFirst ? moveList2 : moveList1;
-					if (oppositeMoveList.TryGet(track.TimeEnd, out var endItem) && !args.Any(a =>
-						    a.IsFirst == !arg.IsFirst && endItem.Equals(a.OldItem)))
+					if (oppositeMoveList.TryGet(model.TimeEnd, out var endItem) &&
+					    !args.Any(a => a.IsFirst == !arg.IsFirst && a.OldTime == model.TimeEnd))
 					{
-						args.Add(new(!arg.IsFirst, endItem, endItem.SetTime(newTrackEndTime)));
+						UpdateMoveListArg newArg = new(
+							!arg.IsFirst, model.TimeEnd, new(newTrackEndTime, endItem))
+						{
+							OldItem = endItem
+						};
+						args.Add(newArg);
 					}
 				}
 			}
@@ -123,26 +133,15 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 			// 3. If track's time does change, see if it can change legally.
 			if (newTrackStartTime != T3Time.MaxValue)
 			{
-				// TODO: Replace with new TimeStart
-				if (IEditingChartManager.Instance.GetChildrenComponents(track.Id)
-				    .Any(c => c is EditingNote e && e.Note.TimeJudge < newTrackStartTime))
-				{
-					return false;
-				}
-
-				oldTrackStartTime = track.TimeInstantiate;
+				if (!track.IsNewTimeMinValid(newTrackStartTime)) return false;
+				oldTrackStartTime = model.TimeStart;
 			}
 
 
 			if (newTrackEndTime != T3Time.MinValue)
 			{
-				if (IEditingChartManager.Instance.GetChildrenComponents(track.Id)
-				    .Any(c => c is EditingNote e && e.TimeEnd > newTrackEndTime))
-				{
-					return false;
-				}
-
-				oldTrackEndTime = track.TimeEnd;
+				if (!track.IsNewTimeMaxValid(newTrackEndTime)) return false;
+				oldTrackEndTime = model.TimeEnd;
 			}
 
 			return true;
@@ -150,22 +149,23 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 
 		public void Do()
 		{
-			if (track == null)
+			if (track is null || model is null)
 			{
 				Debug.LogWarning("No track is specified for this command");
 				return;
 			}
 
-			if (track.Movement.Movement1 is not IMoveList moveList1 ||
-			    track.Movement.Movement2 is not IMoveList moveList2) return;
+			if (model.Movement.Movement1 is not ChartPosMoveList moveList1 ||
+			    model.Movement.Movement2 is not ChartPosMoveList moveList2) return;
 
 			hasExecuted = true;
+
 			foreach (var arg in args)
 			{
-				if (arg.OldItem is not null)
+				if (arg.OldTime is not null)
 				{
 					var moveList = arg.IsFirst ? moveList1 : moveList2;
-					moveList.Remove(arg.OldItem.Time);
+					moveList.Remove(arg.OldTime.Value);
 				}
 			}
 
@@ -174,47 +174,47 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 				if (arg.NewItem is not null)
 				{
 					var moveList = arg.IsFirst ? moveList1 : moveList2;
-					moveList.Insert(arg.NewItem);
+					moveList.Insert(arg.NewItem.Value.Key, arg.NewItem.Value.Value);
 				}
 			}
 
-			if (newTrackStartTime != T3Time.MaxValue) track.TimeInstantiate = newTrackStartTime;
-			if (newTrackEndTime != T3Time.MinValue) track.TimeEnd = newTrackEndTime;
-			IEditingChartManager.Instance.UpdateComponent(track.Id);
+			if (newTrackStartTime != T3Time.MaxValue) model.TimeStart = newTrackStartTime;
+			if (newTrackEndTime != T3Time.MinValue) model.TimeEnd = newTrackEndTime;
+			track.UpdateNotify();
 		}
 
 		public void Undo()
 		{
-			if (track == null)
+			if (track is null || model is null)
 			{
 				Debug.LogWarning("No track is specified for this command");
 				return;
 			}
 
-			if (track.Movement.Movement1 is not IMoveList moveList1 ||
-			    track.Movement.Movement2 is not IMoveList moveList2) return;
+			if (model.Movement.Movement1 is not ChartPosMoveList moveList1 ||
+			    model.Movement.Movement2 is not ChartPosMoveList moveList2) return;
 
 			foreach (var arg in args)
 			{
 				if (arg.NewItem is not null)
 				{
 					var moveList = arg.IsFirst ? moveList1 : moveList2;
-					moveList.Remove(arg.NewItem.Time);
+					moveList.Remove(arg.NewItem.Value.Key);
 				}
 			}
 
 			foreach (var arg in args)
 			{
-				if (arg.OldItem is not null)
+				if (arg.OldTime is not null && arg.OldItem is not null)
 				{
 					var moveList = arg.IsFirst ? moveList1 : moveList2;
-					moveList.Insert(arg.OldItem);
+					moveList.Insert(arg.OldTime.Value, arg.OldItem);
 				}
 			}
 
-			if (newTrackStartTime != T3Time.MaxValue) track.TimeInstantiate = oldTrackStartTime;
-			if (newTrackEndTime != T3Time.MinValue) track.TimeEnd = oldTrackEndTime;
-			IEditingChartManager.Instance.UpdateComponent(track.Id);
+			if (newTrackStartTime != T3Time.MaxValue) model.TimeStart = oldTrackStartTime;
+			if (newTrackEndTime != T3Time.MinValue) model.TimeEnd = oldTrackEndTime;
+			track.UpdateNotify();
 		}
 	}
 }

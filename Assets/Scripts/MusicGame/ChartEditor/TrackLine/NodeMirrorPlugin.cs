@@ -3,100 +3,69 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.EditingComponents;
-using MusicGame.ChartEditor.Message;
-using MusicGame.ChartEditor.Select;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine.Commands;
-using MusicGame.Components.Movement;
+using MusicGame.Gameplay.Chart;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.VContainer;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
-	public class NodeMirrorPlugin : MonoBehaviour
+	public class NodeMirrorPlugin : T3MonoBehaviour, ISelfInstaller
 	{
-		// Static
-		private static IMoveItem Mirror(V1EMoveItem moveItem)
+		// Serializable and Public
+		[SerializeField] private SequencePriority chartEditPriority = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			return new V1EMoveItem(moveItem.Time, -moveItem.Position, moveItem.Ease);
+			new InputRegistrar("InScreenEdit", "Mirror", "mirror", chartEditPriority.Value, NodeMirror)
+		};
+
+		// Private
+		private CommandManager commandManager = default!;
+		private EdgeNodeSelectDataset nodeSelectDataset = default!;
+
+		// Defined Functions
+		[Inject]
+		private void Construct(
+			CommandManager commandManager,
+			EdgeNodeSelectDataset nodeSelectDataset)
+		{
+			this.commandManager = commandManager;
+			this.nodeSelectDataset = nodeSelectDataset;
 		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Event Handlers
-		private void NodeMirror()
+		private bool NodeMirror()
 		{
-			List<IUpdateMovementArg> mirrorArgs = new();
-			if (TrackMovementEditingManager.Instance.TryGetDecorator(
-				    TrackMovementEditingManager.Instance.EditableDecorator, out var decorator))
+			if (nodeSelectDataset.Count == 0) return true;
+			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
+			foreach (var node in nodeSelectDataset)
 			{
-				if (decorator.MoveListDecorator1 != null)
-				{
-					foreach (var node in decorator.MoveListDecorator1.SelectedNodes)
-					{
-						if (node.MoveItem is V1EMoveItem moveItem)
-						{
-							var newItem = Mirror(moveItem);
-							mirrorArgs.Add(new UpdateMoveListArg(true, moveItem, newItem));
-						}
-					}
-				}
-
-				if (decorator.MoveListDecorator2 != null)
-				{
-					foreach (var node in decorator.MoveListDecorator2.SelectedNodes)
-					{
-						if (node.MoveItem is V1EMoveItem moveItem)
-						{
-							var newItem = Mirror(moveItem);
-							mirrorArgs.Add(new UpdateMoveListArg(false, moveItem, newItem));
-						}
-					}
-				}
+				var item = node.Model;
+				var newItem = item.SetPosition(-item.Position);
+				var time = node.Locator.Time;
+				var arg = new UpdateMoveListArg(node.Locator.IsLeft, time, new(time, newItem));
+				var track = node.Locator.Track;
+				if (!args.ContainsKey(track)) args[track] = new() { arg };
+				else args[track].Add(arg);
 			}
 
-			if (mirrorArgs.Count == 0) return;
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack) return;
-			var track = editingTrack.Track;
-
-			var command = new UpdateMoveListCommand(mirrorArgs);
-			if (command.SetInit(track))
-			{
-				CommandManager.Instance.Add(command);
-			}
-			else
-			{
-				HeaderMessage.Show("¾µÏñÊ§°Ü", HeaderMessage.MessageType.Error);
-			}
-		}
-
-		private void EditQueryMirror(VetoArg arg)
-		{
-			if (TrackMovementEditingManager.Instance.TryGetDecorator(
-				    TrackMovementEditingManager.Instance.EditableDecorator, out var decorator))
-			{
-				if (decorator.MoveListDecorator1 != null && decorator.MoveListDecorator1.SelectedNodes.Any())
-				{
-					arg.Veto();
-				}
-
-				else if (decorator.MoveListDecorator2 != null && decorator.MoveListDecorator2.SelectedNodes.Any())
-				{
-					arg.Veto();
-				}
-			}
-		}
-
-		// System Functions
-		void OnEnable()
-		{
-			EventManager.Instance.AddVetoListener("Edit_QueryMirror", EditQueryMirror);
-
-			InputManager.Instance.Register("InScreenEdit", "Mirror", _ => NodeMirror());
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveVetoListener("Edit_QueryMirror", EditQueryMirror);
+			List<ICommand> commands = (
+					from pair in args
+					let command = new UpdateMoveListCommand(pair.Value)
+					where command.SetInit(pair.Key)
+					select command)
+				.Cast<ICommand>().ToList();
+			commandManager.Add(new BatchCommand(commands, "Mirror Nodes"));
+			return false;
 		}
 	}
 }

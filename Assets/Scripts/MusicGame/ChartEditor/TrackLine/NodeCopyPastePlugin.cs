@@ -1,265 +1,254 @@
-using System;
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.EditingComponents;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
-using MusicGame.ChartEditor.Message;
 using MusicGame.ChartEditor.Select;
 using MusicGame.ChartEditor.TrackLine.Commands;
-using MusicGame.Components;
-using MusicGame.Components.Movement;
-using MusicGame.Components.Tracks;
-using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Chart;
+using MusicGame.Models.Track;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.Log;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
-	public struct NodeCopyInfo : IEquatable<NodeCopyInfo>
+	public class NodeCopyPastePlugin : T3MonoBehaviour, ISelfInstaller
 	{
-		public bool IsFirst { get; set; }
-
-		public IMoveItem MoveItem { get; set; }
-
-		public NodeCopyInfo(bool isFirst, IMoveItem moveItem)
+		public enum PasteMode
 		{
-			IsFirst = isFirst;
-			MoveItem = moveItem;
+			None,
+			NormalPaste,
+			ExactPaste
 		}
 
-		public bool Equals(NodeCopyInfo other)
-		{
-			return IsFirst == other.IsFirst && Equals(MoveItem, other.MoveItem);
-		}
-
-		public override bool Equals(object obj)
-		{
-			return obj is NodeCopyInfo other && Equals(other);
-		}
-
-		public override int GetHashCode()
-		{
-			return HashCode.Combine(IsFirst, MoveItem);
-		}
-	}
-
-	public class NodeCopyPastePlugin : MonoBehaviour
-	{
 		// Serializable and Public
-		public IEnumerable<NodeCopyInfo> Clipboard => clipboard;
+		[SerializeField] private SequencePriority chartEditPriority = default!;
 
-		public Track OriginalTrack { get; private set; }
+		public NotifiableProperty<PasteMode> Mode { get; private set; } = new(PasteMode.None);
+
+		public IReadOnlyList<EdgeNodeComponent> Clipboard => clipboard;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputRegistrar("InScreenEdit", "Cut", chartEditPriority.Value,
+				() =>
+				{
+					if (nodeSelectDataset.Count == 0) return true;
+					var ret = CopyToClipboard();
+					Cut();
+					return ret;
+				}),
+			new InputRegistrar("InScreenEdit", "Copy", chartEditPriority.Value, CopyToClipboard),
+			new InputRegistrar("InScreenEdit", "Paste", chartEditPriority.Value, () =>
+			{
+				if (clipboard.Count == 0) return true;
+				Mode.Value = PasteMode.NormalPaste;
+				return false;
+			}),
+			new InputRegistrar("InScreenEdit", "ExactPaste", chartEditPriority.Value, () =>
+			{
+				if (clipboard.Count == 0) return true;
+				Mode.Value = PasteMode.ExactPaste;
+				return false;
+			}),
+			new InputRegistrar("InScreenEdit", "CheckClipboard", chartEditPriority.Value,
+				() =>
+				{
+					if (clipboard.Count == 0) return true;
+					CheckClipboard();
+					return false;
+				}),
+			new InputRegistrar("InScreenEdit", "Create", chartEditPriority.Value,
+				() =>
+				{
+					switch (Mode.Value)
+					{
+						case PasteMode.None:
+							return true;
+						case PasteMode.NormalPaste:
+							Paste();
+							break;
+						case PasteMode.ExactPaste:
+							ExactPaste();
+							break;
+					}
+
+					Mode.Value = PasteMode.None;
+					return false;
+				}),
+			new InputRegistrar("General", "Escape", () => Mode.Value = PasteMode.None)
+		};
 
 		// Private
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
-		private readonly List<NodeCopyInfo> clipboard = new();
+		private readonly List<EdgeNodeComponent> clipboard = new();
 
-		// Static
+		private Camera levelCamera = default!;
+		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
+		private ChartSelectDataset chartSelectDataset = default!;
+		private EdgeNodeSelectDataset nodeSelectDataset = default!;
+		private CommandManager commandManager = default!;
 
 		// Defined Functions
-		public void CopyToClipboard()
+		[Inject]
+		private void Construct(
+			[Key("stage")] Camera levelCamera,
+			NotifiableProperty<ITimeRetriever> timeRetriever,
+			ChartSelectDataset chartSelectDataset,
+			EdgeNodeSelectDataset nodeSelectDataset,
+			CommandManager commandManager)
 		{
-			List<NodeCopyInfo> candidates = new();
-			if (TrackMovementEditingManager.Instance.TryGetDecorator(
-				    TrackMovementEditingManager.Instance.EditableDecorator, out var decorator))
+			this.levelCamera = levelCamera;
+			this.timeRetriever = timeRetriever;
+			this.chartSelectDataset = chartSelectDataset;
+			this.nodeSelectDataset = nodeSelectDataset;
+			this.commandManager = commandManager;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		private void Cut()
+		{
+			if (nodeSelectDataset.Count == 0) return;
+			Dictionary<ChartComponent, List<UpdateMoveListArg>> tracks = new();
+			foreach (var node in nodeSelectDataset)
 			{
-				if (decorator.MoveListDecorator1 != null)
+				var track = node.Locator.Track;
+				if (!tracks.TryGetValue(track, out var args))
 				{
-					candidates.AddRange(
-						decorator.MoveListDecorator1.SelectedNodes.Select(n => new NodeCopyInfo(true, n.MoveItem)));
+					args = new();
+					tracks[track] = args;
 				}
 
-				if (decorator.MoveListDecorator2 != null)
-				{
-					candidates.AddRange(
-						decorator.MoveListDecorator2.SelectedNodes.Select(n => new NodeCopyInfo(false, n.MoveItem)));
-				}
+				args.Add(new UpdateMoveListArg(node.Locator.IsLeft, node.Locator.Time, null));
 			}
 
-			if (candidates.Count == 0) return;
+			List<ICommand> commands = (
+					from pair in tracks
+					let command = new UpdateMoveListCommand(pair.Value)
+					where command.SetInit(pair.Key)
+					select command)
+				.Cast<ICommand>().ToList();
+			commandManager.Add(new BatchCommand(commands, "Delete Nodes"));
+		}
 
-			OriginalTrack = decorator.Model;
-			HeaderMessage.Show("复制成功！", HeaderMessage.MessageType.Success);
+		public bool CopyToClipboard()
+		{
 			clipboard.Clear();
-			clipboard.AddRange(candidates);
+			if (nodeSelectDataset.Count == 0) return true;
 
-			EventManager.Instance.Invoke<object>("Edit_OnClearClipboard", this);
+			T3Logger.Log("Notice", "Edit_CopyPaste_CopySuccess", T3LogType.Success);
+			clipboard.AddRange(nodeSelectDataset);
+			return false;
 		}
 
-		public void Paste()
+		public bool Paste()
 		{
+			// TODO: ModuleInfo
 			var mousePoint = Input.mousePosition;
-			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
-			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			if (!levelCamera.ContainsScreenPoint(mousePoint) ||
+			    !levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{
-				return;
+				return true;
 			}
 
-			if (TrackMovementEditingManager.Instance.EditableDecorator == -1) return;
+			if (clipboard.Count == 0) return true;
 
-			if (clipboard.Count == 0)
+			if (chartSelectDataset.CurrentSelecting.Value is not { Model: ITrack model } track)
 			{
-				return;
+				T3Logger.Log("Notice", "TrackLine_PasteFailForTrack", T3LogType.Info);
+				return false;
 			}
 
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack)
+			clipboard.Sort((a, b) => a.Locator.Time.CompareTo(b.Locator.Time));
+			float baseTime = clipboard[0].Locator.Time;
+
+			List<UpdateMoveListArg> cloneArgs = new();
+			T3Time time = timeRetriever.Value.GetTimeStart(gamePoint);
+
+			foreach (var component in clipboard)
 			{
-				HeaderMessage.Show("需选中一条轨道以进行结点普通粘贴", HeaderMessage.MessageType.Info);
-				return;
-			}
+				var newTime = time + component.Locator.Time - baseTime;
+				var newPos = model.Movement.GetPos(time) -
+					((ITrack)component.Locator.Track.Model).Movement.GetPos(baseTime) + component.Model.Position;
+				var newItem = component.Model.SetPosition(newPos);
 
-			var track = editingTrack.Track;
-			clipboard.Sort((a, b) => a.MoveItem.Time.CompareTo(b.MoveItem.Time));
-			float baseTime = clipboard[0].MoveItem.Time;
-
-			List<IUpdateMovementArg> cloneArgs = new();
-			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
-
-			foreach (var info in clipboard)
-			{
-				var newTime = time + info.MoveItem.Time - baseTime;
-				if (newTime < track.TimeInstantiate || newTime > track.TimeEnd)
-				{
-					HeaderMessage.Show("粘贴片段长度超出轨道时间范围", HeaderMessage.MessageType.Info);
-					return;
-				}
-
-				var newItem = info.MoveItem.SetTime(newTime);
-				if (newItem is V1EMoveItem v1e)
-				{
-					var newX = track.Movement.GetPos(time) - OriginalTrack.Movement.GetPos(baseTime) + v1e.Position;
-					newItem = new V1EMoveItem(v1e.Time, newX, v1e.Ease);
-				}
-
-				cloneArgs.Add(new UpdateMoveListArg(info.IsFirst, null, newItem));
+				cloneArgs.Add(new UpdateMoveListArg(component.Locator.IsLeft, null, new(newTime, newItem)));
 			}
 
 			var command = new UpdateMoveListCommand(cloneArgs);
 			if (command.SetInit(track))
 			{
 				CommandManager.Instance.Add(command);
-				HeaderMessage.Show("粘贴成功！", HeaderMessage.MessageType.Success);
+				T3Logger.Log("Notice", "Edit_CopyPaste_PasteSuccess", T3LogType.Success);
 			}
 			else
 			{
-				HeaderMessage.Show("粘贴失败，与现有结点产生冲突", HeaderMessage.MessageType.Success);
+				T3Logger.Log("Notice", "TrackLine_PasteFailForNode", T3LogType.Warn);
 			}
+
+			return false;
 		}
 
-		public void ExactPaste()
+		public bool ExactPaste()
 		{
 			var mousePoint = Input.mousePosition;
-			if (!LevelManager.Instance.LevelCamera.ContainsScreenPoint(mousePoint) ||
-			    !LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			if (!levelCamera.ContainsScreenPoint(mousePoint) ||
+			    !levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{
-				return;
+				return true;
 			}
 
-			if (TrackMovementEditingManager.Instance.EditableDecorator == -1) return;
+			if (clipboard.Count == 0) return true;
 
-			if (clipboard.Count == 0)
+			if (chartSelectDataset.CurrentSelecting.Value is not { Model: ITrack } track)
 			{
-				return;
+				T3Logger.Log("Notice", "TrackLine_ExactPasteFailForTrack", T3LogType.Info);
+				return false;
 			}
 
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack editingTrack)
+			clipboard.Sort((a, b) => a.Locator.Time.CompareTo(b.Locator.Time));
+			float baseTime = clipboard[0].Locator.Time;
+
+			List<UpdateMoveListArg> cloneArgs = new();
+			T3Time time = timeRetriever.Value.GetTimeStart(gamePoint);
+
+			foreach (var component in clipboard)
 			{
-				HeaderMessage.Show("需选中一条轨道以进行结点普通粘贴", HeaderMessage.MessageType.Info);
-				return;
-			}
+				var newTime = time + component.Locator.Time - baseTime;
+				var newPos = component.Model.Position;
+				var newItem = component.Model.SetPosition(newPos);
 
-			var track = editingTrack.Track;
-			clipboard.Sort((a, b) => a.MoveItem.Time.CompareTo(b.MoveItem.Time));
-			float baseTime = clipboard[0].MoveItem.Time;
-
-			List<IUpdateMovementArg> cloneArgs = new();
-			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
-			foreach (var info in clipboard)
-			{
-				var newTime = time + info.MoveItem.Time - baseTime;
-				if (newTime < track.TimeInstantiate || newTime > track.TimeEnd)
-				{
-					HeaderMessage.Show("粘贴片段长度超出轨道时间范围", HeaderMessage.MessageType.Info);
-					return;
-				}
-
-				cloneArgs.Add(new UpdateMoveListArg(info.IsFirst, null, info.MoveItem.SetTime(newTime)));
+				cloneArgs.Add(new UpdateMoveListArg(component.Locator.IsLeft, null, new(newTime, newItem)));
 			}
 
 			var command = new UpdateMoveListCommand(cloneArgs);
 			if (command.SetInit(track))
 			{
 				CommandManager.Instance.Add(command);
-				HeaderMessage.Show("粘贴成功！", HeaderMessage.MessageType.Success);
+				T3Logger.Log("Notice", "Edit_CopyPaste_PasteSuccess", T3LogType.Success);
 			}
 			else
 			{
-				HeaderMessage.Show("粘贴失败，与现有结点产生冲突", HeaderMessage.MessageType.Success);
+				T3Logger.Log("Notice", "TrackLine_PasteFailForNode", T3LogType.Warn);
 			}
+
+			return false;
 		}
 
 		public void CheckClipboard()
 		{
-			if (clipboard.Count == 0) return;
-			HeaderMessage.Show($"已复制{clipboard.Count}个结点", HeaderMessage.MessageType.Info);
-		}
-
-		// Event Handlers
-		private void OnClearClipboard(object sender)
-		{
-			if (ReferenceEquals(sender, this)) return;
-			clipboard.Clear();
-		}
-
-		private void VetoEditQueryCopy(VetoArg arg, IComponent toCopyComponent)
-		{
-			if (TrackMovementEditingManager.Instance.TryGetDecorator(toCopyComponent.Id, out var decorator) &&
-			    decorator.IsEditing)
-			{
-				arg.Veto();
-			}
-		}
-
-		private void VetoEditQueryPaste(VetoArg arg)
-		{
-			if (clipboard.Count > 0)
-			{
-				arg.Veto();
-			}
-		}
-
-		private void VetoEditQueryCheckClipboard(VetoArg arg)
-		{
-			if (clipboard.Count > 0)
-			{
-				arg.Veto();
-			}
-		}
-
-		// System Functions
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<object>("Edit_OnClearClipboard", OnClearClipboard);
-			EventManager.Instance.AddVetoListener<IComponent>("Edit_QueryCopy", VetoEditQueryCopy);
-			EventManager.Instance.AddVetoListener("Edit_QueryPaste", VetoEditQueryPaste);
-			EventManager.Instance.AddVetoListener("Edit_QueryCheckClipboard", VetoEditQueryCheckClipboard);
-
-			InputManager.Instance.Register("InScreenEdit", "Copy", _ => CopyToClipboard());
-			InputManager.Instance.Register("InScreenEdit", "Paste", _ => Paste());
-			InputManager.Instance.Register("InScreenEdit", "ExactPaste", _ => ExactPaste());
-			InputManager.Instance.Register("InScreenEdit", "CheckClipboard", _ => CheckClipboard());
-		}
-
-		private void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<object>("Edit_OnClearClipboard", OnClearClipboard);
-			EventManager.Instance.RemoveVetoListener<IComponent>("Edit_QueryCopy", VetoEditQueryCopy);
-			EventManager.Instance.RemoveVetoListener("Edit_QueryPaste", VetoEditQueryPaste);
-			EventManager.Instance.RemoveVetoListener("Edit_QueryCheckClipboard", VetoEditQueryCheckClipboard);
+			T3Logger.Log("Notice", $"TrackLine_NodeClipboard|{clipboard.Count}", T3LogType.Info);
 		}
 	}
 }

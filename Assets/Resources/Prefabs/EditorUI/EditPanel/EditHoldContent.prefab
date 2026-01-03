@@ -1581,7 +1581,6 @@ GameObject:
   - component: {fileID: 8216347415229038416}
   - component: {fileID: 5267787198633254422}
   - component: {fileID: 5526041492791748274}
-  - component: {fileID: 2205681392214570130}
   m_Layer: 5
   m_Name: EditHoldContent
   m_TagString: Untagged
@@ -1656,27 +1655,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
---- !u!114 &2205681392214570130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7863820136134744297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f2b54fe43024a8497bfd4978d4ba0a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: 8ad6f67791beed948a3064e1b8f02b4b, type: 2}
-  nameTitle: {fileID: 1999660918337264355}
-  noteTypeImage: {fileID: 6984995231906291155}
-  isNoteDummyImage: {fileID: 6240481166775971247}
-  timeJudgeInputField: {fileID: 1737270790266470992}
-  unselectButton: {fileID: 5843008534038212202}
-  deleteButton: {fileID: 6935610673158426762}
-  jumpToTrackButton: {fileID: 5535826935158172561}
-  timeEndInputField: {fileID: 355379858414048476}
 --- !u!1 &8036750636569060512
 GameObject:
   m_ObjectHideFlags: 0
@@ -2353,17 +2331,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2656cd22901705340bb37b0d6f12d7b0, type: 3}
---- !u!114 &1999660918337264355 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 899411715420243670, guid: 2656cd22901705340bb37b0d6f12d7b0, type: 3}
-  m_PrefabInstance: {fileID: 1710069550601182261}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0425d0f2d76b4eb9bb7e5644c8f3a5e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &6629656449847066746 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5456716059065752655, guid: 2656cd22901705340bb37b0d6f12d7b0, type: 3}

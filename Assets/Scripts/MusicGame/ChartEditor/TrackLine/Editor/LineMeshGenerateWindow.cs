@@ -87,6 +87,17 @@ namespace MusicGame.ChartEditor.TrackLine.Editor
 				}
 			}
 
+			if (GUILayout.Button("Generate and Save Straight Line", GUILayout.Height(30)))
+			{
+				if (ValidateInputs())
+				{
+					Mesh mesh = new();
+					LineDrawer.DrawStraightLine(mesh, precision);
+					mesh.name = $"LineMesh_precision{precision:0.00}";
+					SaveMesh(mesh);
+				}
+			}
+
 			EditorGUILayout.EndScrollView();
 		}
 

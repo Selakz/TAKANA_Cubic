@@ -15,8 +15,6 @@ namespace MusicGame.Models.Track.Movement
 	[StringTypeMark("v1e")]
 	public class V1EMoveItem : IPositionMoveItem<float>, IStringSerializable
 	{
-		public T3Time Time { get; set; }
-
 		public float Position { get; set; }
 
 		public Eases Ease { get; set; }
@@ -33,23 +31,18 @@ namespace MusicGame.Models.Track.Movement
 
 		public V1EMoveItem(float position, Eases ease)
 		{
-			Time = time;
 			Position = position;
 			Ease = ease;
 		}
 
-		public static V1EMoveItem Parse(string s)
-		{
-			var match = RegexHelper.MatchTuple(s, 3);
-			var time = int.Parse(match.Groups[1].Value);
-			var position = float.Parse(match.Groups[2].Value);
-			var ease = CurveCalculator.GetEaseByName(match.Groups[3].Value.Trim());
-			return new V1EMoveItem(time, position, ease);
-		}
+		public string Serialize() => $"({Position:0.00}, {Ease.GetString()})";
 
-		public IMoveItem SetTime(T3Time time)
+		public static V1EMoveItem Deserialize(string content)
 		{
-			return new V1EMoveItem(time, Position, Ease);
+			var match = RegexHelper.MatchTuple(content, 2);
+			var position = float.Parse(match.Groups[1].Value);
+			var ease = CurveCalculator.GetEaseByName(match.Groups[2].Value.Trim());
+			return new V1EMoveItem(position, ease);
 		}
 	}
 
@@ -113,7 +106,7 @@ namespace MusicGame.Models.Track.Movement
 		public bool Insert(V1EMoveItem item)
 		{
 			lastIndex = 0;
-			list[item.Time] = item;
+			list[0] = item;
 			OnMovementUpdated.Invoke();
 			return true;
 		}
@@ -137,7 +130,7 @@ namespace MusicGame.Models.Track.Movement
 
 		public bool Contains(V1EMoveItem item)
 		{
-			return list.ContainsKey(item.Time) && list[item.Time].Equals(item);
+			return list.ContainsKey(0) && list[0].Equals(item);
 		}
 
 		public bool TryGet(T3Time time, out V1EMoveItem item)
@@ -159,7 +152,7 @@ namespace MusicGame.Models.Track.Movement
 		{
 			if (Count == 0) return new V1EMoveList();
 			return new V1EMoveList(list.Values.Select(item =>
-				new V1EMoveItem(item.Time + timeOffset, item.Position + positionOffset, item.Ease)));
+				new V1EMoveItem(item.Position + positionOffset, item.Ease)));
 		}
 
 		public IEnumerator<KeyValuePair<T3Time, V1EMoveItem>> GetEnumerator() => list.GetEnumerator();
@@ -174,7 +167,7 @@ namespace MusicGame.Models.Track.Movement
 			var jArray = new JArray();
 			foreach (var moveItem in list.Values)
 			{
-				jArray.Add(moveItem.ToString());
+				jArray.Add(((IStringSerializable)moveItem).Serialize(true));
 			}
 
 			var token = new JObject()
