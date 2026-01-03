@@ -1,59 +1,51 @@
 #nullable enable
 
 using MusicGame.ChartEditor.Level;
-using MusicGame.Gameplay.Audio;
-using MusicGame.Gameplay.Level;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Setting;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Audio.UI
 {
-	public class HitSoundVolumeSlider : MonoBehaviour
+	public class HitSoundVolumeSlider : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
 		[SerializeField] private Slider hitSoundVolumeSlider = default!;
 		[SerializeField] private TMP_Text hitSoundVolumeText = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new PropertyRegistrar<int>(ISingleton<EditorSetting>.Instance.HitSoundVolumePercent, () =>
+			{
+				var percent = ISingleton<EditorSetting>.Instance.HitSoundVolumePercent.Value;
+				HitSoundVolumePercent = percent;
+			}),
+			new SliderRegistrar(hitSoundVolumeSlider,
+				value =>
+				{
+					ISingleton<EditorSetting>.Instance.HitSoundVolumePercent.Value = Mathf.RoundToInt(value);
+					hitSoundVolumeText.text = Mathf.RoundToInt(value).ToString();
+				})
+		};
 
 		// Private
 		private int HitSoundVolumePercent
 		{
 			set
 			{
-				HitSoundManager.Instance.Volume = value / 100f;
-				hitSoundVolumeSlider.value = value;
+				hitSoundVolumeSlider.SetValueWithoutNotify(value);
 				hitSoundVolumeText.text = value.ToString();
 			}
 		}
 
-		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			hitSoundVolumeSlider.interactable = true;
-			HitSoundVolumePercent = ISingletonSetting<EditorSetting>.Instance.HitSoundVolumePercent;
-		}
-
-		private void OnMusicVolumeSliderValueChanged(float value)
-		{
-			HitSoundVolumePercent = Mathf.RoundToInt(value);
-		}
-
-		// System Functions
-		void Awake()
-		{
-			hitSoundVolumeSlider.onValueChanged.AddListener(OnMusicVolumeSliderValueChanged);
-		}
-
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
+		// Defined Functions
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 	}
 }

@@ -1,12 +1,15 @@
 #nullable enable
 
 using T3Framework.Runtime.Event;
+using UnityEngine;
 
 namespace MusicGame.Gameplay.Speed
 {
 	public class SpeedDataContainer : NotifiableDataContainer<ISpeed>
 	{
-		public override ISpeed InitialValue => new T3Speed(1.0f);
+		[SerializeField] private float speed = 1;
+
+		public override ISpeed InitialValue => new T3Speed(speed);
 
 		public float Speed
 		{

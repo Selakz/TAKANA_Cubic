@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Audio;
 using UnityEngine;
@@ -8,13 +11,19 @@ namespace MusicGame.Gameplay.Audio
 	public class GameAudioPlayer : MonoBehaviour, IGameAudioPlayer
 	{
 		// Serializable and Public
-		[SerializeField] private CanNegativeAudioSource audioSource;
-		[SerializeField] private GameAudioSetting setting;
+		[SerializeField] private CanNegativeAudioSource audioSource = default!;
+		[SerializeField] private GameAudioSetting setting = default!;
+
+		public event Action? OnTimeJump;
 
 		public T3Time AudioTime
 		{
 			get => audioSource.time;
-			set => audioSource.time = (T3Time)Mathf.Max(setting.timeBeforePlaying, Mathf.Min(AudioLength, value));
+			set
+			{
+				audioSource.time = Mathf.Clamp(value, setting.timeBeforePlaying, AudioLength) / 1000f;
+				OnTimeJump?.Invoke();
+			}
 		}
 
 		public T3Time ChartTime
@@ -68,5 +77,7 @@ namespace MusicGame.Gameplay.Audio
 			audioSource.Stop();
 			audioSource.time = time;
 		}
+
+		public T3Time AudioToChart(T3Time audioTime) => audioTime - setting.audioDeviation - Offset;
 	}
 }

@@ -1,21 +1,31 @@
 using System.Collections.Generic;
-using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Audio;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Audio.UI
 {
-	public class PitchButton : MonoBehaviour
+	public class PitchButton : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
 		[SerializeField] private Button pitchButton;
 		[SerializeField] private TMP_Text speedText;
 
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new ButtonRegistrar(pitchButton, OnPitchButtonClick)
+		};
+
 		// Private
-		// TODO: Extract to setting
-		private readonly List<float> speeds = new() { 1.00f, 0.75f, 0.50f, 0.25f };
+		private GameAudioPlayer music;
+		private readonly List<float> speeds = new() { 1.00f, 0.75f, 0.50f, 0.25f }; // TODO: Extract to setting
 		private int speedIndex = 0;
 
 		private float Pitch
@@ -23,37 +33,18 @@ namespace MusicGame.ChartEditor.Audio.UI
 			set => speedText.text = $"{Mathf.RoundToInt(value * 100)}%";
 		}
 
-		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			pitchButton.interactable = true;
-		}
+		// Defined Functions
+		[Inject]
+		private void Construct(GameAudioPlayer music) => this.music = music;
 
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		// Event Handlers
 		private void OnPitchButtonClick()
 		{
 			speedIndex = (speedIndex + 1) % speeds.Count;
-			LevelManager.Instance.Music.Pitch = speeds[speedIndex];
-		}
-
-		// System Functions
-		void Awake()
-		{
-			pitchButton.onClick.AddListener(OnPitchButtonClick);
-		}
-
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void Update()
-		{
-			Pitch = LevelManager.Instance.Music.Pitch;
+			music.Pitch = speeds[speedIndex];
+			Pitch = music.Pitch;
 		}
 	}
 }
