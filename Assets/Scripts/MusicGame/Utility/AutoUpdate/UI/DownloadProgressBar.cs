@@ -1,10 +1,10 @@
 #nullable enable
 
 using System.ComponentModel;
-using MusicGame.ChartEditor.Message;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Log;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +36,7 @@ namespace MusicGame.Utility.AutoUpdate.UI
 
 			if (!isDownloading) return;
 			var descriptor = versionStatusDataContainer.TargetVersionDescriptor;
-			HeaderMessage.Show($"正在下载v{descriptor.Version}版本制谱器", HeaderMessage.MessageType.Info);
+			T3Logger.Log("Notice", $"AutoUpdate_DownloadStart|{descriptor.Version}", T3LogType.Info);
 		}
 
 		private void OnDownloadProgressChanged(object sender, PropertyChangedEventArgs e)

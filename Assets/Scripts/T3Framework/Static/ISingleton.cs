@@ -12,7 +12,8 @@ namespace T3Framework.Static
 
 		public static void Register(string key, Func<Type, object> factory) => factories[key] = factory;
 
-		public static Func<Type, object> GetFactory(string key) => factories[key]!;
+		public static Func<Type, object> GetFactory(string key) =>
+			factories.TryGetValue(key, out var factory) ? factory : Activator.CreateInstance;
 	}
 
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
@@ -46,15 +47,9 @@ namespace T3Framework.Static
 							attribute = interfaceType.GetCustomAttribute<SingletonFactoryAttribute>(true);
 							if (attribute is not null) break;
 						}
-
-						if (attribute is null)
-						{
-							throw new InvalidOperationException(
-								$"Type {type.FullName} does not have a SingletonFactoryAttribute.");
-						}
 					}
 
-					var factory = SingletonFactories.GetFactory(attribute.Key);
+					var factory = SingletonFactories.GetFactory(attribute?.Key ?? string.Empty);
 					var created = factory.Invoke(type);
 					if (created is not T factoryInstance)
 					{

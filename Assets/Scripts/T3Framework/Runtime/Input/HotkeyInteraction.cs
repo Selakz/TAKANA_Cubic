@@ -32,12 +32,7 @@ namespace T3Framework.Runtime.Input
 					if (keyPressing && modifierMatched) context.Started();
 					break;
 				case InputActionPhase.Started:
-					if (!keyPressing)
-					{
-						if (modifierMatched) context.Performed();
-						else context.Canceled();
-					}
-
+					if (!keyPressing) context.Performed();
 					break;
 				case InputActionPhase.Performed:
 					break;

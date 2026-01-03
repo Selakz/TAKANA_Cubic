@@ -2,8 +2,8 @@
 
 using System;
 using Cysharp.Threading.Tasks;
-using MusicGame.ChartEditor.Message;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Log;
 using UnityEngine;
 
 namespace MusicGame.Utility.AutoUpdate
@@ -77,7 +77,7 @@ namespace MusicGame.Utility.AutoUpdate
 			if (string.IsNullOrEmpty(packPath))
 			{
 				versionStatusDataContainer.Property.Value = VersionStatus.HasUpdateAndNotDownloaded;
-				HeaderMessage.Show("下载失败，请手动检查更新", HeaderMessage.MessageType.Warn);
+				T3Logger.Log("Notice", "AutoUpdate_DownloadFail", T3LogType.Warn);
 			}
 			else
 			{

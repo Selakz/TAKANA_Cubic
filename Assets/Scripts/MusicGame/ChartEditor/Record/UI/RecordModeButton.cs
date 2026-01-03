@@ -1,10 +1,10 @@
 #nullable enable
 
-using MusicGame.ChartEditor.Message;
 using T3Framework.Preset.DataContainers;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Log;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +30,7 @@ namespace MusicGame.ChartEditor.Record.UI
 				fullScreenCanvas.SetActive(isInRecordMode);
 				playfieldCamera.rect = isInRecordMode ? new Rect(0, 0, 1, 1) : viewportRect;
 
-				if (isInRecordMode) HeaderMessage.Show("鼠标滑至下方以呼出全屏模式UI", HeaderMessage.MessageType.Info);
+				if (isInRecordMode) T3Logger.Log("Notice", "App_RecordModeHint", T3LogType.Info);
 			})
 		};
 	}

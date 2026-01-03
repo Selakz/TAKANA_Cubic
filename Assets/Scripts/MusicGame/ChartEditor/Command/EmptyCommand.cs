@@ -6,6 +6,8 @@ namespace MusicGame.ChartEditor.Command
 
 		public string Name => string.Empty;
 
+		public bool IsSkippable => true;
+
 		public void Do()
 		{
 		}

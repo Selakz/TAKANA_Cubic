@@ -1,10 +1,10 @@
 #nullable enable
 
 using Cysharp.Threading.Tasks;
-using MusicGame.ChartEditor.Message;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Log;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +26,7 @@ namespace MusicGame.Utility.AutoUpdate.UI
 			var hasUpdate = await handler.BeginCheckUpdateProcess();
 			if (!hasUpdate)
 			{
-				HeaderMessage.Show("当前版本已为最新！", HeaderMessage.MessageType.Success);
+				T3Logger.Log("Notice", "AutoUpdate_Newest", T3LogType.Success);
 			}
 		}
 	}

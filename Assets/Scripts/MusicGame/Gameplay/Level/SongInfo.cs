@@ -10,25 +10,25 @@ namespace MusicGame.Gameplay.Level
 	/// <summary> All about a song </summary>
 	public class SongInfo : ISetting<SongInfo>
 	{
-		[Description("歌曲的唯一标识符")]
+		[Description("Id")]
 		public string Id { get; set; } = string.Empty;
 
-		[Description("展示的曲名")]
+		[Description("Title")]
 		public I18NString Title { get; set; } = new();
 
-		[Description("展示的曲师")]
+		[Description("Composer")]
 		public I18NString Composer { get; set; } = new();
 
-		[Description("展示的画师")]
+		[Description("Illustrator")]
 		public I18NString Illustrator { get; set; } = new();
 
-		[Description("展示的BPM信息")]
+		[Description("BpmDisplay")]
 		public string BpmDisplay { get; set; } = string.Empty;
 
-		[Description("对歌曲的描述")]
+		[Description("Description")]
 		public I18NString Description { get; set; } = new();
 
-		[Description("各难度信息")]
+		[Description("Difficulties")]
 		public Dictionary<int, DifficultyInfo> Difficulties { get; set; } = new();
 	}
 }

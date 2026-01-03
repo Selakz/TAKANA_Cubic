@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using T3Framework.Runtime.Event;
 using TMPro;
 using UnityEngine.Events;
@@ -13,6 +12,7 @@ namespace T3Framework.Preset.Event
 		public enum RegisterTarget
 		{
 			OnEndEdit,
+			OnSelect,
 			OnDeselect,
 			OnValueChanged,
 		}
@@ -33,6 +33,7 @@ namespace T3Framework.Preset.Event
 			UnityEvent<string> targetEvent = registerTarget switch
 			{
 				RegisterTarget.OnEndEdit => inputField.onEndEdit,
+				RegisterTarget.OnSelect => inputField.onSelect,
 				RegisterTarget.OnDeselect => inputField.onDeselect,
 				RegisterTarget.OnValueChanged => inputField.onValueChanged,
 				_ => null!
@@ -46,6 +47,7 @@ namespace T3Framework.Preset.Event
 			UnityEvent<string> targetEvent = registerTarget switch
 			{
 				RegisterTarget.OnEndEdit => inputField.onEndEdit,
+				RegisterTarget.OnSelect => inputField.onSelect,
 				RegisterTarget.OnDeselect => inputField.onDeselect,
 				RegisterTarget.OnValueChanged => inputField.onValueChanged,
 				_ => null!

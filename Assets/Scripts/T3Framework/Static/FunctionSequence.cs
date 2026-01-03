@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace T3Framework.Static
 {
@@ -33,13 +32,11 @@ namespace T3Framework.Static
 			{
 				if (shouldContinue)
 				{
-					Debug.Log($"invoke {priority}'s function");
 					shouldContinue = tuple.Item1.Invoke();
 					if (!shouldContinue) stopPriority = priority;
 				}
 				else
 				{
-					Debug.Log($"invoke {priority}'s action");
 					tuple.Item2?.Invoke(stopPriority);
 				}
 			}

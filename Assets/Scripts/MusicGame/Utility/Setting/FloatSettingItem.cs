@@ -14,7 +14,6 @@ namespace MusicGame.Utility.Setting
 	public class FloatSettingItem : SingleValueSettingItem<float>
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_Text descriptionText = default!;
 		[SerializeField] private TMP_InputField valueInputField = default!;
 		[SerializeField] private string valueFormat = "0.000";
 
@@ -26,19 +25,13 @@ namespace MusicGame.Utility.Setting
 
 		protected override void InitializeSucceed()
 		{
-			var descriptionAttribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
-			descriptionText.text = descriptionAttribute is null ? string.Empty : descriptionAttribute.Description;
+			base.InitializeSucceed();
 			valueInputField.text = DisplayValue.ToString(valueFormat);
 
 			var minValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MinValueAttribute>();
 			if (minValueAttribute is not null) minValue = minValueAttribute.MinValue;
 			var maxValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MaxValueAttribute>();
 			if (maxValueAttribute is not null) maxValue = maxValueAttribute.MaxValue;
-		}
-
-		protected override void InitializeFail()
-		{
-			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
 		}
 
 		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)

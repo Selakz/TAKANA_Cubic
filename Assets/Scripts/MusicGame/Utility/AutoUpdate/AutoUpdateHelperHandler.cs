@@ -2,10 +2,10 @@
 
 using System.IO;
 using Cysharp.Threading.Tasks;
-using MusicGame.ChartEditor.Message;
 using Semver;
 using T3Framework.Preset.DataContainers;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Log;
 using UnityEngine;
 
 namespace MusicGame.Utility.AutoUpdate
@@ -29,7 +29,7 @@ namespace MusicGame.Utility.AutoUpdate
 #endif
 			if (!await AutoUpdateHelperHelper.UpdateUpdateHelper(updaterVersion))
 			{
-				HeaderMessage.Show("自动更新工具损坏，重新下载制谱器以启用自动更新", HeaderMessage.MessageType.Error);
+				T3Logger.Log("Notice", "AutoUpdate_UpdaterBroken", T3LogType.Error);
 				return false;
 			}
 
@@ -51,13 +51,13 @@ namespace MusicGame.Utility.AutoUpdate
 					Application.Quit();
 					break;
 				case AutoUpdateHelperHelper.UpdatePackResult.ExecutionError:
-					HeaderMessage.Show("更新过程中发生错误", HeaderMessage.MessageType.Error);
+					T3Logger.Log("Notice", "AutoUpdate_Updater_ExecutionError", T3LogType.Error);
 					break;
 				case AutoUpdateHelperHelper.UpdatePackResult.InvalidVersion:
-					HeaderMessage.Show($"待安装的版本{version}无效", HeaderMessage.MessageType.Error);
+					T3Logger.Log("Notice", $"AutoUpdate_Updater_InvalidVersion|{version}", T3LogType.Error);
 					break;
 				case AutoUpdateHelperHelper.UpdatePackResult.InvalidPackage:
-					HeaderMessage.Show("待安装的制谱器文件损坏，请重新下载", HeaderMessage.MessageType.Error);
+					T3Logger.Log("Notice", "AutoUpdate_Updater_InvalidPackage", T3LogType.Error);
 					break;
 				case AutoUpdateHelperHelper.UpdatePackResult.ProjectFound:
 					isInConfirmStateDataContainer.Property.Value = true;
@@ -83,7 +83,7 @@ namespace MusicGame.Utility.AutoUpdate
 			{
 				case AutoUpdateHelperHelper.SavePackResult.Success:
 					nextStatus = VersionStatus.HasUpdateAndHasDownloaded;
-					HeaderMessage.Show($"v{version}版本制谱器下载成功！", HeaderMessage.MessageType.Success);
+					T3Logger.Log("Notice", $"AutoUpdate_DownloadSuccess", T3LogType.Success);
 					break;
 				case AutoUpdateHelperHelper.SavePackResult.ExecutionError:
 					nextStatus = currentStatus switch
@@ -91,7 +91,7 @@ namespace MusicGame.Utility.AutoUpdate
 						VersionStatus.NotChecked => VersionStatus.NotChecked,
 						_ => VersionStatus.HasUpdateAndNotDownloaded
 					};
-					HeaderMessage.Show("保存新版本制谱器时出现错误", HeaderMessage.MessageType.Error);
+					T3Logger.Log("Notice", "AutoUpdate_SaveFail", T3LogType.Error);
 					break;
 				case AutoUpdateHelperHelper.SavePackResult.InvalidPackage:
 					nextStatus = currentStatus switch
@@ -99,7 +99,7 @@ namespace MusicGame.Utility.AutoUpdate
 						VersionStatus.NotChecked => VersionStatus.NotChecked,
 						_ => VersionStatus.HasUpdateAndNotDownloaded
 					};
-					HeaderMessage.Show("下载的新版本制谱器文件已损坏，请重新下载", HeaderMessage.MessageType.Error);
+					T3Logger.Log("Notice", "AutoUpdate_EditorBroken", T3LogType.Error);
 					break;
 			}
 

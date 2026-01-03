@@ -9,7 +9,6 @@ using T3Framework.Runtime.Event;
 using T3Framework.Runtime.ListRender;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Setting;
-using TMPro;
 using UnityEngine;
 
 namespace MusicGame.Utility.Setting
@@ -25,7 +24,6 @@ namespace MusicGame.Utility.Setting
 		: SingleValueSettingItem<List<TData>> where TItem : MonoBehaviour, IListItemSettingItem<TData>
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_Text descriptionText = default!;
 		[SerializeField] private ListRendererInt listRenderer = default!;
 
 		/// <summary> Will only be called once to initialize list renderer. </summary>
@@ -33,9 +31,7 @@ namespace MusicGame.Utility.Setting
 
 		protected override void InitializeSucceed()
 		{
-			var descriptionAttribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
-			descriptionText.text = descriptionAttribute is null ? string.Empty : descriptionAttribute.Description;
-
+			base.InitializeSucceed();
 			var maxLengthAttribute = TargetPropertyInfo!.GetCustomAttribute<MaxLengthAttribute>();
 			if (maxLengthAttribute is not null) maxLength = maxLengthAttribute.MaxLength;
 
@@ -46,11 +42,6 @@ namespace MusicGame.Utility.Setting
 				item.Data = data;
 				item.OnListContentChanged += ItemOnOnListContentChanged;
 			}
-		}
-
-		protected override void InitializeFail()
-		{
-			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
 		}
 
 		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)

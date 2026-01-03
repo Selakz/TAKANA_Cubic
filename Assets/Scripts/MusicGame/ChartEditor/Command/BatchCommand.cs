@@ -1,22 +1,27 @@
+#nullable enable
+
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MusicGame.ChartEditor.Command
 {
 	public class BatchCommand : ICommand
 	{
-		public string Name { get; private set; }
+		public string Name { get; }
 
-		private readonly ICommand[] commands = null;
+		public bool IsSkippable => Commands.Length == 0;
 
-		public BatchCommand(ICommand[] commands, string description)
+		public ICommand[] Commands { get; }
+
+		public BatchCommand(IEnumerable<ICommand> commands, string description)
 		{
-			this.commands = commands;
-			Name = commands.Length == 1 ? commands[0].Name : description;
+			Commands = commands.ToArray();
+			Name = description;
 		}
 
 		public void Do()
 		{
-			foreach (var c in commands)
+			foreach (var c in Commands)
 			{
 				c.Do();
 			}
@@ -24,7 +29,7 @@ namespace MusicGame.ChartEditor.Command
 
 		public void Undo()
 		{
-			foreach (var c in commands.Reverse())
+			foreach (var c in Commands.Reverse())
 			{
 				c.Undo();
 			}

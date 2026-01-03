@@ -3,8 +3,10 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using T3Framework.Runtime.I18N;
 using T3Framework.Static.Event;
 using T3Framework.Static.Setting;
+using TMPro;
 using UnityEngine;
 
 namespace T3Framework.Runtime.Setting
@@ -12,6 +14,8 @@ namespace T3Framework.Runtime.Setting
 	public abstract class SingleValueSettingItem<T> : T3MonoBehaviour, ISettingItem
 	{
 		// Serializable and Public
+		[SerializeField] private TMP_Text descriptionText = default!;
+
 		public T? DisplayValue
 		{
 			get
@@ -50,6 +54,8 @@ namespace T3Framework.Runtime.Setting
 
 		/// <summary> If not null, it's guaranteed to be <see cref="ISingletonSetting{T}"/>. </summary>
 		public Type? SettingType { get; private set; }
+
+		public Type? ConcreteType { get; private set; }
 
 		public PropertyInfo? TargetPropertyInfo { get; private set; }
 
@@ -100,6 +106,7 @@ namespace T3Framework.Runtime.Setting
 
 			// 1. Get the type
 			Type? type = Type.GetType(FullClassName);
+			ConcreteType = type;
 			if (type is null)
 			{
 				Debug.LogWarning($"Could not find class of type {fullClassName}");
@@ -195,12 +202,21 @@ namespace T3Framework.Runtime.Setting
 		/// <summary>
 		/// Initialization is successful and all properties are finely initialized.
 		/// </summary>
-		protected abstract void InitializeSucceed();
+		protected virtual void InitializeSucceed()
+		{
+			var descriptionAttribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
+			descriptionText.text = descriptionAttribute is null
+				? string.Empty
+				: I18NSystem.GetText($"Setting_{ConcreteType!.Name}_{descriptionAttribute.Description}");
+		}
 
 		/// <summary>
 		/// Initialization failed, the target property may be null.
 		/// </summary>
-		protected abstract void InitializeFail();
+		protected virtual void InitializeFail()
+		{
+			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
+		}
 
 		/// <summary>
 		/// The action when the target property's value changed.

@@ -1,6 +1,7 @@
 #nullable enable
 
 using T3Framework.Runtime.Input;
+using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ namespace MusicGame.Utility.Setting
 		private void OnPopupButtonClick()
 		{
 			popupObject.SetActive(isOpen);
-			InputManager.Instance.GlobalInputEnabled = !isOpen;
+			ISingleton<InputManager>.Instance.GlobalInputEnabled.Value = !isOpen;
 		}
 
 		// System Functions

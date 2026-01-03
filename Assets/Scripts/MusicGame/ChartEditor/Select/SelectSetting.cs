@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace MusicGame.ChartEditor.Select
 {
-	[Description("点选设置")]
+	[Description("Header")]
 	public class SelectSetting : ISingletonSetting<SelectSetting>
 	{
-		[Description("轨道被选中时的颜色")]
+		[Description("TrackSelectedColor")]
 		public NotifiableProperty<Color> TrackSelectedColor { get; set; } = new(new(0.01f, 0f, 0.5f, 1f));
 	}
 }

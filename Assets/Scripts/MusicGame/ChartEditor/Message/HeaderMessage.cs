@@ -43,7 +43,7 @@ namespace MusicGame.ChartEditor.Message
 				Show(I18NSystem.GetText("App_Exception"), MessageType.Error);
 		}
 
-		private static void OnLogHeader(string message, Enum type)
+		private static void OnLogNotice(string message, Enum type)
 		{
 			var split = message.Split('|');
 			var text = I18NSystem.GetText(split[0], split[1..]);
@@ -52,17 +52,22 @@ namespace MusicGame.ChartEditor.Message
 		}
 
 		// System Functions
+		void Start()
+		{
+			messageText.text = I18NSystem.GetText("App_EditorStartup");
+		}
+
 		void OnEnable()
 		{
 			Instance = this;
 			Application.logMessageReceived += ShowException;
-			T3Logger.AddListener("Header", OnLogHeader);
+			T3Logger.AddListener("Notice", OnLogNotice);
 		}
 
 		void OnDisable()
 		{
 			Application.logMessageReceived -= ShowException;
-			T3Logger.RemoveListener("Header", OnLogHeader);
+			T3Logger.RemoveListener("Notice", OnLogNotice);
 		}
 	}
 

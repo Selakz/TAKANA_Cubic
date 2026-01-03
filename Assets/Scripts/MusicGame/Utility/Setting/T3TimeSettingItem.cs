@@ -13,24 +13,17 @@ namespace MusicGame.Utility.Setting
 	public class T3TimeSettingItem : SingleValueSettingItem<T3Time>
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_Text descriptionText = default!;
 		[SerializeField] private TMP_InputField valueInputField = default!;
 
 		protected override void InitializeSucceed()
 		{
-			var attribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
-			descriptionText.text = attribute is null ? string.Empty : attribute.Description;
+			base.InitializeSucceed();
 			valueInputField.text = DisplayValue.ToString();
 
 			var minValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MinValueAttribute>();
 			if (minValueAttribute is not null) minValue = Mathf.RoundToInt(minValueAttribute.MinValue);
 			var maxValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MaxValueAttribute>();
 			if (maxValueAttribute is not null) maxValue = Mathf.RoundToInt(maxValueAttribute.MaxValue);
-		}
-
-		protected override void InitializeFail()
-		{
-			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
 		}
 
 		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)

@@ -8,16 +8,17 @@ using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLayer
 {
-	[Description("图层设置")]
+	[Description("Header")]
 	public class TrackLayerSetting : ISingletonSetting<TrackLayerSetting>
 	{
-		[Description("默认图层的ID，一般情况下无需关注")]
+		[HideInGame]
+		[Description("DefaultLayerId")]
 		public NotifiableProperty<int> DefaultLayerId { get; set; } = new(0);
 
-		[Description("默认图层的名称")]
-		public NotifiableProperty<string> DefaultLayerName { get; set; } = new("默认图层");
+		[Description("DefaultLayerName")]
+		public NotifiableProperty<string> DefaultLayerName { get; set; } = new("榛樿鍥惧眰");
 
-		[Description("图层可用的颜色定义")]
+		[Description("ColorDefinitions")]
 		[MaxLength(16)]
 		public NotifiableProperty<List<Color?>> ColorDefinitions { get; set; } = new(new()
 		{
@@ -39,15 +40,15 @@ namespace MusicGame.ChartEditor.TrackLayer
 			UnityParser.ParseHexAlphaTuple("(37A64C, 1.00)")
 		});
 
-		[Description("新建的图层默认使用的图层颜色")]
+		[Description("DefaultColor")]
 		public NotifiableProperty<Color> DefaultColor { get; set; } = new(Color.black);
 
-		[Description("选中的图层的透明度倍率，范围为[0, 1]")]
+		[Description("SelectLayerOpacityRatio")]
 		[MinValue(0)]
 		[MaxValue(1)]
 		public NotifiableProperty<float> SelectLayerOpacityRatio { get; set; } = new(1.0f);
 
-		[Description("未选中的图层的透明度倍率，范围为[0, 1]")]
+		[Description("UnselectLayerOpacityRatio")]
 		[MinValue(0)]
 		[MaxValue(1)]
 		public NotifiableProperty<float> UnselectLayerOpacityRatio { get; set; } = new(0.1f);

@@ -10,6 +10,7 @@ namespace T3Framework.Runtime.Input
 	public readonly struct InputRegistrar : IEventRegistrar
 	{
 		private const string GeneralSequenceName = "<@GeneralSequence>";
+		private const string GeneralPrioritySequenceName = "<@GeneralPrioritySequence>";
 		private static int generalPriority = 0;
 
 		private readonly string actionMapName;
@@ -20,6 +21,7 @@ namespace T3Framework.Runtime.Input
 		private readonly Func<InputAction.CallbackContext, bool> action;
 		private readonly Action<int>? notify;
 
+		// No Priority
 		public InputRegistrar(string actionMapName, string actionName, Action action,
 			InputActionPhase phase = InputActionPhase.Performed)
 			: this(actionMapName, actionName, GeneralSequenceName, generalPriority++,
@@ -39,6 +41,21 @@ namespace T3Framework.Runtime.Input
 					action.Invoke(context);
 					return true;
 				}, phase, delegate { })
+		{
+		}
+
+		// Have Priority
+		public InputRegistrar(string actionMapName, string actionName, int priority,
+			Func<bool> action, InputActionPhase phase = InputActionPhase.Performed, Action<int>? notify = null)
+			: this(actionMapName, actionName, GeneralPrioritySequenceName, priority, _ => action.Invoke(), phase,
+				notify)
+		{
+		}
+
+		public InputRegistrar(string actionMapName, string actionName, int priority,
+			Func<InputAction.CallbackContext, bool> action, InputActionPhase phase = InputActionPhase.Performed,
+			Action<int>? notify = null)
+			: this(actionMapName, actionName, GeneralPrioritySequenceName, priority, action, phase, notify)
 		{
 		}
 
@@ -64,14 +81,14 @@ namespace T3Framework.Runtime.Input
 
 		public void Register()
 		{
-			ISingleton<NewInputManager>.Instance.Register
+			ISingleton<InputManager>.Instance.Register
 				(actionMapName, actionName, sequenceName, priority, action, notify, phase);
 		}
 
 		public void Unregister()
 		{
-			ISingleton<NewInputManager>.Instance.Unregister
-				(actionMapName, actionName, sequenceName, priority);
+			ISingleton<InputManager>.Instance.Unregister
+				(actionMapName, actionName, sequenceName, priority, phase);
 		}
 	}
 }

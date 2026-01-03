@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.I18N;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +37,9 @@ namespace MusicGame.Utility.Setting
 					var settingType = Type.GetType(settingClassName);
 					if (settingType is null) return;
 					var description = settingType.GetCustomAttribute<DescriptionAttribute>();
-					settingTabLabel.text = description is null ? settingType.Name : description.Description;
+					settingTabLabel.text = description is null
+						? settingType.Name
+						: I18NSystem.GetText($"Setting_{settingType.Name}_{description.Description}");
 					if (settingItemGenerator != null)
 					{
 						settingItemGenerator.SettingClassName = settingClassName;

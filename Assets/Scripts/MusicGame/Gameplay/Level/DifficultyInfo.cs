@@ -8,10 +8,10 @@ namespace MusicGame.Gameplay.Level
 {
 	public class DifficultyInfo : ISetting<DifficultyInfo>
 	{
-		[Description("展示的难度等级文字")]
+		[Description("LevelDisplay")]
 		public string LevelDisplay { get; set; } = "00";
 
-		[Description("展示的曲师信息")]
+		[Description("Charter")]
 		public I18NString Charter { get; set; } = new();
 	}
 }

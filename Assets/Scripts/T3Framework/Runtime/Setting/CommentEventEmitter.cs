@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
-using UnityEngine;
+using T3Framework.Runtime.I18N;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
@@ -60,7 +60,7 @@ namespace T3Framework.Runtime.Setting
 				var attr = property.GetCustomAttribute<DescriptionAttribute>();
 				if (attr != null)
 				{
-					commentMap[property.Name] = attr.Description;
+					commentMap[property.Name] = I18NSystem.GetText($"Setting_{type.Name}_{attr.Description}");
 				}
 			}
 

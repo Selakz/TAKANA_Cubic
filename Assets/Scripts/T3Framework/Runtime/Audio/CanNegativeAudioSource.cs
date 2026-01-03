@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 
 // ReSharper disable InconsistentNaming
@@ -6,7 +8,9 @@ namespace T3Framework.Runtime.Audio
 	[RequireComponent(typeof(AudioSource))]
 	public class CanNegativeAudioSource : MonoBehaviour
 	{
-		// Public
+		// Serializable and Public
+		[SerializeField] private AudioSource audioSource = default!;
+
 		public float time
 		{
 			get
@@ -42,7 +46,7 @@ namespace T3Framework.Runtime.Audio
 					isPseudoPlaying = false;
 					remainingNegativeTime = 0;
 					// Time assignment fails when audio ends, stops and jumps to 0, So you need to load it again.
-					if (!audioSource.isPlaying && audioSource.time == 0f)
+					if (audioSource is { isPlaying: false, time: 0f })
 					{
 						audioSource.Play();
 						audioSource.Pause();
@@ -74,7 +78,6 @@ namespace T3Framework.Runtime.Audio
 		}
 
 		// Private
-		private AudioSource audioSource;
 		private double scheduledDspTime; // the time when the audio actually played
 		private double remainingNegativeTime; // only be set to positive when time is set to negative and is not playing
 		private bool isPseudoPlaying;
@@ -108,7 +111,6 @@ namespace T3Framework.Runtime.Audio
 		// System Functions
 		private void Awake()
 		{
-			audioSource = GetComponent<AudioSource>();
 			remainingNegativeTime = 0;
 			isPseudoPlaying = false;
 		}

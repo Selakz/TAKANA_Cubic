@@ -14,7 +14,6 @@ namespace MusicGame.Utility.Setting
 	public class IntegerSettingItem : SingleValueSettingItem<int>
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_Text descriptionText = default!;
 		[SerializeField] private TMP_InputField valueInputField = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -25,19 +24,13 @@ namespace MusicGame.Utility.Setting
 
 		protected override void InitializeSucceed()
 		{
-			var descriptionAttribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
-			descriptionText.text = descriptionAttribute is null ? string.Empty : descriptionAttribute.Description;
+			base.InitializeSucceed();
 			valueInputField.text = DisplayValue.ToString();
 
 			var minValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MinValueAttribute>();
 			if (minValueAttribute is not null) minValue = Mathf.RoundToInt(minValueAttribute.MinValue);
 			var maxValueAttribute = TargetPropertyInfo!.GetCustomAttribute<MaxValueAttribute>();
 			if (maxValueAttribute is not null) maxValue = Mathf.RoundToInt(maxValueAttribute.MaxValue);
-		}
-
-		protected override void InitializeFail()
-		{
-			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
 		}
 
 		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)
