@@ -24,5 +24,13 @@ namespace T3Framework.Runtime.Event
 		{
 			unregisterAction?.Invoke();
 		}
+
+		public static CustomRegistrar Generic<T>(Action<T> registerAction, Action<T> unregisterAction, T doAction)
+		{
+			return new CustomRegistrar(RegisterAction, UnregisterAction);
+
+			void RegisterAction() => registerAction.Invoke(doAction);
+			void UnregisterAction() => unregisterAction.Invoke(doAction);
+		}
 	}
 }

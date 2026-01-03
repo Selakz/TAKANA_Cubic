@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.ComponentModel;
 using T3Framework.Runtime.Event;
 using T3Framework.Static.Event;
@@ -15,6 +16,12 @@ namespace T3Framework.Preset.Event
 		{
 			this.property = property;
 			this.handler = handler;
+		}
+
+		public PropertyRegistrar(NotifiableProperty<T> property, Action handler)
+		{
+			this.property = property;
+			this.handler = (_, _) => handler.Invoke();
 		}
 
 		public void Register()
