@@ -878,13 +878,14 @@ GameObject:
   - component: {fileID: 3225089910114752611}
   - component: {fileID: 4416583575263138163}
   - component: {fileID: 8839080945320233494}
+  - component: {fileID: 3298107811669140627}
   m_Layer: 5
   m_Name: EditV1EItemContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5286421331068406810
 RectTransform:
   m_ObjectHideFlags: 0
@@ -959,12 +960,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd2a2938a6b34b7dba8bf23abd7ac2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  background: {fileID: 0}
-  timeInputField: {fileID: 3592522029346606219}
-  positionInputField: {fileID: 433811612864645425}
-  easeInputField: {fileID: 2156824838724470722}
-  addButton: {fileID: 8001102756837364605}
-  removeButton: {fileID: 4346280041799633722}
+  <Background>k__BackingField: {fileID: 4416583575263138163}
+  <TimeInputField>k__BackingField: {fileID: 3592522029346606219}
+  <PositionInputField>k__BackingField: {fileID: 433811612864645425}
+  <EaseInputField>k__BackingField: {fileID: 2156824838724470722}
+  <AddButton>k__BackingField: {fileID: 8001102756837364605}
+  <RemoveButton>k__BackingField: {fileID: 4346280041799633722}
+--- !u!114 &3298107811669140627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3243811557639799165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 40
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4287814103821082703
 GameObject:
   m_ObjectHideFlags: 0

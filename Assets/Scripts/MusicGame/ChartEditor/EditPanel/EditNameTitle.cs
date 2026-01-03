@@ -1,5 +1,11 @@
-using MusicGame.ChartEditor.EditingComponents;
-using T3Framework.Runtime.Extensions;
+#nullable enable
+
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using MusicGame.Gameplay.Chart;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime.Event;
 using TMPro;
 using UnityEngine;
 
@@ -8,57 +14,108 @@ namespace MusicGame.ChartEditor.EditPanel
 	public class EditNameTitle : MonoBehaviour
 	{
 		// Serializable and Public
-		[SerializeField] private GameObject singleIdTitleRoot;
-		[SerializeField] private TMP_Text singleIdText;
-		[SerializeField] private GameObject compositeTitleRoot;
-		[SerializeField] private TMP_Text compositeIdText;
-		[SerializeField] private TMP_InputField nameInputField;
+		[field: SerializeField]
+		public GameObject SingleIdTitleRoot { get; set; } = default!;
 
-		public EditingComponent Model
+		[field: SerializeField]
+		public GameObject CompositeTitleRoot { get; set; } = default!;
+
+		[field: SerializeField]
+		public TMP_Text SingleIdText { get; set; } = default!;
+
+		[field: SerializeField]
+		public TMP_InputField CompositeIdInputField { get; set; } = default!;
+
+		[field: SerializeField]
+		public TMP_InputField NameInputField { get; set; } = default!;
+	}
+
+	public class NameTitleRegistrar : IEventRegistrar
+	{
+		private readonly EditNameTitle nameTitle;
+		private readonly ChartComponent component;
+		private readonly IEventRegistrar[] registrars;
+		private CancellationTokenSource? cts;
+
+		public NameTitleRegistrar(EditNameTitle nameTitle, ChartComponent component)
 		{
-			get => model;
-			set
+			this.nameTitle = nameTitle;
+			this.component = component;
+			registrars = new IEventRegistrar[]
 			{
-				model = value;
-				OnNameInputFieldEndEdit(model.Properties.Get("name", string.Empty));
-			}
+				CustomRegistrar.Generic<EventHandler>(
+					e => component.OnComponentUpdated += e,
+					e => component.OnComponentUpdated -= e,
+					(_, _) =>
+					{
+						nameTitle.SingleIdText.text = component.Id.ToString();
+						nameTitle.CompositeIdInputField.SetTextWithoutNotify(component.Id.ToString());
+						nameTitle.NameInputField.SetTextWithoutNotify(component.Name ?? string.Empty);
+					}),
+				new InputFieldRegistrar(nameTitle.CompositeIdInputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+					content =>
+					{
+						if (int.TryParse(content, out int id) && id != component.Id) component.Id = id;
+						else nameTitle.CompositeIdInputField.SetTextWithoutNotify(component.Id.ToString());
+					}),
+				new InputFieldRegistrar(nameTitle.CompositeIdInputField, InputFieldRegistrar.RegisterTarget.OnSelect,
+					_ =>
+					{
+						cts?.Cancel();
+						nameTitle.SingleIdTitleRoot.SetActive(false);
+						nameTitle.CompositeTitleRoot.SetActive(true);
+					}),
+				new InputFieldRegistrar(nameTitle.CompositeIdInputField, InputFieldRegistrar.RegisterTarget.OnDeselect,
+					_ =>
+					{
+						cts?.Cancel();
+						cts?.Dispose();
+						cts = new CancellationTokenSource();
+						UniTask.Delay(200, cancellationToken: cts.Token).ContinueWith(UpdateVisible);
+					}),
+				new InputFieldRegistrar(nameTitle.NameInputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+					content =>
+					{
+						var newName = string.IsNullOrWhiteSpace(content) ? null : content;
+						if (newName != component.Name) component.Name = newName;
+					}),
+				new InputFieldRegistrar(nameTitle.NameInputField, InputFieldRegistrar.RegisterTarget.OnSelect,
+					_ =>
+					{
+						cts?.Cancel();
+						nameTitle.SingleIdTitleRoot.SetActive(false);
+						nameTitle.CompositeTitleRoot.SetActive(true);
+					}),
+				new InputFieldRegistrar(nameTitle.NameInputField, InputFieldRegistrar.RegisterTarget.OnDeselect,
+					_ =>
+					{
+						cts?.Cancel();
+						cts?.Dispose();
+						cts = new CancellationTokenSource();
+						UniTask.Delay(200, cancellationToken: cts.Token).ContinueWith(UpdateVisible);
+					})
+			};
 		}
 
-		// Private
-		private EditingComponent model;
-
-		// Event Handlers
-		private void OnNameInputFieldSelect(string content)
+		public void Register()
 		{
-			singleIdTitleRoot.SetActive(false);
-			compositeTitleRoot.SetActive(true);
+			nameTitle.SingleIdText.text = component.Id.ToString();
+			nameTitle.CompositeIdInputField.SetTextWithoutNotify(component.Id.ToString());
+			nameTitle.NameInputField.SetTextWithoutNotify(component.Name ?? string.Empty);
+			nameTitle.SingleIdTitleRoot.SetActive(component.Name is null);
+			nameTitle.CompositeTitleRoot.SetActive(component.Name is not null);
+			foreach (var registrar in registrars) registrar.Register();
 		}
 
-		private void OnNameInputFieldEndEdit(string content)
+		public void Unregister()
 		{
-			if (string.IsNullOrEmpty(content))
-			{
-				Model.Properties.Remove("name");
-				singleIdTitleRoot.SetActive(true);
-				compositeTitleRoot.SetActive(false);
-			}
-			else
-			{
-				Model.Properties["name"] = content;
-				singleIdTitleRoot.SetActive(false);
-				compositeTitleRoot.SetActive(true);
-			}
-
-			singleIdText.text = model.Id.ToString();
-			compositeIdText.text = model.Id.ToString();
-			nameInputField.SetTextWithoutNotify(model.Properties.Get("name", string.Empty));
+			foreach (var registrar in registrars) registrar.Unregister();
 		}
 
-		// System Functions
-		void Awake()
+		private void UpdateVisible()
 		{
-			nameInputField.onEndEdit.AddListener(OnNameInputFieldEndEdit);
-			nameInputField.onSelect.AddListener(OnNameInputFieldSelect);
+			nameTitle.SingleIdTitleRoot.SetActive(component.Name is null);
+			nameTitle.CompositeTitleRoot.SetActive(component.Name is not null);
 		}
 	}
 }
