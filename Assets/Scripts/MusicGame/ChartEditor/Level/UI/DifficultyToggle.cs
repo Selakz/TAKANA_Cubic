@@ -19,7 +19,6 @@ namespace MusicGame.ChartEditor.Level.UI
 	{
 		// Serializable and Public
 		[SerializeField] private int difficulty;
-		[SerializeField] private EditorLevelLoader levelLoader = default!;
 		[SerializeField] private Toggle difficultyToggle = default!;
 		[SerializeField] private TMP_Text difficultyText = default!;
 		[SerializeField] private TMP_InputField levelInputField = default!;
@@ -86,7 +85,14 @@ namespace MusicGame.ChartEditor.Level.UI
 
 		private void OnLevelInputFieldEndEdit(string level)
 		{
-			Level = level;
+			var info = levelInfo.Value;
+			if (info?.SongInfo != null)
+			{
+				var difficulties = info.SongInfo.Difficulties;
+				difficulties.AddIf(difficulty, new(), !difficulties.ContainsKey(difficulty));
+				difficulties[difficulty].LevelDisplay = level;
+				levelInputField.text = level;
+			}
 		}
 	}
 }

@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
-using MusicGame.ChartEditor.Level;
-using MusicGame.Components;
-using MusicGame.Gameplay.Level;
+using MusicGame.ChartEditor.Select;
+using MusicGame.Models.Track;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Static.Event;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
@@ -15,110 +14,127 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 	public class EditingTrackPasteHandler : IPasteHandler
 	{
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
+		private readonly Camera levelCamera;
+		private readonly ChartSelectDataset dataset;
+		private readonly NotifiableProperty<ITimeRetriever> timeRetriever;
+		private readonly NotifiableProperty<IWidthRetriever> widthRetriever;
 
 		public CopyPastePlugin CopyPaste { get; }
 
-		public EditingTrackPasteHandler(CopyPastePlugin copyPastePlugin)
+		public EditingTrackPasteHandler(
+			CopyPastePlugin copyPastePlugin,
+			Camera levelCamera,
+			ChartSelectDataset dataset,
+			NotifiableProperty<ITimeRetriever> timeRetriever,
+			NotifiableProperty<IWidthRetriever> widthRetriever)
 		{
 			CopyPaste = copyPastePlugin;
+			this.levelCamera = levelCamera;
+			this.dataset = dataset;
+			this.timeRetriever = timeRetriever;
+			this.widthRetriever = widthRetriever;
 		}
 
 		public string GetDescription()
 		{
-			int count = CopyPaste.Clipboard.Count(c => c is EditingTrack);
-			return $"已复制{count}个轨道";
+			int count = CopyPaste.Clipboard.Count(c => c.Model is ITrack);
+			return $"Edit_CopyPast_TrackClipboard|{count}";
 		}
 
 		public void Cut()
 		{
-			var toDelete = CopyPaste.Clipboard.Where(c => c is EditingTrack).ToList();
+			var toDelete = CopyPaste.Clipboard.Where(c => c.Model is ITrack).ToList();
 			if (toDelete.Count == 0) return;
-			CommandManager.Instance.Add(new DeleteComponentsCommand(toDelete));
+			CommandManager.Instance.Add(new BatchCommand(
+				toDelete.Select(c => new DeleteComponentCommand(c)),
+				"TrackCut"));
 		}
 
 		public bool Paste(out string message)
 		{
 			var mousePoint = Input.mousePosition;
-			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			if (!levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{
 				message = string.Empty;
 				return false;
 			}
 
-			var tracks = CopyPaste.Clipboard.Where(c => c is EditingTrack).Cast<EditingTrack>().ToList();
+			var tracks = CopyPaste.Clipboard.Where(c => c.Model is ITrack).ToList();
 			if (tracks.Count == 0)
 			{
 				message = IPasteHandler.NoPasteObjectMessage;
 				return false;
 			}
 
-			tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
-			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
-			float left = InScreenEditManager.Instance.WidthRetriever.GetAttachedPosition(gamePoint);
-			float baseTime = tracks[0].TimeInstantiate;
-			float baseLeft = tracks[0].Track.Movement.GetLeftPos(baseTime);
-			List<IComponent> cloneComponents = new();
+			tracks.Sort((a, b) => ((ITrack)a.Model).TimeStart.CompareTo(((ITrack)b.Model).TimeStart));
+			T3Time baseTime = ((ITrack)tracks[0].Model).TimeStart;
+			float baseLeft = ((ITrack)tracks[0].Model).Movement.GetLeftPos(baseTime);
+
+			var commands = new List<ICommand>();
+			T3Time time = timeRetriever.Value.GetTimeStart(gamePoint);
+			float left = widthRetriever.Value.GetAttachedPosition(gamePoint);
+			var distance = time - baseTime;
+			var positionOffset = left - baseLeft;
 			foreach (var track in tracks)
 			{
-				var newTrack = track.Clone(time + track.TimeInstantiate - baseTime, left - baseLeft);
-				cloneComponents.Add(newTrack);
-
-				if (IEditingChartManager.Instance != null)
+				if (!track.IsWithinParentRange(distance))
 				{
-					var children = IEditingChartManager.Instance.GetChildrenComponents(track.Id);
-					foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
-					{
-						var newTime = time + note.Note.TimeJudge - baseTime;
-						var newNote = note.Clone(newTime, newTrack.Track);
-						cloneComponents.Add(newNote);
-					}
+					message = string.Empty;
+					return false;
 				}
+
+				commands.Add(new CloneComponentCommand(track, component =>
+				{
+					component.Parent = track.Parent;
+					component.Nudge(distance);
+					component.UpdateModel(model => ((ITrack)model).Shift(positionOffset));
+				}));
 			}
 
-			CommandManager.Instance.Add(new AddComponentsCommand(cloneComponents));
-			message = "粘贴成功！";
+			CommandManager.Instance.Add(new BatchCommand(commands, "TrackPaste"));
+			message = "Edit_CopyPaste_PasteSuccess";
 			return true;
 		}
 
 		public bool ExactPaste(out string message)
 		{
 			var mousePoint = Input.mousePosition;
-			if (!LevelManager.Instance.LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
+			if (!levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{
 				message = string.Empty;
 				return false;
 			}
 
-			var tracks = CopyPaste.Clipboard.Where(c => c is EditingTrack).Cast<EditingTrack>().ToList();
+			var tracks = CopyPaste.Clipboard.Where(c => c.Model is ITrack).ToList();
 			if (tracks.Count == 0)
 			{
 				message = IPasteHandler.NoPasteObjectMessage;
 				return false;
 			}
 
-			tracks.Sort((a, b) => a.TimeInstantiate.CompareTo(b.TimeInstantiate));
-			T3Time time = InScreenEditManager.Instance.TimeRetriever.GetTimeStart(gamePoint);
-			float baseTime = tracks[0].TimeInstantiate;
-			List<IComponent> cloneComponents = new();
+			tracks.Sort((a, b) => ((ITrack)a.Model).TimeStart.CompareTo(((ITrack)b.Model).TimeStart));
+			T3Time baseTime = ((ITrack)tracks[0].Model).TimeStart;
+
+			var commands = new List<ICommand>();
+			T3Time time = timeRetriever.Value.GetTimeStart(gamePoint);
+			var distance = time - baseTime;
 			foreach (var track in tracks)
 			{
-				var newTrack = track.Track.Clone(time + track.TimeInstantiate - baseTime, 0);
-				cloneComponents.Add(newTrack);
-
-				if (IEditingChartManager.Instance != null)
+				if (!track.IsWithinParentRange(distance))
 				{
-					var children = IEditingChartManager.Instance.GetChildrenComponents(track.Id);
-					foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
-					{
-						var newTime = time + note.Note.TimeJudge - baseTime;
-						var newNote = note.Note.Clone(newTime, newTrack);
-						cloneComponents.Add(newNote);
-					}
+					message = string.Empty;
+					return false;
 				}
+
+				commands.Add(new CloneComponentCommand(track, component =>
+				{
+					component.Parent = track.Parent;
+					component.Nudge(distance);
+				}));
 			}
 
-			CommandManager.Instance.Add(new AddComponentsCommand(cloneComponents));
-			message = "粘贴成功！";
+			CommandManager.Instance.Add(new BatchCommand(commands, "TrackPaste"));
+			message = "Edit_CopyPaste_PasteSuccess";
 			return true;
 		}
 	}

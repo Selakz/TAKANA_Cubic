@@ -1,32 +1,43 @@
-using MusicGame.Gameplay.Level;
+using MusicGame.ChartEditor.Level;
+using MusicGame.Gameplay.Audio;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
-using UnityEngine;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static;
 using UnityEngine.InputSystem;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Audio
 {
-	public class AudioPlayHandler : MonoBehaviour
+	public class AudioPlayHandler : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private LevelManager levelManager;
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputRegistrar("EditorBasic", "Pause", TogglePlay),
+			new InputRegistrar("EditorBasic", "ForcePause", ForcePause)
+		};
+
+		// Private
+		private GameAudioPlayer music;
 
 		// Defined Functions
+		[Inject]
+		private void Construct(GameAudioPlayer music) => this.music = music;
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
 		public void TogglePlay(InputAction.CallbackContext context)
 		{
-			EventManager.Instance.Invoke(levelManager.Music.IsPlaying ? "Level_OnPause" : "Level_OnResume");
+			if (music.IsPlaying) music.Pause();
+			else music.Play();
 		}
 
-		public static void ForcePause(InputAction.CallbackContext context)
+		public void ForcePause(InputAction.CallbackContext context)
 		{
-			EventManager.Instance.Invoke("Level_OnPause");
-		}
-
-		// System Functions
-		void OnEnable()
-		{
-			InputManager.Instance.Register("EditorBasic", "Pause", TogglePlay);
-			InputManager.Instance.Register("EditorBasic", "ForcePause", ForcePause);
+			if (ISingleton<EditorSetting>.Instance.ShouldForcePause) music.Pause();
 		}
 	}
 }

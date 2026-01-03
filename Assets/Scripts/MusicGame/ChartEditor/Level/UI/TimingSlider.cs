@@ -1,38 +1,42 @@
 #nullable enable
 
+using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Event.UI;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Level.UI
 {
-	public class TimingSlider : T3MonoBehaviour
+	public class TimingSlider : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
 		[SerializeField] private PointerUpDownListener pointerUpDownListener = default!;
 		[SerializeField] private Slider slider = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new DataContainerRegistrar<LevelInfo?>(levelInfoContainer, (_, _) =>
+			new PropertyRegistrar<LevelInfo?>(levelInfo, (_, _) =>
 			{
-				var levelInfo = levelInfoContainer.Property.Value;
-				if (levelInfo is null) slider.interactable = false;
+				var info = levelInfo.Value;
+				if (info is null) slider.interactable = false;
 				else
 				{
 					slider.interactable = true;
 					slider.minValue = 0;
-					slider.maxValue = Mathf.Floor(levelInfo.Music!.length * 1000) - 1;
+					slider.maxValue = Mathf.Floor(info.Music!.length * 1000) - 1;
 					slider.wholeNumbers = true;
 				}
 			}),
-			new SliderRegistrar(slider, _ => { EventManager.Instance.Invoke("Level_OnReset", SliderTime); }),
+			new SliderRegistrar(slider, _ => { music.AudioTime = SliderTime; }),
 			new CustomRegistrar(
 				() => pointerUpDownListener.PointerDown += OnPointerDown,
 				() => pointerUpDownListener.PointerDown -= OnPointerDown),
@@ -42,27 +46,34 @@ namespace MusicGame.ChartEditor.Level.UI
 		};
 
 		// Private
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		private GameAudioPlayer music = default!;
 		private T3Time SliderTime => (int)slider.value;
-
 		private bool isPointerDown;
 
-		// Event Handlers
-		private void OnPointerDown(PointerEventData _)
+		// Defined Functions
+		[Inject]
+		private void Construct(
+			NotifiableProperty<LevelInfo?> levelInfo,
+			GameAudioPlayer music)
 		{
-			isPointerDown = true;
+			this.levelInfo = levelInfo;
+			this.music = music;
 		}
 
-		private void OnPointerUp(PointerEventData _)
-		{
-			isPointerDown = false;
-		}
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		// Event Handlers
+		private void OnPointerDown(PointerEventData _) => isPointerDown = true;
+
+		private void OnPointerUp(PointerEventData _) => isPointerDown = false;
 
 		// System Function
 		void Update()
 		{
 			if (slider.interactable && !isPointerDown)
 			{
-				slider.SetValueWithoutNotify(LevelManager.Instance.Music.AudioTime.Milli);
+				slider.SetValueWithoutNotify(music.AudioTime.Milli);
 			}
 		}
 	}

@@ -2,25 +2,42 @@
 
 using System;
 using System.IO;
-using MusicGame.ChartEditor.Message;
-using MusicGame.Components.Chart;
-using MusicGame.Components.JudgeLines;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.Models.JudgeLine;
+using MusicGame.Utility.JsonV1ToV2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using T3Framework.Runtime.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Plugins;
 using T3Framework.Runtime.Setting;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Level
 {
-	public class EditorLevelLoader : MonoBehaviour
+	public class EditorLevelLoader : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private NotifiableDataContainer<LevelInfo?> levelInfoContainer = default!;
+#if UNITY_EDITOR
+		[SerializeField] private bool mockStart = true;
+#endif
+		// Constructor
+		[Inject]
+		private void Construct(NotifiableProperty<LevelInfo?> levelInfo)
+		{
+			this.levelInfo = levelInfo;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
+
+		// Private
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 
 		// Defined Functions
 		public void LoadLevel(string projectFolderPath, int difficulty = 0)
@@ -71,7 +88,7 @@ namespace MusicGame.ChartEditor.Level
 				if (!File.Exists(chartPath))
 				{
 					ChartInfo chartInfo = new();
-					chartInfo.AddComponent(new JudgeLine());
+					chartInfo.AddComponentGeneric(new StaticJudgeLine());
 					File.WriteAllText(editingChartPath, JsonConvert.SerializeObject(chartInfo.GetSerializationToken()));
 				}
 				else
@@ -80,9 +97,23 @@ namespace MusicGame.ChartEditor.Level
 				}
 			}
 
-			var json = File.ReadAllText(editingChartPath);
-			var chart = ChartInfo.Deserialize(JObject.Parse(json));
-			var levelInfo = new LevelInfo
+			JObject? jObject;
+			try
+			{
+				jObject = JObject.Parse(File.ReadAllText(editingChartPath));
+			}
+			catch (JsonReaderException)
+			{
+				T3Logger.Log("Notice", "App_InvalidChart", T3LogType.Error);
+				jObject = new();
+			}
+
+			// Temp chart version identifier
+			ChartInfo? chart;
+			if (jObject["version"] is { } token && token.Value<int>() == 2) chart = ChartInfo.Deserialize(jObject);
+			else chart = V1ToV2Converter.DeserializeFromV1(jObject);
+
+			var info = new LevelInfo
 			{
 				LevelPath = projectSettingPath,
 				Chart = chart,
@@ -93,16 +124,14 @@ namespace MusicGame.ChartEditor.Level
 				Difficulty = difficulty
 			};
 
-			levelInfoContainer.Property.Value = levelInfo;
-			levelInfoContainer.Property.AddUpNotify();
-			// TODO: Delete this event
-			EventManager.Instance.Invoke("Level_OnLoad", levelInfo);
-			HeaderMessage.Show("加载完成！", HeaderMessage.MessageType.Success);
+			levelInfo.Value = info;
+			levelInfo.AddUpNotify();
+			T3Logger.Log("Notice", "App_LoadComplete", T3LogType.Success);
 #if !UNITY_EDITOR
 			}
 			catch
 			{
-				HeaderMessage.Show("读取工程时发生错误，请检查路径和工程格式", HeaderMessage.MessageType.Error);
+				T3Logger.Log("Notice", "App_LoadError", T3LogType.Error);
 			}
 #endif
 		}
@@ -123,6 +152,10 @@ namespace MusicGame.ChartEditor.Level
 					LoadLevel(Path.GetDirectoryName(targetPath)!);
 				}
 			}
+
+#if UNITY_EDITOR
+			if (mockStart) LoadLevel(@"G:\TAKANACharts\Test");
+#endif
 		}
 	}
 }

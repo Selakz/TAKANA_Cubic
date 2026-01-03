@@ -4,6 +4,8 @@ namespace MusicGame.ChartEditor.InScreenEdit
 {
 	public class DefaultWidthRetriever : IWidthRetriever
 	{
+		public static DefaultWidthRetriever Instance { get; } = new();
+
 		public float GetWidth(Vector3 position)
 		{
 			return 2f;

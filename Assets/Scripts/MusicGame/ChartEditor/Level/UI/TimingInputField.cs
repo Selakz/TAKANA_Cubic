@@ -1,52 +1,49 @@
-using MusicGame.Gameplay.Level;
+#nullable enable
+
+using MusicGame.Gameplay.Audio;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using TMPro;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Level.UI
 {
-	public class TimingInputField : MonoBehaviour
+	public class TimingInputField : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_InputField inputField;
+		[SerializeField] private TMP_InputField inputField = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputFieldRegistrar(inputField, InputFieldRegistrar.RegisterTarget.OnEndEdit, OnInputFieldEndEdit)
+		};
 
 		// Private
+		private GameAudioPlayer music = default!;
 
-		// Static
+		// Defined Functions
+		[Inject]
+		private void Construct(GameAudioPlayer music) => this.music = music;
 
-		// Defined Function
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			inputField.interactable = true;
-		}
-
 		private void OnInputFieldEndEdit(string useless)
 		{
 			T3Time targetTime = int.Parse(inputField.text);
-			EventManager.Instance.Invoke("Level_OnReset", targetTime);
+			music.ChartTime = targetTime;
 		}
 
 		// System Function
-		void OnEnable()
-		{
-			inputField.onEndEdit.AddListener(OnInputFieldEndEdit);
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			inputField.onEndEdit.RemoveListener(OnInputFieldEndEdit);
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
 		void Update()
 		{
 			if (!inputField.isFocused)
 			{
-				inputField.SetTextWithoutNotify(LevelManager.Instance.Music.ChartTime.ToString());
+				inputField.SetTextWithoutNotify(music.ChartTime.ToString());
 			}
 		}
 	}

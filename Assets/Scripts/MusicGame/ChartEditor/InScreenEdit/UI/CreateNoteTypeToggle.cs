@@ -1,30 +1,51 @@
+#nullable enable
+
+using System.Collections.Generic;
+using MusicGame.Models;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Serialization.Inspector;
+using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit.UI
 {
-	public class CreateNoteTypeToggle : MonoBehaviour
+	public class CreateNoteTypeToggle : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private Toggle toggle;
-		[SerializeField] private InScreenEditManager.CreateNoteType noteType;
+		[SerializeField] private InspectorDictionary<T3Flag, Toggle> toggles = default!;
 
-		// Event Handlers
-		private void OnToggleValueChanged(bool isOn)
+		protected override IEventRegistrar[] EnableRegistrars => enableRegistrars;
+		private IEventRegistrar[] enableRegistrars = default!;
+
+		// Defined Functions
+		[Inject]
+		private void Construct(ChartEditInputSystem system)
 		{
-			if (!isOn) return;
-			InScreenEditManager.Instance.NoteType = noteType;
+			List<IEventRegistrar> registrars = new();
+			foreach (var pair in toggles.Value)
+			{
+				registrars.Add(new ToggleRegistrar(pair.Value, isOn =>
+				{
+					if (!isOn) return;
+					system.NoteType.Value = pair.Key;
+				}));
+			}
+
+			registrars.Add(new PropertyRegistrar<T3Flag>(system.NoteType, () =>
+			{
+				foreach (var pair in toggles.Value)
+				{
+					pair.Value.SetIsOnWithoutNotify(system.NoteType == pair.Key);
+				}
+			}));
+			enableRegistrars = registrars.ToArray();
 		}
 
-		// System Functions
-		void Awake()
-		{
-			toggle.onValueChanged.AddListener(OnToggleValueChanged);
-		}
-
-		void Update()
-		{
-			toggle.SetIsOnWithoutNotify(InScreenEditManager.Instance.NoteType == noteType);
-		}
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 	}
 }

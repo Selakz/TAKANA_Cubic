@@ -1,9 +1,12 @@
-using MusicGame.ChartEditor.Level;
+#nullable enable
+
+using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using VContainer;
@@ -50,12 +53,6 @@ namespace MusicGame.ChartEditor.Audio.UI
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			offsetInputField.interactable = true;
-			Offset = levelInfo.Chart.Properties.Get("offset", 0);
-		}
-
 		private void OnOffsetInputFieldEndEdit(string content)
 		{
 			if (int.TryParse(content, out int offset) && offset >= 0)

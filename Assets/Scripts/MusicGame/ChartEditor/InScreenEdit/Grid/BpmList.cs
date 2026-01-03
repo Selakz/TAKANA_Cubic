@@ -1,7 +1,12 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using MusicGame.Components;
+using MusicGame.ChartEditor.Level;
+using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Level;
+using MusicGame.Models;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Extensions;
@@ -9,23 +14,23 @@ using UnityEngine;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class BpmList : ISerializable, IDictionary<T3Time, float>
+	[ChartTypeMark("bpm")]
+	public class BpmList : IChartSerializable, IDictionary<T3Time, float>
 	{
-		public static string TypeMark => "bpmList";
-
 		private SortedList<T3Time, float> bpmList;
 
 		public BpmList()
 		{
-			bpmList = new();
+			bpmList = new() { [0] = 100f };
 		}
 
 		public BpmList(IDictionary<T3Time, float> bpmList)
 		{
 			this.bpmList = new(bpmList);
+			if (bpmList.Count == 0) bpmList.Add(0, 100f);
 		}
 
-		public event Action OnBpmListUpdate = delegate { };
+		public event Action? OnBpmListUpdate;
 
 		/// <summary> The result will never be equal to given time, unless the time is the start time of this list. </summary>
 		public T3Time GetFloorTime(T3Time time, int gridDivision, out int gridIndexSinceLastBpm)
@@ -97,21 +102,23 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			return new(bpmList);
 		}
 
-		public JToken GetSerializationToken()
+		public JObject GetSerializationToken()
 		{
-			var token = new JArray();
+			var dict = new JObject();
+			var list = new JArray();
 			foreach (var pair in bpmList)
 			{
-				token.Add($"({pair.Key}, {pair.Value})");
+				list.Add($"({pair.Key}, {pair.Value: 0.0000})");
 			}
 
-			return token;
+			dict["list"] = list;
+			return dict;
 		}
 
-		public static BpmList Deserialize(JToken token)
+		public static BpmList Deserialize(JObject dict)
 		{
-			if (token is not JArray array) return default;
 			BpmList list = new() { bpmList = new() };
+			if (dict["list"] is not JArray array) return list;
 			foreach (var bpmItem in array)
 			{
 				var match = RegexHelper.MatchTuple(bpmItem.ToString(), 2);
@@ -135,15 +142,16 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		public void Add(KeyValuePair<T3Time, float> item)
 		{
-			OnBpmListUpdate.Invoke();
 			var value = Mathf.Max(item.Value, 1f);
 			bpmList[item.Key] = value;
+			OnBpmListUpdate?.Invoke();
 		}
 
 		public void Clear()
 		{
-			if (bpmList.Count > 0) OnBpmListUpdate.Invoke();
 			bpmList.Clear();
+			bpmList.Add(0, 100f);
+			OnBpmListUpdate?.Invoke();
 		}
 
 		public bool Contains(KeyValuePair<T3Time, float> item)
@@ -159,7 +167,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public bool Remove(KeyValuePair<T3Time, float> item)
 		{
 			var ret = bpmList.Remove(item.Key);
-			if (ret) OnBpmListUpdate.Invoke();
+			if (ret) OnBpmListUpdate?.Invoke();
 			return ret;
 		}
 
@@ -171,7 +179,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		{
 			value = Mathf.Max(value, 1f);
 			bpmList[key] = value;
-			OnBpmListUpdate.Invoke();
+			OnBpmListUpdate?.Invoke();
+		}
+
+		public void Reconstruct(IDictionary<T3Time, float> bpmList)
+		{
+			this.bpmList = new(bpmList);
+			OnBpmListUpdate?.Invoke();
 		}
 
 		public bool ContainsKey(T3Time key)
@@ -182,7 +196,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public bool Remove(T3Time key)
 		{
 			var ret = bpmList.Remove(key);
-			if (ret) OnBpmListUpdate.Invoke();
+			if (bpmList.Count == 0) bpmList.Add(0, 100f);
+			if (ret) OnBpmListUpdate?.Invoke();
 			return ret;
 		}
 
@@ -197,12 +212,48 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			set
 			{
 				bpmList[key] = value;
-				OnBpmListUpdate.Invoke();
+				OnBpmListUpdate?.Invoke();
 			}
 		}
 
 		public ICollection<T3Time> Keys => bpmList.Keys;
 
 		public ICollection<float> Values => bpmList.Values;
+	}
+
+	public static class BpmListExtensions
+	{
+		public static BpmList GetsBpmList(this LevelInfo levelInfo)
+		{
+			if (levelInfo.Chart.HasBpmList()) return levelInfo.Chart.GetsBpmList();
+			else if (levelInfo.Preference is EditorPreference preference)
+			{
+				return preference.BpmList.Count > 0
+					? levelInfo.Chart.SetBpmList(preference.BpmList)
+					: levelInfo.Chart.GetsBpmList();
+			}
+			else return levelInfo.Chart.GetsBpmList();
+		}
+
+		public static bool HasBpmList(this ChartInfo chart) => chart.EditorConfig.Get<BpmList>("bpm") is { Count: > 0 };
+
+		public static BpmList GetsBpmList(this ChartInfo chart)
+		{
+			var bpmList = chart.EditorConfig.Get<BpmList>("bpm");
+			if (bpmList is null)
+			{
+				bpmList = new BpmList { [0] = 100 };
+				chart.EditorConfig["bpm"] = bpmList;
+			}
+
+			return bpmList;
+		}
+
+		public static BpmList SetBpmList(this ChartInfo chart, IDictionary<T3Time, float> bpmList)
+		{
+			var list = chart.GetsBpmList();
+			list.Reconstruct(bpmList);
+			return list;
+		}
 	}
 }

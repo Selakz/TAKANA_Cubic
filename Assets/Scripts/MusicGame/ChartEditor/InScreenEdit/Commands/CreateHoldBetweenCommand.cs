@@ -1,9 +1,8 @@
 #nullable enable
 
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.Level;
-using MusicGame.ChartEditor.Select;
-using MusicGame.Components.Notes;
+using MusicGame.Gameplay.Chart;
+using MusicGame.Models.Note;
 using T3Framework.Runtime;
 using UnityEngine;
 
@@ -13,22 +12,23 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 	{
 		public string Name => $"Create hold between {note1.Id} and {note2.Id}";
 
-		private readonly BaseNote note1;
-		private readonly BaseNote note2;
-		private Hold? newHold;
+		public ChartComponent<Hold>? NewHold { get; private set; }
+
+		private readonly ChartInfo? chart;
+		private ChartComponent note1;
+		private ChartComponent note2;
+		private INote? model1;
+		private INote? model2;
 		private T3Time oldHoldTimeEnd;
 
 		private bool hasExecuted = false;
 
-		public CreateHoldBetweenCommand(BaseNote note1, BaseNote note2)
-		{
-			if (note1.TimeJudge > note2.TimeJudge)
-			{
-				(note1, note2) = (note2, note1);
-			}
 
+		public CreateHoldBetweenCommand(ChartComponent note1, ChartComponent note2)
+		{
 			this.note1 = note1;
 			this.note2 = note2;
+			chart = note1.BelongingChart;
 		}
 
 		public bool SetInit()
@@ -39,70 +39,92 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 				return false;
 			}
 
-			return note1.TimeJudge != note2.TimeJudge && note1.Parent.Id == note2.Parent.Id;
+			if (note1.BelongingChart is null ||
+			    note1.BelongingChart != note2.BelongingChart ||
+			    !ReferenceEquals(note1.Parent, note2.Parent) ||
+			    note1.Model is not INote note1Model ||
+			    note2.Model is not INote note2Model ||
+			    note1Model.TimeJudge == note2Model.TimeJudge) return false;
+
+			model1 = note1Model;
+			model2 = note2Model;
+			if (model1.TimeJudge > model2.TimeJudge)
+			{
+				(note1, note2) = (note2, note1);
+				(model1, model2) = (model2, model1);
+			}
+
+			return true;
 		}
 
 		public void Do()
 		{
 			hasExecuted = true;
 
-			if (note1 is Hold hold1)
+			if (model1 is Hold hold1)
 			{
 				oldHoldTimeEnd = hold1.TimeEnd;
-				hold1.TimeEnd = note2.TimeJudge;
-				IEditingChartManager.Instance.RemoveComponent(note2.Id);
-				IEditingChartManager.Instance.UpdateComponent(hold1.Id);
+				note2.BelongingChart = null;
+				note1.UpdateModel(_ => hold1.TimeEnd = model2!.TimeJudge);
 			}
 			else
 			{
-				if (note2 is Hold hold2)
+				if (model2 is Hold hold2)
 				{
 					oldHoldTimeEnd = hold2.TimeEnd;
-					hold2.TimeEnd = hold2.TimeJudge;
-					hold2.TimeJudge = note1.TimeJudge;
-					IEditingChartManager.Instance.RemoveComponent(note1.Id);
-					IEditingChartManager.Instance.UpdateComponent(hold2.Id);
+					note1.BelongingChart = null;
+					note2.UpdateModel(_ =>
+					{
+						hold2.TimeEnd = hold2.TimeJudge;
+						hold2.TimeJudge = model1!.TimeJudge;
+					});
 				}
 				else
 				{
-					newHold = new Hold(note1.TimeJudge, note2.TimeJudge, note1.Parent);
-					IEditingChartManager.Instance.RemoveComponents(new[] { note1.Id, note2.Id });
-					IEditingChartManager.Instance.AddComponent(newHold);
-					if (ISelectManager.Instance != null)
+					var parent = note1.Parent;
+					note1.BelongingChart = null;
+					note2.BelongingChart = null;
+
+					if (NewHold is not null) NewHold.BelongingChart = chart;
+					else
 					{
-						ISelectManager.Instance.UnselectAll();
-						ISelectManager.Instance.Select(newHold.Id);
+						var hold = new Hold(model1!.TimeJudge, model2!.TimeJudge);
+						NewHold = chart!.AddComponentGeneric(hold);
 					}
+
+					NewHold.Parent = parent;
 				}
 			}
 		}
 
 		public void Undo()
 		{
-			if (note1 is Hold hold1)
+			if (model1 is Hold hold1)
 			{
-				hold1.TimeEnd = oldHoldTimeEnd;
-				IEditingChartManager.Instance.UpdateComponent(hold1.Id);
-				IEditingChartManager.Instance.AddComponent(note2);
+				note1.UpdateModel(_ => hold1.TimeEnd = oldHoldTimeEnd);
+				note2.BelongingChart = chart;
+				note2.Parent = note1.Parent;
 			}
 			else
 			{
-				if (note2 is Hold hold2)
+				if (model2 is Hold hold2)
 				{
-					hold2.TimeJudge = hold2.TimeEnd;
-					hold2.TimeEnd = oldHoldTimeEnd;
-					IEditingChartManager.Instance.UpdateComponent(hold2.Id);
-					IEditingChartManager.Instance.AddComponent(note1);
+					note2.UpdateModel(_ =>
+					{
+						hold2.TimeJudge = hold2.TimeEnd;
+						hold2.TimeEnd = oldHoldTimeEnd;
+					});
+					note1.BelongingChart = chart;
+					note1.Parent = note2.Parent;
 				}
 				else
 				{
-					if (newHold is not null) IEditingChartManager.Instance.RemoveComponent(newHold.Id);
-					IEditingChartManager.Instance.AddComponents(new[] { note1, note2 });
-					if (ISelectManager.Instance != null)
-					{
-						ISelectManager.Instance.UnselectAll();
-						ISelectManager.Instance.SelectBundle(new[] { note1.Id, note2.Id });
-					}
+					var parent = NewHold!.Parent;
+					NewHold.BelongingChart = null;
+					note1.BelongingChart = chart;
+					note2.BelongingChart = chart;
+					note1.Parent = parent;
+					note2.Parent = parent;
 				}
 			}
 		}

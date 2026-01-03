@@ -2,76 +2,81 @@
 
 using System;
 using System.IO;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using MusicGame.Gameplay.Level;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Setting;
-using T3Framework.Runtime.Timer;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static;
+using T3Framework.Static.Event;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Level
 {
-	public class AutoSavePlugin : MonoBehaviour
+	public class AutoSavePlugin : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private EditorLevelSaver editorLevelSaver = default!;
-
-		public T3Time AutoSaveInterval
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			get => Mathf.Max(60000, ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value);
-			set
+			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
 			{
-				ISingletonSetting<EditorSetting>.Instance.AutoSaveInterval.Value = value;
-				timer.TimeDelta = value;
-				timer.Reset();
-			}
-		}
+				cts?.Cancel();
+				cts?.Dispose();
+				cts = null;
+
+				if (levelInfo.Value is not null)
+				{
+					cts = new CancellationTokenSource();
+					LoopAutoSave(cts.Token).Forget();
+				}
+			})
+		};
 
 		// Private
-		private TriggerTimer timer = default!;
+		private CancellationTokenSource? cts;
+		private EditorLevelSaver editorLevelSaver = default!;
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 
-		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
+		// Constructor
+		[Inject]
+		private void Construct(
+			EditorLevelSaver editorLevelSaver,
+			NotifiableProperty<LevelInfo?> levelInfo)
 		{
-			timer.Start();
+			this.editorLevelSaver = editorLevelSaver;
+			this.levelInfo = levelInfo;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		// Defined Functions
+		private async UniTaskVoid LoopAutoSave(CancellationToken token)
+		{
+			while (!token.IsCancellationRequested)
+			{
+				var delay = ISingleton<EditorSetting>.Instance.AutoSaveInterval.Value.Milli;
+				await UniTask.Delay(delay, cancellationToken: token);
+				AutoSave();
+			}
 		}
 
 		private void AutoSave()
 		{
 			Debug.Log("AutoSave");
-			var levelInfo = LevelManager.Instance.LevelInfo;
-			var folderPath = FileHelper.GetAbsolutePathFromRelative(levelInfo.LevelPath, "AutoSave");
+			if (levelInfo.Value is not { } info) return;
+			var folderPath = FileHelper.GetAbsolutePathFromRelative(info.LevelPath, "AutoSave");
 			Directory.CreateDirectory(folderPath);
-			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(levelInfo.LevelPath);
+			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
 			var fileName =
-				$"{DateTime.Now:yyyy-MM-dd_HH-mm}_{projectSetting.GetChartFileName(levelInfo.Difficulty)}.editing.json";
+				$"{DateTime.Now:yyyy-MM-dd_HH-mm}_{projectSetting.GetChartFileName(info.Difficulty)}.editing.json";
 			editorLevelSaver.SaveEditorChart(Path.Combine(folderPath, fileName));
 			editorLevelSaver.SaveSettings();
-		}
-
-		// System Functions
-		void Awake()
-		{
-			timer = new TriggerTimer(AutoSaveInterval);
-			timer.ShouldRepeat = true;
-			timer.OnTrigger += AutoSave;
-		}
-
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDestroy()
-		{
-			timer.OnTrigger -= AutoSave;
-			timer.Dispose();
 		}
 	}
 }

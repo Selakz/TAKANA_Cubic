@@ -1,27 +1,42 @@
 #nullable enable
 
 using System;
-using MusicGame.ChartEditor.Message;
-using MusicGame.Gameplay.Level;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Log;
+using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Level.UI
 {
-	public class SaveLevelButton : MonoBehaviour
+	public class SaveLevelButton : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private EditorLevelSaver levelSaver = default!;
 		[SerializeField] private Button saveEditingLevelButton = default!;
 		[SerializeField] private Button savePlayableLevelButton = default!;
 
-		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			saveEditingLevelButton.interactable = true;
-			savePlayableLevelButton.interactable = true;
+			new ButtonRegistrar(saveEditingLevelButton, OnSaveEditingLevelButtonClick),
+			new ButtonRegistrar(savePlayableLevelButton, OnSavePlayableLevelButtonClick)
+		};
+
+		// Private
+		private EditorLevelSaver levelSaver = default!;
+
+		// Constructor
+		[Inject]
+		private void Construct(EditorLevelSaver levelSaver)
+		{
+			this.levelSaver = levelSaver;
 		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		private void OnSaveEditingLevelButtonClick()
 		{
@@ -33,11 +48,11 @@ namespace MusicGame.ChartEditor.Level.UI
 			catch (Exception ex)
 			{
 				Debug.Log(ex);
-				HeaderMessage.Show("工程保存过程中出现异常", HeaderMessage.MessageType.Error);
+				T3Logger.Log("Notice", "App_SaveError", T3LogType.Error);
 				return;
 			}
 
-			HeaderMessage.Show("保存成功！", HeaderMessage.MessageType.Success);
+			T3Logger.Log("Notice", "App_SaveComplete", T3LogType.Success);
 		}
 
 		private void OnSavePlayableLevelButtonClick()
@@ -46,30 +61,14 @@ namespace MusicGame.ChartEditor.Level.UI
 			{
 				levelSaver.SavePlayableChart();
 			}
-			catch
+			catch (Exception ex)
 			{
-				HeaderMessage.Show("导出过程中出现异常", HeaderMessage.MessageType.Error);
+				Debug.Log(ex);
+				T3Logger.Log("Notice", "App_SaveError", T3LogType.Error);
 				return;
 			}
 
-			HeaderMessage.Show("成功导出无编辑时信息谱面", HeaderMessage.MessageType.Success);
-		}
-
-		// System Functions
-		void Awake()
-		{
-			saveEditingLevelButton.onClick.AddListener(OnSaveEditingLevelButtonClick);
-			savePlayableLevelButton.onClick.AddListener(OnSavePlayableLevelButtonClick);
-		}
-
-		void OnEnable()
-		{
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
+			T3Logger.Log("Notice", "App_SaveGameChartComplete", T3LogType.Success);
 		}
 	}
 }

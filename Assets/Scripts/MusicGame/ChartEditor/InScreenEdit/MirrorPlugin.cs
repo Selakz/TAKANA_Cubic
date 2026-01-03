@@ -3,104 +3,79 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
-using MusicGame.ChartEditor.Level;
 using MusicGame.ChartEditor.Select;
-using MusicGame.Components;
-using MusicGame.Components.Movement;
-using Newtonsoft.Json.Linq;
+using MusicGame.Models.Track;
+using MusicGame.Models.Track.Movement;
+using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Movement;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
-	public class MirrorPlugin : MonoBehaviour
+	public class MirrorPlugin : T3MonoBehaviour, ISelfInstaller
 	{
-		// Static
-		private static void Mirror(EditingTrack editingTrack)
+		// Serializable and Public
+		[SerializeField] private SequencePriority chartEditPriority = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			var track = editingTrack.Track;
-			if (track.Movement.Movement1 is V1EMoveList moveList1)
+			new InputRegistrar("InScreenEdit", "Mirror", "mirror", chartEditPriority.Value, TrackMirror),
+			new InputRegistrar("InScreenEdit", "MirrorCopy", TrackMirrorCopy),
+		};
+
+		// Private
+		private ChartSelectDataset dataset = default!;
+
+		// Static
+		public static void MirrorMovementAction(IMovement<float> movement)
+		{
+			if (movement is ChartPosMoveList moveList)
 			{
-				var moveItems = moveList1.ToList<V1EMoveItem>();
-				for (var i = 0; i < moveItems.Count; i++)
-				{
-					moveItems[i] = new V1EMoveItem(moveItems[i].Time, -moveItems[i].Position, moveItems[i].Ease);
-				}
-
-				foreach (var moveItem in moveItems)
-				{
-					moveList1.Insert(moveItem);
-				}
+				foreach (var item in moveList) item.Value.Position *= -1;
 			}
+		}
 
-			if (track.Movement.Movement2 is V1EMoveList moveList2)
-			{
-				var moveItems = moveList2.ToList<V1EMoveItem>();
-				for (var i = 0; i < moveItems.Count; i++)
-				{
-					moveItems[i] = new V1EMoveItem(moveItems[i].Time, -moveItems[i].Position, moveItems[i].Ease);
-				}
-
-				foreach (var moveItem in moveItems)
-				{
-					moveList2.Insert(moveItem);
-				}
-			}
-
+		public static void MirrorTrackAction(ITrack track)
+		{
+			MirrorMovementAction(track.Movement.Movement1);
+			MirrorMovementAction(track.Movement.Movement2);
 			(track.Movement.Movement1, track.Movement.Movement2) = (track.Movement.Movement2, track.Movement.Movement1);
 		}
 
-		// Event Handlers
-		private void TrackMirror()
+		// Defined Functions
+		[Inject]
+		private void Construct(ChartSelectDataset dataset)
 		{
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack) return;
-			if (!EventManager.Instance.InvokeVeto("Edit_QueryMirror", out _)) return;
-			var args = ISelectManager.Instance.SelectedTargets.Values.OfType<EditingTrack>()
-				.Select(c => new UpdateComponentArg(
-					c,
-					track => Mirror((track as EditingTrack)!),
-					track => Mirror((track as EditingTrack)!)));
-			var command = new UpdateComponentsCommand(args);
+			this.dataset = dataset;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		// Event Handlers
+		private bool TrackMirror()
+		{
+			var tracks = dataset.Where(component => component.Model is ITrack);
+			var command = new BatchCommand(tracks.Select(track => new UpdateComponentCommand(track,
+					model => MirrorTrackAction((model as ITrack)!), model => MirrorTrackAction((model as ITrack)!))),
+				"Mirror Tracks");
 			CommandManager.Instance.Add(command);
+			return true;
 		}
 
 		private void TrackMirrorCopy()
 		{
-			if (ISelectManager.Instance.CurrentSelecting is not EditingTrack) return;
-			List<IComponent> cloneComponents = new();
-			foreach (var editingTrack in ISelectManager.Instance.SelectedTargets.Values.OfType<EditingTrack>())
-			{
-				var newTrack = editingTrack.Track.Clone(editingTrack.Track.TimeInstantiate, 0);
-				var newEditingTrack = new EditingTrack(newTrack)
-				{
-					Properties = new JObject(editingTrack.Properties)
-				};
-				Mirror(newEditingTrack);
-				cloneComponents.Add(newEditingTrack);
-				if (IEditingChartManager.Instance != null)
-				{
-					var children = IEditingChartManager.Instance.GetChildrenComponents(editingTrack.Id);
-					foreach (var note in children.Where(c => c is EditingNote).Cast<EditingNote>())
-					{
-						var newTime = note.Note.TimeJudge;
-						var newNote = note.Note.Clone(newTime, newTrack);
-						cloneComponents.Add(newNote);
-					}
-				}
-			}
-
-			var command = new AddComponentsCommand(cloneComponents);
+			var tracks = dataset.Where(component => component.Model is ITrack).ToArray();
+			IEnumerable<ICommand> cloneCommands = tracks.Select(track => new CloneComponentCommand(track));
+			IEnumerable<ICommand> mirrorCommands = tracks.Select(track => new UpdateComponentCommand(track,
+				model => MirrorTrackAction((model as ITrack)!), model => MirrorTrackAction((model as ITrack)!)));
+			var command = new BatchCommand(cloneCommands.Concat(mirrorCommands), "Mirror and Copy Tracks");
 			CommandManager.Instance.Add(command);
-		}
-
-		// System Functions
-		private void OnEnable()
-		{
-			InputManager.Instance.Register("InScreenEdit", "Mirror", _ => TrackMirror());
-			InputManager.Instance.Register("InScreenEdit", "MirrorCopy", _ => TrackMirrorCopy());
 		}
 	}
 }

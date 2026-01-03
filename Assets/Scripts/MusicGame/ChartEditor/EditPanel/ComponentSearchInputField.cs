@@ -1,60 +1,75 @@
-using MusicGame.ChartEditor.Level;
-using MusicGame.ChartEditor.Message;
+#nullable enable
+
+using System.Linq;
 using MusicGame.ChartEditor.Select;
-using T3Framework.Runtime.Extensions;
+using MusicGame.Gameplay.Level;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Log;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
+using VContainer;
 
 namespace MusicGame.ChartEditor.EditPanel
 {
-	[RequireComponent(typeof(TMP_InputField))]
-	public class ComponentSearchInputField : MonoBehaviour
+	public class ComponentSearchInputField : T3MonoBehaviour, ISelfInstaller
 	{
+		// Serializable and Public
+		[SerializeField] private TMP_InputField searchInputField = default!;
+
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputFieldRegistrar(searchInputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+				OnSearchInputFieldEndEdit),
+			new PropertyRegistrar<LevelInfo?>(levelInfo, () => searchInputField.SetTextWithoutNotify(string.Empty))
+		};
+
 		// Private
-		private TMP_InputField searchInputField;
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		private ChartSelectDataset dataset = default!;
+
+		// Defined Functions
+		[Inject]
+		private void Construct(NotifiableProperty<LevelInfo?> levelInfo, ChartSelectDataset dataset)
+		{
+			this.levelInfo = levelInfo;
+			this.dataset = dataset;
+		}
 
 		// Event Handler
-		private static void OnSearchInputFieldEndEdit(string content)
+		private void OnSearchInputFieldEndEdit(string content)
 		{
+			if (string.IsNullOrWhiteSpace(content)) return;
+			if (levelInfo.Value?.Chart is null) return;
+			var chart = levelInfo.Value.Chart;
+
+			dataset.Clear();
 			bool isFind = false;
 			if (int.TryParse(content, out int targetId))
 			{
-				if (IEditingChartManager.Instance.Chart.Contains(targetId))
+				foreach (var component in chart.Where(c => c.Id == targetId))
 				{
+					dataset.Add(component);
 					isFind = true;
-					ISelectManager.Instance.UnselectAll();
-					ISelectManager.Instance.Select(targetId);
 				}
 			}
-			else if (!string.IsNullOrEmpty(content))
-			{
-				foreach (var component in IEditingChartManager.Instance.Chart)
-				{
-					string targetName = component.Properties.Get("name", string.Empty);
-					if (!string.IsNullOrEmpty(targetName) && targetName.StartsWith(content))
-					{
-						if (!isFind)
-						{
-							isFind = true;
-							ISelectManager.Instance.UnselectAll();
-						}
 
-						ISelectManager.Instance.Select(component.Id);
-					}
+			foreach (var component in chart)
+			{
+				if (component.Name is not null && component.Name.Contains(content))
+				{
+					dataset.Add(component);
+					isFind = true;
 				}
 			}
 
 			if (!isFind)
 			{
-				HeaderMessage.Show("没有找到指定的元件", HeaderMessage.MessageType.Info);
+				T3Logger.Log("Notice", "Edit_SearchNotFound", T3LogType.Info);
 			}
-		}
-
-		// System Function
-		void Awake()
-		{
-			searchInputField = GetComponent<TMP_InputField>();
-			searchInputField.onEndEdit.AddListener(OnSearchInputFieldEndEdit);
 		}
 	}
 }

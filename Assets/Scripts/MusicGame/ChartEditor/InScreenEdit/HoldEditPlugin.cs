@@ -3,124 +3,133 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.EditingComponents;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
 using MusicGame.ChartEditor.Select;
-using MusicGame.Components.Notes;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
 using T3Framework.Runtime.Setting;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using UnityEngine;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
-	public class HoldEditPlugin : MonoBehaviour
+	public class HoldEditPlugin : T3MonoBehaviour, ISelfInstaller
 	{
+		// Serializable and Public
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new InputRegistrar("HoldEdit", "HoldEndToNext", HoldEndToNext),
+			new InputRegistrar("HoldEdit", "HoldEndToPrevious", HoldEndToPrevious),
+			new InputRegistrar("HoldEdit", "HoldEndToNextBeat", HoldEndToNextBeat),
+			new InputRegistrar("HoldEdit", "HoldEndToPreviousBeat", HoldEndToPreviousBeat),
+			new InputRegistrar("HoldEdit", "CreateHoldBetween", CreateHoldBetween),
+		};
+
+		// Private
+		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
+		private ChartEditSystem system = default!;
+		private ChartSelectDataset dataset = default!;
+
+		// Defined Functions
+		[Inject]
+		private void Construct(
+			NotifiableProperty<ITimeRetriever> timeRetriever,
+			ChartEditSystem system,
+			ChartSelectDataset dataset)
+		{
+			this.timeRetriever = timeRetriever;
+			this.system = system;
+			this.dataset = dataset;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
 		// Event Handlers
 		private void HoldEndToNext()
 		{
-			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
+			List<ICommand> commands = new();
 			var noteToNextDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance.Value;
-			List<UpdateComponentArg> args = new();
-			foreach (var editingHold in holds)
+			foreach (var component in dataset)
 			{
-				var hold = (editingHold as EditingHold)!.Hold;
-				var actualDistance = Mathf.Min(hold.Parent.TimeEnd - hold.TimeEnd, noteToNextDistance);
-				UpdateComponentArg arg = new(hold,
-					h => (h as Hold)!.TimeEnd += actualDistance,
-					h => (h as Hold)!.TimeEnd -= actualDistance);
-				args.Add(arg);
+				var timeEnd = Mathf.Min(
+					component.Parent?.Model.TimeMax ?? T3Time.MaxValue,
+					component.Model.TimeMax + noteToNextDistance);
+				if (system.NudgeHoldEnd(component, timeEnd - component.Model.TimeMax) is { } command)
+				{
+					commands.Add(command);
+				}
 			}
 
-			if (args.Count > 0)
-			{
-				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
-			}
+			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToNext"));
 		}
 
 		private void HoldEndToPrevious()
 		{
-			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
+			List<ICommand> commands = new();
 			var noteToPreviousDistance = ISingletonSetting<InScreenEditSetting>.Instance.NoteNudgeDistance.Value;
-			List<UpdateComponentArg> args = new();
-			foreach (var editingHold in holds)
+			foreach (var component in dataset)
 			{
-				var hold = (editingHold as EditingHold)!.Hold;
-				var actualDistance = Mathf.Min(hold.TimeEnd - hold.TimeJudge - 1, noteToPreviousDistance);
-				UpdateComponentArg arg = new(hold,
-					h => (h as Hold)!.TimeEnd -= actualDistance,
-					h => (h as Hold)!.TimeEnd += actualDistance);
-				args.Add(arg);
+				var timeEnd = Mathf.Max(
+					component.Model.TimeMin + 1,
+					component.Model.TimeMax - noteToPreviousDistance);
+				if (system.NudgeHoldEnd(component, timeEnd - component.Model.TimeMax) is { } command)
+				{
+					commands.Add(command);
+				}
 			}
 
-			if (args.Count > 0)
-			{
-				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
-			}
+			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToPrevious"));
 		}
 
 		private void HoldEndToNextBeat()
 		{
-			if (InScreenEditManager.Instance.TimeRetriever is not GridTimeRetriever timeRetriever) return;
-			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
-			List<UpdateComponentArg> args = new();
-			foreach (var editingHold in holds)
+			if (timeRetriever.Value is not GridTimeRetriever retriever) return;
+			List<ICommand> commands = new();
+			foreach (var component in dataset)
 			{
-				var hold = (editingHold as EditingHold)!.Hold;
-				var updatedTime = Mathf.Min(hold.Parent.TimeEnd, timeRetriever.GetCeilTime(hold.TimeEnd));
-				var actualDistance = updatedTime - hold.TimeEnd;
-				UpdateComponentArg arg = new(hold,
-					h => (h as Hold)!.TimeEnd += actualDistance,
-					h => (h as Hold)!.TimeEnd -= actualDistance);
-				args.Add(arg);
+				var timeEnd = Mathf.Min(
+					component.Parent?.Model.TimeMax ?? T3Time.MaxValue,
+					retriever.GetCeilTime(component.Model.TimeMax));
+				if (system.NudgeHoldEnd(component, timeEnd - component.Model.TimeMax) is { } command)
+				{
+					commands.Add(command);
+				}
 			}
 
-			if (args.Count > 0)
-			{
-				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
-			}
+			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToNextBeat"));
 		}
 
 		private void HoldEndToPreviousBeat()
 		{
-			if (InScreenEditManager.Instance.TimeRetriever is not GridTimeRetriever timeRetriever) return;
-			var holds = ISelectManager.Instance.SelectedTargets.Values.Where(note => note is EditingHold);
-			List<UpdateComponentArg> args = new();
-			foreach (var editingHold in holds)
+			if (timeRetriever.Value is not GridTimeRetriever retriever) return;
+			List<ICommand> commands = new();
+			foreach (var component in dataset)
 			{
-				var hold = (editingHold as EditingNote)!.Note;
-				var updatedTime = Mathf.Max(hold.TimeJudge + 1, timeRetriever.GetFloorTime(hold.TimeEnd));
-				var actualDistance = hold.TimeEnd - updatedTime;
-				UpdateComponentArg arg = new(hold,
-					h => (h as Hold)!.TimeEnd -= actualDistance,
-					h => (h as Hold)!.TimeEnd += actualDistance);
-				args.Add(arg);
+				var timeEnd = Mathf.Max(
+					component.Model.TimeMin + 1,
+					retriever.GetFloorTime(component.Model.TimeMax));
+				if (system.NudgeHoldEnd(component, timeEnd - component.Model.TimeMax) is { } command)
+				{
+					commands.Add(command);
+				}
 			}
 
-			if (args.Count > 0)
-			{
-				CommandManager.Instance.Add(new UpdateComponentsCommand(args));
-			}
+			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToPreviousBeat"));
 		}
 
 		private void CreateHoldBetween()
 		{
-			var notes = ISelectManager.Instance.SelectedTargets.Values.Cast<EditingNote>().ToList();
-			if (notes.Count != 2) return;
+			if (dataset.Count != 2) return;
+			var notes = dataset.ToArray();
 
-			var command = new CreateHoldBetweenCommand(notes[0].Note, notes[1].Note);
+			var command = new CreateHoldBetweenCommand(notes[0], notes[1]);
 			if (!command.SetInit()) return;
 			CommandManager.Instance.Add(command);
-		}
-
-		// System Functions
-		void OnEnable()
-		{
-			InputManager.Instance.Register("HoldEdit", "HoldEndToNext", _ => HoldEndToNext());
-			InputManager.Instance.Register("HoldEdit", "HoldEndToPrevious", _ => HoldEndToPrevious());
-			InputManager.Instance.Register("HoldEdit", "HoldEndToNextBeat", _ => HoldEndToNextBeat());
-			InputManager.Instance.Register("HoldEdit", "HoldEndToPreviousBeat", _ => HoldEndToPreviousBeat());
-			InputManager.Instance.Register("HoldEdit", "CreateHoldBetween", _ => CreateHoldBetween());
 		}
 	}
 }

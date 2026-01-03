@@ -1,21 +1,31 @@
+#nullable enable
+
 using System;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Level;
+using T3Framework.Preset.Event;
+using T3Framework.Runtime;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UI;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class GridWidthRetriever : MonoBehaviour, IWidthRetriever
+	public class GridWidthRetriever : T3MonoBehaviour, IWidthRetriever, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private Toggle toggle;
-		[SerializeField] private TMP_InputField gridIntervalInputField;
-		[SerializeField] private TMP_InputField gridOffsetInputField;
-		[SerializeField] private Transform widthGridRoot;
+		[SerializeField] private Toggle toggle = default!;
+		[SerializeField] private TMP_InputField gridIntervalInputField = default!;
+		[SerializeField] private TMP_InputField gridOffsetInputField = default!;
+		[SerializeField] private Transform widthGridRoot = default!;
+		[SerializeField] private PrefabObject gridPrefab = default!;
 
 		public event Action OnBeforeResetGrid = delegate { };
 
@@ -26,7 +36,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			{
 				gridInterval = Mathf.Max(0.1f, value);
 				gridIntervalInputField.text = gridInterval.ToString("0.000");
-				if (LevelManager.Instance.LevelInfo.Preference is EditorPreference preference)
+				if (levelInfo.Value?.Preference is EditorPreference preference)
 				{
 					preference.WidthGridInterval = value;
 				}
@@ -42,7 +52,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			{
 				gridOffset = value;
 				gridOffsetInputField.text = gridOffset.ToString("0.000");
-				if (LevelManager.Instance.LevelInfo.Preference is EditorPreference preference)
+				if (levelInfo.Value?.Preference is EditorPreference preference)
 				{
 					preference.WidthGridOffset = value;
 				}
@@ -51,21 +61,54 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			}
 		}
 
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		{
+			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
+			{
+				var info = levelInfo.Value;
+				if (info?.Preference is EditorPreference preference)
+				{
+					GridOffset = preference.WidthGridOffset;
+					GridInterval = preference.WidthGridInterval;
+				}
+
+				ResetGrid();
+			})
+		};
+
 		// Private
+		private IObjectResolver resolver = default!;
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		private NotifiableProperty<IWidthRetriever> widthRetriever = default!;
+
 		private float gridInterval = 1.5f;
 		private float gridOffset = 0f;
 
-		private readonly ObjectPool<WidthGridController> widthGridPool = new(
-			() => Instantiate<GameObject>(lazyPrefab).GetComponent<WidthGridController>(),
+		private ObjectPool<WidthGridController> WidthGridPool => widthGridPool ??= new(
+			() => gridPrefab.Instantiate(resolver, widthGridRoot).GetComponent<WidthGridController>(),
 			grid => grid.gameObject.SetActive(true),
 			grid => grid.gameObject.SetActive(false),
 			grid => Destroy(grid.gameObject));
 
+		private ObjectPool<WidthGridController>? widthGridPool;
+
 		// Static
 		private const float GameWidth = 6f;
-		private static LazyPrefab lazyPrefab;
 
 		// Defined Functions
+		[Inject]
+		private void Construct(
+			IObjectResolver resolver,
+			NotifiableProperty<LevelInfo?> levelInfo,
+			NotifiableProperty<IWidthRetriever> widthRetriever)
+		{
+			this.resolver = resolver;
+			this.levelInfo = levelInfo;
+			this.widthRetriever = widthRetriever;
+		}
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
 		public float GetWidth(Vector3 position)
 		{
 			int lineCount = Mathf.FloorToInt((position.x - GridOffset) / GridInterval);
@@ -118,7 +161,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		public void ReleaseWidthGrid(WidthGridController widthGrid)
 		{
-			widthGridPool.Release(widthGrid);
+			WidthGridPool.Release(widthGrid);
 		}
 
 		public void ResetGrid()
@@ -127,7 +170,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			float left = GridOffset, right = GridOffset + GridInterval;
 			while (left > -GameWidth)
 			{
-				var widthGrid = widthGridPool.Get();
+				var widthGrid = WidthGridPool.Get();
 				widthGrid.transform.SetParent(widthGridRoot);
 				widthGrid.Init(this, left);
 				left -= GridInterval;
@@ -135,7 +178,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 			while (right < GameWidth)
 			{
-				var widthGrid = widthGridPool.Get();
+				var widthGrid = WidthGridPool.Get();
 				widthGrid.transform.SetParent(widthGridRoot);
 				widthGrid.Init(this, right);
 				right += GridInterval;
@@ -143,29 +186,18 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		}
 
 		// Event Handlers
-		private void LevelOnLoad(LevelInfo levelInfo)
-		{
-			if (levelInfo.Preference is EditorPreference preference)
-			{
-				GridOffset = preference.WidthGridOffset;
-				GridInterval = preference.WidthGridInterval;
-			}
-
-			ResetGrid();
-		}
-
 		private void OnToggleChanged(bool isOn)
 		{
 			if (isOn)
 			{
 				widthGridRoot.gameObject.SetActive(true);
-				InScreenEditManager.Instance.WidthRetriever = this;
+				widthRetriever.Value = this;
 				ResetGrid();
 			}
 			else
 			{
 				widthGridRoot.gameObject.SetActive(false);
-				InScreenEditManager.Instance.WidthRetriever = InScreenEditManager.FallbackWidthRetriever;
+				widthRetriever.Value = DefaultWidthRetriever.Instance;
 			}
 		}
 
@@ -190,23 +222,16 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		}
 
 		// System Functions
-		void Awake()
+		protected override void Awake()
 		{
 			toggle.onValueChanged.AddListener(OnToggleChanged);
 			gridIntervalInputField.onEndEdit.AddListener(OnGridIntervalInputFieldEndEdit);
 			gridOffsetInputField.onEndEdit.AddListener(OnGridOffsetInputFieldEndEdit);
-			lazyPrefab ??= new("Prefabs/EditorUI/InScreenEdit/WidthGrid", "WidthGridPrefab_OnLoad");
 		}
 
-		void OnEnable()
+		protected override void OnEnable()
 		{
 			OnToggleChanged(toggle.isOn);
-			EventManager.Instance.AddListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
-		}
-
-		void OnDisable()
-		{
-			EventManager.Instance.RemoveListener<LevelInfo>("Level_OnLoad", LevelOnLoad);
 		}
 	}
 }

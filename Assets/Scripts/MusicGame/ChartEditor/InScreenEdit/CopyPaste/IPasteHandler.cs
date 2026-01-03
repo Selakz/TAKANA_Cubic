@@ -12,6 +12,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		public bool ExactPaste(out string message);
 
-		public const string NoPasteObjectMessage = "剪贴板中没有可复制的元件";
+		public const string NoPasteObjectMessage = "Edit_CopyPaste_EmptyForPaste";
 	}
 }

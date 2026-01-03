@@ -1,33 +1,49 @@
 #nullable enable
 
-using System.Linq;
-using MusicGame.ChartEditor.Level;
+using System.Collections.Generic;
+using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
-using T3Framework.Runtime.Extensions;
+using MusicGame.Models.Note;
+using T3Framework.Runtime;
+using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
-using UnityEngine;
+using T3Framework.Runtime.VContainer;
+using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
-	public class DummyTogglePlugin : MonoBehaviour
+	public class DummyTogglePlugin : T3MonoBehaviour, ISelfInstaller
 	{
-		// Event Handlers
-		private void ToggleDummyState()
+		// Serializable and Public
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			var notes = ISelectManager.Instance.SelectedTargets.Values
-				.Where(component => component is EditingNote).Cast<EditingNote>();
-			foreach (var note in notes)
+			new InputRegistrar("InScreenEdit", "ToggleDummy", () =>
 			{
-				note.Note.Properties["isDummy"] = !note.Note.Properties.Get("isDummy", false);
-			}
+				List<ICommand> commands = new List<ICommand>();
+				foreach (var component in dataset)
+				{
+					if (component.Model is INote note)
+					{
+						var isDummy = note.IsDummy();
+						ICommand command = new UpdateComponentCommand
+							(component, _ => note.SetDummy(!isDummy), _ => note.SetDummy(isDummy));
+						commands.Add(command);
+					}
+				}
 
-			IEditingChartManager.Instance.UpdateProperties();
-		}
+				CommandManager.Instance.Add(new BatchCommand(commands, "ToggleDummy"));
+			})
+		};
 
-		// System Functions
-		void OnEnable()
-		{
-			InputManager.Instance.Register("InScreenEdit", "ToggleDummy", _ => ToggleDummyState());
-		}
+		// Private
+		private ChartSelectDataset dataset = default!;
+
+		// Defined Functions
+		[Inject]
+		private void Construct(ChartSelectDataset dataset) => this.dataset = dataset;
+
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 	}
 }
