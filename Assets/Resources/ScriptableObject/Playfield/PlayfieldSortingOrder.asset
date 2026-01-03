@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94f0cc22ff934963aec4a8d156771926, type: 3}
+  m_Name: PlayfieldSortingOrder
+  m_EditorClassIdentifier: 
+  priorities:
+    pairs:
+    - key: Track
+      value: 0
+    - key: SelectedTrack
+      value: 50
+    - key: LaneBeam
+      value: 60
+    - key: JudgeLine
+      value: 100
+    - key: EditorGrid
+      value: 120
+    - key: EditorTrackHint
+      value: 121
+    - key: JudgeLineLeftEdge
+      value: 140
+    - key: JudgeLineRightEdge
+      value: 140
+    - key: PlayfieldUILower
+      value: 160
+    - key: TrackLeftEdge
+      value: 180
+    - key: TrackRightEdge
+      value: 180
+    - key: HoldBody
+      value: 200
+    - key: Hold
+      value: 201
+    - key: SelectedHoldBody
+      value: 250
+    - key: SelectedHold
+      value: 251
+    - key: Tap
+      value: 300
+    - key: SelectedTap
+      value: 350
+    - key: Slide
+      value: 400
+    - key: SelectedSlide
+      value: 450
+    - key: PlayfieldUIUpper
+      value: 500
+    - key: EditorTrackNode
+      value: 550
+    - key: NoteEffect
+      value: 600

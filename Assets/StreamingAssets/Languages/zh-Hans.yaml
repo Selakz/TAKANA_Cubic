@@ -1,0 +1,167 @@
+Fallback: 该文本（{0}）未被正确本地化，请通知作者
+
+App:
+  EditorStartup: 点击“选择文件夹”按钮以加载谱面工程
+  LoadError: 读取工程时发生错误，请检查路径和工程格式
+  LoadComplete: 加载完成！
+  InvalidChart: 无法将谱面文件解析为json
+  SaveError: 工程保存过程中出现异常
+  SaveComplete: 保存成功！
+  SaveGameChartComplete: 成功导出无编辑时信息谱面
+  Exception: 出现未处理异常，请将日志汇报给作者
+  ChooseProject: 选择工程文件夹
+  RecordModeHint: 鼠标滑至下方以呼出全屏模式UI
+
+AutoUpdate:
+  Newest: 当前版本已为最新！
+  DownloadStart: 正在下载v{0}版本制谱器
+  DownloadFail: 下载失败，请手动检查更新
+  DownloadSuccess: v{0}版本制谱器下载成功！
+  SaveFail: 保存新版本制谱器时出现错误
+  EditorBroken: 下载的新版本制谱器文件已损坏，请重新下载
+  UpdaterBroken: 自动更新工具损坏，重新下载制谱器以启用自动更新
+  Updater:
+    ExecutionError: 更新过程中发生错误
+    InvalidVersion: 待安装的版本{0}无效
+    InvalidPackage: 待安装的制谱器文件损坏，请重新下载
+
+Select:
+  Brief: 选中了{0}个元件
+
+Edit:
+  Fail: 修改失败
+  DeleteNoteCount: 同时删除了{0}个Note
+  HoldTimeError: Hold的结束时间需大于开始时间
+  NoteTimeOutOfRange: 操作失败：Note的时间在所选轨道的时间范围外
+  TrackTimeError: 轨道的结束时间需大于开始时间
+  SearchNotFound: 没有找到指定的元件
+  Dragging: 正在拖拽
+  SelectedCount: 已选中{0}个物件
+  CreateFailForDecoration: 无法在装饰层轨道上放置Note
+  
+  CopyPaste:
+    CopySuccess: 复制成功！
+    PasteSuccess: 粘贴成功！
+    CopyNotSupport: 暂不支持此类元件的复制
+    Empty: 剪贴板为空
+    EmptyForPaste: 剪贴板中没有可复制的元件
+    NoteClipboard: 已复制{0}个Note
+    PasteFailForTrack: 需选中一条轨道以进行Note普通粘贴
+    TrackClipboard: 已复制{0}个轨道
+    Pasting: 正在普通粘贴
+    ExactPasting: 正在原位粘贴
+
+TrackLayer:
+  Basic:
+    DeleteLayerHint: 该图层上有{0}个轨道；再次点击以删除
+  Decoration:
+    SetTrueFailForNote: 无法设为装饰图层，轨道{0}上存在Note
+    SetTrueSuccess: 设置成功，该图层将无法放置Note
+    SetFalseSuccess: 取消装饰，该图层将可以放置Note
+    SetDecorationFail: 无法移动至装饰图层，该轨道存在Note
+    
+TrackLine:
+  MirrorFail: 镜像失败
+  NodeDragging: 正在拖拽结点
+  NodeSplitDragging: 正在双向拖拽结点
+  PasteFailForTrack: 需选中一条轨道以进行结点普通粘贴
+  ExactPasteFailForTrack: 需选中一条轨道以进行结点原位粘贴
+  PasteFailForNode: 粘贴失败，与现有结点产生冲突
+  NodeClipboard: 已复制{0}个结点
+  Pasting: 正在普通粘贴结点
+  ExactPasting: 正在原位粘贴结点
+  
+  ChangeEase: 切换至{0}曲线族
+  CheckEase: 当前选中曲线族：{0}
+  
+# It's so boring chore. LLM helps me with this.
+Setting:
+  SelectSetting:
+    Header: 点选设置
+    TrackSelectedColor: 轨道被选中时的颜色
+  PlayfieldSetting:
+    Header: 游戏UI设置
+    TrackGap1: Tap和Hold与轨道边界的间隔大小
+    TrackGap2: Slide与轨道边界的间隔大小
+    TrackFaceDefaultColor: 轨道默认颜色，该项也用来设置轨道的默认透明度
+    CameraPosition: 主相机位置
+    CameraRotation: 主相机旋转角度
+    TimeAfterEnd: Note下落时如果未被判定，则其视图层内容在判定时间之后延迟销毁的时间（非必要请勿修改）
+    UpperThreshold: 当Note在1速下首次位于该高度以下时才会真正生成其视图层内容（非必要请勿修改）
+    LowerThreshold: 当Note在1速下首次位于该高度以上时才会真正生成其视图层内容（非必要请勿修改）
+  TrackLineSetting:
+    Header: 轨道线设置
+    DefaultEaseId: 默认曲线族的缓动ID | 范围 [0, 9]
+    AllowMultipleEdit: 是否允许同时编辑不同轨道的轨道线
+    NodePositionNudgeDistance: 单击 A 或 D 时结点移动的距离
+    NodeTimeNudgeDistance: 单击 W 或 S 时结点移动的时间长度 | 单位：毫秒
+    UneditableLineWidth: 不可编辑时轨道线的宽度
+    EditableLineWidth: 可编辑时轨道线的宽度
+    LeftSideNodeColor: 左轨道线结点的默认颜色
+    RightSideNodeColor: 右轨道线结点的默认颜色
+    SelectedLeftColor: 左轨道线结点选中时的颜色
+    SelectedRightColor: 右轨道线结点选中时的颜色
+    LogicLinePrecision: 轨道线碰撞箱渲染精度，若轨道编辑卡顿可适当增加该值
+    MaxSegment: 轨道线的最大分段数，若轨道编辑卡顿可适当减少该值
+    LogicLineWidth: 轨道线碰撞箱渲染的宽度
+    AddNodeTimeDistance: 在编辑面板点击添加结点时，新结点与原结点的时间间隔 | 单位：毫秒
+  AutoScoreSetting:
+    Header: 编辑UI设置
+    DummyNoteOpacity: 假Note的不透明度 | 范围 [0, 1]
+  InScreenEditSetting:
+    Header: 编辑器设置
+    IsInitialTrackLengthToEnd: 创建轨道时是否使轨道的初始结束时间为乐曲结束时间
+    InitialTrackLength: 若上一项为false，则轨道的初始长度 | 单位：毫秒
+    TimeSnapDistance: 当鼠标位置与最近的横向格线时间差小于该值时，将吸附到该格线上 | 单位：毫秒
+    NoteNudgeDistance: 单击 W 或 S 时 Note 移动的时间长度 | 单位：毫秒
+    TimeDragThreshold: 尝试拖动时，只有拖动时间差大于该时间才会进行拖动 | 单位：毫秒
+    ShowTimeIndicator: 是否显示时间指示器
+    ShowPositionIndicator: 是否显示位置指示器
+    BeatColor: 四分音符（拍）的横向格线颜色
+    QuaverColor: 八分音符的横向格线颜色
+    SemiQuaverColor: 十六分音符的横向格线颜色
+    TripletColor: 十二分音符的横向格线颜色
+    DefaultColor: 不满足上述情况时的横向格线颜色
+  EditorSetting:
+    Header: 应用设置
+    HitSoundVolumePercent: 打击音音量大小百分比（整数） | 范围 [0, 100]
+    ScrollSensitivity: 鼠标滚动灵敏度（即每次滚动移动的格线数量，负数则反向）
+    ShouldForcePause: 音乐播放时左键强制暂停
+    AutoSaveInterval: 自动保存的时间间隔 | 单位：毫秒
+    SaveIndented: 谱面文件是否缩进，不缩进可减小文件大小
+    WindowWidth: 窗口宽度，高度将在保持16：9窗口比例的前提下自动计算
+    WindowWidthChoices: 在编辑器界面提供的分辨率调整选项，同样均为窗口宽度
+    MouseDragThreshold: 尝试进行拖动时，只有拖动位置差大于该时间才会认为是在进行拖动 | 单位：px
+  AutoUpdateSetting:
+    Header: 自动更新设置
+    CheckUpdateOnStartup: 是否在启动时自动检查更新 | 建议开启
+    DownloadSilently: 是否静默下载
+  TrackLayerSetting:
+    Header: 图层设置
+    DefaultLayerId: 默认图层的ID，一般情况下无需关注
+    DefaultLayerName: 默认图层的默认名称
+    ColorDefinitions: 图层可用的颜色定义
+    DefaultColor: 新建的图层默认使用的图层颜色
+    SelectLayerOpacityRatio: 选中的图层的透明度倍率，范围为[0, 1]
+    UnselectLayerOpacityRatio: 未选中的图层的透明度倍率，范围为[0, 1]
+  SongInfo:
+    Id: 歌曲的唯一标识符
+    Title: 展示的曲名
+    Composer: 展示的曲师
+    Illustrator: 展示的画师
+    BpmDisplay: 展示的BPM信息
+    Description: 对歌曲的描述
+    Difficulties: 各难度信息
+  DifficultyInfo:
+    LevelDisplay: 展示的难度等级文字
+    Charter: 展示的谱师信息
+  EditorPreference:
+    Difficulty: 初始默认选择的难度 | 1 ~ 5 依次为 Normal ~ Ravage
+    Offset: 谱面时间偏移量
+    MusicVolumePercent: 音乐音量大小百分比（整数） | 范围 [0, 100]
+    Speed: 初始默认设置的速度 | 范围 [0, 10]
+    TimeGridLineCount: 横向时间格线密度 | 范围 [0, ?)
+    WidthGridInterval: 纵向位置格线密度 | 范围 [0, ?)
+    WidthGridOffset: 纵向位置格线偏移
+    BpmList: BPM列表，键为时间，值为BPM值
+  
