@@ -9,7 +9,7 @@ namespace MusicGame.Gameplay.Scoring
 {
 	public class ScoringInstaller : HierarchyInstaller
 	{
-		[SerializeField] private IntegerDataContainer scoreContainer = default!;
+		[SerializeField] private DoubleDataContainer scoreContainer = default!;
 		[SerializeField] private IntegerDataContainer comboContainer = default!;
 
 		public override void SelfInstall(IContainerBuilder builder)

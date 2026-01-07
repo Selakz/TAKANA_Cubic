@@ -15,7 +15,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 	public class AutoScoreSystem : T3System, ITickable
 	{
 		private const double MaxScore = 1_000_000;
-		private readonly NotifiableProperty<int> score;
+		private readonly NotifiableProperty<double> score;
 		private readonly NotifiableProperty<int> combo;
 		private readonly NotifiableProperty<LevelInfo?> levelInfo;
 		private readonly GameAudioPlayer music;
@@ -34,7 +34,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		};
 
 		public AutoScoreSystem(
-			[Key("score")] NotifiableProperty<int> score,
+			[Key("score")] NotifiableProperty<double> score,
 			[Key("combo")] NotifiableProperty<int> combo,
 			NotifiableProperty<LevelInfo?> levelInfo,
 			GameAudioPlayer music) : base(true)

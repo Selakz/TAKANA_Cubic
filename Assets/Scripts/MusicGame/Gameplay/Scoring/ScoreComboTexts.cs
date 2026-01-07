@@ -20,18 +20,18 @@ namespace MusicGame.Gameplay.Scoring
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<int>(score, () => { scoreText.text = score.Value.ToString("0000000"); }),
+			new PropertyRegistrar<double>(score, () => { scoreText.text = score.Value.ToString("0000000"); }),
 			new PropertyRegistrar<int>(combo, () => { comboText.text = combo.Value.ToString(); })
 		};
 
 		// Private
-		private NotifiableProperty<int> score = default!;
+		private NotifiableProperty<double> score = default!;
 		private NotifiableProperty<int> combo = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
-			[Key("score")] NotifiableProperty<int> score,
+			[Key("score")] NotifiableProperty<double> score,
 			[Key("combo")] NotifiableProperty<int> combo)
 		{
 			this.score = score;
