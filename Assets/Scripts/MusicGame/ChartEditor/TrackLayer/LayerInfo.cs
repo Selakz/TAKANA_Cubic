@@ -32,6 +32,19 @@ namespace MusicGame.ChartEditor.TrackLayer
 		/// <summary> Will automatically add a default layer. </summary>
 		public LayersInfo() => layers.Add(new LayerComponent(this, new LayerInfo())); // Default LayerInfo
 
+		public void AddNewLayer(string name)
+		{
+			LayerInfo info = new()
+			{
+				Name = name,
+				Id = NewId,
+				Color = ISingleton<TrackLayerSetting>.Instance.DefaultColor,
+				IsDecoration = false,
+				IsSelected = true
+			};
+			Add(new(this, info));
+		}
+
 		public void Sort(Comparison<LayerComponent> comparison)
 		{
 			layers.Sort(comparison);
