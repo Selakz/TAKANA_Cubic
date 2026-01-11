@@ -18,7 +18,7 @@ namespace T3Framework.Runtime.ECS
 				() =>
 				{
 					var data = targetPool[handler];
-					if (data is null || (!shouldAddPlugin?.Invoke(data) ?? true)) return;
+					if (data is null || (!shouldAddPlugin?.Invoke(data) ?? false)) return;
 					if (pluginPool.Add(data))
 					{
 						handler.AddPlugin(pluginName, pluginPool[data]!);
