@@ -4,7 +4,7 @@ using System.ComponentModel;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	[Description("Header")]
 	public class AutoUpdateSetting : ISingletonSetting<AutoUpdateSetting>

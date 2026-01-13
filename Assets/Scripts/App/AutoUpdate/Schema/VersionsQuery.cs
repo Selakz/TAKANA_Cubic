@@ -1,11 +1,11 @@
 #nullable enable
 
 using System;
-using MusicGame.Utility.AutoUpdate.Model;
+using App.AutoUpdate.Model;
 using Newtonsoft.Json;
 using T3Framework.Runtime.WebRequest;
 
-namespace MusicGame.Utility.AutoUpdate.Schema
+namespace App.AutoUpdate.Schema
 {
 	public struct VersionsQuery : IQueryParam
 	{

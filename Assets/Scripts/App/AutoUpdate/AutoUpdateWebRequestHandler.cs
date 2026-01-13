@@ -6,7 +6,7 @@ using T3Framework.Runtime;
 using T3Framework.Runtime.Log;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public class AutoUpdateWebRequestHandler : T3MonoBehaviour
 	{

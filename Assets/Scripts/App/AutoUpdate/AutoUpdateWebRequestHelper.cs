@@ -2,14 +2,13 @@
 
 using System.IO;
 using System.Threading;
+using App.AutoUpdate.Model;
+using App.AutoUpdate.Schema;
 using Cysharp.Threading.Tasks;
-using MusicGame.Utility.AutoUpdate.Model;
-using MusicGame.Utility.AutoUpdate.Schema;
-using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.WebRequest;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public class AutoUpdateWebRequestHelper : MonoBehaviour
 	{

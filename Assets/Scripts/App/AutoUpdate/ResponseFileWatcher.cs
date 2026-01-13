@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public class ResponseFileWatcher
 	{

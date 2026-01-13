@@ -1,7 +1,7 @@
 #nullable enable
 
 using System.ComponentModel;
-using MusicGame.Utility.AutoUpdate.Model;
+using App.AutoUpdate.Model;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -9,7 +9,7 @@ using T3Framework.Runtime.Setting;
 using TMPro;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate.UI
+namespace App.AutoUpdate.UI
 {
 	public class AutoUpdateDownloadPanel : T3MonoBehaviour
 	{

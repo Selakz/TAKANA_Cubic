@@ -6,7 +6,7 @@ using T3Framework.Runtime.Event;
 using TMPro;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate.UI
+namespace App.AutoUpdate.UI
 {
 	public class UpdateVersionText : T3MonoBehaviour
 	{

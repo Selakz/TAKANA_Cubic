@@ -8,7 +8,7 @@ using T3Framework.Runtime.Log;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MusicGame.Utility.AutoUpdate.UI
+namespace App.AutoUpdate.UI
 {
 	public class CheckUpdateButton : T3MonoBehaviour
 	{

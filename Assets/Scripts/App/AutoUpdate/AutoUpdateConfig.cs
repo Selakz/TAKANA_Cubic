@@ -1,9 +1,8 @@
 #nullable enable
 
-using System;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	[CreateAssetMenu(fileName = "Auto Update Config", menuName = "ScriptableObjects/Auto Update Config")]
 	public class AutoUpdateConfig : ScriptableObject

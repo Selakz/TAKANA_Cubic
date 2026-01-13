@@ -2,7 +2,7 @@
 
 using T3Framework.Runtime.WebRequest;
 
-namespace MusicGame.Utility.AutoUpdate.Schema
+namespace App.AutoUpdate.Schema
 {
 	public struct DownloadPackQuery : IQueryParam
 	{

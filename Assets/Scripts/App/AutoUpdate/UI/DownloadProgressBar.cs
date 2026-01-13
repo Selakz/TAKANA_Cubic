@@ -9,7 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MusicGame.Utility.AutoUpdate.UI
+namespace App.AutoUpdate.UI
 {
 	public class DownloadProgressBar : T3MonoBehaviour
 	{

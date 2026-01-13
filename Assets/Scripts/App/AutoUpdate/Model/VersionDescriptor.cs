@@ -3,7 +3,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace MusicGame.Utility.AutoUpdate.Model
+namespace App.AutoUpdate.Model
 {
 	public struct VersionDescriptor : IEquatable<VersionDescriptor>
 	{

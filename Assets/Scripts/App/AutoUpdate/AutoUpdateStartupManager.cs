@@ -5,7 +5,7 @@ using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public class AutoUpdateStartupManager : T3MonoBehaviour
 	{

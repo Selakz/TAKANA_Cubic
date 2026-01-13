@@ -1,10 +1,10 @@
 #nullable enable
 
-using MusicGame.Utility.AutoUpdate.Model;
+using App.AutoUpdate.Model;
 using T3Framework.Runtime.Event;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public enum VersionStatus
 	{

@@ -4,7 +4,7 @@ using Semver;
 using TMPro;
 using UnityEngine;
 
-namespace MusicGame.Utility.AutoUpdate.UI
+namespace App.AutoUpdate.UI
 {
 	public class AppVersionText : MonoBehaviour
 	{

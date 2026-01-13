@@ -35,14 +35,14 @@ namespace T3Framework.Runtime.WebRequest
 				using var response = await Client.GetAsync(uriBuilder.Uri);
 				if (response.IsSuccessStatusCode)
 				{
-					Debug.Log($"Request success: {url}");
+					Debug.Log($"Request success: {uriBuilder.Uri}");
 					var json = await response.Content.ReadAsStringAsync();
 					var result = JsonConvert.DeserializeObject<TResponse>(json);
 					return result;
 				}
 				else
 				{
-					Debug.Log($"Request failed: {url}");
+					Debug.Log($"Request failed: {uriBuilder.Uri}");
 				}
 			}
 			catch (Exception e)

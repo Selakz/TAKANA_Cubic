@@ -9,7 +9,7 @@ using Semver;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	/// <summary>
 	/// It's a helper class about a helper.
@@ -23,7 +23,7 @@ namespace MusicGame.Utility.AutoUpdate
 		private const int TimeoutMilliseconds = 5000;
 
 		public static string NewHelperFilePath =>
-			Path.Combine(Application.streamingAssetsPath, HelperFileName);
+			Path.Combine(Application.streamingAssetsPath, "Windows", HelperFileName);
 
 		public static string DefaultHelperFilePath =>
 			Path.Combine(Application.persistentDataPath, "AutoUpdate", HelperFileName);

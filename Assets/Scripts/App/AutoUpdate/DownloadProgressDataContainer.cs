@@ -2,7 +2,7 @@
 
 using T3Framework.Runtime.Event;
 
-namespace MusicGame.Utility.AutoUpdate
+namespace App.AutoUpdate
 {
 	public struct DownloadProgress
 	{
