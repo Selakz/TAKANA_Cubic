@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using T3Framework.Runtime.Extensions;
 
-namespace T3Framework.Runtime.Localization
+namespace T3Framework.Runtime.I18N
 {
 	public enum Language
 	{

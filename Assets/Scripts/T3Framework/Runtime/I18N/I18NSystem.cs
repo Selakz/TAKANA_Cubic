@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using T3Framework.Runtime.Localization;
+using Cysharp.Threading.Tasks;
+using T3Framework.Runtime.Extensions;
 using UnityEngine;
 
 namespace T3Framework.Runtime.I18N
@@ -14,14 +15,29 @@ namespace T3Framework.Runtime.I18N
 	// TODO: Merge T3Framework.Runtime.Localization here with runtime localization
 	public static class I18NSystem
 	{
-		public const string DefaultLanguageCode = "zh-Hans";
-		internal const string DefaultLanguageName = "SimplifiedChinese";
-		private static readonly Dictionary<string, LanguagePack> languageMap = new();
+		public const Language DefaultLanguageCode = Language.SimplifiedChinese;
+		private static readonly Dictionary<Language, LanguagePack> languageMap = new();
 
-		private static readonly LanguagePack defaultLanguagePack;
+		private static LanguagePack defaultLanguagePack;
 		private static LanguagePack currentLanguagePack;
 
-		public static Dictionary<string, LanguagePack>.ValueCollection Languages => languageMap.Values;
+		public static Dictionary<Language, LanguagePack>.ValueCollection Languages => languageMap.Values;
+
+		public static Language CurrentLanguageCode
+		{
+			get => currentLanguagePack.LanguageCode;
+			set
+			{
+				if (currentLanguagePack.LanguageCode == value) return;
+				if (!languageMap.TryGetValue(value, out var pack))
+				{
+					Debug.LogError("Language pack is not found in the dictionary.");
+					return;
+				}
+
+				CurrentLanguage = pack;
+			}
+		}
 
 		public static LanguagePack CurrentLanguage
 		{
@@ -42,10 +58,16 @@ namespace T3Framework.Runtime.I18N
 
 		public static event Action<LanguagePack>? OnLanguageChanged;
 
-		static I18NSystem()
+		static I18NSystem() => currentLanguagePack = defaultLanguagePack = LanguagePack.FallbackDefault;
+
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+		private static void ConstructTexts() => ConstructTextsAsync().Forget();
+
+		private static async UniTaskVoid ConstructTextsAsync()
 		{
 			var folder = Path.Combine(Application.streamingAssetsPath, "Languages");
-			var files = Directory.GetFiles(folder);
+			var files = FileHelper.GetFiles(folder);
+
 			foreach (var file in files)
 			{
 				if (file.EndsWith(".yaml") || file.EndsWith(".yml"))
@@ -53,14 +75,9 @@ namespace T3Framework.Runtime.I18N
 					var fileName = Path.GetFileNameWithoutExtension(file);
 					var language = LanguageExtension.GetLanguage(fileName);
 					if (language is null) continue;
-					if (LanguagePack.TryLoad(language.Value, file, out var pack))
-					{
-						languageMap.TryAdd(pack.LanguageCode, pack);
-					}
-				}
-				else if (file.EndsWith(".txt"))
-				{
-					if (LanguagePack.TryLoadDeenoteStyle(file, out var pack))
+					var text = await FileHelper.ReadTextAsync(file).AsUniTask();
+					if (text is null) continue;
+					if (LanguagePack.TryLoad(language.Value, text, out var pack))
 					{
 						languageMap.TryAdd(pack.LanguageCode, pack);
 					}
@@ -74,6 +91,7 @@ namespace T3Framework.Runtime.I18N
 			}
 
 			currentLanguagePack = defaultLanguagePack = languageMap[DefaultLanguageCode];
+			OnLanguageChanged?.Invoke(currentLanguagePack);
 		}
 
 		public static string GetText(I18NText text) =>
@@ -102,10 +120,8 @@ namespace T3Framework.Runtime.I18N
 			return text;
 		}
 
-		public static bool TrySetLanguage(string? languageCode)
+		public static bool TrySetLanguage(Language languageCode)
 		{
-			if (languageCode is null) return false;
-
 			if (languageMap.TryGetValue(languageCode, out var pack))
 			{
 				currentLanguagePack = pack;
@@ -115,7 +131,7 @@ namespace T3Framework.Runtime.I18N
 			return false;
 		}
 
-		public static bool TryGetLanguagePack(string languageCode, out LanguagePack languagePack) =>
+		public static bool TryGetLanguagePack(Language languageCode, out LanguagePack languagePack) =>
 			languageMap.TryGetValue(languageCode, out languagePack);
 	}
 }

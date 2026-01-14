@@ -1,7 +1,7 @@
 #nullable enable
 
 using System;
-using T3Framework.Runtime.Localization;
+using T3Framework.Runtime.I18N;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;

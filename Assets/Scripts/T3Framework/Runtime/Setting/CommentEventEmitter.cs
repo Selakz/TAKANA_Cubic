@@ -13,7 +13,7 @@ namespace T3Framework.Runtime.Setting
 {
 	public class CommentEventEmitter : ChainedEventEmitter
 	{
-		private readonly Dictionary<Type, Dictionary<string, string>> commentCache = new();
+		private readonly Dictionary<Type, Dictionary<string, string>> commentKeyCache = new();
 		private Type currentSerializingType = null;
 
 		public CommentEventEmitter(IEventEmitter nextEmitter) : base(nextEmitter)
@@ -28,9 +28,9 @@ namespace T3Framework.Runtime.Setting
 
 		public override void Emit(ScalarEventInfo eventInfo, IEmitter emitter)
 		{
-			if (ShouldAddComment(eventInfo, out var comment))
+			if (ShouldAddComment(eventInfo, out var commentKey))
 			{
-				emitter.Emit(new Comment(comment, false));
+				emitter.Emit(new Comment(I18NSystem.GetText(commentKey), false));
 			}
 
 			base.Emit(eventInfo, emitter);
@@ -45,14 +45,14 @@ namespace T3Framework.Runtime.Setting
 			}
 
 			var propertyName = CamelCaseNamingConvention.Instance.Reverse(eventInfo.Source.Value.ToString());
-			return commentCache.TryGetValue(currentSerializingType, out var properties) &&
+			return commentKeyCache.TryGetValue(currentSerializingType, out var properties) &&
 			       properties.TryGetValue(propertyName, out comment);
 		}
 
 		private void CacheTypeComments(Type type)
 		{
 			currentSerializingType = type;
-			if (commentCache.ContainsKey(type)) return;
+			if (commentKeyCache.ContainsKey(type)) return;
 
 			var commentMap = new Dictionary<string, string>();
 			foreach (var property in type.GetProperties())
@@ -60,11 +60,11 @@ namespace T3Framework.Runtime.Setting
 				var attr = property.GetCustomAttribute<DescriptionAttribute>();
 				if (attr != null)
 				{
-					commentMap[property.Name] = I18NSystem.GetText($"Setting_{type.Name}_{attr.Description}");
+					commentMap[property.Name] = $"Setting_{type.Name}_{attr.Description}";
 				}
 			}
 
-			commentCache[type] = commentMap;
+			commentKeyCache[type] = commentMap;
 		}
 	}
 }

@@ -6,19 +6,19 @@ namespace MusicGame.ChartEditor.Level
 	[SettingFileName(".t3proj")]
 	public class T3ProjSetting : ISetting<T3ProjSetting>
 	{
-		[Description("音源文件名称 | 以下文件需要附带文件后缀名")]
+		[Description("MusicFileName")]
 		public string MusicFileName { get; set; } = "music.mp3";
 
-		[Description("封面文件名称")]
+		[Description("CoverFileName")]
 		public string CoverFileName { get; set; } = "cover.jpg";
 
-		[Description("乐曲信息文件名称")]
+		[Description("SongInfoFileName")]
 		public string SongInfoFileName { get; set; } = "songinfo.yaml";
 
-		[Description("偏好设置文件名称，例如在谱面编辑器中该项用来保存编辑器的一些设置")]
+		[Description("PreferenceFileName")]
 		public string PreferenceFileName { get; set; } = "preference.yaml";
 
-		[Description("各难度谱面文件名称 | 以下文件不需要附带文件后缀")]
+		[Description("ChartFileName")]
 		public string NormalChartFileName { get; set; } = "normal";
 
 		public string HardChartFileName { get; set; } = "hard";

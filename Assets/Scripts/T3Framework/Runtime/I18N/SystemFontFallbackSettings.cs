@@ -16,7 +16,7 @@ namespace T3Framework.Runtime.I18N
 		[Serializable]
 		public struct PerLanguageSettings
 		{
-			public string languageCode;
+			public Language languageCode;
 			public string[] fontFileNames;
 		}
 	}

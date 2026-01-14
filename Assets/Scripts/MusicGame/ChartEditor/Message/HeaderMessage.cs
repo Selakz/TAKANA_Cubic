@@ -1,7 +1,6 @@
 using System;
 using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Log;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +10,7 @@ namespace MusicGame.ChartEditor.Message
 	{
 		// Serializable and Public
 		[SerializeField] private Image panelImage;
-		[SerializeField] private TMP_Text messageText;
+		[SerializeField] private I18NTextBlock messageText;
 		[SerializeField] private Animator animator;
 
 		public enum MessageType
@@ -31,7 +30,7 @@ namespace MusicGame.ChartEditor.Message
 		public static void Show(string message, MessageType type)
 		{
 			Instance.panelImage.color = type.GetColor();
-			Instance.messageText.text = message;
+			Instance.messageText.SetText(message);
 			Instance.animator.Play(0);
 			Debug.Log($"HeaderMessage Show: {message}");
 		}
@@ -54,7 +53,7 @@ namespace MusicGame.ChartEditor.Message
 		// System Functions
 		void Start()
 		{
-			messageText.text = I18NSystem.GetText("App_EditorStartup");
+			messageText.SetText("App_EditorStartup");
 		}
 
 		void OnEnable()
