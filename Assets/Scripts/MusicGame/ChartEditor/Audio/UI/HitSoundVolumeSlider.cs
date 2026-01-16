@@ -1,6 +1,6 @@
 #nullable enable
 
-using MusicGame.ChartEditor.Level;
+using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -22,15 +22,15 @@ namespace MusicGame.ChartEditor.Audio.UI
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<int>(ISingleton<EditorSetting>.Instance.HitSoundVolumePercent, () =>
+			new PropertyRegistrar<int>(ISingleton<PlayfieldSetting>.Instance.HitSoundVolumePercent, () =>
 			{
-				var percent = ISingleton<EditorSetting>.Instance.HitSoundVolumePercent.Value;
+				var percent = ISingleton<PlayfieldSetting>.Instance.HitSoundVolumePercent.Value;
 				HitSoundVolumePercent = percent;
 			}),
 			new SliderRegistrar(hitSoundVolumeSlider,
 				value =>
 				{
-					ISingleton<EditorSetting>.Instance.HitSoundVolumePercent.Value = Mathf.RoundToInt(value);
+					ISingleton<PlayfieldSetting>.Instance.HitSoundVolumePercent.Value = Mathf.RoundToInt(value);
 					hitSoundVolumeText.text = Mathf.RoundToInt(value).ToString();
 				})
 		};

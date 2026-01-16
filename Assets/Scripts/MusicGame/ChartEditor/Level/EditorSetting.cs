@@ -12,11 +12,6 @@ namespace MusicGame.ChartEditor.Level
 	[Description("Header")]
 	public class EditorSetting : ISingletonSetting<EditorSetting>
 	{
-		[Description("HitSoundVolumePercent")]
-		[MinValue(0)]
-		[MaxValue(100)]
-		public NotifiableProperty<int> HitSoundVolumePercent { get; set; } = new(50);
-
 		[Description("ScrollSensitivity")]
 		[MinValue(10)]
 		[MaxValue(-10)]

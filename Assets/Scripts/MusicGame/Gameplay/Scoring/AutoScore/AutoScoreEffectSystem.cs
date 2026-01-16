@@ -1,10 +1,10 @@
 #nullable enable
 
 using Cysharp.Threading.Tasks;
-using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.LaneBeam;
+using MusicGame.Gameplay.Level;
 using MusicGame.Models.Note;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
@@ -110,7 +110,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			double currentTime = AudioSettings.dspTime;
 			if (currentTime - lastHitTime < 0.003) volume *= 0.5f;
 			hitSound.PlayOneShot(hitSound.clip,
-				volume * ISingleton<EditorSetting>.Instance.HitSoundVolumePercent / 100f);
+				volume * ISingleton<PlayfieldSetting>.Instance.HitSoundVolumePercent / 100f);
 			lastHitTime = currentTime;
 		}
 
