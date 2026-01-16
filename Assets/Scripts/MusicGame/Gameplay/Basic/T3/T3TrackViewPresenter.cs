@@ -6,6 +6,7 @@ using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.Setting;
+using T3Framework.Static;
 using UnityEngine;
 using VContainer;
 
@@ -69,6 +70,12 @@ namespace MusicGame.Gameplay.Basic.T3
 				() => mainTexture.color,
 				value => mainTexture.color = value,
 				_ => ISingletonSetting<PlayfieldSetting>.Instance.TrackFaceDefaultColor);
+			Textures["leftLine"].ColorModifier.Register(
+				color => color with { a = ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor.Value.a },
+				-1);
+			Textures["rightLine"].ColorModifier.Register(
+				color => color with { a = ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor.Value.a },
+				-1);
 		}
 
 		private void Update()

@@ -46,7 +46,7 @@ namespace T3Framework.Runtime.Audio
 					isPseudoPlaying = false;
 					remainingNegativeTime = 0;
 					// Time assignment fails when audio ends, stops and jumps to 0, So you need to load it again.
-					if (audioSource is { isPlaying: false, time: 0f })
+					if (audioSource is { isPlaying: false, time: <= float.Epsilon })
 					{
 						audioSource.Play();
 						audioSource.Pause();
@@ -81,11 +81,14 @@ namespace T3Framework.Runtime.Audio
 		private double scheduledDspTime; // the time when the audio actually played
 		private double remainingNegativeTime; // only be set to positive when time is set to negative and is not playing
 		private bool isPseudoPlaying;
+		private bool isInNegativeDelay = false; // may only be set to true when calling PlayDelayed and time is negative
 
 		// Defined Functions
 		public void Play()
 		{
 			if (isPlaying) return;
+
+			isInNegativeDelay = false;
 			if (remainingNegativeTime > 0)
 			{
 				scheduledDspTime = AudioSettings.dspTime + remainingNegativeTime;
@@ -101,12 +104,34 @@ namespace T3Framework.Runtime.Audio
 			}
 		}
 
+		public void PlayDelayed(float delay)
+		{
+			if (isPlaying) return;
+
+			isPseudoPlaying = false;
+			if (remainingNegativeTime > 0)
+			{
+				scheduledDspTime = AudioSettings.dspTime + remainingNegativeTime + delay;
+				audioSource.Stop();
+				audioSource.PlayScheduled(scheduledDspTime);
+				isInNegativeDelay = true;
+			}
+			else
+			{
+				audioSource.PlayDelayed(delay);
+			}
+		}
+
 		public void Stop()
 		{
 			audioSource.Pause(); // IDK why the following time assignments fails when using Stop()
 			isPseudoPlaying = false;
+			isInNegativeDelay = false;
 			remainingNegativeTime = 0;
 		}
+
+		private float lastFrameAudioTime;
+		private double lastFrameDspTime;
 
 		// System Functions
 		private void Awake()
@@ -123,6 +148,16 @@ namespace T3Framework.Runtime.Audio
 				if (currentTime >= scheduledDspTime)
 				{
 					isPseudoPlaying = false;
+				}
+			}
+			else if (isInNegativeDelay)
+			{
+				double currentTime = AudioSettings.dspTime;
+				if (remainingNegativeTime > 0 && currentTime > scheduledDspTime - remainingNegativeTime)
+				{
+					isPseudoPlaying = true;
+					remainingNegativeTime = 0;
+					isInNegativeDelay = false;
 				}
 			}
 		}

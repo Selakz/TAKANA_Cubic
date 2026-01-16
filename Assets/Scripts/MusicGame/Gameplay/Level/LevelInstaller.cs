@@ -14,7 +14,7 @@ namespace MusicGame.Gameplay.Level
 {
 	public class LevelInstaller : HierarchyInstaller
 	{
-		[SerializeField] private InputActionAsset defaultInputAsset = default!;
+		[SerializeField] private InputActionAsset? defaultInputAsset;
 		[SerializeField] private Camera levelCamara = default!;
 		[SerializeField] private GameAudioPlayer musicPlayer = default!;
 
@@ -23,7 +23,7 @@ namespace MusicGame.Gameplay.Level
 			builder.RegisterInstance(levelCamara).As<Camera>().Keyed("stage");
 			builder.RegisterInstance(new NotifiableProperty<LevelInfo?>(null)).As<NotifiableProperty<LevelInfo?>>();
 			builder.RegisterComponent(musicPlayer).AsSelf();
-			ISingleton<InputManager>.Instance.ActionAsset = defaultInputAsset;
+			if (defaultInputAsset != null) ISingleton<InputManager>.Instance.ActionAsset = defaultInputAsset;
 		}
 	}
 }

@@ -2,6 +2,7 @@
 
 using MusicGame.Gameplay.Basic.T3;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Movement;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.LaneBeam
@@ -9,23 +10,34 @@ namespace MusicGame.Gameplay.LaneBeam
 	public class LaneBeamPlugin : MonoBehaviour
 	{
 		// Serializable and Public
-		// TODO: Replace animator with lightweight DOTWeen easing
-		[SerializeField] private Animator animator = default!;
+		[SerializeField] private FloatMovementContainer movement = default!;
+		[SerializeField] private SpriteRenderer texture = default!;
+
+		public Color LaneBeamColor
+		{
+			get => laneBeamColor;
+			set
+			{
+				laneBeamColor = value;
+				texture.color = laneBeamColor;
+			}
+		}
 
 		// Private
 		private PrefabHandler handler = default!;
 		private T3TrackViewPresenter? presenter;
+		private Color laneBeamColor;
 
 		// Defined Functions
 		public void PlayAnimation()
 		{
-			animator.gameObject.SetActive(true);
-			animator.Play(0);
+			texture.gameObject.SetActive(true);
+			movement.Move(() => texture.color.a, value => texture.color = texture.color with { a = value });
 		}
 
 		public void StopAnimation()
 		{
-			animator.gameObject.SetActive(false);
+			texture.gameObject.SetActive(false);
 		}
 
 		// System Functions

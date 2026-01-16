@@ -11,6 +11,7 @@ namespace MusicGame.Gameplay.Scoring
 	{
 		[SerializeField] private DoubleDataContainer scoreContainer = default!;
 		[SerializeField] private IntegerDataContainer comboContainer = default!;
+		[SerializeField] private IntegerDataContainer maxComboContainer = default!;
 
 		public override void SelfInstall(IContainerBuilder builder)
 		{
@@ -18,6 +19,8 @@ namespace MusicGame.Gameplay.Scoring
 				.Keyed("score");
 			builder.RegisterInstance(comboContainer.Property)
 				.Keyed("combo");
+			builder.RegisterInstance(maxComboContainer.Property)
+				.Keyed("maxCombo");
 		}
 	}
 }
