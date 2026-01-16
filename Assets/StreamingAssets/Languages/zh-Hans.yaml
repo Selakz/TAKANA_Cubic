@@ -1,6 +1,7 @@
 Fallback: 该文本（{0}）未被正确本地化，请通知作者
 
 App:
+  TapToStart: 点击以开始
   EditorStartup: 点击“选择文件夹”按钮以加载谱面工程
   LoadError: 读取工程时发生错误，请检查路径和工程格式
   LoadComplete: 加载完成！
@@ -74,16 +75,29 @@ TrackLine:
   ChangeEase: 切换至{0}曲线族
   CheckEase: 当前选中曲线族：{0}
   
+LevelSelect:
+  Speed: 谱面流速
+  Deviation: 音乐偏移
+  Loading: 加载中
+  DetailSetting: 详细设置
+  
+LevelResult:
+  SetDeviation: 立即设置
+  
 # It's so boring chore. LLM helps me with this.
 Setting:
   SelectSetting:
     Header: 点选设置
     TrackSelectedColor: 轨道被选中时的颜色
   PlayfieldSetting:
-    Header: 游戏UI设置
+    Header: 游戏设置
+    HitSoundVolumePercent: 打击音音量大小百分比（整数） | 范围 [0, 100]
+    TrackFaceDefaultColor: 轨道默认颜色，该项也用来设置轨道的默认透明度
+    MissHoldOpacity: Hold miss后的不透明度 | 范围 [0, 1]
+    Speed: 游玩谱面时的默认速度 | 范围 [0, 10]
+    AudioDeviation: 游玩谱面时的音乐偏移量 | 单位：毫秒
     TrackGap1: Tap和Hold与轨道边界的间隔大小
     TrackGap2: Slide与轨道边界的间隔大小
-    TrackFaceDefaultColor: 轨道默认颜色，该项也用来设置轨道的默认透明度
     CameraPosition: 主相机位置
     CameraRotation: 主相机旋转角度
     TimeAfterEnd: Note下落时如果未被判定，则其视图层内容在判定时间之后延迟销毁的时间（非必要请勿修改）
@@ -124,7 +138,6 @@ Setting:
     DefaultColor: 不满足上述情况时的横向格线颜色
   EditorSetting:
     Header: 应用设置
-    HitSoundVolumePercent: 打击音音量大小百分比（整数） | 范围 [0, 100]
     ScrollSensitivity: 鼠标滚动灵敏度（即每次滚动移动的格线数量，负数则反向）
     ShouldForcePause: 音乐播放时左键强制暂停
     AutoSaveInterval: 自动保存的时间间隔 | 单位：毫秒
@@ -144,6 +157,12 @@ Setting:
     DefaultColor: 新建的图层默认使用的图层颜色
     SelectLayerOpacityRatio: 选中的图层的透明度倍率，范围为[0, 1]
     UnselectLayerOpacityRatio: 未选中的图层的透明度倍率，范围为[0, 1]
+  T3ProjSetting:
+    MusicFileName: 音源文件名称 | 以下文件需要附带文件后缀名
+    CoverFileName: 封面文件名称
+    SongInfoFileName: 乐曲信息文件名称
+    PreferenceFileName: 偏好设置文件名称，例如在谱面编辑器中该项用来保存编辑器的一些设置
+    ChartFileName: 各难度谱面文件名称 | 以下文件不需要附带文件后缀
   SongInfo:
     Id: 歌曲的唯一标识符
     Title: 展示的曲名

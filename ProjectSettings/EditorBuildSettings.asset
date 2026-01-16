@@ -5,8 +5,20 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ChartEditor.unity
     guid: 8edc6939e51e3174598ac004e41d2bdb
+  - enabled: 1
+    path: Assets/Scenes/AppEntry.unity
+    guid: 435143a237eedb34390e62b40ef01d5e
+  - enabled: 1
+    path: Assets/Scenes/LevelSelect.unity
+    guid: edd7cb3822c95d640a8344da62dd57c5
+  - enabled: 1
+    path: Assets/Scenes/Playfield.unity
+    guid: 3392b755d9288bf47a5e4cf3749362d0
+  - enabled: 1
+    path: Assets/Scenes/LevelResult.unity
+    guid: 70617e7e5845b08478923863b437ae56
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 08c14772bc3a8704984e3ccf0d6694e2, type: 2}

@@ -31,7 +31,9 @@ If you are interested in developing this project, feel free to reach out to me. 
 
 ## 🏗️ Technical Architecture
 
-The project is divided into two main assemblies with a strict dependency flow:
+The project is divided into three main assemblies with a strict dependency flow:
+
+- **App**: Contains codes which are independent of the app's specific functions.
 
 - **MusicGame**: Contains all logic related to the chart editor. The `ChartEditor` module depends on other internal parts.
 
@@ -62,3 +64,8 @@ Special thanks to these projects for their inspiration and technical contributio
 - [GlitchEnzo / NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity)
 - [Demigiant / dotween](https://github.com/Demigiant/dotween)
 - [hadashiA / VContainer](https://github.com/hadashiA/VContainer)
+
+Below are some sources of the project's resources：
+
+- Icons mainly from [Flaticon](https://www.flaticon.com)
+- Background music source of app entry: Amethyst Cove / KhantLOL from B.M.P.O.A.T. Original SoundTrack
