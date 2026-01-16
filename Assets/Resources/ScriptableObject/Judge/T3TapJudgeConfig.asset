@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ce65babcbb428db636b32f722cff32, type: 3}
+  m_Name: T3TapJudgeConfig
+  m_EditorClassIdentifier: 
+  resultMap:
+    pairs:
+    - key: 0
+      value:
+        startTime: -150
+        endTime: -100
+    - key: 1
+      value:
+        startTime: -100
+        endTime: -85
+    - key: 2
+      value:
+        startTime: -85
+        endTime: -60
+    - key: 3
+      value:
+        startTime: -60
+        endTime: -40
+    - key: 4
+      value:
+        startTime: -40
+        endTime: 40
+    - key: 5
+      value:
+        startTime: 40
+        endTime: 60
+    - key: 6
+      value:
+        startTime: 60
+        endTime: 85
+    - key: 7
+      value:
+        startTime: 85
+        endTime: 100
