@@ -37,9 +37,11 @@ namespace MusicGame.ChartEditor.Level.UI
 		// Event Handlers
 		private void OnLoadLevelButtonClick()
 		{
+#if !UNITY_ANDROID && !UNITY_IOS
 			string folder = FileBrowser.OpenFolderDialog(I18NSystem.GetText("App_ChooseProject"));
 			if (folder == null) return;
 			levelLoader.LoadLevel(folder);
+#endif
 		}
 	}
 }

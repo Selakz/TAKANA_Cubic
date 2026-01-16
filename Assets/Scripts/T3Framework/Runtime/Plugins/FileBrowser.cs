@@ -1,3 +1,4 @@
+#if !UNITY_ANDROID && !UNITY_IOS
 using SFB;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -67,3 +68,4 @@ namespace T3Framework.Runtime.Plugins
 		}
 	}
 }
+#endif

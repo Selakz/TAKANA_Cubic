@@ -1,1 +1,1 @@
-{"AdditionalImports":[{"Path":"Assets/Scripts/MusicGame/LangVersion.props","Position":0}],"AdditionalImportsAdditionalProjects":["MusicGame.csproj"],"EnableAddAnalyzerReferences":false,"AddAnalyzerReferencesAdditionalProjects":[]}
+{"AdditionalImports":[{"Path":"Assets/Scripts/MusicGame/LangVersion.props","Position":0}],"AdditionalImportsAdditionalProjects":["MusicGame.csproj","App.csproj"],"EnableAddAnalyzerReferences":false,"AddAnalyzerReferencesAdditionalProjects":[]}
