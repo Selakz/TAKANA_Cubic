@@ -3,6 +3,7 @@
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
@@ -24,13 +25,7 @@ namespace MusicGame.Gameplay.Level.UI
 			{
 				var info = levelInfo.Value;
 				var texture = info?.Cover ?? defaultCover;
-				var textureRatio = (float)texture.width / texture.height;
-				var rectRatio = coverImage.rectTransform.rect.width / coverImage.rectTransform.rect.height;
-				var ratio = textureRatio / rectRatio;
-				coverImage.texture = texture;
-				coverImage.uvRect = ratio < 1
-					? new Rect(0, (1 - ratio) / 2, 1, ratio)
-					: new Rect((1 - 1 / ratio) / 2, 0, 1 / ratio, 1);
+				coverImage.LoadTextureCover(texture);
 			})
 		};
 

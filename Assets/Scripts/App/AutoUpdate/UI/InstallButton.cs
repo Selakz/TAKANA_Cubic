@@ -5,7 +5,7 @@ using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using UnityEngine;
 using UnityEngine.UI;
-#if !UNITY_STANDALONE_WIN
+#if !UNITY_STANDALONE_WIN && !UNITY_ANDROID && !UNITY_IOS
 using T3Framework.Runtime.Plugins;
 #endif
 
@@ -22,7 +22,7 @@ namespace App.AutoUpdate.UI
 		{
 			new ButtonRegistrar(button, () =>
 			{
-#if !UNITY_STANDALONE_WIN && !UNITY_ANDROID
+#if !UNITY_STANDALONE_WIN && !UNITY_ANDROID && !UNITY_IOS
 				FileBrowser.OpenExplorer(Application.streamingAssetsPath);
 				return;
 #endif

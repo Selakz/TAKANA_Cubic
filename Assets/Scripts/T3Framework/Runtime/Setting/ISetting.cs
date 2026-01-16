@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 
 namespace T3Framework.Runtime.Setting
 {
@@ -19,10 +20,30 @@ namespace T3Framework.Runtime.Setting
 			return setting;
 		}
 
+		public static async Task<T> LoadAsync(string filePath)
+		{
+			if (File.Exists(filePath))
+			{
+				var yaml = await File.ReadAllTextAsync(filePath);
+				return SettingConvertHelper.Deserializer.Deserialize<T>(yaml);
+			}
+
+			var setting = new T();
+			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			await File.WriteAllTextAsync(filePath, text);
+			return setting;
+		}
+
 		public static void Save(T setting, string filePath)
 		{
 			var text = SettingConvertHelper.Serializer.Serialize(setting);
 			File.WriteAllText(filePath, text);
+		}
+
+		public static async Task SaveAsync(T setting, string filePath)
+		{
+			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			await File.WriteAllTextAsync(filePath, text);
 		}
 
 		public static string GetFileName()

@@ -9,6 +9,7 @@ using T3Framework.Runtime.Extensions;
 using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace T3Framework.Preset.ColorPicker
@@ -77,8 +78,14 @@ namespace T3Framework.Preset.ColorPicker
 		{
 			if (eventData.pointerCurrentRaycast.gameObject != rawImage.gameObject) return;
 			var rect = (RectTransform)rawImage.transform;
+			var screenPoint =
+#if UNITY_ANDROID || UNITY_IOS
+				Touchscreen.current.primaryTouch.position.value;
+#else
+				Mouse.current.position.ReadValue();
+#endif
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(
-				rect, Input.mousePosition, null, out var localPoint);
+				rect, screenPoint, null, out var localPoint);
 			SetColor((int)localPoint.x, (int)localPoint.y);
 		}
 
@@ -109,8 +116,14 @@ namespace T3Framework.Preset.ColorPicker
 		private void OnUpdate()
 		{
 			var rect = (RectTransform)rawImage.transform;
+			var screenPoint =
+#if UNITY_ANDROID || UNITY_IOS
+				Touchscreen.current.primaryTouch.position.value;
+#else
+				Mouse.current.position.ReadValue();
+#endif
 			RectTransformUtility.ScreenPointToLocalPointInRectangle(
-				rect, Input.mousePosition, null, out var localPoint);
+				rect, screenPoint, null, out var localPoint);
 			SetColor((int)localPoint.x, (int)localPoint.y);
 		}
 

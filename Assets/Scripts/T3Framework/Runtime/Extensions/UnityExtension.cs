@@ -45,5 +45,17 @@ namespace T3Framework.Runtime.Extensions
 			dropdown.options = optionTexts;
 			return options.ToArray();
 		}
+
+		// RawImage
+		public static void LoadTextureCover(this RawImage rawImage, Texture texture)
+		{
+			var textureRatio = (float)texture.width / texture.height;
+			var rectRatio = rawImage.rectTransform.rect.width / rawImage.rectTransform.rect.height;
+			var ratio = textureRatio / rectRatio;
+			rawImage.texture = texture;
+			rawImage.uvRect = ratio < 1
+				? new Rect(0, (1 - ratio) / 2, 1, ratio)
+				: new Rect((1 - 1 / ratio) / 2, 0, 1 / ratio, 1);
+		}
 	}
 }
