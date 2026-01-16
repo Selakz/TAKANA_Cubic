@@ -1,7 +1,7 @@
 #nullable enable
 
 using System.ComponentModel;
-using T3Framework.Runtime.Localization;
+using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Setting;
 
 namespace MusicGame.Gameplay.Level

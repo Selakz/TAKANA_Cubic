@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Reflection;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.I18N;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +15,7 @@ namespace MusicGame.Utility.Setting
 	{
 		// Serializable and Public
 		[SerializeField] private Toggle settingTabToggle = default!;
-		[SerializeField] private TMP_Text settingTabLabel = default!;
+		[SerializeField] private I18NTextBlock labelTextBlock = default!;
 		[SerializeField] private Transform movableArea = default!;
 		[SerializeField] private Transform panelParent = default!;
 
@@ -37,9 +36,10 @@ namespace MusicGame.Utility.Setting
 					var settingType = Type.GetType(settingClassName);
 					if (settingType is null) return;
 					var description = settingType.GetCustomAttribute<DescriptionAttribute>();
-					settingTabLabel.text = description is null
-						? settingType.Name
-						: I18NSystem.GetText($"Setting_{settingType.Name}_{description.Description}");
+
+					labelTextBlock.SetText(description is null
+						? settingClassName
+						: $"Setting_{settingType.Name}_{description.Description}");
 					if (settingItemGenerator != null)
 					{
 						settingItemGenerator.SettingClassName = settingClassName;

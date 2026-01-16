@@ -5,7 +5,7 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
-using T3Framework.Runtime.Localization;
+using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using TMPro;
