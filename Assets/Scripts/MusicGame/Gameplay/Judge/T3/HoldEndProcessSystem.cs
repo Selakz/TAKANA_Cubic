@@ -106,8 +106,9 @@ namespace MusicGame.Gameplay.Judge.T3
 					else
 					{
 						if (endCombo.FromComponent.Parent?.Model is not ITrack track) return true;
-						var leftEdge = track.Movement.GetLeftPos(chartTime);
-						var rightEdge = track.Movement.GetRightPos(chartTime);
+						// TODO: Share the same reference in T3ComboFactory
+						var leftEdge = track.Movement.GetLeftPos(chartTime) - 0.1f;
+						var rightEdge = track.Movement.GetRightPos(chartTime) + 0.1f;
 						if (leftEdge > rightEdge) (leftEdge, rightEdge) = (rightEdge, leftEdge);
 						if (leftEdge > position || rightEdge < position)
 						{
@@ -158,6 +159,7 @@ namespace MusicGame.Gameplay.Judge.T3
 			{
 				if (hitJudgeItem.JudgeResult is T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss)
 				{
+					if (hitJudgeItem.JudgedTouch is not null) Debug.Log("judge miss");
 					judgeStorage.AddJudgeItem(new HoldEndJudgeItem(endCombo)
 					{
 						ActualTime = hitJudgeItem.ActualTime,
