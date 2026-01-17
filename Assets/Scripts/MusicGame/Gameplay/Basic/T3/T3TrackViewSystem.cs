@@ -15,7 +15,7 @@ namespace MusicGame.Gameplay.Basic.T3
 	{
 		private readonly int positionPriority;
 		private readonly int widthPriority;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 		private readonly SubViewPool<ChartComponent, Type> trackPool;
 
 		public IViewPool<ChartComponent> TrackPool => trackPool;
@@ -23,7 +23,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		public T3TrackViewSystem(
 			int positionPriority,
 			int widthPriority,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			[Key("stage")] IViewPool<ChartComponent> viewPool)
 		{
 			this.positionPriority = positionPriority;

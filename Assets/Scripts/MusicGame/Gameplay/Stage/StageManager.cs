@@ -13,7 +13,7 @@ namespace MusicGame.Gameplay.Stage
 		private readonly IViewPool<ChartComponent> viewPool;
 
 		private ChartInfo? chart;
-		private GameAudioPlayer? music;
+		private IGameAudioPlayer? music;
 		private ComponentGenerator? generator;
 
 		public StageManager([Key("stage")] IViewPool<ChartComponent> viewPool)
@@ -21,7 +21,7 @@ namespace MusicGame.Gameplay.Stage
 			this.viewPool = viewPool;
 		}
 
-		public void StartGenerate(ChartInfo chart, GameAudioPlayer music, IModelTimeCalculator calculator)
+		public void StartGenerate(ChartInfo chart, IGameAudioPlayer music, IModelTimeCalculator calculator)
 		{
 			StopGenerate();
 			this.chart = chart;

@@ -42,7 +42,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		};
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private ComboStorage comboStorage = default!;
 		private JudgeStorage judgeStorage = default!;
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
@@ -56,7 +56,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		// Constructor
 		[Inject]
 		private void Construct(
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			ComboStorage comboStorage,
 			JudgeStorage judgeStorage,
 			NotifiableProperty<LevelInfo?> levelInfo,

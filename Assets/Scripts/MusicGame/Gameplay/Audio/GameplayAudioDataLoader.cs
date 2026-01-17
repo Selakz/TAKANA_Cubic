@@ -12,11 +12,11 @@ namespace MusicGame.Gameplay.Audio
 	public class GameplayAudioDataLoader : MonoBehaviour, ISelfInstaller
 	{
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 
 		// Constructor
 		[Inject]
-		private void Construct(GameAudioPlayer music)
+		private void Construct(IGameAudioPlayer music)
 		{
 			this.music = music;
 		}

@@ -12,7 +12,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 {
 	public abstract class BaseTimeRetriever : ITimeRetriever
 	{
-		[Inject] private GameAudioPlayer music = default!;
+		[Inject] private IGameAudioPlayer music = default!;
 		[Inject] private NotifiableProperty<ISpeed> speed = default!;
 
 		public virtual T3Time GetTimeStart(Vector3 position) => GetCorrespondingTime(position.y);

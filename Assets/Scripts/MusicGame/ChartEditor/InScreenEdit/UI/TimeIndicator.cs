@@ -56,7 +56,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
 		private Camera levelCamera = default!;
 		private NotifiableProperty<ISpeed> speed = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 		private string timeString = "0";
@@ -70,7 +70,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 			[Key("stage")] Camera levelCamera,
 			NotifiableProperty<ITimeRetriever> timeRetriever,
 			NotifiableProperty<ISpeed> speed,
-			GameAudioPlayer music)
+			IGameAudioPlayer music)
 		{
 			this.levelInfo = levelInfo;
 			this.levelCamera = levelCamera;

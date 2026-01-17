@@ -32,7 +32,7 @@ namespace MusicGame.ChartEditor.Audio.UI
 		};
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 
 		private T3Time Offset
@@ -44,7 +44,7 @@ namespace MusicGame.ChartEditor.Audio.UI
 		[Inject]
 		private void Construct(
 			NotifiableProperty<LevelInfo?> levelInfo,
-			GameAudioPlayer music)
+			IGameAudioPlayer music)
 		{
 			this.levelInfo = levelInfo;
 			this.music = music;

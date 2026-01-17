@@ -16,13 +16,16 @@ namespace MusicGame.Gameplay.Level
 	{
 		[SerializeField] private InputActionAsset? defaultInputAsset;
 		[SerializeField] private Camera levelCamara = default!;
-		[SerializeField] private GameAudioPlayer musicPlayer = default!;
+		[SerializeField] private GameObject musicPlayerObject = default!;
 
 		public override void SelfInstall(IContainerBuilder builder)
 		{
 			builder.RegisterInstance(levelCamara).As<Camera>().Keyed("stage");
-			builder.RegisterInstance(new NotifiableProperty<LevelInfo?>(null)).As<NotifiableProperty<LevelInfo?>>();
-			builder.RegisterComponent(musicPlayer).AsSelf();
+			builder.RegisterInstance(new NotifiableProperty<LevelInfo?>(null))
+				.As<NotifiableProperty<LevelInfo?>>();
+			builder.RegisterComponent(musicPlayerObject.GetComponent<IGameAudioPlayer>())
+				.As<IGameAudioPlayer>()
+				.AsSelf();
 			if (defaultInputAsset != null) ISingleton<InputManager>.Instance.ActionAsset = defaultInputAsset;
 		}
 	}

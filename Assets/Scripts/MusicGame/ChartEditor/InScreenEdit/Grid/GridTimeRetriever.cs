@@ -22,14 +22,14 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		// Private
 		private readonly IEventRegistrar[] registrars;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 
 		// Static
 
 		// Defined Functions
 		public GridTimeRetriever(
 			NotifiableProperty<LevelInfo?> levelInfo,
-			GameAudioPlayer music)
+			IGameAudioPlayer music)
 		{
 			this.music = music;
 			registrars = new IEventRegistrar[]

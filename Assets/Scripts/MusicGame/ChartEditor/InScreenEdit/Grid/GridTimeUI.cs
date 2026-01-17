@@ -76,7 +76,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		private IObjectResolver resolver = default!;
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private NotifiableProperty<ISpeed> speed = default!;
 		private ITimeRetriever defaultTimeRetriever = default!;
 		private GridTimeRetriever gridTimeRetriever = default!;
@@ -98,7 +98,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			IObjectResolver resolver,
 			NotifiableProperty<LevelInfo?> levelInfo,
 			NotifiableProperty<ITimeRetriever> timeRetriever,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			NotifiableProperty<ISpeed> speed,
 			ITimeRetriever defaultTimeRetriever,
 			GridTimeRetriever gridTimeRetriever)

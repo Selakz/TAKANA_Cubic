@@ -21,14 +21,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 	{
 		// Private
 		private Camera levelCamera = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
 			[Key("stage")] Camera levelCamera,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			NotifiableProperty<ITimeRetriever> timeRetriever)
 		{
 			this.levelCamera = levelCamera;

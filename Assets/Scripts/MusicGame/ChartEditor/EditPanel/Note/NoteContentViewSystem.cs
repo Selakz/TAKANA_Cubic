@@ -25,7 +25,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 		// Private
 		private IViewPool<ChartComponent> decoratorPool = default!;
 		private ChartSelectDataset selectDataset = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private ChartEditSystem system = default!;
 
 		// Defined Functions
@@ -33,7 +33,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 		private void Construct(
 			[Key("note-decoration")] IViewPool<ChartComponent> decoratorPool,
 			ChartSelectDataset selectDataset,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			ChartEditSystem system)
 		{
 			this.decoratorPool = decoratorPool;

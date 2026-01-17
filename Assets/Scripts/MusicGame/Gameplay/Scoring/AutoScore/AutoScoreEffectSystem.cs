@@ -20,7 +20,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 	public class AutoScoreEffectSystem : T3System, ITickable
 	{
 		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 		private readonly ObjectPool<HitEffectAnimator> hitEffectPool;
 		private readonly AudioSource hitSound;
 		private readonly AutoScoreSystem system;
@@ -32,7 +32,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		public AutoScoreEffectSystem(
 			IObjectResolver resolver,
 			[Key("stage")] IViewPool<ChartComponent> viewPool,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			PrefabObject hitEffectPrefab,
 			AudioSource hitSound,
 			AutoScoreSystem system,

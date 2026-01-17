@@ -47,7 +47,7 @@ namespace MusicGame.ChartEditor.Level.UI
 
 		// Private
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private T3Time SliderTime => (int)slider.value;
 		private bool isPointerDown;
 
@@ -55,7 +55,7 @@ namespace MusicGame.ChartEditor.Level.UI
 		[Inject]
 		private void Construct(
 			NotifiableProperty<LevelInfo?> levelInfo,
-			GameAudioPlayer music)
+			IGameAudioPlayer music)
 		{
 			this.levelInfo = levelInfo;
 			this.music = music;

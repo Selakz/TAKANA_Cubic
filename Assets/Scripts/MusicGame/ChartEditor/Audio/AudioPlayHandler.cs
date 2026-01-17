@@ -21,11 +21,11 @@ namespace MusicGame.ChartEditor.Audio
 		};
 
 		// Private
-		private GameAudioPlayer music;
+		private IGameAudioPlayer music;
 
 		// Defined Functions
 		[Inject]
-		private void Construct(GameAudioPlayer music) => this.music = music;
+		private void Construct(IGameAudioPlayer music) => this.music = music;
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 

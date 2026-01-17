@@ -42,14 +42,14 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		};
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private JudgeStorage judgeStorage = default!;
 
 		// Constructor
 		[Inject]
 		private void Construct(
 			[Key("stage")] IViewPool<ChartComponent> viewPool,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			JudgeStorage judgeStorage)
 		{
 			NotePool = new SubViewPool<ChartComponent, T3Flag>(

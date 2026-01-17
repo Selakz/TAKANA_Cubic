@@ -13,7 +13,7 @@ namespace MusicGame.Gameplay.Stage
 	public class LevelStarter : T3System
 	{
 		private readonly NotifiableProperty<LevelInfo?> levelInfo;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 		private readonly StageManager stageManager;
 
 
@@ -35,7 +35,7 @@ namespace MusicGame.Gameplay.Stage
 
 		public LevelStarter(
 			NotifiableProperty<LevelInfo?> levelInfo,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			StageManager stageManager) : base(true)
 		{
 			this.levelInfo = levelInfo;

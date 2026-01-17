@@ -51630,7 +51630,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultInputAsset: {fileID: -944628639613478452, guid: 133318ec7bdaed742aa62f1a19d2e636, type: 3}
   levelCamara: {fileID: 1569697295}
-  musicPlayer: {fileID: 130195030}
+  musicPlayerObject: {fileID: 130195028}
 --- !u!1 &2047997814
 GameObject:
   m_ObjectHideFlags: 0

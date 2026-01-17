@@ -24,7 +24,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		}
 
 		// Private
-		private GameAudioPlayer music;
+		private IGameAudioPlayer music;
 		private NotifiableProperty<ISpeed> speed;
 
 		private GridTimeUI ui;
@@ -35,7 +35,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 
 		// Defined Functions
 		[Inject]
-		private void Construct(GameAudioPlayer music, NotifiableProperty<ISpeed> speed)
+		private void Construct(IGameAudioPlayer music, NotifiableProperty<ISpeed> speed)
 		{
 			this.music = music;
 			this.speed = speed;

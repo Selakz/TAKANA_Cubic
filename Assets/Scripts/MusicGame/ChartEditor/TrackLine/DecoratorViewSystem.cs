@@ -19,7 +19,7 @@ namespace MusicGame.ChartEditor.TrackLine
 	{
 		// Private
 		private IViewPool<ChartComponent> decoratorPool = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private NotifiableProperty<ISpeed> speed = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -36,7 +36,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		[Inject]
 		private void Construct(
 			[Key("track-decoration")] IViewPool<ChartComponent> decoratorPool,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			NotifiableProperty<ISpeed> speed)
 		{
 			this.decoratorPool = decoratorPool;

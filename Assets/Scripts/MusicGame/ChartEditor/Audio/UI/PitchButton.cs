@@ -24,7 +24,7 @@ namespace MusicGame.ChartEditor.Audio.UI
 		};
 
 		// Private
-		private GameAudioPlayer music;
+		private IGameAudioPlayer music;
 		private readonly List<float> speeds = new() { 1.00f, 0.75f, 0.50f, 0.25f }; // TODO: Extract to setting
 		private int speedIndex = 0;
 
@@ -35,7 +35,7 @@ namespace MusicGame.ChartEditor.Audio.UI
 
 		// Defined Functions
 		[Inject]
-		private void Construct(GameAudioPlayer music) => this.music = music;
+		private void Construct(IGameAudioPlayer music) => this.music = music;
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 

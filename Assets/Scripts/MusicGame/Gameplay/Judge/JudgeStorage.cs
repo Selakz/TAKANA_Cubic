@@ -38,7 +38,7 @@ namespace MusicGame.Gameplay.Judge
 
 		// Private
 		private ComboStorage comboStorage = default!;
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 
 		private readonly ReusableCancellationTokenSource rcts = new(true);
 		private readonly Dictionary<IComboItem, IJudgeItem> judgeItems = new();
@@ -48,7 +48,7 @@ namespace MusicGame.Gameplay.Judge
 		[Inject]
 		private void Construct(
 			ComboStorage comboStorage,
-			GameAudioPlayer music)
+			IGameAudioPlayer music)
 		{
 			this.comboStorage = comboStorage;
 			this.music = music;

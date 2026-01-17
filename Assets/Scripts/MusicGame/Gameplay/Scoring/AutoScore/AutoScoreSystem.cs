@@ -18,7 +18,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		private readonly NotifiableProperty<double> score;
 		private readonly NotifiableProperty<int> combo;
 		private readonly NotifiableProperty<LevelInfo?> levelInfo;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 
 		public NotifiableProperty<NoteSortedDataset?> Dataset { get; } = new(null);
 
@@ -37,7 +37,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			[Key("score")] NotifiableProperty<double> score,
 			[Key("combo")] NotifiableProperty<int> combo,
 			NotifiableProperty<LevelInfo?> levelInfo,
-			GameAudioPlayer music) : base(true)
+			IGameAudioPlayer music) : base(true)
 		{
 			this.score = score;
 			this.combo = combo;

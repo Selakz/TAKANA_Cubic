@@ -19,13 +19,13 @@ namespace MusicGame.Gameplay.Judge
 		[SerializeField] private GameObject[] inputProcessObjects = Array.Empty<GameObject>();
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 
 		private readonly List<IInputProcessSystem> inputProcessSystems = new();
 
 		// Constructor
 		[Inject]
-		private void Construct(GameAudioPlayer music)
+		private void Construct(IGameAudioPlayer music)
 		{
 			this.music = music;
 		}

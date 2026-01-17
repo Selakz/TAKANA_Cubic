@@ -23,11 +23,11 @@ namespace MusicGame.ChartEditor.Level.UI
 		};
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 
 		// Defined Functions
 		[Inject]
-		private void Construct(GameAudioPlayer music) => this.music = music;
+		private void Construct(IGameAudioPlayer music) => this.music = music;
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 

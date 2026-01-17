@@ -64,7 +64,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 			EditNoteContent noteContent,
 			ChartComponent component,
 			ChartSelectDataset dataset,
-			GameAudioPlayer audioPlayer,
+			IGameAudioPlayer audioPlayer,
 			ChartEditSystem chartEditSystem)
 		{
 			this.noteContent = noteContent;

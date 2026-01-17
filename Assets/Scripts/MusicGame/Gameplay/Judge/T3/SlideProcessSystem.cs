@@ -19,7 +19,7 @@ namespace MusicGame.Gameplay.Judge.T3
 		private T3JudgeConfig slideConfig = default!;
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private TimeAligner aligner = default!;
 		private ComboStorage comboStorage = default!;
 		private JudgeStorage judgeStorage = default!;
@@ -31,7 +31,7 @@ namespace MusicGame.Gameplay.Judge.T3
 		// Constructor
 		[Inject]
 		private void Construct(
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			TimeAligner aligner,
 			ComboStorage comboStorage,
 			JudgeStorage judgeStorage,

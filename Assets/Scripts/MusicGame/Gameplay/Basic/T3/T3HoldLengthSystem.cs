@@ -14,13 +14,13 @@ namespace MusicGame.Gameplay.Basic.T3
 	public class T3HoldLengthSystem : IInitializable
 	{
 		private readonly int lengthPriority;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 		private readonly IViewPool<ChartComponent> viewPool;
 		private readonly SubDataset<ChartComponent, Type> notePool;
 
 		public T3HoldLengthSystem(
 			int lengthPriority,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			[Key("stage")] IViewPool<ChartComponent> viewPool)
 		{
 			this.lengthPriority = lengthPriority;

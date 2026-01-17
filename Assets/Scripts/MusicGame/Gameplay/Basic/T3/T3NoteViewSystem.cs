@@ -19,14 +19,14 @@ namespace MusicGame.Gameplay.Basic.T3
 	{
 		private readonly int positionPriority;
 		private readonly int widthPriority;
-		private readonly GameAudioPlayer music;
+		private readonly IGameAudioPlayer music;
 		private readonly IViewPool<ChartComponent> viewPool;
 		private readonly SubDataset<ChartComponent, Type> notePool;
 
 		public T3NoteViewSystem(
 			int positionPriority,
 			int widthPriority,
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			[Key("stage")] IViewPool<ChartComponent> viewPool)
 		{
 			this.positionPriority = positionPriority;

@@ -24,7 +24,7 @@ namespace MusicGame.Gameplay.Judge.T3
 		};
 
 		// Private
-		private GameAudioPlayer music = default!;
+		private IGameAudioPlayer music = default!;
 		private ComboStorage comboStorage = default!;
 		private JudgeStorage judgeStorage = default!;
 
@@ -33,7 +33,7 @@ namespace MusicGame.Gameplay.Judge.T3
 		// Constructor
 		[Inject]
 		private void Construct(
-			GameAudioPlayer music,
+			IGameAudioPlayer music,
 			ComboStorage comboStorage,
 			JudgeStorage judgeStorage)
 		{
