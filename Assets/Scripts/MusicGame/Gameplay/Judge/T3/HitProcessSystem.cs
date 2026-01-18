@@ -80,6 +80,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					if (combo is not HitCombo { NeedTap: true } hitCombo) continue;
 					// 1. If not in range, skip
 					if (hitCombo.LeftEdge > position || hitCombo.RightEdge < position) continue;
+
 					// 2. If judged and not in pending state, skip
 					if (judgeStorage.ContainsOrToContain(hitCombo))
 					{
@@ -107,14 +108,14 @@ namespace MusicGame.Gameplay.Judge.T3
 							if (!tapConfig.IsInJudgeRange(combo.ExpectedTime, chartTime, out result)) continue;
 							NearestCombos[0] = hitCombo;
 							nearestCount = 1;
+							isNearestPending = isPending;
 						}
 						else if (Mathf.Abs(currentDistance - nearestDistance) <= tolerance)
 						{
 							NearestCombos[nearestCount] = hitCombo;
 							nearestCount++;
+							if (isNearestPending) isNearestPending = isPending;
 						}
-
-						isNearestPending = isPending;
 					}
 					else
 					{

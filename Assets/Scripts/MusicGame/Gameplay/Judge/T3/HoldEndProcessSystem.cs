@@ -77,7 +77,7 @@ namespace MusicGame.Gameplay.Judge.T3
 				var position = retriever.GetPosition(touch.screenPosition);
 				endCombos.RemoveAll(endCombo =>
 				{
-					var timeEnd = endCombo.FromComponent.Model.TimeMax;
+					var timeEnd = endCombo.ExpectedTime;
 					// 1. Can already be judged as complete
 					if (holdEndConfig.IsInJudgeRange(timeEnd, chartTime, out var result))
 					{
@@ -159,7 +159,6 @@ namespace MusicGame.Gameplay.Judge.T3
 			{
 				if (hitJudgeItem.JudgeResult is T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss)
 				{
-					if (hitJudgeItem.JudgedTouch is not null) Debug.Log("judge miss");
 					judgeStorage.AddJudgeItem(new HoldEndJudgeItem(endCombo)
 					{
 						ActualTime = hitJudgeItem.ActualTime,
@@ -167,6 +166,17 @@ namespace MusicGame.Gameplay.Judge.T3
 						JudgedTouch = hitJudgeItem.JudgedTouch,
 						JudgeResult = T3JudgeResult.EarlyMiss
 					});
+				}
+				// Short hold can directly be judged
+				else if (holdEndConfig.IsInJudgeRange(endCombo.ExpectedTime, hitJudgeItem.ActualTime, out var result))
+				{
+					judgeStorage.AddJudgeItemScheduled(new HoldEndJudgeItem(endCombo)
+					{
+						ActualTime = endCombo.ExpectedTime,
+						EndPosition = hitJudgeItem.TapPosition,
+						JudgedTouch = hitJudgeItem.JudgedTouch,
+						JudgeResult = result
+					}, endCombo.ExpectedTime);
 				}
 				else
 				{

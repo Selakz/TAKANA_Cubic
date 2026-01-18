@@ -2,35 +2,20 @@
 
 using System;
 using System.Collections.Generic;
-using MusicGame.Gameplay.Audio;
 using T3Framework.Runtime;
-using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
-using VContainer;
-using VContainer.Unity;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 namespace MusicGame.Gameplay.Judge
 {
-	public class JudgeStarter : T3MonoBehaviour, ISelfInstaller
+	public class JudgeStarter : T3MonoBehaviour
 	{
 		// Serializable and Public
 		[SerializeField] private GameObject[] inputProcessObjects = Array.Empty<GameObject>();
 
 		// Private
-		private IGameAudioPlayer music = default!;
-
 		private readonly List<IInputProcessSystem> inputProcessSystems = new();
-
-		// Constructor
-		[Inject]
-		private void Construct(IGameAudioPlayer music)
-		{
-			this.music = music;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// System Functions
 		protected override void OnEnable()
