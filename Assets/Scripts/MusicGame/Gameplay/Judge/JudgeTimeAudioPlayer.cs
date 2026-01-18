@@ -25,15 +25,15 @@ namespace MusicGame.Gameplay.Judge
 
 		public T3Time AudioTime
 		{
-			get => audioTime is null || gameAudioPlayer.AudioTime == AudioLength
-				? gameAudioPlayer.AudioTime
-				: audioTime.Value.Second + (float)(Time.realtimeSinceStartupAsDouble - pacedStartUnityTime);
+			get => ChartTime - AudioDeviation + Offset;
 			set => gameAudioPlayer.AudioTime = value;
 		}
 
 		public T3Time ChartTime
 		{
-			get => AudioTime + AudioDeviation - Offset;
+			get => chartTime is null || gameAudioPlayer.AudioTime == AudioLength
+				? gameAudioPlayer.ChartTime
+				: chartTime.Value.Second + (float)(Time.realtimeSinceStartupAsDouble - pacedStartUnityTime);
 			set => AudioTime = value - AudioDeviation + Offset;
 		}
 
@@ -81,15 +81,15 @@ namespace MusicGame.Gameplay.Judge
 
 		// Private
 		private float updatePace = 1;
-		private T3Time? audioTime;
+		private T3Time? chartTime;
 		private double startDspTime;
 		private double startUnityTime;
 		private double pacedStartUnityTime;
 
 		// Defined Functions
-		public void Align(T3Time audioTime, double dspTime, double unityTime)
+		public void Align(T3Time chartTime, double dspTime, double unityTime)
 		{
-			this.audioTime = audioTime;
+			this.chartTime = chartTime;
 			startDspTime = dspTime;
 			startUnityTime = unityTime;
 			pacedStartUnityTime = unityTime;
@@ -98,23 +98,23 @@ namespace MusicGame.Gameplay.Judge
 
 		public T3Time GetChartTime(double inputTime)
 		{
-			var inputAudioTime = audioTime is null || gameAudioPlayer.AudioTime == AudioLength
-				? gameAudioPlayer.AudioTime.Second
-				: audioTime.Value.Second + (float)(inputTime - pacedStartUnityTime);
-			return AudioToChart(inputAudioTime);
+			var inputChartTime = chartTime is null || gameAudioPlayer.AudioTime == AudioLength
+				? gameAudioPlayer.ChartTime.Second
+				: chartTime.Value.Second + (float)(inputTime - pacedStartUnityTime);
+			return inputChartTime;
 		}
 
 		// Event Handlers
 		private void OnAudioPlay()
 		{
 			OnPlay?.Invoke();
-			Align(gameAudioPlayer.AudioTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
 		}
 
 		private void OnAudioTimeJump()
 		{
 			OnTimeJump?.Invoke();
-			Align(gameAudioPlayer.AudioTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
 		}
 
 		// System Functions
