@@ -16,5 +16,5 @@ MonoBehaviour:
     pairs:
     - key: 4
       value:
-        startTime: -100
-        endTime: 100
+        startTime: -150
+        endTime: 150

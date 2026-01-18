@@ -12,7 +12,6 @@ using MusicGame.Models.Note;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using UnityEngine;
@@ -25,10 +24,10 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 	public class JudgeScoreEffectSystem : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
+		[SerializeField] private T3JudgeResultConfig config = default!;
 		[SerializeField] private PrefabObject hitEffectPrefab = default!;
 		[SerializeField] private Transform hitEffectRoot = default!;
 		[SerializeField] private AudioSource hitSound = default!;
-		[SerializeField] private InspectorDictionary<T3JudgeResult, Color> laneBeamColors = default!;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -120,11 +119,11 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		private void PlayLaneBeam(IT3JudgeItem judgeItem)
 		{
 			var component = judgeItem.ComboItem.FromComponent;
-			if (laneBeamColors.Value.TryGetValue(judgeItem.JudgeResult, out var color) &&
+			if (config.Data.TryGetValue(judgeItem.JudgeResult, out var data) &&
 			    component.Parent is not null && viewPool[component.Parent] is var handler &&
 			    handler?.GetPlugin("lane-beam")?.TryScript<LaneBeamPlugin>() is { } laneBeamPlugin)
 			{
-				laneBeamPlugin.LaneBeamColor = color;
+				laneBeamPlugin.LaneBeamColor = data.color;
 				laneBeamPlugin.PlayAnimation();
 			}
 		}

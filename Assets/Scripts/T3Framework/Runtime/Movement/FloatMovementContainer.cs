@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
@@ -15,7 +16,19 @@ namespace T3Framework.Runtime.Movement
 		[SerializeField] private float initialValue;
 		[SerializeField] private EaseFloatMoveItem[] moveItems = default!;
 
+		public T3Time Length
+		{
+			get
+			{
+				if (length is not null) return length.Value;
+				float sum = moveItems.Sum(item => item.Duration);
+				length = sum;
+				return length.Value;
+			}
+		}
+
 		// Private
+		private T3Time? length;
 		private Sequence? sequence;
 
 		// Defined Functions

@@ -6,7 +6,6 @@ using MusicGame.Gameplay.Judge;
 using MusicGame.Gameplay.Judge.T3;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
@@ -18,8 +17,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 	public class JudgeScoreSystem : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private InspectorDictionary<T3JudgeResult, float> scoreRates = default!;
-		[SerializeField] private List<T3JudgeResult> offComboResults = default!;
+		[SerializeField] private T3JudgeResultConfig config = default!;
 
 		// Private
 		private NotifiableProperty<double> score = default!;
@@ -77,9 +75,9 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		private void UpdateScoreAndCombo(IJudgeItem judgeItem)
 		{
 			if (judgeItem is not IT3JudgeItem t3JudgeItem) return;
-			double scoreRate = scoreRates.Value.GetValueOrDefault(t3JudgeItem.JudgeResult, 0);
+			double scoreRate = config.Data.GetValueOrDefault(t3JudgeItem.JudgeResult).scoreRate;
 			score.Value += averageScore * scoreRate;
-			if (offComboResults.Contains(t3JudgeItem.JudgeResult)) combo.Value = 0;
+			if (config.IsOffCombo(t3JudgeItem.JudgeResult)) combo.Value = 0;
 			else combo.Value++;
 			maxCombo.Value = Mathf.Max(maxCombo.Value, combo.Value);
 		}

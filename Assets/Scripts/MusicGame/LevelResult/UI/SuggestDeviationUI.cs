@@ -75,7 +75,7 @@ namespace MusicGame.LevelResult.UI
 				}
 
 				var levelDeviation = totalCount is 0 ? 0 : totalDeviation.Milli / totalCount;
-				suggestDeviation = ISingleton<PlayfieldSetting>.Instance.AudioDeviation.Value + levelDeviation;
+				suggestDeviation = ISingleton<PlayfieldSetting>.Instance.AudioDeviation.Value - levelDeviation;
 
 				levelDeviationText.text = levelDeviation.ToString();
 				suggestDeviationText.text = suggestDeviation.ToString();

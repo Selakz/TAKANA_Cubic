@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00e35bd4bbfa4236807ad6dfb4ed7a3f, type: 3}
+  m_Name: T3JudgeResultConfig
+  m_EditorClassIdentifier: 
+  resultData:
+    pairs:
+    - key: 0
+      value:
+        scoreRate: 0
+        color: {r: 1, g: 1, b: 1, a: 1}
+        fastLateStatus: 0
+        worsePriority: 5
+    - key: 1
+      value:
+        scoreRate: 0.5
+        color: {r: 0.27987415, g: 0.6255346, b: 1, a: 1}
+        fastLateStatus: -1
+        worsePriority: 4
+    - key: 2
+      value:
+        scoreRate: 0.75
+        color: {r: 0.42452818, g: 1, b: 0.42452818, a: 1}
+        fastLateStatus: -1
+        worsePriority: 3
+    - key: 3
+      value:
+        scoreRate: 0.9
+        color: {r: 0.9240507, g: 1, b: 0, a: 1}
+        fastLateStatus: -1
+        worsePriority: 2
+    - key: 4
+      value:
+        scoreRate: 1
+        color: {r: 1, g: 0.60112363, b: 0, a: 1}
+        fastLateStatus: 0
+        worsePriority: 1
+    - key: 5
+      value:
+        scoreRate: 0.9
+        color: {r: 0.9254902, g: 1, b: 0, a: 1}
+        fastLateStatus: 1
+        worsePriority: 2
+    - key: 6
+      value:
+        scoreRate: 0.75
+        color: {r: 0.42352942, g: 1, b: 0.42352942, a: 1}
+        fastLateStatus: 1
+        worsePriority: 3
+    - key: 7
+      value:
+        scoreRate: 0.5
+        color: {r: 0.2784314, g: 0.627451, b: 1, a: 1}
+        fastLateStatus: 1
+        worsePriority: 4
+    - key: 8
+      value:
+        scoreRate: 0
+        color: {r: 1, g: 1, b: 1, a: 1}
+        fastLateStatus: 0
+        worsePriority: 5
+  offComboResults: 0000000008000000
