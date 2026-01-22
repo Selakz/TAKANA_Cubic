@@ -16,11 +16,11 @@ namespace MusicGame.LevelSelect
 	public class ResourceLevelLoader : T3MonoBehaviour, ISelfInstaller
 	{
 		// Private
-		private IDataset<LevelComponent> dataset = default!;
+		private IDataset<LevelComponent<GameplayPreference>> dataset = default!;
 
 		// Constructor
 		[Inject]
-		private void Construct(IDataset<LevelComponent> dataset)
+		private void Construct(IDataset<LevelComponent<GameplayPreference>> dataset)
 		{
 			this.dataset = dataset;
 		}
@@ -45,7 +45,7 @@ namespace MusicGame.LevelSelect
 				Preference = preference,
 				Difficulty = preference.Difficulty
 			};
-			var rawLevelInfo = await RawLevelInfo.FromLevelInfo(levelInfo);
+			var rawLevelInfo = await RawLevelInfo<GameplayPreference>.FromLevelInfo(levelInfo);
 			dataset.Add(new(rawLevelInfo));
 		}
 	}

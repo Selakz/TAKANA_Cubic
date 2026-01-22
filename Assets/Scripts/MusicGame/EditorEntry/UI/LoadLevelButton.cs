@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using VContainer;
 using VContainer.Unity;
 
-namespace MusicGame.ChartEditor.Level.UI
+namespace MusicGame.EditorEntry.UI
 {
 	public class LoadLevelButton : T3MonoBehaviour, ISelfInstaller
 	{

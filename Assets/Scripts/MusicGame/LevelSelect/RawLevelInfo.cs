@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using MusicGame.ChartEditor.Level;
@@ -20,7 +21,7 @@ using UnityEngine;
 
 namespace MusicGame.LevelSelect
 {
-	public class RawLevelInfo
+	public class RawLevelInfo<TPreference> where TPreference : IPreference, ISetting<TPreference>, new()
 	{
 		public string LevelPath { get; set; } = string.Empty;
 
@@ -30,11 +31,11 @@ namespace MusicGame.LevelSelect
 
 		public NotifiableProperty<SongInfo?> SongInfo { get; } = new(null);
 
-		public NotifiableProperty<GameplayPreference?> Preference { get; } = new(null);
+		public NotifiableProperty<TPreference?> Preference { get; } = new(default);
 
 		private LevelInfo? levelInfo;
 
-		public static async UniTask<RawLevelInfo?> FromFolder(string folderPath)
+		public static async UniTask<RawLevelInfo<TPreference>?> FromFolder(string folderPath)
 		{
 			// 1. Find .t3proj, or create it
 			DirectoryInfo directoryInfo = new DirectoryInfo(folderPath);
@@ -54,7 +55,8 @@ namespace MusicGame.LevelSelect
 			if (!File.Exists(projectSettingPath)) return null;
 			T3ProjSetting projectSetting = await ISetting<T3ProjSetting>.LoadAsync(projectSettingPath);
 
-			var rawLevelInfo = new RawLevelInfo { LevelPath = projectSettingPath, ProjectSetting = projectSetting };
+			var rawLevelInfo = new RawLevelInfo<TPreference>
+				{ LevelPath = projectSettingPath, ProjectSetting = projectSetting };
 			// 2. Load song info fire-and-forget
 			var songInfoPath =
 				FileHelper.GetAbsolutePathFromRelative(projectSettingPath, projectSetting.SongInfoFileName);
@@ -65,7 +67,7 @@ namespace MusicGame.LevelSelect
 			// 3. Load preference fire-and-forget
 			var preferencePath =
 				FileHelper.GetAbsolutePathFromRelative(projectSettingPath, projectSetting.PreferenceFileName);
-			ISetting<GameplayPreference>.LoadAsync(preferencePath).AsUniTask()
+			ISetting<TPreference>.LoadAsync(preferencePath).AsUniTask()
 				.ContinueWith(preference => rawLevelInfo.Preference.Value = preference)
 				.Forget();
 
@@ -79,9 +81,9 @@ namespace MusicGame.LevelSelect
 			return rawLevelInfo;
 		}
 
-		public static async UniTask<RawLevelInfo> FromLevelInfo(LevelInfo levelInfo)
+		public static async UniTask<RawLevelInfo<TPreference>> FromLevelInfo(LevelInfo levelInfo)
 		{
-			var rawLevelInfo = new RawLevelInfo
+			var rawLevelInfo = new RawLevelInfo<TPreference>
 			{
 				LevelPath = levelInfo.LevelPath,
 				ProjectSetting = await ISetting<T3ProjSetting>.LoadAsync(levelInfo.LevelPath),
@@ -93,7 +95,7 @@ namespace MusicGame.LevelSelect
 			return rawLevelInfo;
 		}
 
-		public async UniTask<LevelInfo?> ToLevelInfo(int difficulty = 0)
+		public async UniTask<LevelInfo?> ToLevelInfo(int difficulty = 0, params string[] extensions)
 		{
 			if (levelInfo is not null && levelInfo.Difficulty == difficulty)
 			{
@@ -109,9 +111,14 @@ namespace MusicGame.LevelSelect
 			difficulty = difficulty is >= 1 and <= 5 ? difficulty : preference.Difficulty;
 			var chartName = setting.GetChartFileName(difficulty);
 			ChartInfo? chart = null;
-			var chartFileName = $"{chartName}.json";
-			var chartPath = FileHelper.GetAbsolutePathFromRelative(LevelPath, chartFileName);
-			if (File.Exists(chartPath)) chart = await TempLoadChart(chartPath);
+			foreach (var extension in extensions.Length == 0 ? Enumerable.Repeat(".json", 1) : extensions)
+			{
+				var chartFileName = $"{chartName}{extension}";
+				var chartPath = FileHelper.GetAbsolutePathFromRelative(LevelPath, chartFileName);
+				if (File.Exists(chartPath)) chart = await TempLoadChart(chartPath);
+				if (chart is not null) break;
+			}
+
 			if (chart is null) return null;
 
 			if (levelInfo is not null)
@@ -160,13 +167,14 @@ namespace MusicGame.LevelSelect
 		}
 	}
 
-	public class LevelComponent : IComponent<RawLevelInfo>
+	public class LevelComponent<TPreference> : IComponent<RawLevelInfo<TPreference>>
+		where TPreference : IPreference, ISetting<TPreference>, new()
 	{
-		public RawLevelInfo Model { get; }
+		public RawLevelInfo<TPreference> Model { get; }
 
 		public event EventHandler? OnComponentUpdated;
 
-		public LevelComponent(RawLevelInfo model)
+		public LevelComponent(RawLevelInfo<TPreference> model)
 		{
 			Model = model;
 			Model.SongInfo.PropertyChanged += (_, _) => UpdateNotify();
@@ -174,7 +182,7 @@ namespace MusicGame.LevelSelect
 			Model.Preference.PropertyChanged += (_, _) => UpdateNotify();
 		}
 
-		public void UpdateModel(Action<RawLevelInfo> action)
+		public void UpdateModel(Action<RawLevelInfo<TPreference>> action)
 		{
 			action.Invoke(Model);
 			UpdateNotify();

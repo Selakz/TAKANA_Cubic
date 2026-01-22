@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using T3Framework.Runtime.Event;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ namespace T3Framework.Runtime.ECS
 			}
 		}
 
-		public bool AlwaysRebuildLayout { get; set; } = true;
+		public bool AlwaysRebuildLayout { get; set; } = false;
 
 		public IViewPool<T> ViewPool { get; }
 
@@ -87,7 +88,7 @@ namespace T3Framework.Runtime.ECS
 		private readonly Transform parentTransform;
 
 		// Serializable and Public
-		public bool AlwaysRebuildLayout { get; set; } = true;
+		public bool AlwaysRebuildLayout { get; set; } = false;
 
 		public IViewPool<T> ViewPool { get; }
 
@@ -151,6 +152,107 @@ namespace T3Framework.Runtime.ECS
 		{
 			ViewPool.OnGet -= OnGet;
 			ViewPool.OnRelease -= OnRelease;
+		}
+	}
+
+	public class ListDatasetViewSorter<T> : IEventRegistrar where T : IComponent
+	{
+		public ListDataset<T> FromDataset { get; }
+
+		public IViewPool<T> ViewPool { get; }
+
+		public bool AlwaysRebuildLayout { get; set; } = false;
+
+		public ListDatasetViewSorter(ListDataset<T> fromDataset, IViewPool<T> viewPool)
+		{
+			FromDataset = fromDataset;
+			ViewPool = viewPool;
+		}
+
+		// Defined Functions
+		public void Register()
+		{
+			ViewPool.OnGet += OnGet;
+			ViewPool.OnRelease += OnRelease;
+			FromDataset.OnOrderChanged += OnOrderChanged;
+			Sort();
+		}
+
+		public void Unregister()
+		{
+			ViewPool.OnGet -= OnGet;
+			ViewPool.OnRelease -= OnRelease;
+			FromDataset.OnOrderChanged -= OnOrderChanged;
+		}
+
+		public void RebuildLayout()
+		{
+			if (ViewPool.DefaultTransform is RectTransform rectTransform)
+				LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+		}
+
+		private void Sort()
+		{
+			int siblingIndex = 0;
+			foreach (var data in FromDataset)
+			{
+				if (ViewPool[data] is not { } handler) continue;
+				handler.transform.SetSiblingIndex(siblingIndex);
+				siblingIndex++;
+			}
+		}
+
+		// Event Handlers
+		private void OnGet(object sender, PrefabHandler handler)
+		{
+			if (ViewPool[handler] is { } data)
+			{
+				// The data is most possible to be the last one of the dataset
+				if (ReferenceEquals(data, FromDataset[^1]))
+				{
+					handler.transform.SetSiblingIndex(FromDataset.Count - 1);
+				}
+				else Sort();
+			}
+
+			if (AlwaysRebuildLayout) RebuildLayout();
+		}
+
+		private void OnRelease(object sender, PrefabHandler handler)
+		{
+			if (AlwaysRebuildLayout) RebuildLayout();
+		}
+
+		private void OnOrderChanged(IOrderChangeInfo info)
+		{
+			switch (info)
+			{
+				case SwapOrderChangeInfo swapInfo:
+					var si = swapInfo.Index1;
+					var sj = swapInfo.Index2;
+					var sHandler1 = ViewPool[FromDataset[si]];
+					var sHandler2 = ViewPool[FromDataset[sj]];
+					if (sHandler1 is not null && sHandler2 is not null)
+					{
+						if (si > sj) (sHandler1, sHandler2) = (sHandler2, sHandler1);
+						var siblingIndex1 = sHandler1.transform.GetSiblingIndex();
+						sHandler1.transform.SetSiblingIndex(sHandler2.transform.GetSiblingIndex());
+						sHandler2.transform.SetSiblingIndex(siblingIndex1);
+					}
+					else if (sHandler1 is not null || sHandler2 is not null) Sort();
+
+					break;
+				case MoveOrderChangeInfo moveInfo:
+					var mi = moveInfo.NewIndex;
+					if (ViewPool[FromDataset[mi]] is not { } mHandler) break;
+					if (mi == 0) mHandler.transform.SetSiblingIndex(0);
+					else if (mi == FromDataset.Count - 1) mHandler.transform.SetSiblingIndex(FromDataset.Count - 1);
+					else Sort();
+					break;
+				default:
+					Sort();
+					break;
+			}
 		}
 	}
 }

@@ -69,4 +69,32 @@ namespace T3Framework.Runtime.ECS
 			}
 		}
 	}
+
+	public class ViewPoolDataRegistrar<T> : IEventRegistrar where T : IComponent
+	{
+		private readonly IDataset<T> dataset;
+		private readonly IViewPool<T> viewPool;
+
+		public ViewPoolDataRegistrar(IDataset<T> dataset, IViewPool<T> viewPool)
+		{
+			this.dataset = dataset;
+			this.viewPool = viewPool;
+		}
+
+		public void Register()
+		{
+			dataset.OnDataAdded += AddToPool;
+			dataset.BeforeDataRemoved += RemoveFromPool;
+		}
+
+		public void Unregister()
+		{
+			dataset.OnDataAdded -= AddToPool;
+			dataset.BeforeDataRemoved -= RemoveFromPool;
+		}
+
+		private void AddToPool(T data) => viewPool.Add(data);
+
+		private void RemoveFromPool(T data) => viewPool.Remove(data);
+	}
 }

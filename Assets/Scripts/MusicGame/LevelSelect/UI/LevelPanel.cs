@@ -42,7 +42,7 @@ namespace MusicGame.LevelSelect.UI
 	public class LevelPanelRegistrar : CompositeRegistrar
 	{
 		private readonly LevelPanel levelPanel;
-		private readonly LevelComponent component;
+		private readonly LevelComponent<GameplayPreference> component;
 		private readonly int playfieldSceneIndex;
 		private readonly DifficultyConfig difficultyConfig;
 		private readonly GameObject loadingPanel;
@@ -52,7 +52,7 @@ namespace MusicGame.LevelSelect.UI
 
 		public LevelPanelRegistrar(
 			LevelPanel levelPanel,
-			LevelComponent component,
+			LevelComponent<GameplayPreference> component,
 			int playfieldSceneIndex,
 			DifficultyConfig difficultyConfig,
 			GameObject loadingPanel)

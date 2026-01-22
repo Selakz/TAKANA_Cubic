@@ -43,5 +43,13 @@ namespace MusicGame.ChartEditor.Level
 		[Description("MouseDragThreshold")]
 		[MinValue(0)]
 		public NotifiableProperty<int> MouseDragThreshold { get; set; } = new(10);
+
+		[Description("RecentProjectBufferCount")]
+		[MinValue(0)]
+		[MaxValue(100)]
+		public NotifiableProperty<int> RecentProjectBufferCount { get; set; } = new(10);
+
+		[Description("RecentProjects")]
+		public NotifiableProperty<List<string>> RecentProjects { get; set; } = new(new());
 	}
 }

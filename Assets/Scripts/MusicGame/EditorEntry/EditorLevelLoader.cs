@@ -2,13 +2,17 @@
 
 using System;
 using System.IO;
+using Cysharp.Threading.Tasks;
+using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.LevelSelect;
 using MusicGame.Models.JudgeLine;
 using MusicGame.Utility.JsonV1ToV2;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Plugins;
@@ -19,7 +23,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace MusicGame.ChartEditor.Level
+namespace MusicGame.EditorEntry
 {
 	public class EditorLevelLoader : T3MonoBehaviour, ISelfInstaller
 	{
@@ -29,15 +33,19 @@ namespace MusicGame.ChartEditor.Level
 #endif
 		// Constructor
 		[Inject]
-		private void Construct(NotifiableProperty<LevelInfo?> levelInfo)
+		private void Construct(
+			NotifiableProperty<LevelInfo?> levelInfo,
+			ListDataset<LevelComponent<EditorPreference>> dataset)
 		{
 			this.levelInfo = levelInfo;
+			this.dataset = dataset;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
 		// Private
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		private ListDataset<LevelComponent<EditorPreference>> dataset = default!;
 
 		// Defined Functions
 		public void LoadLevel(string projectFolderPath, int difficulty = 0)
@@ -127,6 +135,27 @@ namespace MusicGame.ChartEditor.Level
 			levelInfo.Value = info;
 			levelInfo.AddUpNotify();
 			T3Logger.Log("Notice", "App_LoadComplete", T3LogType.Success);
+
+			bool exist = false;
+			foreach (var data in dataset)
+			{
+				if (data.Model.LevelPath == info.LevelPath)
+				{
+					exist = true;
+					dataset.MoveToTop(data);
+					break;
+				}
+			}
+
+			if (!exist)
+			{
+				RawLevelInfo<EditorPreference>.FromLevelInfo(info).ContinueWith(rawInfo =>
+				{
+					dataset.Add(new(rawInfo));
+					dataset.MoveToTop(dataset.Count - 1);
+				});
+			}
+
 #if !UNITY_EDITOR
 			}
 			catch

@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
@@ -18,11 +19,11 @@ namespace MusicGame.LevelSelect
 	public class StorageLevelLoader : T3MonoBehaviour, ISelfInstaller
 	{
 		// Private
-		private IDataset<LevelComponent> dataset = default!;
+		private IDataset<LevelComponent<GameplayPreference>> dataset = default!;
 
 		// Constructor
 		[Inject]
-		private void Construct(IDataset<LevelComponent> dataset)
+		private void Construct(IDataset<LevelComponent<GameplayPreference>> dataset)
 		{
 			this.dataset = dataset;
 		}
@@ -30,13 +31,13 @@ namespace MusicGame.LevelSelect
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Defined Functions
-		public static async UniTask<List<RawLevelInfo>> LoadLevels(string storagePath)
+		public static async UniTask<List<RawLevelInfo<GameplayPreference>>> LoadLevels(string storagePath)
 		{
-			List<RawLevelInfo> levels = new();
+			List<RawLevelInfo<GameplayPreference>> levels = new();
 			if (!Directory.Exists(storagePath)) return levels;
 			foreach (var folder in Directory.GetDirectories(storagePath))
 			{
-				var levelInfo = await RawLevelInfo.FromFolder(folder);
+				var levelInfo = await RawLevelInfo<GameplayPreference>.FromFolder(folder);
 				Debug.Log($"Try load level {folder} and {(levelInfo is null ? "failed" : "succeeded")}");
 				if (levelInfo is not null) levels.Add(levelInfo);
 			}

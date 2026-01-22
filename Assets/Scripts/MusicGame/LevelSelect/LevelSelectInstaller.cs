@@ -1,9 +1,9 @@
 #nullable enable
 
+using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
-using UnityEngine.Android;
 using VContainer;
 
 namespace MusicGame.LevelSelect
@@ -12,7 +12,8 @@ namespace MusicGame.LevelSelect
 	{
 		public override void SelfInstall(IContainerBuilder builder)
 		{
-			builder.Register<IDataset<LevelComponent>, HashDataset<LevelComponent>>(Lifetime.Singleton);
+			builder.Register<IDataset<LevelComponent<GameplayPreference>>,
+				HashDataset<LevelComponent<GameplayPreference>>>(Lifetime.Singleton);
 		}
 
 		// System Functions
