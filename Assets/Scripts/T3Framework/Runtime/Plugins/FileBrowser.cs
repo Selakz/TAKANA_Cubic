@@ -1,4 +1,7 @@
 #if !UNITY_ANDROID && !UNITY_IOS
+
+#nullable enable
+
 using SFB;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -7,7 +10,7 @@ namespace T3Framework.Runtime.Plugins
 {
 	public static class FileBrowser
 	{
-		public static string OpenFileDialog(string title, string initPath, params ExtensionFilter[] extensions)
+		public static string? OpenFileDialog(string title, string initPath, params ExtensionFilter[] extensions)
 		{
 			string[] chosenPaths = StandaloneFileBrowser.OpenFilePanel(title, initPath, extensions, false);
 			if (chosenPaths.Length > 0 && chosenPaths[0] != "")
@@ -26,7 +29,7 @@ namespace T3Framework.Runtime.Plugins
 			}
 		}
 
-		public static string OpenFolderDialog(string title = "", string initPath = "")
+		public static string? OpenFolderDialog(string title = "", string initPath = "")
 		{
 			string[] chosenPaths = StandaloneFileBrowser.OpenFolderPanel(title, initPath, false);
 			if (chosenPaths.Length > 0 && chosenPaths[0] != "")

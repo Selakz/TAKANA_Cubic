@@ -24,6 +24,12 @@ namespace T3Framework.Preset.Event
 			this.handler = (_, _) => handler.Invoke();
 		}
 
+		public PropertyRegistrar(NotifiableProperty<T> property, Action<T> handler)
+		{
+			this.property = property;
+			this.handler = (_, _) => handler.Invoke(property.Value);
+		}
+
 		public void Register()
 		{
 			property.PropertyChanged += handler;
