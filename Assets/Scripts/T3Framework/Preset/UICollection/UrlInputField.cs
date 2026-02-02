@@ -7,6 +7,7 @@ using SFB;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Plugins;
 using T3Framework.Static.Event;
@@ -92,7 +93,7 @@ namespace T3Framework.Preset.UICollection
 			switch (Type)
 			{
 				case PathType.File:
-					if (!File.Exists(value)) IsPathValid.Value = false;
+					if (!File.Exists(value) || !FileHelper.IsValidPath(value)) IsPathValid.Value = false;
 					else
 					{
 						IsPathValid.Value = Extensions.Count == 0 ||

@@ -15,6 +15,10 @@ namespace T3Framework.Runtime.Extensions
 {
 	public static class FileHelper
 	{
+		private static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+
+		public static bool IsValidPath(string path) => path.IndexOfAny(invalidFileNameChars) < 0;
+
 		public static string GetAbsolutePathFromRelative(string absoluteBasePath, string relativePath)
 		{
 			var baseDirectory = Path.GetDirectoryName(absoluteBasePath);

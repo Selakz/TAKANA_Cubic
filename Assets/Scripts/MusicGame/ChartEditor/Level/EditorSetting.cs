@@ -57,5 +57,8 @@ namespace MusicGame.ChartEditor.Level
 
 		[Description("LastCharterId")]
 		public NotifiableProperty<string> LastCharterId { get; set; } = new(string.Empty);
+
+		[Description("LastExportDirectory")]
+		public NotifiableProperty<string> LastExportDirectory { get; set; } = new(string.Empty);
 	}
 }

@@ -19,6 +19,10 @@ namespace MusicGame.Gameplay.Chart
 
 		public ModelProperty EditorConfig { get; set; } = new();
 
+		public IReadOnlyCollection<ChartComponent> Components => components;
+
+		public int Count => components.Count;
+
 		public event Action<ChartComponent>? OnComponentAdded;
 		public event Action<ChartComponent>? OnComponentRemoved;
 		public event Action<ChartComponent>? OnComponentModelUpdated;
@@ -29,7 +33,7 @@ namespace MusicGame.Gameplay.Chart
 		private readonly HashSet<ChartComponent> components = new();
 		private int generalId = 0;
 
-		private const int VersionIdentifier = 2;
+		private const int VersionIdentifier = 3;
 
 		public int NewId => generalId++;
 
@@ -110,7 +114,7 @@ namespace MusicGame.Gameplay.Chart
 		public static ChartInfo Deserialize(JToken token)
 		{
 			ChartInfo chartInfo = new();
-			if (token is not JObject dict || dict.Get("version", 0) != VersionIdentifier) return chartInfo;
+			if (token is not JObject dict) return chartInfo;
 			chartInfo.Properties = ModelProperty.Deserialize(dict["properties"] as JObject ?? new JObject());
 			chartInfo.EditorConfig = ModelProperty.Deserialize(dict["editorconfig"] as JObject ?? new JObject());
 			if (dict["components"] is JArray componentArray)

@@ -59,10 +59,9 @@ namespace MusicGame.ChartEditor.Level
 
 		// Defined Functions
 		// TODO: threading
-		public void SavePlayableChart(string? filePath = null)
+		public static ChartInfo GetPlayableChart(ChartInfo editingChart)
 		{
-			if (levelInfo.Value is not { } info) return;
-			ChartInfo chart = (IChartSerializable.Clone(info.Chart) as ChartInfo)!;
+			ChartInfo chart = (IChartSerializable.Clone(editingChart) as ChartInfo)!;
 			chart.EditorConfig.Clear();
 			List<ChartComponent> toRemove = new();
 			foreach (var component in chart)
@@ -77,7 +76,13 @@ namespace MusicGame.ChartEditor.Level
 			}
 
 			foreach (var component in toRemove) chart.RemoveComponent(component);
+			return chart;
+		}
 
+		public void SavePlayableChart(string? filePath = null)
+		{
+			if (levelInfo.Value is not { } info) return;
+			ChartInfo chart = GetPlayableChart(info.Chart);
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
 			var chartName = projectSetting.GetChartFileName(info.Difficulty);
 			var token = chart.GetSerializationToken();

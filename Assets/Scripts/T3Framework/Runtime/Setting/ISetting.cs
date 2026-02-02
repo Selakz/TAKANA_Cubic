@@ -5,6 +5,8 @@ namespace T3Framework.Runtime.Setting
 {
 	public interface ISetting<out T> where T : ISetting<T>, new()
 	{
+		public static string ToString(T setting) => SettingConvertHelper.Serializer.Serialize(setting);
+
 		/// <summary> If the path does not exist, this method will create a default file on it. </summary>
 		public static T Load(string filePath)
 		{
@@ -15,7 +17,7 @@ namespace T3Framework.Runtime.Setting
 			}
 
 			var setting = new T();
-			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			var text = ToString(setting);
 			File.WriteAllText(filePath, text);
 			return setting;
 		}
@@ -29,20 +31,20 @@ namespace T3Framework.Runtime.Setting
 			}
 
 			var setting = new T();
-			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			var text = ToString(setting);
 			await File.WriteAllTextAsync(filePath, text);
 			return setting;
 		}
 
 		public static void Save(T setting, string filePath)
 		{
-			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			var text = ToString(setting);
 			File.WriteAllText(filePath, text);
 		}
 
 		public static async Task SaveAsync(T setting, string filePath)
 		{
-			var text = SettingConvertHelper.Serializer.Serialize(setting);
+			var text = ToString(setting);
 			await File.WriteAllTextAsync(filePath, text);
 		}
 
