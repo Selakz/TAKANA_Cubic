@@ -55,7 +55,7 @@ namespace MusicGame.ChartEditor.Select
 					boxCollider.center = new(offset.x * width, offset.y * height, boxCollider.center.z);
 				}
 
-				boxCollider.size = new(width + OutWidth, height + OutWidth, boxCollider.size.z);
+				boxCollider.size = new(Mathf.Max(width, OutWidth), height + OutWidth, boxCollider.size.z);
 
 				if (delay > 0) await UniTask.Delay(delay, cancellationToken: token);
 				else await UniTask.DelayFrame(1, cancellationToken: token);
