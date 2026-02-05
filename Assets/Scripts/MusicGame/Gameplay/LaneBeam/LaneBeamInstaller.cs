@@ -5,7 +5,6 @@ using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.LaneBeam
 {
@@ -20,7 +19,6 @@ namespace MusicGame.Gameplay.LaneBeam
 				.WithParameter("prefab", laneBeamPrefab)
 				.WithParameter("defaultTransform", laneBeamRoot)
 				.Keyed("lane-beam");
-			builder.RegisterEntryPoint<LaneBeamPluginSystem>();
 		}
 	}
 }

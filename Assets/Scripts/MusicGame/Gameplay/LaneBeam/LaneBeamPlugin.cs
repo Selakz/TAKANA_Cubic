@@ -1,8 +1,10 @@
 #nullable enable
 
+using Cysharp.Threading.Tasks;
 using MusicGame.Gameplay.Basic.T3;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Movement;
+using T3Framework.Runtime.Threading;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.LaneBeam
@@ -24,6 +26,8 @@ namespace MusicGame.Gameplay.LaneBeam
 		}
 
 		// Private
+		private readonly ReusableCancellationTokenSource rcts = new();
+
 		private PrefabHandler handler = default!;
 		private T3TrackViewPresenter? presenter;
 		private Color laneBeamColor;
@@ -33,10 +37,14 @@ namespace MusicGame.Gameplay.LaneBeam
 		{
 			texture.gameObject.SetActive(true);
 			movement.Move(() => texture.color.a, value => texture.color = texture.color with { a = value });
+			rcts.CancelAndReset();
+			UniTask.Delay(movement.Length.Milli, cancellationToken: rcts.Token)
+				.ContinueWith(() => texture.gameObject.SetActive(false)); // Avoid overdraw
 		}
 
 		public void StopAnimation()
 		{
+			rcts.CancelAndReset();
 			texture.gameObject.SetActive(false);
 		}
 
