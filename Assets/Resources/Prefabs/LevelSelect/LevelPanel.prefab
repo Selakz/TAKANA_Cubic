@@ -918,6 +918,7 @@ GameObject:
   - component: {fileID: 3450175163550966229}
   - component: {fileID: 467144327153674267}
   - component: {fileID: 588169092952337410}
+  - component: {fileID: 3320011479231377584}
   m_Layer: 5
   m_Name: LevelPanel
   m_TagString: Untagged
@@ -957,6 +958,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe62722904294e56a553590cc9763bad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <PointerListener>k__BackingField: {fileID: 3320011479231377584}
+  <BgImage>k__BackingField: {fileID: 740840053078322526}
   <CoverImage>k__BackingField: {fileID: 650842852711990060}
   <SongNameText>k__BackingField: {fileID: 1202354113940437033}
   <StartGameButton>k__BackingField: {fileID: 4727344697983742117}
@@ -992,6 +995,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3320011479231377584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5952517904387094127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122f6026acda4d27b61799c99ecd5b46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6268049565148908852
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,7 +1225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

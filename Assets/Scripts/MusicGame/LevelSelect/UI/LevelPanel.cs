@@ -6,9 +6,12 @@ using Cysharp.Threading.Tasks;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Event.UI;
 using T3Framework.Static;
+using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,6 +20,12 @@ namespace MusicGame.LevelSelect.UI
 	public class LevelPanel : MonoBehaviour
 	{
 		// Serializable and Public
+		[field: SerializeField]
+		public PointerUpDownListener PointerListener { get; set; } = default!;
+
+		[field: SerializeField]
+		public Image BgImage { get; set; } = default!;
+
 		[field: SerializeField]
 		public RawImage CoverImage { get; set; } = default!;
 
@@ -42,6 +51,8 @@ namespace MusicGame.LevelSelect.UI
 	public class LevelPanelRegistrar : CompositeRegistrar
 	{
 		private readonly LevelPanel levelPanel;
+		private readonly NotifiableProperty<RawLevelInfo<GameplayPreference>?> rawLevelInfo;
+		private readonly NotifiableProperty<int> difficulty;
 		private readonly LevelComponent<GameplayPreference> component;
 		private readonly int playfieldSceneIndex;
 		private readonly DifficultyConfig difficultyConfig;
@@ -52,12 +63,16 @@ namespace MusicGame.LevelSelect.UI
 
 		public LevelPanelRegistrar(
 			LevelPanel levelPanel,
+			NotifiableProperty<RawLevelInfo<GameplayPreference>?> rawLevelInfo,
+			NotifiableProperty<int> difficulty,
 			LevelComponent<GameplayPreference> component,
 			int playfieldSceneIndex,
 			DifficultyConfig difficultyConfig,
 			GameObject loadingPanel)
 		{
 			this.levelPanel = levelPanel;
+			this.rawLevelInfo = rawLevelInfo;
+			this.difficulty = difficulty;
 			this.component = component;
 			this.playfieldSceneIndex = playfieldSceneIndex;
 			this.difficultyConfig = difficultyConfig;
@@ -73,6 +88,16 @@ namespace MusicGame.LevelSelect.UI
 				e => component.OnComponentUpdated += e,
 				e => component.OnComponentUpdated -= e,
 				(_, _) => Initialize()),
+			CustomRegistrar.Generic<Action<PointerEventData>>(
+				e => levelPanel.PointerListener.PointerClick += e,
+				e => levelPanel.PointerListener.PointerClick -= e,
+				_ => { rawLevelInfo.Value = component.Model; }),
+			new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(rawLevelInfo, info =>
+			{
+				levelPanel.BgImage.color = ReferenceEquals(info, component.Model)
+					? new(0.75f, 1, 1, 1)
+					: Color.white;
+			}),
 			new ButtonRegistrar(levelPanel.StartGameButton, () => TryStartGame().Forget()),
 			new ButtonRegistrar(levelPanel.ChangeDifficultyButton, () =>
 			{

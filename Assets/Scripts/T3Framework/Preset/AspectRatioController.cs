@@ -11,6 +11,9 @@ namespace T3Framework.Preset
 		[SerializeField] private float heightWeight;
 		[SerializeField] private Camera targetCamera = default!;
 
+		// Private
+		private Rect defaultRect;
+
 		// Defined Functions
 		private void UpdateCameraViewport()
 		{
@@ -40,9 +43,15 @@ namespace T3Framework.Preset
 		}
 
 		// System Functions
-		void Start()
+		void OnEnable()
 		{
+			defaultRect = targetCamera.rect;
 			UpdateCameraViewport();
+		}
+
+		void OnDisable()
+		{
+			targetCamera.rect = defaultRect;
 		}
 	}
 }

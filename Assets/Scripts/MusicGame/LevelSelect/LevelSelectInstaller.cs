@@ -3,7 +3,7 @@
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
-using UnityEngine;
+using T3Framework.Static.Event;
 using VContainer;
 
 namespace MusicGame.LevelSelect
@@ -14,14 +14,10 @@ namespace MusicGame.LevelSelect
 		{
 			builder.Register<IDataset<LevelComponent<GameplayPreference>>,
 				HashDataset<LevelComponent<GameplayPreference>>>(Lifetime.Singleton);
-		}
-
-		// System Functions
-		void Awake()
-		{
-			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 120;
-			ScalableBufferManager.ResizeBuffers(0.25f, 0.25f);
+			builder.Register<NotifiableProperty<RawLevelInfo<GameplayPreference>?>>(Lifetime.Singleton)
+				.WithParameter("initialValue", default(RawLevelInfo<GameplayPreference>?));
+			builder.Register<NotifiableProperty<int>>(Lifetime.Singleton) // selected difficulty
+				.WithParameter("initialValue", 0);
 		}
 	}
 }
