@@ -29,6 +29,9 @@ namespace MusicGame.Gameplay.Level
 		[Description("AudioDeviation")]
 		public NotifiableProperty<T3Time> AudioDeviation { get; set; } = new(0);
 
+		[Description("InputDeviation")]
+		public NotifiableProperty<T3Time> InputDeviation { get; set; } = new(0);
+
 		[Description("TrackGap1")]
 		public NotifiableProperty<float> TrackGap1 { get; set; } = new(0.15f);
 

@@ -32,7 +32,7 @@ namespace MusicGame.Gameplay.Judge
 		public T3Time ChartTime
 		{
 			get => chartTime is null || gameAudioPlayer.AudioTime == AudioLength
-				? gameAudioPlayer.ChartTime
+				? gameAudioPlayer.ChartTime.Second
 				: chartTime.Value.Second + (float)(Time.realtimeSinceStartupAsDouble - pacedStartUnityTime);
 			set => AudioTime = value - AudioDeviation + Offset;
 		}
@@ -68,7 +68,7 @@ namespace MusicGame.Gameplay.Judge
 				OnAudioPlay),
 			CustomRegistrar.Generic<Action>(e => gameAudioPlayer.OnTimeJump += e,
 				e => gameAudioPlayer.OnTimeJump -= e,
-				OnAudioTimeJump),
+				OnAudioTimeJump)
 		};
 
 		public void Load(AudioClip clip, T3Time offset) => gameAudioPlayer.Load(clip, offset);

@@ -1,13 +1,14 @@
 #nullable enable
 
+using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
 using T3Framework.Runtime.VContainer;
+using T3Framework.Static;
 using VContainer;
 using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Judge
 {
-	// TODO: Delete this
 	public class TimeAligner : T3MonoBehaviour, ISelfInstaller
 	{
 		// Private
@@ -22,6 +23,7 @@ namespace MusicGame.Gameplay.Judge
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
-		public T3Time GetChartTime(double inputTime) => music.GetChartTime(inputTime);
+		public T3Time GetChartTime(double inputTime)
+			=> music.GetChartTime(inputTime) + ISingleton<PlayfieldSetting>.Instance.InputDeviation;
 	}
 }

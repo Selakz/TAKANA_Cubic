@@ -14,21 +14,25 @@ namespace MusicGame.LevelSelect.UI
 	{
 		// Serializable and Public
 		[SerializeField] private FloatValueAdjuster speedAdjuster = default!;
-		[SerializeField] private FloatValueAdjuster deviationAdjuster = default!;
+		[SerializeField] private FloatValueAdjuster audioDeviationAdjuster = default!;
+		[SerializeField] private FloatValueAdjuster inputDeviationAdjuster = default!;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<float>(speedAdjuster.Property, () =>
+			new PropertyRegistrar<float>(speedAdjuster.Property, speed =>
 			{
-				var speed = speedAdjuster.Property.Value;
 				ISingletonSetting<PlayfieldSetting>.Instance.Speed.Value = speed;
 				ISingletonSetting<PlayfieldSetting>.SaveInstance();
 			}),
-			new PropertyRegistrar<float>(deviationAdjuster.Property, () =>
+			new PropertyRegistrar<float>(audioDeviationAdjuster.Property, deviation =>
 			{
-				var deviation = deviationAdjuster.Property.Value;
 				ISingletonSetting<PlayfieldSetting>.Instance.AudioDeviation.Value = deviation;
+				ISingletonSetting<PlayfieldSetting>.SaveInstance();
+			}),
+			new PropertyRegistrar<float>(inputDeviationAdjuster.Property, deviation =>
+			{
+				ISingletonSetting<PlayfieldSetting>.Instance.InputDeviation.Value = deviation;
 				ISingletonSetting<PlayfieldSetting>.SaveInstance();
 			})
 		};
@@ -37,7 +41,11 @@ namespace MusicGame.LevelSelect.UI
 		protected override void OnEnable()
 		{
 			speedAdjuster.Property.Value = ISingletonSetting<PlayfieldSetting>.Instance.Speed;
-			deviationAdjuster.Property.Value = ISingletonSetting<PlayfieldSetting>.Instance.AudioDeviation.Value.Second;
+			audioDeviationAdjuster.Property.Value =
+				ISingletonSetting<PlayfieldSetting>.Instance.AudioDeviation.Value.Second;
+			inputDeviationAdjuster.Property.Value =
+				ISingletonSetting<PlayfieldSetting>.Instance.InputDeviation.Value.Second;
+
 			base.OnEnable();
 		}
 	}
