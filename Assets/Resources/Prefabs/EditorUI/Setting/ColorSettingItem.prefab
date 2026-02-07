@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7109f4145dec439788e929d8edc1c751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorTags: []
   initialColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1547922194867404170
 GameObject:
@@ -140,7 +139,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1ab47efb57b4601b13f1550fe5cd386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorTags: []
   colorDataContainer: {fileID: 1641034497267388395}
   button: {fileID: 148267828875233344}
 --- !u!114 &148267828875233344
@@ -279,8 +277,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -729,7 +727,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9d367c3f2da4718961bb54be02182bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorTags: []
   colorDataContainer: {fileID: 1641034497267388395}
   graphic: {fileID: 3199855585953312101}
 --- !u!1 &6364024544224612879
@@ -920,7 +917,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d33bfc94117a45718728cbd36ad974dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorTags: []
   colorDataContainer: {fileID: 1641034497267388395}
   inputField: {fileID: 4384290003257795619}
 --- !u!1 &6998784841419340537
@@ -1171,6 +1167,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da30f9195fc4ea08da159c510d81660, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectorTags: []
   descriptionText: {fileID: 4971139081975977096}
   colorDataContainer: {fileID: 1641034497267388395}
