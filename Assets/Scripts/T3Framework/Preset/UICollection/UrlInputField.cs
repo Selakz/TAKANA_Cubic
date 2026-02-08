@@ -3,17 +3,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SFB;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.I18N;
-using T3Framework.Runtime.Plugins;
 using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+#if !UNITY_ANDROID && !UNITY_IOS
+using SFB;
+using T3Framework.Runtime.Plugins;
+#endif
 
 namespace T3Framework.Preset.UICollection
 {
@@ -50,9 +52,11 @@ namespace T3Framework.Preset.UICollection
 		[field: SerializeField]
 		public string InitPath { get; set; } = string.Empty;
 
+#if !UNITY_ANDROID && !UNITY_IOS
 		/// <summary> Should manually call <see cref="Validate"/> after modify it. </summary>
 		[field: SerializeField]
 		public List<ExtensionFilter> Extensions { get; set; } = new();
+#endif
 
 		public NotifiableProperty<string> Path { get; } = new(string.Empty);
 
@@ -65,6 +69,7 @@ namespace T3Framework.Preset.UICollection
 			new InputFieldRegistrar(InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit, Validate),
 			new ButtonRegistrar(Button, () =>
 			{
+#if !UNITY_ANDROID && !UNITY_IOS
 				switch (Type)
 				{
 					case PathType.File:
@@ -82,6 +87,7 @@ namespace T3Framework.Preset.UICollection
 					default:
 						break;
 				}
+#endif
 			})
 		};
 
@@ -90,6 +96,7 @@ namespace T3Framework.Preset.UICollection
 
 		private void Validate(string value)
 		{
+#if !UNITY_ANDROID && !UNITY_IOS
 			switch (Type)
 			{
 				case PathType.File:
@@ -107,6 +114,7 @@ namespace T3Framework.Preset.UICollection
 				default:
 					break;
 			}
+#endif
 
 			Path.Value = value;
 		}

@@ -8,9 +8,6 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
 using MusicGame.LevelSelect;
 using MusicGame.Models.JudgeLine;
-using MusicGame.Utility.JsonV1ToV2;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Extensions;
@@ -87,75 +84,50 @@ namespace MusicGame.EditorEntry
 			var preference = ISetting<EditorPreference>.Load(preferencePath);
 			// 4. Load chart
 			difficulty = difficulty is >= 1 and <= 5 ? difficulty : preference.Difficulty;
-			var chartName = projectSetting.GetChartFileName(difficulty);
-			var editingChartPath =
-				FileHelper.GetAbsolutePathFromRelative(projectSettingPath, chartName + ".editing.json");
-			if (!File.Exists(editingChartPath))
-			{
-				var chartPath = FileHelper.GetAbsolutePathFromRelative(projectSettingPath, chartName + ".json");
-				if (!File.Exists(chartPath))
+			ChartLoader.LoadFromEditorProject(projectSettingPath, projectSetting, difficulty)
+				.AsUniTask().ContinueWith(chart =>
 				{
-					ChartInfo chartInfo = new();
-					chartInfo.AddComponentGeneric(new StaticJudgeLine());
-					File.WriteAllText(editingChartPath, JsonConvert.SerializeObject(chartInfo.GetSerializationToken()));
-				}
-				else
-				{
-					editingChartPath = chartPath;
-				}
-			}
+					if (chart is null)
+					{
+						chart = new ChartInfo();
+						chart.AddComponentGeneric(new StaticJudgeLine());
+					}
 
-			JObject? jObject;
-			try
-			{
-				jObject = JObject.Parse(File.ReadAllText(editingChartPath));
-			}
-			catch (JsonReaderException)
-			{
-				T3Logger.Log("Notice", "App_InvalidChart", T3LogType.Error);
-				jObject = new();
-			}
+					var info = new LevelInfo
+					{
+						LevelPath = projectSettingPath,
+						Chart = chart,
+						Music = music,
+						Cover = cover,
+						SongInfo = songInfo,
+						Preference = preference,
+						Difficulty = difficulty
+					};
 
-			// Temp chart version identifier
-			ChartInfo? chart;
-			if (jObject["version"] is { } token && token.Value<int>() == 2) chart = ChartInfo.Deserialize(jObject);
-			else chart = V1ToV2Converter.DeserializeFromV1(jObject);
+					levelInfo.Value = info;
+					levelInfo.AddUpNotify();
+					T3Logger.Log("Notice", "App_LoadComplete", T3LogType.Success);
 
-			var info = new LevelInfo
-			{
-				LevelPath = projectSettingPath,
-				Chart = chart,
-				Music = music,
-				Cover = cover,
-				SongInfo = songInfo,
-				Preference = preference,
-				Difficulty = difficulty
-			};
+					bool exist = false;
+					foreach (var data in dataset)
+					{
+						if (data.Model.LevelPath == info.LevelPath)
+						{
+							exist = true;
+							dataset.MoveToTop(data);
+							break;
+						}
+					}
 
-			levelInfo.Value = info;
-			levelInfo.AddUpNotify();
-			T3Logger.Log("Notice", "App_LoadComplete", T3LogType.Success);
-
-			bool exist = false;
-			foreach (var data in dataset)
-			{
-				if (data.Model.LevelPath == info.LevelPath)
-				{
-					exist = true;
-					dataset.MoveToTop(data);
-					break;
-				}
-			}
-
-			if (!exist)
-			{
-				RawLevelInfo<EditorPreference>.FromLevelInfo(info).ContinueWith(rawInfo =>
-				{
-					dataset.Add(new(rawInfo));
-					dataset.MoveToTop(dataset.Count - 1);
+					if (!exist)
+					{
+						RawLevelInfo<EditorPreference>.FromLevelInfo(info).ContinueWith(rawInfo =>
+						{
+							dataset.Add(new(rawInfo));
+							dataset.MoveToTop(dataset.Count - 1);
+						});
+					}
 				});
-			}
-
 #if !UNITY_EDITOR
 			}
 			catch

@@ -6,7 +6,6 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-
 #if UNITY_ANDROID && !UNITY_EDITOR
 using System.Linq;
 #endif
@@ -15,9 +14,27 @@ namespace T3Framework.Runtime.Extensions
 {
 	public static class FileHelper
 	{
+		private static readonly char[] invalidPathChars = Path.GetInvalidPathChars();
 		private static readonly char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
 
-		public static bool IsValidPath(string path) => path.IndexOfAny(invalidFileNameChars) < 0;
+		public static bool IsValidPath(string path)
+		{
+			if (path.IndexOfAny(invalidPathChars) >= 0) return false;
+			try
+			{
+				if (File.Exists(path))
+				{
+					var fileName = Path.GetFileName(path);
+					if (fileName.IndexOfAny(invalidFileNameChars) >= 0) return false;
+				}
+			}
+			catch
+			{
+				return false;
+			}
+
+			return true;
+		}
 
 		public static string GetAbsolutePathFromRelative(string absoluteBasePath, string relativePath)
 		{

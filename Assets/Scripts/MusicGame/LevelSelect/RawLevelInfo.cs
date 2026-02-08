@@ -2,18 +2,12 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
-using MusicGame.Utility.JsonV1ToV2;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Extensions;
-using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Plugins;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
@@ -109,16 +103,17 @@ namespace MusicGame.LevelSelect
 
 			// 5. Load chart
 			difficulty = difficulty is >= 1 and <= 5 ? difficulty : preference.Difficulty;
-			var chartName = setting.GetChartFileName(difficulty);
-			ChartInfo? chart = null;
-			foreach (var extension in extensions.Length == 0 ? Enumerable.Repeat(".json", 1) : extensions)
-			{
-				var chartFileName = $"{chartName}{extension}";
-				var chartPath = FileHelper.GetAbsolutePathFromRelative(LevelPath, chartFileName);
-				if (File.Exists(chartPath)) chart = await TempLoadChart(chartPath);
-				if (chart is not null) break;
-			}
+			// var chartName = setting.GetChartFileName(difficulty);
+			// ChartInfo? chart = null;
+			// foreach (var extension in extensions.Length == 0 ? Enumerable.Repeat(".json", 1) : extensions)
+			// {
+			// 	var chartFileName = $"{chartName}{extension}";
+			// 	var chartPath = FileHelper.GetAbsolutePathFromRelative(LevelPath, chartFileName);
+			// 	if (File.Exists(chartPath)) chart = await TempLoadChart(chartPath);
+			// 	if (chart is not null) break;
+			// }
 
+			var chart = await ChartLoader.LoadFromEditorProject(LevelPath, ProjectSetting, difficulty);
 			if (chart is null) return null;
 
 			if (levelInfo is not null)
@@ -144,26 +139,6 @@ namespace MusicGame.LevelSelect
 				Preference = preference,
 				Difficulty = difficulty
 			};
-
-			async Task<ChartInfo?> TempLoadChart(string path)
-			{
-				JObject? jObject;
-				try
-				{
-					jObject = JObject.Parse(await File.ReadAllTextAsync(path));
-				}
-				catch (JsonReaderException)
-				{
-					T3Logger.Log("Notice", "App_InvalidChart", T3LogType.Error);
-					return null;
-				}
-
-				// Temp chart version identifier
-				if (jObject["version"] is { } token && token.Value<int>() == 2)
-					chart = ChartInfo.Deserialize(jObject);
-				else chart = V1ToV2Converter.DeserializeFromV1(jObject);
-				return chart;
-			}
 		}
 	}
 

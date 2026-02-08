@@ -16,3 +16,5 @@ MonoBehaviour:
     pairs:
     - key: basic
       value: 0
+    - key: dakumi-sw0
+      value: 1
