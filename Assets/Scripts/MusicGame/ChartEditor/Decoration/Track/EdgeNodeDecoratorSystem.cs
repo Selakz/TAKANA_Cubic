@@ -3,51 +3,99 @@
 using System.Linq;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using UnityEngine;
+using VContainer;
 
 namespace MusicGame.ChartEditor.Decoration.Track
 {
-	public class EdgeNodeDecoratorSystem : T3System
+	public class EdgeNodeDecoratorSystem : HierarchySystem<EdgeNodeDecoratorSystem>
 	{
-		private readonly string nodeNamePrefix;
-		private readonly EdgeNodeDataset dataset;
-		private readonly IViewPool<EdgePMLComponent> decoratorPool;
-		private readonly IViewPool<EdgeNodeComponent> viewPool;
+		// Serializable and Public
+		[SerializeField] private string edgeNodeNamePrefix = default!;
+		[SerializeField] private string directNodeNamePrefix = default!;
 
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new ViewPoolPluginRegistrar<EdgePMLComponent, EdgeNodeComponent>(decoratorPool, viewPool,
-				moveList => dataset[moveList]
-					.Select(c => (c, $"{nodeNamePrefix}{c.Locator.Time.Milli}"))),
-			new DatasetRegistrar<EdgeNodeComponent>(dataset,
+			// Edge
+			new ViewPoolPluginRegistrar<EdgePMLComponent, EdgeNodeComponent>(edgeDecoratorPool, edgeViewPool,
+				moveList => edgeDataset[moveList]
+					.Select(c => (c, $"{edgeNodeNamePrefix}{c.Locator.Time.Milli}"))),
+			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
 				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataAdded,
 				component =>
 				{
-					if (dataset[component] is not { } moveList || decoratorPool[moveList] is not { } decorator) return;
-					if (viewPool.Add(component))
+					if (edgeDataset[component] is not { } moveList ||
+					    edgeDecoratorPool[moveList] is not { } decorator) return;
+					if (edgeViewPool.Add(component))
 					{
-						decorator.AddPlugin($"{nodeNamePrefix}{component.Locator.Time.Milli}", viewPool[component]!);
+						decorator.AddPlugin($"{edgeNodeNamePrefix}{component.Locator.Time.Milli}",
+							edgeViewPool[component]!);
 					}
 				}),
-			new DatasetRegistrar<EdgeNodeComponent>(dataset,
+			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
 				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataRemoved,
 				component =>
 				{
-					if (dataset[component] is not { } moveList || decoratorPool[moveList] is not { } decorator) return;
-					var handler = viewPool[component];
-					if (viewPool.Remove(component)) decorator.RemovePlugin(handler!, decoratorPool.DefaultTransform);
+					if (edgeDataset[component] is not { } moveList ||
+					    edgeDecoratorPool[moveList] is not { } decorator) return;
+					var handler = edgeViewPool[component];
+					if (edgeViewPool.Remove(component))
+						decorator.RemovePlugin(handler!, edgeDecoratorPool.DefaultTransform);
+				}),
+			// Direct
+			new ViewPoolPluginRegistrar<DirectPMLComponent, DirectNodeComponent>(directDecoratorPool, directViewPool,
+				moveList => directDataset[moveList]
+					.Select(c => (c, $"{directNodeNamePrefix}{c.Locator.Time.Milli}"))),
+			new DatasetRegistrar<DirectNodeComponent>(directDataset,
+				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataAdded,
+				component =>
+				{
+					if (directDataset[component] is not { } moveList ||
+					    directDecoratorPool[moveList] is not { } decorator) return;
+					if (directViewPool.Add(component))
+					{
+						decorator.AddPlugin($"{directNodeNamePrefix}{component.Locator.Time.Milli}",
+							directViewPool[component]!);
+					}
+				}),
+			new DatasetRegistrar<DirectNodeComponent>(directDataset,
+				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataRemoved,
+				component =>
+				{
+					if (directDataset[component] is not { } moveList ||
+					    directDecoratorPool[moveList] is not { } decorator) return;
+					var handler = directViewPool[component];
+					if (directViewPool.Remove(component))
+						decorator.RemovePlugin(handler!, directDecoratorPool.DefaultTransform);
 				})
 		};
 
-		public EdgeNodeDecoratorSystem(
-			string nodeNamePrefix,
-			EdgeNodeDataset dataset,
-			IViewPool<EdgePMLComponent> decoratorPool,
-			IViewPool<EdgeNodeComponent> viewPool) : base(true)
+		// Private
+		private EdgeNodeDataset edgeDataset = default!;
+		private IViewPool<EdgePMLComponent> edgeDecoratorPool = default!;
+		private IViewPool<EdgeNodeComponent> edgeViewPool = default!;
+		private DirectNodeDataset directDataset = default!;
+		private IViewPool<DirectPMLComponent> directDecoratorPool = default!;
+		private IViewPool<DirectNodeComponent> directViewPool = default!;
+
+		// Constructor
+		[Inject]
+		private void Construct(
+			EdgeNodeDataset edgeDataset,
+			IViewPool<EdgePMLComponent> edgeDecoratorPool,
+			IViewPool<EdgeNodeComponent> edgeViewPool,
+			DirectNodeDataset directDataset,
+			IViewPool<DirectPMLComponent> directDecoratorPool,
+			IViewPool<DirectNodeComponent> directViewPool)
 		{
-			this.nodeNamePrefix = nodeNamePrefix;
-			this.dataset = dataset;
-			this.decoratorPool = decoratorPool;
-			this.viewPool = viewPool;
+			this.edgeDataset = edgeDataset;
+			this.edgeDecoratorPool = edgeDecoratorPool;
+			this.edgeViewPool = edgeViewPool;
+			this.directDataset = directDataset;
+			this.directDecoratorPool = directDecoratorPool;
+			this.directViewPool = directViewPool;
 		}
 	}
 }

@@ -33,6 +33,21 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			builder.RegisterInstance(edgeNodeDataset);
 
 			builder.Register<EdgeNodeSelectDataset>(Lifetime.Singleton);
+
+			// Track's TrackDirectMovement Decorator
+			var directMovementDataset = new DirectDataset(trackDataset, MovementLocator<TrackDirectMovement>.Factory);
+			builder.RegisterInstance(directMovementDataset);
+
+			// Track's TrackDirectMovement's ChartPosMoveList Decorator
+			var directSideMoveListDataset =
+				new DirectPMLDataset(directMovementDataset, DirectSideMovementLocator<ChartPosMoveList>.Factory);
+			builder.RegisterInstance(directSideMoveListDataset);
+
+			// Track's TrackDirectMovement's ChartPosMoveList's IPositionMoveItem Decorator (Another four-layer nesting!!)
+			var directNodeDataset = new DirectNodeDataset(directSideMoveListDataset, DirectSideMoveItemLocator.Factory);
+			builder.RegisterInstance(directNodeDataset);
+
+			builder.Register<DirectNodeSelectDataset>(Lifetime.Singleton);
 		}
 	}
 }

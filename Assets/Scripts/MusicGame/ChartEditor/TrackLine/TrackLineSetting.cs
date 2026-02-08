@@ -46,6 +46,18 @@ namespace MusicGame.ChartEditor.TrackLine
 		[Description("SelectedRightColor")]
 		public NotifiableProperty<Color> SelectedRightColor { get; set; } = new(new Color(0.60f, 0.38f, 0.82f));
 
+		[Description("PosSideNodeColor")]
+		public NotifiableProperty<Color> PosSideNodeColor { get; set; } = new(new Color(1f, 0.9f, 0.8f));
+
+		[Description("WidthSideNodeColor")]
+		public NotifiableProperty<Color> WidthSideNodeColor { get; set; } = new(new Color(0.8f, 1f, 0.8f));
+
+		[Description("SelectedPosColor")]
+		public NotifiableProperty<Color> SelectedPosColor { get; set; } = new(new Color(1f, 0.7f, 0.35f));
+
+		[Description("SelectedWidthColor")]
+		public NotifiableProperty<Color> SelectedWidthColor { get; set; } = new(new Color(0.32f, 0.81f, 0.24f));
+
 		[Description("LogicLinePrecision")]
 		[MinValue(0.001f)]
 		public NotifiableProperty<float> LogicLinePrecision { get; set; } = new(0.2f);

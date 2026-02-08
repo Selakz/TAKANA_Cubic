@@ -7,4 +7,8 @@ namespace MusicGame.ChartEditor.Decoration.Track
 	public class EdgeNodeSelectDataset : HashSelectDataset<EdgeNodeComponent>
 	{
 	}
+
+	public class DirectNodeSelectDataset : HashSelectDataset<DirectNodeComponent>
+	{
+	}
 }

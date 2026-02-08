@@ -1,6 +1,5 @@
 #nullable enable
 
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
 using T3Framework.Static.Movement;
@@ -14,12 +13,6 @@ namespace MusicGame.Models.Track.Movement
 		{
 			Movement1 = positionMovement;
 			Movement2 = widthMovement;
-		}
-
-		public TrackDirectMovement(IEnumerable<V1EMoveItem> positionItems, IEnumerable<V1EMoveItem> widthItems)
-		{
-			Movement1 = new V1EMoveList(positionItems);
-			Movement2 = new V1EMoveList(widthItems);
 		}
 
 		/// <summary> Position </summary>
@@ -51,7 +44,7 @@ namespace MusicGame.Models.Track.Movement
 
 		public JObject GetSerializationToken()
 		{
-			return new JObject()
+			return new JObject
 			{
 				["position"] = ((IChartSerializable)Movement1).Serialize(true),
 				["width"] = ((IChartSerializable)Movement2).Serialize(true),

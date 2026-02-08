@@ -24,6 +24,9 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		private IViewPool<EdgeComponent> edgePool = default!;
 		private IViewPool<EdgePMLComponent> edgePmlPool = default!;
 		private IViewPool<EdgeNodeComponent> edgeNodePool = default!;
+		private IViewPool<DirectComponent> directPool = default!;
+		private IViewPool<DirectPMLComponent> directPmlPool = default!;
+		private IViewPool<DirectNodeComponent> directNodePool = default!;
 		private ChartSelectDataset selectDataset = default!;
 		private TrackLayerManageSystem trackLayerManageSystem = default!;
 		private CommandManager commandManager = default!;
@@ -32,14 +35,37 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		{
 			new ViewPoolLifetimeRegistrar<ChartComponent>(decoratorPool, handler => new TrackContentRegistrar(
 				handler.Script<EditTrackContent>(), decoratorPool[handler]!, selectDataset, trackLayerManageSystem)),
+			// Edge Movement
 			// new ViewPoolLifetimeRegistrar<EdgeComponent>(edgePool, handler => new EdgeMovementContentRegistrar()),
 			new ViewPoolLifetimeRegistrar<EdgePMLComponent>(edgePmlPool, handler => new MoveListContentRegistrar(
 				handler.Script<EditMoveListContent>())),
-			new ViewPoolLifetimeRegistrar<EdgeNodeComponent>(edgeNodePool, handler => new V1EItemContentRegistrar(
-				handler.Script<EditV1EItemContent>(), edgeNodePool[handler]!, commandManager)),
-
+			new ViewPoolLifetimeRegistrar<EdgeNodeComponent>(edgeNodePool, EdgeNodeRegistrarFactory),
+			// Direct Movement
+			// new ViewPoolLifetimeRegistrar<DirectComponent>(directPool, handler => new EdgeMovementContentRegistrar()),
+			new ViewPoolLifetimeRegistrar<DirectPMLComponent>(directPmlPool, handler => new MoveListContentRegistrar(
+				handler.Script<EditMoveListContent>())),
+			new ViewPoolLifetimeRegistrar<DirectNodeComponent>(directNodePool, DirectNodeRegistrarFactory),
+			// Add Height
 			new ViewPoolRegistrar<EdgePMLComponent>(edgePmlPool,
 				ViewPoolRegistrar<EdgePMLComponent>.RegisterTarget.Get,
+				handler =>
+				{
+					if (decoratorPool.Count == 1)
+					{
+						var content = handler.Script<EditMoveListContent>();
+						content.HeightModifier.Assign(singleHeight, 1);
+					}
+					else
+					{
+						foreach (var data in edgePmlPool)
+						{
+							var content = edgePmlPool[data]!.Script<EditMoveListContent>();
+							content.HeightModifier.Unregister(1);
+						}
+					}
+				}),
+			new ViewPoolRegistrar<DirectPMLComponent>(directPmlPool,
+				ViewPoolRegistrar<DirectPMLComponent>.RegisterTarget.Get,
 				handler =>
 				{
 					if (decoratorPool.Count == 1)
@@ -65,6 +91,9 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			IViewPool<EdgeComponent> edgePool,
 			IViewPool<EdgePMLComponent> edgePmlPool,
 			IViewPool<EdgeNodeComponent> edgeNodePool,
+			IViewPool<DirectComponent> directPool,
+			IViewPool<DirectPMLComponent> directPmlPool,
+			IViewPool<DirectNodeComponent> directNodePool,
 			ChartSelectDataset selectDataset,
 			TrackLayerManageSystem trackLayerManageSystem,
 			CommandManager commandManager)
@@ -73,11 +102,42 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			this.edgePool = edgePool;
 			this.edgePmlPool = edgePmlPool;
 			this.edgeNodePool = edgeNodePool;
+			this.directPool = directPool;
+			this.directPmlPool = directPmlPool;
+			this.directNodePool = directNodePool;
 			this.selectDataset = selectDataset;
 			this.trackLayerManageSystem = trackLayerManageSystem;
 			this.commandManager = commandManager;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		private MoveItemContentRegistrar EdgeNodeRegistrarFactory(PrefabHandler handler)
+		{
+			var component = edgeNodePool[handler]!;
+			var content = handler.Script<IEditMoveItemContent>();
+			return content switch
+			{
+				EditV1EItemContent eContent => new V1EItemContentRegistrar(eContent, component.Locator.Track,
+					component.Locator.Time, component, component.Locator.IsLeft, commandManager, true),
+				EditV1BItemContent bContent => new V1BItemContentRegistrar(bContent, component.Locator.Track,
+					component.Locator.Time, component, component.Locator.IsLeft, commandManager, true),
+				_ => null!
+			};
+		}
+
+		private MoveItemContentRegistrar DirectNodeRegistrarFactory(PrefabHandler handler)
+		{
+			var component = directNodePool[handler]!;
+			var content = handler.Script<IEditMoveItemContent>();
+			return content switch
+			{
+				EditV1EItemContent eContent => new V1EItemContentRegistrar(eContent, component.Locator.Track,
+					component.Locator.Time, component, component.Locator.IsPos, commandManager, false),
+				EditV1BItemContent bContent => new V1BItemContentRegistrar(bContent, component.Locator.Track,
+					component.Locator.Time, component, component.Locator.IsPos, commandManager, false),
+				_ => null!
+			};
+		}
 	}
 }

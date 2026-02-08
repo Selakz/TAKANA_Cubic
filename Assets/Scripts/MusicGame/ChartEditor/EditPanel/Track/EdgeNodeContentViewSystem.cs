@@ -18,12 +18,13 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		// Serializable and Public
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new DatasetRegistrar<EdgeNodeComponent>(dataset,
+			// Edge Movement
+			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
 				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataAdded,
 				component =>
 				{
-					if (nodeViewPool[component] is not { } handler) return;
-					var content = handler.Script<EditV1EItemContent>();
+					if (edgeNodeViewPool[component] is not { } handler) return;
+					var content = handler.Script<IEditMoveItemContent>();
 					content.BgColorModifier.Register(
 						_ => component.Locator.IsLeft
 							? ISingleton<TrackLineSetting>.Instance.SelectedLeftColor
@@ -34,38 +35,80 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 					{
 						if (edgeComponent.Model == movement)
 						{
-							if (edgeViewPool[edgeComponent]?.Script<EditEdgeMovementContent>() is { } movementContent)
+							if (edgeViewPool[edgeComponent]?.Script<EditTrackMovementContent>() is { } movementContent)
 							{
-								movementContent.IsShowLeft = component.Locator.IsLeft;
+								movementContent.IsShow1 = component.Locator.IsLeft;
 							}
 						}
 					}
 				}),
-			new DatasetRegistrar<EdgeNodeComponent>(dataset,
+			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
 				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataRemoved,
 				component =>
 				{
-					if (nodeViewPool[component] is not { } handler) return;
-					var content = handler.Script<EditV1EItemContent>();
+					if (edgeNodeViewPool[component] is not { } handler) return;
+					var content = handler.Script<IEditMoveItemContent>();
+					content.BgColorModifier.Unregister(1);
+				}),
+			// Direct Movement
+			new DatasetRegistrar<DirectNodeComponent>(directDataset,
+				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataAdded,
+				component =>
+				{
+					if (directNodeViewPool[component] is not { } handler) return;
+					var content = handler.Script<IEditMoveItemContent>();
+					content.BgColorModifier.Register(
+						_ => component.Locator.IsPos
+							? ISingleton<TrackLineSetting>.Instance.SelectedPosColor
+							: ISingleton<TrackLineSetting>.Instance.SelectedWidthColor, 1);
+
+					var movement = (component.Locator.Track.Model as ITrack)?.Movement;
+					foreach (var directComponent in directViewPool)
+					{
+						if (directComponent.Model == movement)
+						{
+							if (directViewPool[directComponent]?.Script<EditTrackMovementContent>() is
+							    { } movementContent)
+							{
+								movementContent.IsShow1 = component.Locator.IsPos;
+							}
+						}
+					}
+				}),
+			new DatasetRegistrar<DirectNodeComponent>(directDataset,
+				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataRemoved,
+				component =>
+				{
+					if (directNodeViewPool[component] is not { } handler) return;
+					var content = handler.Script<IEditMoveItemContent>();
 					content.BgColorModifier.Unregister(1);
 				})
 		};
 
 		// Private
-		private EdgeNodeSelectDataset dataset = default!;
+		private EdgeNodeSelectDataset edgeDataset = default!;
 		private IViewPool<EdgeComponent> edgeViewPool = default!;
-		private IViewPool<EdgeNodeComponent> nodeViewPool = default!;
+		private IViewPool<EdgeNodeComponent> edgeNodeViewPool = default!;
+		private DirectNodeSelectDataset directDataset = default!;
+		private IViewPool<DirectComponent> directViewPool = default!;
+		private IViewPool<DirectNodeComponent> directNodeViewPool = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
 			IViewPool<EdgeComponent> edgeViewPool,
-			IViewPool<EdgeNodeComponent> nodeViewPool,
-			EdgeNodeSelectDataset dataset)
+			IViewPool<EdgeNodeComponent> edgeNodeViewPool,
+			EdgeNodeSelectDataset edgeDataset,
+			IViewPool<DirectComponent> directViewPool,
+			IViewPool<DirectNodeComponent> directNodeViewPool,
+			DirectNodeSelectDataset directDataset)
 		{
 			this.edgeViewPool = edgeViewPool;
-			this.nodeViewPool = nodeViewPool;
-			this.dataset = dataset;
+			this.edgeNodeViewPool = edgeNodeViewPool;
+			this.edgeDataset = edgeDataset;
+			this.directViewPool = directViewPool;
+			this.directNodeViewPool = directNodeViewPool;
+			this.directDataset = directDataset;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);

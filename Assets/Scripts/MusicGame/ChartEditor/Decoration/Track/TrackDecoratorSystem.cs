@@ -3,16 +3,15 @@
 using MusicGame.Gameplay.Chart;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using VContainer;
 
 namespace MusicGame.ChartEditor.Decoration.Track
 {
-	public class TrackDecoratorSystem : T3System
+	public class TrackDecoratorSystem : HierarchySystem<TrackDecoratorSystem>
 	{
-		private readonly IDataset<ChartComponent> trackDataset;
-		private readonly IViewPool<ChartComponent> decoratorPool;
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new DatasetRegistrar<ChartComponent>(trackDataset,
 				DatasetRegistrar<ChartComponent>.RegisterTarget.DataAdded,
@@ -22,9 +21,15 @@ namespace MusicGame.ChartEditor.Decoration.Track
 				component => decoratorPool.Remove(component))
 		};
 
-		public TrackDecoratorSystem(
+		// Private
+		private IDataset<ChartComponent> trackDataset = default!;
+		private IViewPool<ChartComponent> decoratorPool = default!;
+
+		// Constructor
+		[Inject]
+		private void Construct(
 			[Key("track-decoration")] IDataset<ChartComponent> trackDataset,
-			[Key("track-decoration")] IViewPool<ChartComponent> decoratorPool) : base(true)
+			[Key("track-decoration")] IViewPool<ChartComponent> decoratorPool)
 		{
 			this.trackDataset = trackDataset;
 			this.decoratorPool = decoratorPool;

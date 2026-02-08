@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace T3Framework.Runtime.Extensions
 			{ 2, new Regex(@"^\((.+?),\s*(.+?)\)$") },
 			{ 3, new Regex(@"^\((.+?),\s*(.+?),\s*(.+?)\)$") },
 			{ 4, new Regex(@"^\((.+?),\s*(.+?),\s*(.+?),\s*(.+?)\)$") },
+			{ 5, new Regex(@"^\((.+?),\s*(.+?),\s*(.+?),\s*(.+?),\s*(.+?)\)$") },
 		};
 
 		public static Match MatchTuple(string input, int count)
@@ -78,9 +80,9 @@ namespace T3Framework.Runtime.Extensions
 		/// </summary>
 		public static Color ParseHexColor(string s)
 		{
-			byte r = byte.Parse(s[..2], System.Globalization.NumberStyles.HexNumber);
-			byte g = byte.Parse(s[2..4], System.Globalization.NumberStyles.HexNumber);
-			byte b = byte.Parse(s[4..6], System.Globalization.NumberStyles.HexNumber);
+			byte r = byte.Parse(s[..2], NumberStyles.HexNumber);
+			byte g = byte.Parse(s[2..4], NumberStyles.HexNumber);
+			byte b = byte.Parse(s[4..6], NumberStyles.HexNumber);
 			return new Color(r / 255f, g / 255f, b / 255f);
 		}
 

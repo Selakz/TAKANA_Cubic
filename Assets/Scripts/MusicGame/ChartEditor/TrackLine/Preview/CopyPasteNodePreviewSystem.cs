@@ -170,8 +170,7 @@ namespace MusicGame.ChartEditor.TrackLine.Preview
 				T3Time minTime = T3Time.MaxValue;
 				foreach (var component in clipboard)
 				{
-					if (!nodePool.Add(component)) continue;
-					V1EMoveItem item = (component.Model as V1EMoveItem)!;
+					if (!nodePool.Add(component) || component.Model is not V1EMoveItem item) continue;
 					EdgeNodePreviewData data = new(nodePool[component]!.Script<PositionNodeView>())
 					{
 						Ease = item.Ease,

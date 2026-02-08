@@ -120,4 +120,85 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			}
 		}
 	}
+
+	public readonly struct DirectSideMovementLocator<T> : IDataLocator<T>, IEquatable<DirectSideMovementLocator<T>>
+		where T : IMovement<float>
+	{
+		public ChartComponent Track { get; }
+		public bool IsPos { get; }
+		private readonly MovementLocator<TrackDirectMovement> locator;
+
+		public DirectSideMovementLocator(ChartComponent component, bool isPos)
+		{
+			Track = component;
+			IsPos = isPos;
+			locator = new(component);
+		}
+
+		public T? GetData() => IsPos
+			? locator.GetData()?.Movement1 is T movement1
+				? movement1
+				: default
+			: locator.GetData()?.Movement2 is T movement2
+				? movement2
+				: default;
+
+		public bool Equals(DirectSideMovementLocator<T> other) =>
+			Track.Equals(other.Track) && IsPos == other.IsPos;
+
+		public bool Equals(IDataLocator<T> other) => other is DirectSideMovementLocator<T> l && Equals(l);
+
+		public override bool Equals(object? obj) => obj is DirectSideMovementLocator<T> other && Equals(other);
+
+		public override int GetHashCode() => HashCode.Combine(Track, IsPos);
+
+		public static IEnumerable<DirectSideMovementLocator<T>> Factory(DirectComponent component)
+		{
+			yield return new DirectSideMovementLocator<T>(component.Locator.Track, false);
+			yield return new DirectSideMovementLocator<T>(component.Locator.Track, true);
+		}
+	}
+
+	public readonly struct DirectSideMoveItemLocator
+		: IDataLocator<IPositionMoveItem<float>>, IEquatable<DirectSideMoveItemLocator>
+	{
+		public ChartComponent Track { get; }
+
+		public bool IsPos { get; }
+
+		public T3Time Time { get; }
+
+		public DirectSideMovementLocator<ChartPosMoveList> InnerLocator { get; }
+
+		public DirectSideMoveItemLocator(ChartComponent track, bool isPos, T3Time time)
+		{
+			Track = track;
+			IsPos = isPos;
+			Time = time;
+			InnerLocator = new(Track, IsPos);
+		}
+
+		public IPositionMoveItem<float>? GetData() =>
+			InnerLocator.GetData()?.TryGet(Time, out var item) == true ? item : default;
+
+		public bool Equals(IDataLocator<IPositionMoveItem<float>> other)
+			=> other is DirectSideMoveItemLocator l && Equals(l);
+
+		public bool Equals(DirectSideMoveItemLocator other) =>
+			Track.Equals(other.Track) && IsPos == other.IsPos && Time.Equals(other.Time);
+
+		public override bool Equals(object? obj) => obj is DirectSideMoveItemLocator other && Equals(other);
+
+		public override int GetHashCode() => HashCode.Combine(Track, IsPos, Time);
+
+		public static IEnumerable<DirectSideMoveItemLocator> Factory(DirectPMLComponent component)
+		{
+			var moveList = component.Locator.GetData();
+			if (moveList is null) yield break;
+			foreach (var pair in moveList)
+			{
+				yield return new(component.Locator.Track, component.Locator.IsPos, pair.Key);
+			}
+		}
+	}
 }

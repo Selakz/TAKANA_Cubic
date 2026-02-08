@@ -2,10 +2,11 @@
 
 using System;
 using System.Linq;
-using T3Framework.Runtime;
+using Cysharp.Threading.Tasks;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Modifier;
+using T3Framework.Runtime.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
@@ -48,7 +49,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		// Event Handlers
 		private void OnPluginAdded(string id)
 		{
-			if (id.StartsWith("ListItem"))
+			if (id.Contains("ListItem"))
 			{
 				var plugin = Handler.GetPlugin(id);
 				plugin?.transform.SetParent(listItemRoot, false);
@@ -64,6 +65,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 	public class MoveListContentRegistrar : IEventRegistrar
 	{
+		private readonly ReusableCancellationTokenSource rcts = new();
 		private readonly IEventRegistrar[] registrars;
 
 		public MoveListContentRegistrar(EditMoveListContent content)
@@ -73,7 +75,14 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 				CustomRegistrar.Generic<Action<string>>(
 					a => content.Handler.OnPluginAdded += a,
 					a => content.Handler.OnPluginAdded -= a,
-					_ => content.SortListItem(ListItemCompare))
+					_ =>
+					{
+						rcts.CancelAndReset();
+						UniTask.DelayFrame(5, cancellationToken: rcts.Token).ContinueWith(() =>
+						{
+							content.SortListItem(ListItemCompare);
+						});
+					})
 			};
 		}
 
@@ -89,8 +98,8 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 		private static int ListItemCompare(PrefabHandler a, PrefabHandler b)
 		{
-			var nodeA = a.Script<EditV1EItemContent>();
-			var nodeB = b.Script<EditV1EItemContent>();
+			var nodeA = a.Script<IEditMoveItemContent>();
+			var nodeB = b.Script<IEditMoveItemContent>();
 			var timeA = int.TryParse(nodeA.TimeInputField.text, out var time1) ? time1 : 0;
 			var timeB = int.TryParse(nodeB.TimeInputField.text, out var time2) ? time2 : 0;
 			return timeA.CompareTo(timeB);

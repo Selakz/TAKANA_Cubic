@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
 using T3Framework.Static.Movement;
@@ -15,12 +14,6 @@ namespace MusicGame.Models.Track.Movement
 		{
 			Movement1 = leftEdgeMovement;
 			Movement2 = rightEdgeMovement;
-		}
-
-		public TrackEdgeMovement(IEnumerable<V1EMoveItem> leftEdgeItems, IEnumerable<V1EMoveItem> rightEdgeItems)
-		{
-			Movement1 = new V1EMoveList(leftEdgeItems);
-			Movement2 = new V1EMoveList(rightEdgeItems);
 		}
 
 		/// <summary> Left Edge </summary>
