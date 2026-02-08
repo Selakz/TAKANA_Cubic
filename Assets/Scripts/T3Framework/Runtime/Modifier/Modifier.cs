@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace T3Framework.Runtime
+namespace T3Framework.Runtime.Modifier
 {
 	/// <summary>
 	/// Note: Actions with larger priority will be executed later. <br/>
 	/// </summary>
-	public class Modifier<T>
+	public class Modifier<T> : IModifier<T>
 	{
 		private readonly Func<T> getter;
 		private readonly Action<T> setter;
@@ -62,9 +62,13 @@ namespace T3Framework.Runtime
 			if (!isLazy) DoModify();
 		}
 
-		public void Assign(T value, int priority, bool isLazy = false) => Register(_ => value, priority, isLazy);
+		public void Assign(T value, int priority) => Assign(value, priority, false);
 
-		public void Unregister(int priority, bool isLazy = false)
+		public void Assign(T value, int priority, bool isLazy) => Register(_ => value, priority, isLazy);
+
+		public void Unregister(int priority) => Unregister(priority, false);
+
+		public void Unregister(int priority, bool isLazy)
 		{
 			if (!functions.Remove(priority)) return;
 			isModified = true;

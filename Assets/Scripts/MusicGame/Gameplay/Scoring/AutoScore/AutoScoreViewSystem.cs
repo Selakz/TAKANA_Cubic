@@ -53,11 +53,9 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			if (note.Model is not INote model) return;
 
 			var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
-			// TODO: IModifier, UnionModifier, ColorModifier in IT3ModelViewPresenter
-			presenter.Textures["main"].ColorModifier.Register(color => music.ChartTime < model.TimeJudge
+			presenter.MainTexture.ColorModifier.Register(color => music.ChartTime < model.TimeJudge
 				? model.IsDummy()
-					? new Color(color.r, color.g, color.b,
-						color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity)
+					? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
 					: color
 				: Color.clear, colorPriority, true);
 
@@ -76,15 +74,28 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 				presenter.PositionModifier.Register(
 					pos => music.ChartTime < hold.TimeJudge ? pos : new(pos.x, 0),
 					positionPriority, true);
+
+				presenter.Textures["body"].ColorModifier.Register(color => music.ChartTime < hold.TimeEnd
+					? model.IsDummy()
+						? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
+						: color
+					: Color.clear, colorPriority, true);
 			}
 		}
 
 		private void BeforeDataRemoved(ChartComponent note)
 		{
-			if (note.Model is not INote) return;
+			if (note.Model is not INote model) return;
 
 			var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
-			presenter.Textures["main"].ColorModifier.Unregister(colorPriority, true);
+			presenter.MainTexture.ColorModifier.Unregister(colorPriority, true);
+
+			if (model is Hold)
+			{
+				foreach (var modifier in presenter.HeightModifiers) modifier.Unregister(heightPriority, true);
+				presenter.PositionModifier.Unregister(positionPriority, true);
+				presenter.Textures["body"].ColorModifier.Unregister(colorPriority, true);
+			}
 		}
 
 		public override void Dispose()

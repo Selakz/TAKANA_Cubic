@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static;
@@ -20,7 +21,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private SpriteRenderer rightLineTexture = default!;
 		[SerializeField] private InspectorDictionary<string, SpriteRendererModifier> textures = new();
 
-		public SpriteRendererModifier MainTexture => mainModifier ??= new(mainTexture);
+		public SpriteRendererModifier MainTexture => textures.Value["main"];
 
 		public SpriteRenderer LeftLineTexture => leftLineTexture;
 
@@ -43,15 +44,17 @@ namespace MusicGame.Gameplay.Basic.T3
 			set
 			{
 				mainTexture.size = new(value, mainTexture.size.y);
-				leftLineTexture.transform.localPosition = new(-value / 2, 0);
-				rightLineTexture.transform.localPosition = new(value / 2, 0);
+				leftLineTexture.transform.localPosition =
+					leftLineTexture.transform.localPosition with { x = -value / 2 };
+				rightLineTexture.transform.localPosition =
+					rightLineTexture.transform.localPosition with { x = value / 2 };
 			}
 		}
 
 		private float Position
 		{
 			get => transform.localPosition.x;
-			set => transform.localPosition = new(value, 0);
+			set => transform.localPosition = new(value, 0, transform.localPosition.z);
 		}
 
 		// System Functions

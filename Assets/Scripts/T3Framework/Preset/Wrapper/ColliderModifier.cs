@@ -1,7 +1,7 @@
 #nullable enable
 
 using System;
-using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using UnityEngine;
 
 namespace T3Framework.Preset.Wrapper

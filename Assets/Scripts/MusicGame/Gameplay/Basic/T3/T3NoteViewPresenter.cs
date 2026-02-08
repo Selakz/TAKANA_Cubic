@@ -5,6 +5,7 @@ using System.Linq;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.Setting;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private string[] widthTextures = default!;
 		[SerializeField] private string[] heightTextures = default!;
 
-		public SpriteRendererModifier MainTexture => mainModifier ??= new(mainTexture);
+		public SpriteRendererModifier MainTexture => textures.Value["main"];
 
 		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures => textures.Value;
 
@@ -35,8 +36,6 @@ namespace MusicGame.Gameplay.Basic.T3
 		public Modifier<Color> ColorModifier { get; private set; } = default!;
 
 		// Private
-		private SpriteRendererModifier? mainModifier;
-
 		private Color SpriteColor
 		{
 			get => MainTexture.Value.color;
@@ -46,7 +45,11 @@ namespace MusicGame.Gameplay.Basic.T3
 		private Vector2 Position
 		{
 			get => transform.localPosition;
-			set => transform.localPosition = value;
+			set
+			{
+				Vector3 position = new(value.x, value.y, transform.localPosition.z);
+				transform.localPosition = position;
+			}
 		}
 
 		private Modifier<Vector2>[]? widthModifiers;
@@ -69,8 +72,11 @@ namespace MusicGame.Gameplay.Basic.T3
 		private void Update()
 		{
 			PositionModifier.Update();
-			ColorModifier.Update();
-			foreach (var modifier in Textures.Values) modifier.SizeModifier.Update();
+			foreach (var modifier in Textures.Values)
+			{
+				modifier.SizeModifier.Update();
+				modifier.ColorModifier.Update();
+			}
 		}
 	}
 }

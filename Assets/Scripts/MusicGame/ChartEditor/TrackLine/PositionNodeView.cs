@@ -1,6 +1,6 @@
 #nullable enable
 
-using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Easing;
 using UnityEngine;

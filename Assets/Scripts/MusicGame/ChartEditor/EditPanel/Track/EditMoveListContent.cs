@@ -5,6 +5,7 @@ using System.Linq;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Modifier;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;

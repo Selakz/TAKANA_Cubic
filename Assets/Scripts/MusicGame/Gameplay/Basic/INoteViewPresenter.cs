@@ -1,6 +1,6 @@
 #nullable enable
 
-using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Basic

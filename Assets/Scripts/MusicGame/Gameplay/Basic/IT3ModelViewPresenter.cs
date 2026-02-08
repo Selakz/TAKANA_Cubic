@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 using T3Framework.Preset.Wrapper;
-using T3Framework.Runtime;
+using T3Framework.Runtime.Modifier;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Basic
@@ -11,7 +11,6 @@ namespace MusicGame.Gameplay.Basic
 	{
 		public Modifier<Color> ColorModifier { get; }
 
-		// TODO: "MainTexture" and Textures["main"] should not be two split modifiers
 		public SpriteRendererModifier MainTexture { get; }
 
 		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures { get; }
