@@ -1,0 +1,314 @@
+Fallback: "This text ({0}) was not correctly localized, please notify the author"
+
+App:
+  Cancel: Cancel
+  Exit: Exit
+  Name: TAKANA³
+  Confirm: Confirm
+  Create: Create
+  SelectFolder: Select Folder
+  Back: Back
+  
+  TapToStart: Tap to Start
+  EditorStartup: Click "Select Folder" to load chart project
+  LoadError: Error occurred while reading the project, please check path and project format
+  LoadComplete: Loading complete!
+  InvalidChart: Failed to parse chart file as JSON
+  SaveError: Exception occurred during project saving
+  SaveComplete: Saved successfully!
+  SaveGameChartComplete: Successfully exported game chart (without editor info)
+  Exception: Unhandled exception occurred, please report the logs to the author
+  ChooseProject: Choose project folder
+  RecordModeHint: Hover mouse to the bottom to call up full-screen UI
+
+EditorEntry:
+  Projects: All Projects
+  Cover: "Cover Art (Optional): "
+  ChartConversion: Chart Conversion
+  MusicSource: "Music Source: "
+  Export: Export
+  Convert: Convert
+  ExportDirectory: "Export Directory: "
+  ProjectName: "Project Name: "
+  ProjectDirectory: "Project Directory: "
+  ConvertFilePath: "File to Convert: "
+  ProjectType: Project Type
+  ComingSoon: Coming Soon...
+  NewProject: New Project
+  CharterId: "Charter ID: "
+  SongId: "Song ID: "
+  ProjectTypeTakana: TAKANA³
+  ExportT3Pkg: Export .t3pkg
+  ToConvertType: "Target Chart Format: "
+  SearchProjects: Search Projects (Not searchable)
+  Open: Open
+  
+  OpenEntryConfirm: Project saved, click again to return to main menu
+  TargetDirectory: "Project will be created in {0}"
+  InvalidProjectName: Project name must not be empty
+  InvalidFile: "{0} is not a valid file"
+  InvalidDirectory: "{0} is not a valid path"
+  SuggestId: IDs are suggested to be camelCase words without spaces, e.g., "RedRose"
+  InvalidCurrentProject: No project currently open, cannot export
+  TargetT3pkg: "Chart package will be exported to {0}"
+  TargetTakana: "TAKANA³ chart will be exported to {0}"
+
+Editor:
+  BpmList: BPM List
+  HitSound: Hit Sound Volume
+  Offset: Offset
+  MusicSpeed: Music Speed
+  Timing: Timing
+  NoteType: Note Type
+  NoteSpeed: Flow Speed
+  SaveEditor: "Save Chart & Settings"
+  SavePure: Export Pure Chart
+  MusicSound: Music Volume
+  
+  Camera:
+    Perspective: Camera Perspective
+    LeftRight: L/R
+    UpDown: U/D
+    InOut: In/Out
+    Rotation: Rotation
+  Info:
+    InputComposer: Enter composer name
+    InputTitle: Enter song title
+    InputBpm: Enter display BPM
+    InputIllustrator: Enter illustrator name
+    Composer: Composer
+    Title: Title
+    Bpm: BPM
+    Illustrator: Illustrator
+    Charter: Charter
+    Difficulty: Difficulty
+    InputCharter: Enter charter name
+  Utility:
+    FullScreen: Full Screen
+    Tutorial: View Tutorial
+    CheckUpdate: Check for Updates
+    Resolution: Window Resolution
+    FrameRate: Frame Rate
+    SettingPanel: Settings Panel
+    GoToGithub: Go to Homepage
+  ColorPicker:
+    SelectColor: Select Color
+    CurrentColor: "Current Color: "
+  Grid:
+    Division: Division
+    Interval: Interval
+    WidthGrid: Vertical Grid
+    TimeGrid: Horizontal Grid
+    Deviation: Deviation
+  Layer:
+    InputLayerName: Please enter layer name...
+    SelectOpacity: Selected Opacity
+    UnselectOpacity: Hidden Opacity
+  TrackLine:
+    CurveInstruction: |-
+      Number keys switch curve family, Tab key switches easing mode
+      1 Sine | 2 Quad | 3 Cubic | 4 Quart | 5 Quint | 6 Expo | 7 Circ | 8 Back | 9 Elastic | 0 Bounce
+  
+
+AutoUpdate:
+  Newest: Current version is up to date!
+  DownloadStart: "Downloading v{0} editor"
+  DownloadFail: Download failed, please check for updates manually
+  DownloadSuccess: "v{0} editor downloaded successfully!"
+  SaveFail: Error occurred while saving the new version
+  EditorBroken: The downloaded editor file is corrupted, please download again
+  UpdaterBroken: Auto-update tool is corrupted, redownload the editor to enable auto-update
+  Updater:
+    ExecutionError: Error occurred during update process
+    InvalidVersion: "The version to be installed ({0}) is invalid"
+    InvalidPackage: The package to be installed is corrupted, please redownload
+    
+  UI:
+    DetectNewVersion: "New version detected: "
+    InstallLater: Install Later
+    ConfirmInstall: Confirm Installation
+    ConfirmT3Proj: Project files (.t3proj) detected in installation path. Continue? This will delete all projects in the path!
+    HintT3Proj: "Note: It is recommended to store projects in a separate folder"
+    HintConfirmInstall: New version downloaded. Install now? This will restart the editor; please ensure your work is saved.
+    UpdateLog: Update Log
+    CancelInstall: Let me think...
+    DownloadProgress: Download Progress
+    UpdateDate: "Update Date: "
+    Download: Download
+
+Select:
+  Brief: "Selected {0} elements"
+
+Edit:
+  Fail: Modification failed
+  DeleteNoteCount: "Deleted {0} Notes simultaneously"
+  HoldTimeError: Hold end time must be greater than start time
+  NoteTimeOutOfRange: "Operation failed: Note time is outside the selected track's time range"
+  TrackTimeError: Track end time must be greater than start time
+  SearchNotFound: Specified element not found
+  Dragging: Dragging
+  SelectedCount: "{0} objects selected"
+  CreateFailForDecoration: Cannot place Notes on decoration layers
+  
+  CopyPaste:
+    CopySuccess: Copied successfully!
+    PasteSuccess: Pasted successfully!
+    CopyNotSupport: This type of element does not support copying
+    Empty: Clipboard is empty
+    EmptyForPaste: No copiable elements in clipboard
+    NoteClipboard: "{0} Notes copied"
+    PasteFailForTrack: Select a track to perform standard Note paste
+    TrackClipboard: "{0} tracks copied"
+    Pasting: Pasting
+    ExactPasting: Pasting in place
+
+TrackLayer:
+  Basic:
+    DeleteLayerHint: "This layer has {0} tracks; click again to delete"
+  Decoration:
+    SetTrueFailForNote: "Cannot set as decoration layer; Notes exist on track {0}"
+    SetTrueSuccess: Successfully set; this layer can no longer hold Notes
+    SetFalseSuccess: Decoration disabled; this layer can now hold Notes
+    SetDecorationFail: Cannot move to decoration layer; this track contains Notes
+    
+TrackLine:
+  MirrorFail: Mirror failed
+  NodeDragging: Dragging node
+  NodeSplitDragging: Dragging node bidirectionally
+  PasteFailForTrack: Select a track to perform standard node paste
+  ExactPasteFailForTrack: Select a track to perform node paste in place
+  PasteFailForNode: Paste failed; conflict with existing nodes
+  NodeClipboard: "{0} nodes copied"
+  Pasting: Pasting nodes
+  ExactPasting: Pasting nodes in place
+  
+  ChangeEase: "Switched to {0} curve family"
+  CheckEase: "Current curve family: {0}"
+  
+LevelSelect:
+  Speed: Chart Speed
+  AudioDeviation: Audio Offset
+  InputDeviation: Input Offset
+  Loading: Loading
+  DetailSetting: Detailed Settings
+  Camera: Camera Tilt (Range 0-4)
+  
+LevelResult:
+  SetDeviation: Set Now
+  
+Setting:
+  SelectSetting:
+    Header: Selection Settings
+    TrackSelectedColor: Color when track is selected
+  PlayfieldSetting:
+    Header: Gameplay Settings
+    HitSoundVolumePercent: Hit sound volume percentage (Integer) | Range [0, 100]
+    TrackFaceDefaultColor: Default track color; also used to set default track opacity
+    MissHoldOpacity: Opacity after missing a Hold | Range [0, 1]
+    Speed: Default playback speed | Range [0, 10]
+    AudioDeviation: "Audio offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
+    InputDeviation: "Visual offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
+    TrackGap1: Gap between Tap/Hold and track boundaries
+    TrackGap2: Gap between Slide and track boundaries
+    CameraPosition: Main camera position
+    CameraRotation: Main camera rotation
+    TimeAfterEnd: "Delay before a missed Note's view is destroyed (Do not modify unless necessary)"
+    UpperThreshold: View layer content generates only when Note is below this height at 1x speed (Do not modify unless necessary)
+    LowerThreshold: View layer content generates only when Note is above this height at 1x speed (Do not modify unless necessary)
+  PerformanceSetting:
+    Header: Performance Settings
+    UseDebugPanel: Enable debug panel (FPS, etc.)
+    UseVSync: Synchronize frame rate with screen refresh rate
+    TargetFrameRate: Target frame rate
+    ResolutionRatio: Resolution scale
+    MergeTrackFace: Merge track textures (loses opacity overlap effect) | Significantly improves performance
+    EnableLaneBeam: Enable track hit effects
+  TrackLineSetting:
+    Header: Track Line Settings
+    DefaultEaseId: Default easing ID for curve families | Range [0, 9]
+    AllowMultipleEdit: Allow simultaneous editing of track lines on different tracks
+    NodePositionNudgeDistance: Distance node moves when clicking A or D
+    NodeTimeNudgeDistance: "Time duration node moves when clicking W or S | Unit: ms"
+    UneditableLineWidth: Width of track lines when not editable
+    EditableLineWidth: Width of track lines when editable
+    LeftSideNodeColor: Default color for left track line nodes
+    RightSideNodeColor: Default color for right track line nodes
+    SelectedLeftColor: Color for selected left track line nodes
+    SelectedRightColor: Color for selected right track line nodes
+    PosSideNodeColor: Default color for position track line nodes
+    WidthSideNodeColor: Default color for width track line nodes
+    SelectedPosColor: Color for selected position track line nodes
+    SelectedWidthColor: Color for selected width track line nodes
+    LogicLinePrecision: Hitbox rendering precision; increase if editing lags
+    MaxSegment: Max segments for track lines; decrease if editing lags
+    LogicLineWidth: Width of track line hitbox rendering
+    AddNodeTimeDistance: "Time interval between a new node and the original when adding via panel | Unit: ms"
+  AutoScoreSetting:
+    Header: Editor UI Settings
+    DummyNoteOpacity: Opacity of dummy Notes | Range [0, 1]
+  InScreenEditSetting:
+    Header: Editor Settings
+    IsInitialTrackLengthToEnd: Make track end time match song end time upon creation
+    InitialTrackLength: "Initial track length if the above is false | Unit: ms"
+    TimeSnapDistance: "Snapping threshold to the nearest horizontal grid line | Unit: ms"
+    NoteNudgeDistance: "Time duration a Note moves when clicking W or S | Unit: ms"
+    TimeDragThreshold: "Minimum drag distance required to trigger a drag action | Unit: ms"
+    ShowTimeIndicator: Show time indicator
+    ShowPositionIndicator: Show position indicator
+    BeatColor: Grid color for Quarter notes (Beats)
+    QuaverColor: Grid color for Eighth notes
+    SemiQuaverColor: Grid color for Sixteenth notes
+    TripletColor: Grid color for Triplets
+    DefaultColor: Default grid color for other cases
+  EditorSetting:
+    Header: Application Settings
+    ScrollSensitivity: Mouse scroll sensitivity (lines per scroll; negative to invert)
+    ShouldForcePause: Force pause on left-click during music playback
+    AutoSaveInterval: "Auto-save interval | Unit: ms"
+    SaveIndented: Indent chart files; disabling this reduces file size
+    WindowWidth: Window width (Height calculated automatically to maintain 16:9)
+    WindowWidthChoices: Resolution options available in the editor interface
+    MouseDragThreshold: "Minimum pixel distance to distinguish a drag from a click | Unit: px"
+    RecentProjectBufferCount: Number of recently opened projects to save
+    RecentProjects: Recently opened projects
+    LastProjectDirectory: Directory of the last created project
+    LastCharterId: Last used charter ID
+    LastExportDirectory: Last export directory for play packages
+  AutoUpdateSetting:
+    Header: Auto-update Settings
+    CheckUpdateOnStartup: Automatically check for updates on startup | Recommended
+    DownloadSilently: Download in background
+  TrackLayerSetting:
+    Header: Layer Settings
+    DefaultLayerId: ID for the default layer
+    DefaultLayerName: Default name for the default layer
+    ColorDefinitions: Available color definitions for layers
+    DefaultColor: Default color used for new layers
+    SelectLayerOpacityRatio: Opacity multiplier for selected layers | Range [0, 1]
+    UnselectLayerOpacityRatio: Opacity multiplier for unselected layers | Range [0, 1]
+  T3ProjSetting:
+    MusicFileName: Music file name | Include file extension for the following
+    CoverFileName: Cover file name
+    SongInfoFileName: Song info file name
+    PreferenceFileName: Preference file name (e.g., editor settings)
+    ChartFileName: Chart names for each difficulty | Do NOT include file extension
+  SongInfo:
+    Id: Unique identifier for the song
+    Title: Display title
+    Composer: Display composer
+    Illustrator: Display illustrator
+    BpmDisplay: Display BPM info
+    Description: Song description
+    Difficulties: Info for each difficulty
+  DifficultyInfo:
+    LevelDisplay: Display difficulty level text
+    Charter: Display charter info
+  EditorPreference:
+    Difficulty: Initial default difficulty | 1 ~ 5 corresponds to Normal ~ Ravage
+    Offset: Chart time offset
+    MusicVolumePercent: Music volume percentage (Integer) | Range [0, 100]
+    Speed: Initial default speed | Range [0, 10]
+    TimeGridLineCount: Horizontal time grid density | Range [0, ?)
+    WidthGridInterval: Vertical position grid density | Range [0, ?)
+    WidthGridOffset: Vertical position grid offset
+    BpmList: "BPM list (Key: Time, Value: BPM)"

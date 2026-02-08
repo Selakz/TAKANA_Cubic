@@ -1,6 +1,14 @@
 Fallback: 该文本（{0}）未被正确本地化，请通知作者
 
 App:
+  Cancel: 取消
+  Exit: 退出
+  Name: TAKANA³
+  Confirm: 确认
+  Create: 创建
+  SelectFolder: 选择文件夹
+  Back: 返回
+  
   TapToStart: 点击以开始
   EditorStartup: 点击“选择文件夹”按钮以加载谱面工程
   LoadError: 读取工程时发生错误，请检查路径和工程格式
@@ -12,6 +20,95 @@ App:
   Exception: 出现未处理异常，请将日志汇报给作者
   ChooseProject: 选择工程文件夹
   RecordModeHint: 鼠标滑至下方以呼出全屏模式UI
+
+EditorEntry:
+  Projects: 所有项目
+  Cover: "曲绘 （可选）："
+  ChartConversion: 谱面转换
+  MusicSource: "音源文件："
+  Export: 导出
+  Convert: 转换
+  ExportDirectory: "导出目录："
+  ProjectName: "项目名称："
+  ProjectDirectory: "项目目录："
+  ConvertFilePath: "待转换谱面文件："
+  ProjectType: 项目类型
+  ComingSoon: 敬请期待...
+  NewProject: 新项目
+  CharterId: "谱师id："
+  SongId: "乐曲id："
+  ProjectTypeTakana: TAKANA³
+  ExportT3Pkg: 导出 .t3pkg
+  ToConvertType: "要转换的谱面格式："
+  SearchProjects: 搜索项目（并不能搜索）
+  Open: 打开
+  
+  OpenEntryConfirm: 项目已保存，再次点击回到主界面
+  TargetDirectory: 项目将在 {0} 中创建
+  InvalidProjectName: 项目名称必须不为空
+  InvalidFile: '{0} 不是一个有效的文件'
+  InvalidDirectory: '{0} 不是一个有效的路径'
+  SuggestId: 各Id均建议为大小写字母混合的无空格单词，如“RedRose”
+  InvalidCurrentProject: 当前无打开的工程，不可导出
+  TargetT3pkg: '谱面包将导出为 {0}'
+  TargetTakana: 'TAKANA³谱面将导出为 {0}'
+
+Editor:
+  BpmList: BPM列表
+  HitSound: 音效音量
+  Offset: 偏移
+  MusicSpeed: 音乐速度
+  Timing: 时间
+  NoteType: 创建类型
+  NoteSpeed: 流速
+  SaveEditor: 保存谱面和设置
+  SavePure: 导出纯谱面
+  MusicSound: 音乐音量
+  
+  Camera:
+    Perspective: 相机视角
+    LeftRight: 左右
+    UpDown: 上下
+    InOut: 纵深
+    Rotation: 旋转
+  Info:
+    InputComposer: 输入曲师名称
+    InputTitle: 输入音乐名称
+    InputBpm: 输入展示BPM
+    InputIllustrator: 输入画师名称
+    Composer: 曲师
+    Title: 音乐
+    Bpm: BPM
+    Illustrator: 曲绘
+    Charter: 谱师
+    Difficulty: 难度
+    InputCharter: 输入谱师名称
+  Utility:
+    FullScreen: 全屏模式
+    Tutorial: 查看教程
+    CheckUpdate: 检查更新
+    Resolution: 窗口分辨率
+    FrameRate: 帧率
+    SettingPanel: 设置面板
+    GoToGithub: 前往主页
+  ColorPicker:
+    SelectColor: 选取颜色
+    CurrentColor: 当前颜色：
+  Grid:
+    Division: 细分
+    Interval: 间隔
+    WidthGrid: 纵向格线
+    TimeGrid: 横向格线
+    Deviation: 偏移
+  Layer:
+    InputLayerName: 请输入图层名称...
+    SelectOpacity: 选中不透明度
+    UnselectOpacity: 隐藏不透明度
+  TrackLine:
+    CurveInstruction: |-
+      数字键切换曲线族，Tab键切换曲线运动方式
+      1 Sine | 2 Quad | 3 Cubic | 4 Quart | 5 Quint | 6 Expo | 7 Circ | 8 Back | 9 Elastic | 0 Bounce
+  
 
 AutoUpdate:
   Newest: 当前版本已为最新！
@@ -25,6 +122,19 @@ AutoUpdate:
     ExecutionError: 更新过程中发生错误
     InvalidVersion: 待安装的版本{0}无效
     InvalidPackage: 待安装的制谱器文件损坏，请重新下载
+    
+  UI:
+    DetectNewVersion: "检测到新版本："
+    InstallLater: 稍后安装
+    ConfirmInstall: 确认安装
+    ConfirmT3Proj: 检测到安装路径中存在工程文件（.t3proj），是否继续安装？这会删除路径内的所有工程！
+    HintT3Proj: 提示：建议将谱面工程存放在单独的文件夹中
+    HintConfirmInstall: 新版本制谱器已下载完成，是否现在安装？这将重启您的制谱器，请确认您已保存好当前工程。
+    UpdateLog: 更新日志
+    CancelInstall: 我再想想...
+    DownloadProgress: 下载进度
+    UpdateDate: "更新日期："
+    Download: 下载
 
 Select:
   Brief: 选中了{0}个元件
@@ -77,9 +187,11 @@ TrackLine:
   
 LevelSelect:
   Speed: 谱面流速
-  Deviation: 音乐偏移
+  AudioDeviation: 音乐偏移
+  InputDeviation: 目押偏移
   Loading: 加载中
   DetailSetting: 详细设置
+  Camera: 相机倾斜度（范围0-4）
   
 LevelResult:
   SetDeviation: 立即设置
@@ -95,7 +207,8 @@ Setting:
     TrackFaceDefaultColor: 轨道默认颜色，该项也用来设置轨道的默认透明度
     MissHoldOpacity: Hold miss后的不透明度 | 范围 [0, 1]
     Speed: 游玩谱面时的默认速度 | 范围 [0, 10]
-    AudioDeviation: 游玩谱面时的音乐偏移量 | 单位：毫秒
+    AudioDeviation: 游玩时的音押偏移量（Fast多则加，Late多则减） | 单位：毫秒
+    InputDeviation: 游玩时的目押偏移量（Fast多则加，Late多则减） | 单位：毫秒
     TrackGap1: Tap和Hold与轨道边界的间隔大小
     TrackGap2: Slide与轨道边界的间隔大小
     CameraPosition: 主相机位置
@@ -103,6 +216,14 @@ Setting:
     TimeAfterEnd: Note下落时如果未被判定，则其视图层内容在判定时间之后延迟销毁的时间（非必要请勿修改）
     UpperThreshold: 当Note在1速下首次位于该高度以下时才会真正生成其视图层内容（非必要请勿修改）
     LowerThreshold: 当Note在1速下首次位于该高度以上时才会真正生成其视图层内容（非必要请勿修改）
+  PerformanceSetting:
+    Header: 性能设置
+    UseDebugPanel: 开启调试面板（包括帧率等）
+    UseVSync: 使帧率与屏幕刷新率同步（因设备不同可能无效果）
+    TargetFrameRate: 目标帧率
+    ResolutionRatio: 画面分辨率比例
+    MergeTrackFace: 将轨道贴图合并，失去透明度叠加效果 | 打开可最显著提升性能
+    EnableLaneBeam: 启用轨道打击特效
   TrackLineSetting:
     Header: 轨道线设置
     DefaultEaseId: 默认曲线族的缓动ID | 范围 [0, 9]
@@ -115,6 +236,10 @@ Setting:
     RightSideNodeColor: 右轨道线结点的默认颜色
     SelectedLeftColor: 左轨道线结点选中时的颜色
     SelectedRightColor: 右轨道线结点选中时的颜色
+    PosSideNodeColor: 位置轨道线结点的默认颜色
+    WidthSideNodeColor: 宽度轨道线结点的默认颜色
+    SelectedPosColor: 位置轨道线结点选中时的颜色
+    SelectedWidthColor: 宽度轨道线结点选中时的颜色
     LogicLinePrecision: 轨道线碰撞箱渲染精度，若轨道编辑卡顿可适当增加该值
     MaxSegment: 轨道线的最大分段数，若轨道编辑卡顿可适当减少该值
     LogicLineWidth: 轨道线碰撞箱渲染的宽度
@@ -145,6 +270,11 @@ Setting:
     WindowWidth: 窗口宽度，高度将在保持16：9窗口比例的前提下自动计算
     WindowWidthChoices: 在编辑器界面提供的分辨率调整选项，同样均为窗口宽度
     MouseDragThreshold: 尝试进行拖动时，只有拖动位置差大于该时间才会认为是在进行拖动 | 单位：px
+    RecentProjectBufferCount: 保存的最近打开项目的数量
+    RecentProjects: 最近打开的项目
+    LastProjectDirectory: 上次创建新工程的目录
+    LastCharterId: 上次使用的谱师id
+    LastExportDirectory: 上次导出游玩包的目录
   AutoUpdateSetting:
     Header: 自动更新设置
     CheckUpdateOnStartup: 是否在启动时自动检查更新 | 建议开启

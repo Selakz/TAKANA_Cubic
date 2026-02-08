@@ -655,8 +655,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4bf8b874724ad8b7864dddd6778ffb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <LeftToggle>k__BackingField: {fileID: 3721278359766438234}
-  <RightToggle>k__BackingField: {fileID: 887711624961026374}
+  isLrPos: 1
+  <Toggle1>k__BackingField: {fileID: 3721278359766438234}
+  <Toggle2>k__BackingField: {fileID: 887711624961026374}
   <MovementContentRoot>k__BackingField: {fileID: 8213256743841446808}
 --- !u!114 &6976294376997915177
 MonoBehaviour:

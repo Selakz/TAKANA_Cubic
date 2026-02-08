@@ -18,7 +18,7 @@ Shader "Custom/CutoutSprite"
             "CanUseSpriteAtlas"="True"
         }
 
-        Cull Off
+        Cull Back
         Lighting Off
         ZWrite On
         ZTest LEqual
