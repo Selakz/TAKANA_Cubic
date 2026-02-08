@@ -27,27 +27,26 @@ namespace MusicGame.ChartEditor.Message
 		// Static
 
 		// Defined Functions
-		public static void Show(string message, MessageType type)
+		public static void Show(MessageType type, string key, params string[] args)
 		{
 			Instance.panelImage.color = type.GetColor();
-			Instance.messageText.SetText(message);
+			Instance.messageText.SetText(key, args);
 			Instance.animator.Play(0);
-			Debug.Log($"HeaderMessage Show: {message}");
+			Debug.Log($"HeaderMessage Show: {Instance.messageText.Text.text}");
 		}
 
 		// Event Handlers
 		private void ShowException(string condition, string stackTrace, LogType logType)
 		{
 			if (logType is LogType.Error or LogType.Exception or LogType.Assert)
-				Show(I18NSystem.GetText("App_Exception"), MessageType.Error);
+				Show(MessageType.Error, "App_Exception");
 		}
 
 		private static void OnLogNotice(string message, Enum type)
 		{
 			var split = message.Split('|');
-			var text = I18NSystem.GetText(split[0], split[1..]);
 			MessageType msgType = type is T3LogType t ? t.ToType() : MessageType.Info;
-			Show(text, msgType);
+			Show(msgType, split[0], split[1..]);
 		}
 
 		// System Functions

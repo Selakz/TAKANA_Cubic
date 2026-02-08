@@ -8,11 +8,11 @@ using System.IO;
 using System.Text;
 using Cysharp.Threading.Tasks;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Static.Event;
 using UnityEngine;
 
 namespace T3Framework.Runtime.I18N
 {
-	// TODO: Merge T3Framework.Runtime.Localization here with runtime localization
 	public static class I18NSystem
 	{
 		public const Language DefaultLanguageCode = Language.SimplifiedChinese;
@@ -22,6 +22,8 @@ namespace T3Framework.Runtime.I18N
 		private static LanguagePack currentLanguagePack;
 
 		public static Dictionary<Language, LanguagePack>.ValueCollection Languages => languageMap.Values;
+
+		public static NotifiableProperty<bool> IsLoaded { get; private set; } = new(false);
 
 		public static Language CurrentLanguageCode
 		{
@@ -92,6 +94,7 @@ namespace T3Framework.Runtime.I18N
 
 			currentLanguagePack = defaultLanguagePack = languageMap[DefaultLanguageCode];
 			OnLanguageChanged?.Invoke(currentLanguagePack);
+			IsLoaded.Value = true;
 		}
 
 		public static string GetText(I18NText text) =>
@@ -104,20 +107,25 @@ namespace T3Framework.Runtime.I18N
 		public static string GetText(string key, params string[] args)
 		{
 			var text = currentLanguagePack.GetTranslationOrDefault(key) ??
-			           defaultLanguagePack.GetTranslationOrDefault(key) ??
-			           key;
-			if (args.Length > 0)
+			           defaultLanguagePack.GetTranslationOrDefault(key);
+			const string fallback = "Fallback";
+			if (key == fallback && text is null) return args.Length > 0 ? args[0] : string.Empty;
+			if (text is not null)
 			{
-				var sb = new StringBuilder(text);
-				for (int i = 0; i < args.Length; i++)
+				if (args.Length > 0)
 				{
-					sb.Replace($"{{{i}}}", args[i]);
+					var sb = new StringBuilder(text);
+					for (int i = 0; i < args.Length; i++)
+					{
+						sb.Replace($"{{{i}}}", args[i]);
+					}
+
+					text = sb.ToString();
 				}
 
-				text = sb.ToString();
+				return text;
 			}
-
-			return text;
+			else return GetText(fallback, key);
 		}
 
 		public static bool TrySetLanguage(Language languageCode)
