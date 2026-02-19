@@ -9,10 +9,8 @@ using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Pool;
-using UnityEngine.UI;
 using VContainer;
 using VContainer.Unity;
 
@@ -21,45 +19,16 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 	public class GridWidthRetriever : T3MonoBehaviour, IWidthRetriever, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private Toggle toggle = default!;
-		[SerializeField] private TMP_InputField gridIntervalInputField = default!;
-		[SerializeField] private TMP_InputField gridOffsetInputField = default!;
 		[SerializeField] private Transform widthGridRoot = default!;
 		[SerializeField] private PrefabObject gridPrefab = default!;
 
 		public event Action OnBeforeResetGrid = delegate { };
 
-		public float GridInterval
-		{
-			get => gridInterval;
-			set
-			{
-				gridInterval = Mathf.Max(0.1f, value);
-				gridIntervalInputField.text = gridInterval.ToString("0.000");
-				if (levelInfo.Value?.Preference is EditorPreference preference)
-				{
-					preference.WidthGridInterval = value;
-				}
+		public NotifiableProperty<bool> IsOn { get; } = new(false);
 
-				ResetGrid();
-			}
-		}
+		public NotifiableProperty<float> GridInterval { get; } = new(1.0f);
 
-		public float GridOffset
-		{
-			get => gridOffset;
-			set
-			{
-				gridOffset = value;
-				gridOffsetInputField.text = gridOffset.ToString("0.000");
-				if (levelInfo.Value?.Preference is EditorPreference preference)
-				{
-					preference.WidthGridOffset = value;
-				}
-
-				ResetGrid();
-			}
-		}
+		public NotifiableProperty<float> GridOffset { get; } = new(0f);
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -68,10 +37,34 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 				var info = levelInfo.Value;
 				if (info?.Preference is EditorPreference preference)
 				{
-					GridOffset = preference.WidthGridOffset;
-					GridInterval = preference.WidthGridInterval;
+					GridOffset.Value = preference.WidthGridOffset;
+					GridInterval.Value = preference.WidthGridInterval;
 				}
 
+				ResetGrid();
+			}),
+			new PropertyRegistrar<bool>(IsOn, isOn =>
+			{
+				if (isOn)
+				{
+					widthGridRoot.gameObject.SetActive(true);
+					widthRetriever.Value = this;
+					ResetGrid();
+				}
+				else
+				{
+					widthGridRoot.gameObject.SetActive(false);
+					widthRetriever.Value = DefaultWidthRetriever.Instance;
+				}
+			}),
+			new PropertyRegistrar<float>(GridInterval, value =>
+			{
+				if (levelInfo.Value?.Preference is EditorPreference preference) preference.WidthGridInterval = value;
+				ResetGrid();
+			}),
+			new PropertyRegistrar<float>(GridOffset, value =>
+			{
+				if (levelInfo.Value?.Preference is EditorPreference preference) preference.WidthGridOffset = value;
 				ResetGrid();
 			})
 		};
@@ -80,9 +73,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		private IObjectResolver resolver = default!;
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 		private NotifiableProperty<IWidthRetriever> widthRetriever = default!;
-
-		private float gridInterval = 1.5f;
-		private float gridOffset = 0f;
 
 		private ObjectPool<WidthGridController> WidthGridPool => widthGridPool ??= new(
 			() => gridPrefab.Instantiate(resolver, widthGridRoot).GetComponent<WidthGridController>(),
@@ -107,7 +97,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			this.widthRetriever = widthRetriever;
 		}
 
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
 		public float GetWidth(Vector3 position)
 		{
@@ -183,55 +173,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 				widthGrid.Init(this, right);
 				right += GridInterval;
 			}
-		}
-
-		// Event Handlers
-		private void OnToggleChanged(bool isOn)
-		{
-			if (isOn)
-			{
-				widthGridRoot.gameObject.SetActive(true);
-				widthRetriever.Value = this;
-				ResetGrid();
-			}
-			else
-			{
-				widthGridRoot.gameObject.SetActive(false);
-				widthRetriever.Value = DefaultWidthRetriever.Instance;
-			}
-		}
-
-		private void OnGridIntervalInputFieldEndEdit(string content)
-		{
-			if (float.TryParse(content, out float interval))
-			{
-				GridInterval = interval;
-			}
-
-			gridIntervalInputField.SetTextWithoutNotify(GridInterval.ToString("0.000"));
-		}
-
-		private void OnGridOffsetInputFieldEndEdit(string content)
-		{
-			if (float.TryParse(content, out float offset))
-			{
-				GridOffset = offset;
-			}
-
-			gridOffsetInputField.SetTextWithoutNotify(GridOffset.ToString("0.000"));
-		}
-
-		// System Functions
-		protected override void Awake()
-		{
-			toggle.onValueChanged.AddListener(OnToggleChanged);
-			gridIntervalInputField.onEndEdit.AddListener(OnGridIntervalInputFieldEndEdit);
-			gridOffsetInputField.onEndEdit.AddListener(OnGridOffsetInputFieldEndEdit);
-		}
-
-		protected override void OnEnable()
-		{
-			OnToggleChanged(toggle.isOn);
 		}
 	}
 }
