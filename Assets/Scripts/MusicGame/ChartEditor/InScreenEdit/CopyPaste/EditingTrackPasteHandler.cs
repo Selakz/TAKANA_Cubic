@@ -1,8 +1,9 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
-using MusicGame.ChartEditor.Select;
 using MusicGame.Models.Track;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Extensions;
@@ -15,7 +16,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 	{
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 		private readonly Camera levelCamera;
-		private readonly ChartSelectDataset dataset;
 		private readonly NotifiableProperty<ITimeRetriever> timeRetriever;
 		private readonly NotifiableProperty<IWidthRetriever> widthRetriever;
 
@@ -24,13 +24,11 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 		public EditingTrackPasteHandler(
 			CopyPastePlugin copyPastePlugin,
 			Camera levelCamera,
-			ChartSelectDataset dataset,
 			NotifiableProperty<ITimeRetriever> timeRetriever,
 			NotifiableProperty<IWidthRetriever> widthRetriever)
 		{
 			CopyPaste = copyPastePlugin;
 			this.levelCamera = levelCamera;
-			this.dataset = dataset;
 			this.timeRetriever = timeRetriever;
 			this.widthRetriever = widthRetriever;
 		}
@@ -38,7 +36,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 		public string GetDescription()
 		{
 			int count = CopyPaste.Clipboard.Count(c => c.Model is ITrack);
-			return $"Edit_CopyPast_TrackClipboard|{count}";
+			return $"Edit_CopyPaste_TrackClipboard|{count}";
 		}
 
 		public void Cut()

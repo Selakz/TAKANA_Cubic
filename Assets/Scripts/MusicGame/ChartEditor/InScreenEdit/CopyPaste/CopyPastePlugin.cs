@@ -188,7 +188,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 				[typeof(INote)] =
 					new EditingNotePasteHandler(this, levelCamera, dataset, timeRetriever),
 				[typeof(ITrack)] =
-					new EditingTrackPasteHandler(this, levelCamera, dataset, timeRetriever, widthRetriever),
+					new EditingTrackPasteHandler(this, levelCamera, timeRetriever, widthRetriever),
 			};
 		}
 	}

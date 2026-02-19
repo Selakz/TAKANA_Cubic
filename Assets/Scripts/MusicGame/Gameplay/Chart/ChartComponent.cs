@@ -99,8 +99,8 @@ namespace MusicGame.Gameplay.Chart
 		public bool Nudge(T3Time distance)
 		{
 			if (!IsWithinParentRange(distance)) return false;
-			foreach (var child in Children) child.Nudge(distance);
 			UpdateModel(model => model.Nudge(distance));
+			foreach (var child in Children) child.Nudge(distance);
 			return true;
 		}
 
