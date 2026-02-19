@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using T3Framework.Runtime.Extensions;
 
 namespace MusicGame.Models
 {
@@ -14,7 +13,10 @@ namespace MusicGame.Models
 		public IChartSerializable? this[string id]
 		{
 			get => properties.GetValueOrDefault(id);
-			set => properties.AddIf(id, value!, !properties.ContainsKey(id) && value != null);
+			set
+			{
+				if(value is not null) properties[id] = value;
+			}
 		}
 
 		public int Count => properties.Count;
