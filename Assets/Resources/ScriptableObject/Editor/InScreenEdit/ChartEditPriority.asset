@@ -18,11 +18,13 @@ MonoBehaviour:
       value: 0
     - key: note-copy-paste
       value: 1
-    - key: note-drag
+    - key: track-copy-paste
       value: 2
-    - key: node
+    - key: note-drag
       value: 3
-    - key: node-copy-paste
+    - key: node
       value: 4
-    - key: node-drag
+    - key: node-copy-paste
       value: 5
+    - key: node-drag
+      value: 6

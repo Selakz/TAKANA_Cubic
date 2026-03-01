@@ -11,7 +11,6 @@ using MusicGame.Models.JudgeLine;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Extensions;
-using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Plugins;
 using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
@@ -19,6 +18,9 @@ using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+#if !UNITY_EDITOR
+using T3Framework.Runtime.Log;
+#endif
 
 namespace MusicGame.EditorEntry
 {
@@ -106,7 +108,6 @@ namespace MusicGame.EditorEntry
 
 					levelInfo.Value = info;
 					levelInfo.AddUpNotify();
-					T3Logger.Log("Notice", "App_LoadComplete", T3LogType.Success);
 
 					bool exist = false;
 					foreach (var data in dataset)

@@ -8,6 +8,7 @@ App:
   Create: Create
   SelectFolder: Select Folder
   Back: Back
+  ChangeLanguage: Change Language
   
   TapToStart: Tap to Start
   EditorStartup: Click "Select Folder" to load chart project
@@ -52,25 +53,28 @@ EditorEntry:
   InvalidCurrentProject: No project currently open, cannot export
   TargetT3pkg: "Chart package will be exported to {0}"
   TargetTakana: "TAKANA³ chart will be exported to {0}"
+  Intro: Shift + Right Click to create the first track
 
 Editor:
   BpmList: BPM List
-  HitSound: Hit Sound Volume
+  HitSound: Hit Sound
   Offset: Offset
   MusicSpeed: Music Speed
   Timing: Timing
+  RaycastType: Raycast Mode
   NoteType: Note Type
-  NoteSpeed: Flow Speed
+  NoteSpeed: Speed
   SaveEditor: "Save Chart & Settings"
   SavePure: Export Pure Chart
-  MusicSound: Music Volume
+  MusicSound: Music
+  RaycastMode: Raycast Mode
   
   Camera:
-    Perspective: Camera Perspective
+    Perspective: Perspective
     LeftRight: L/R
     UpDown: U/D
-    InOut: In/Out
-    Rotation: Rotation
+    InOut: I/O
+    Rotation: Rot
   Info:
     InputComposer: Enter composer name
     InputTitle: Enter song title
@@ -87,7 +91,7 @@ Editor:
     FullScreen: Full Screen
     Tutorial: View Tutorial
     CheckUpdate: Check for Updates
-    Resolution: Window Resolution
+    Resolution: Resolution
     FrameRate: Frame Rate
     SettingPanel: Settings Panel
     GoToGithub: Go to Homepage
@@ -97,13 +101,15 @@ Editor:
   Grid:
     Division: Division
     Interval: Interval
-    WidthGrid: Vertical Grid
-    TimeGrid: Horizontal Grid
-    Deviation: Deviation
+    WidthGrid: Vertical
+    TimeGrid: Horizontal
+    Deviation: Offset
+    KeyCount: Key
+    KeyPercent: '%'
   Layer:
-    InputLayerName: Please enter layer name...
-    SelectOpacity: Selected Opacity
-    UnselectOpacity: Hidden Opacity
+    InputLayerName: New layer name...
+    SelectOpacity: Selected
+    UnselectOpacity: Hidden
   TrackLine:
     CurveInstruction: |-
       Number keys switch curve family, Tab key switches easing mode
@@ -141,6 +147,7 @@ Select:
 
 Edit:
   Fail: Modification failed
+  SelectTrackToPlaceNote: Please select a track to place note
   DeleteNoteCount: "Deleted {0} Notes simultaneously"
   HoldTimeError: Hold end time must be greater than start time
   NoteTimeOutOfRange: "Operation failed: Note time is outside the selected track's time range"
@@ -149,6 +156,16 @@ Edit:
   Dragging: Dragging
   SelectedCount: "{0} objects selected"
   CreateFailForDecoration: Cannot place Notes on decoration layers
+  ConnectTrackOverlapping: Track time range overlapping, cannot connect
+  ConnectTrackTypeNotSame: Track move type different, cannot connect
+  
+  Format:
+    Title: Chart Formatting
+    RemoveOutOfRange: Remove all notes outside the track time range
+    RemoveOverlap: Remove all overlapping same-type notes
+    RemoveZeroWidth: Remove all notes with width 0
+    FormattingSuccess: "{0} elements formatted successfully"
+    NoNeedToFormat: "No elements need to be formatted"
   
   CopyPaste:
     CopySuccess: Copied successfully!
@@ -255,6 +272,7 @@ Setting:
     TimeDragThreshold: "Minimum drag distance required to trigger a drag action | Unit: ms"
     ShowTimeIndicator: Show time indicator
     ShowPositionIndicator: Show position indicator
+    WidthGridColor: Vertical grid color
     BeatColor: Grid color for Quarter notes (Beats)
     QuaverColor: Grid color for Eighth notes
     SemiQuaverColor: Grid color for Sixteenth notes

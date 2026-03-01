@@ -4759,6 +4759,78 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "TrackEdit",
+            "id": "4fa6f0f3-08fd-462c-b73f-d34b02e96e66",
+            "actions": [
+                {
+                    "name": "ConnectTrack",
+                    "type": "Value",
+                    "id": "ed3ad137-6942-4cf7-8dc2-6558b2097412",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "Key With Modifiers",
+                    "id": "e200f97f-f86b-44ae-adaf-836d829058d9",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectTrack",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "faa91192-2066-42e2-9b6c-766c361835cb",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "81f11a73-7678-499b-b72d-62fe912c9012",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "909395d3-b1c0-4412-b81d-188820469520",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "43faeefe-5a36-474c-940a-2fa291c65c57",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConnectTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         }
     ],
     "controlSchemes": []

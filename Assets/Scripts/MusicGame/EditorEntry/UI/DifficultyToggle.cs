@@ -1,7 +1,7 @@
 #nullable enable
 
 using System.IO;
-using MusicGame.EditorEntry;
+using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
@@ -14,7 +14,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
 
-namespace MusicGame.ChartEditor.Level.UI
+namespace MusicGame.EditorEntry.UI
 {
 	public class DifficultyToggle : T3MonoBehaviour, ISelfInstaller
 	{
@@ -26,10 +26,14 @@ namespace MusicGame.ChartEditor.Level.UI
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<LevelInfo?>(levelInfo, (_, _) =>
+			new PropertyRegistrar<LevelInfo?>(levelInfo, info =>
 			{
-				var info = levelInfo.Value;
-				if (info != null) UpdateUI(info);
+				if (info != null)
+				{
+					UpdateUI(info);
+					if (difficultyToggle.isOn && info.Preference is EditorPreference preference)
+						preference.Difficulty = difficulty;
+				}
 			}),
 			new ToggleRegistrar(
 				difficultyToggle, OnDifficultyToggleValueChanged),
@@ -44,6 +48,7 @@ namespace MusicGame.ChartEditor.Level.UI
 		private void UpdateUI(LevelInfo levelInfo)
 		{
 			difficultyToggle.interactable = true;
+			difficultyToggle.SetIsOnWithoutNotify(levelInfo.Difficulty == difficulty);
 			levelInputField.interactable = true;
 			difficultyText.fontStyle = levelInfo.Difficulty == difficulty ? FontStyles.Bold : FontStyles.Normal;
 			levelInputField.text = levelInfo.SongInfo.Difficulties.TryGetValue(difficulty, out var difficultyInfo)
@@ -72,11 +77,6 @@ namespace MusicGame.ChartEditor.Level.UI
 			{
 				difficultyText.fontStyle = FontStyles.Bold;
 				levelLoader.LoadLevel(Path.GetDirectoryName(info.LevelPath)!, difficulty);
-				info = levelInfo.Value;
-				if (info?.Preference is EditorPreference preference)
-				{
-					preference.Difficulty = difficulty;
-				}
 			}
 			else
 			{

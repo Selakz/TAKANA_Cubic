@@ -14,8 +14,6 @@ namespace App
 
 		public AppSetting()
 		{
-			UseEnglish.PropertyChanged += (_, _) =>
-				I18NSystem.CurrentLanguageCode = UseEnglish.Value ? Language.English : Language.SimplifiedChinese;
 		}
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -26,6 +24,12 @@ namespace App
 				? Language.English
 				: Language.SimplifiedChinese;
 			Debug.Log($"Initialize AppSetting. Use English: {setting.UseEnglish.Value}");
+			setting.UseEnglish.PropertyChanged += (_, _) =>
+			{
+				I18NSystem.CurrentLanguageCode =
+					setting.UseEnglish.Value ? Language.English : Language.SimplifiedChinese;
+				Debug.Log($"Switch Language to {I18NSystem.CurrentLanguageCode}");
+			};
 		}
 	}
 }

@@ -8,6 +8,7 @@ App:
   Create: 创建
   SelectFolder: 选择文件夹
   Back: 返回
+  ChangeLanguage: 切换语言
   
   TapToStart: 点击以开始
   EditorStartup: 点击“选择文件夹”按钮以加载谱面工程
@@ -52,6 +53,7 @@ EditorEntry:
   InvalidCurrentProject: 当前无打开的工程，不可导出
   TargetT3pkg: '谱面包将导出为 {0}'
   TargetTakana: 'TAKANA³谱面将导出为 {0}'
+  Intro: Shift + 右键以创建第一个轨道
 
 Editor:
   BpmList: BPM列表
@@ -59,11 +61,13 @@ Editor:
   Offset: 偏移
   MusicSpeed: 音乐速度
   Timing: 时间
+  RaycastType: 点选模式
   NoteType: 创建类型
   NoteSpeed: 流速
   SaveEditor: 保存谱面和设置
   SavePure: 导出纯谱面
   MusicSound: 音乐音量
+  RaycastMode: 点选模式
   
   Camera:
     Perspective: 相机视角
@@ -100,6 +104,8 @@ Editor:
     WidthGrid: 纵向格线
     TimeGrid: 横向格线
     Deviation: 偏移
+    KeyCount: Key
+    KeyPercent: '%'
   Layer:
     InputLayerName: 请输入图层名称...
     SelectOpacity: 选中不透明度
@@ -141,6 +147,7 @@ Select:
 
 Edit:
   Fail: 修改失败
+  SelectTrackToPlaceNote: 请选中一条轨道以放置Note
   DeleteNoteCount: 同时删除了{0}个Note
   HoldTimeError: Hold的结束时间需大于开始时间
   NoteTimeOutOfRange: 操作失败：Note的时间在所选轨道的时间范围外
@@ -149,6 +156,16 @@ Edit:
   Dragging: 正在拖拽
   SelectedCount: 已选中{0}个物件
   CreateFailForDecoration: 无法在装饰层轨道上放置Note
+  ConnectTrackOverlapping: 轨道时间范围重叠，无法连接
+  ConnectTrackTypeNotSame: 轨道运动类型不同，无法连接
+  
+  Format:
+    Title: 谱面格式化
+    RemoveOutOfRange: 移除所有超出轨道时间范围的Note
+    RemoveOverlap: 移除所有重叠的同类型Note
+    RemoveZeroWidth: 移除所有宽度为0的Note
+    FormattingSuccess: 成功删除 {0} 个符合条件的元件
+    NoNeedToFormat: 没有符合条件的元件需要删除
   
   CopyPaste:
     CopySuccess: 复制成功！
@@ -256,6 +273,7 @@ Setting:
     TimeDragThreshold: 尝试拖动时，只有拖动时间差大于该时间才会进行拖动 | 单位：毫秒
     ShowTimeIndicator: 是否显示时间指示器
     ShowPositionIndicator: 是否显示位置指示器
+    WidthGridColor: 纵向格线颜色
     BeatColor: 四分音符（拍）的横向格线颜色
     QuaverColor: 八分音符的横向格线颜色
     SemiQuaverColor: 十六分音符的横向格线颜色

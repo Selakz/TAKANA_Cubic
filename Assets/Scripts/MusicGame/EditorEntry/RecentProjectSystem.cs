@@ -8,6 +8,7 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.Log;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Event;
@@ -36,6 +37,8 @@ namespace MusicGame.EditorEntry
 				{
 					entryCanvas.SetActive(false);
 					ISingleton<InputManager>.Instance.GlobalInputEnabled.Value = true;
+					if (levelInfo.Value.Chart.Count <= 1)
+						T3Logger.Log("Notice", "EditorEntry_Intro", T3LogType.Success);
 				}
 			})
 		};
