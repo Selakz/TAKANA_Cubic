@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace T3Framework.Runtime.Event.UI
 {
-	[RequireComponent(typeof(Collider))]
-	public class ColliderEnterExitListener : MonoBehaviour
+	[RequireComponent(typeof(Collider2D))]
+	public class Collider2DEnterExitListener : MonoBehaviour
 	{
 		// Serializable and Public
-		public event Action<Collider>? CollisionEnter;
-		public event Action<Collider>? CollisionExit;
+		public event Action<Collider2D>? CollisionEnter;
+		public event Action<Collider2D>? CollisionExit;
 
-		public Collider Collider => targetCollider ??= GetComponent<Collider>();
+		public Collider2D Collider => targetCollider ??= GetComponent<Collider2D>();
 
 		public int Layer
 		{
@@ -21,31 +21,31 @@ namespace T3Framework.Runtime.Event.UI
 		}
 
 		// Private
-		private Collider? targetCollider;
+		private Collider2D? targetCollider;
 
 		// System Functions
-		public void OnCollisionEnter(Collision other)
+		public void OnCollisionEnter2D(Collision2D other)
 		{
 			CollisionEnter?.Invoke(other.collider);
 		}
 
-		public void OnCollisionExit(Collision other)
+		public void OnCollisionExit2D(Collision2D other)
 		{
 			CollisionExit?.Invoke(other.collider);
 		}
 
-		public void OnTriggerEnter(Collider other)
+		public void OnTriggerEnter2D(Collider2D other)
 		{
 			CollisionEnter?.Invoke(other);
 		}
 
-		public void OnTriggerExit(Collider other)
+		public void OnTriggerExit2D(Collider2D other)
 		{
 			CollisionExit?.Invoke(other);
 		}
 	}
 
-	public class ColliderEnterExitRegistrar : IEventRegistrar
+	public class Collider2DEnterExitRegistrar : IEventRegistrar
 	{
 		public enum RegisterTarget
 		{
@@ -53,12 +53,12 @@ namespace T3Framework.Runtime.Event.UI
 			CollisionExit
 		}
 
-		private readonly ColliderEnterExitListener listener;
+		private readonly Collider2DEnterExitListener listener;
 		private readonly RegisterTarget target;
-		private readonly Action<Collider> action;
+		private readonly Action<Collider2D> action;
 
-		public ColliderEnterExitRegistrar(
-			ColliderEnterExitListener listener, RegisterTarget target, Action<Collider> action)
+		public Collider2DEnterExitRegistrar(
+			Collider2DEnterExitListener listener, RegisterTarget target, Action<Collider2D> action)
 		{
 			this.listener = listener;
 			this.target = target;

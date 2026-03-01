@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
@@ -19,6 +20,8 @@ namespace T3Framework.Preset.Select.UI
 		[SerializeField] private Toggle allCastToggle = default!;
 
 		protected abstract NotifiableProperty<ISelectRaycastMode<T>> RaycastMode { get; }
+
+		protected virtual IComparer<KeyValuePair<RaycastHit, T>>? PollingComparer => null;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -55,16 +58,32 @@ namespace T3Framework.Preset.Select.UI
 		private bool polling = true;
 		private bool sole = true;
 
+		private PollingRaycastMode<T>? solePollingMode = null;
+		private PollingRaycastMode<T>? ctrlPollingMode = null;
+
+		private PollingRaycastMode<T> SolePollingMode =>
+			solePollingMode ??= new PollingRaycastMode<T>(PollingComparer, false);
+
+		private PollingRaycastMode<T> CtrlPollingMode =>
+			ctrlPollingMode ??= new PollingRaycastMode<T>(PollingComparer, true);
+
 		private void UpdateMode()
 		{
 			RaycastMode.Value =
 				polling
 					? sole
-						? PollingRaycastMode<T>.InstanceSole
-						: PollingRaycastMode<T>.InstanceCtrl
+						? SolePollingMode
+						: CtrlPollingMode
 					: sole
 						? AllCastRaycastMode<T>.InstanceSole
 						: AllCastRaycastMode<T>.InstanceCtrl;
+		}
+
+		// System Functions
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			UpdateMode();
 		}
 	}
 }

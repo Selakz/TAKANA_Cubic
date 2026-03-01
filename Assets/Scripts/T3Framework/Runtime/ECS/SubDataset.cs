@@ -13,13 +13,13 @@ namespace T3Framework.Runtime.ECS
 	/// </summary>
 	public class SubDataset<T, TClass> : IReadOnlyDataset<T> where T : IComponent
 	{
-		private readonly IDataset<T> parentDataset;
+		private readonly IReadOnlyDataset<T> parentDataset;
 		private readonly IClassifier<TClass> classifier;
 		private readonly HashSet<TClass> targetClasses = new();
 		private readonly HashSet<T> components = new();
 
 		// TODO: Dynamically add or remove classes
-		public SubDataset(IDataset<T> parentDataset, IClassifier<TClass> classifier,
+		public SubDataset(IReadOnlyDataset<T> parentDataset, IClassifier<TClass> classifier,
 			params TClass[] targetClasses)
 		{
 			this.parentDataset = parentDataset;

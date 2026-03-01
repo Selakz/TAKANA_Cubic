@@ -14,12 +14,13 @@ namespace T3Framework.Static.Event
 		public object? LastGenericValue { get; }
 
 		public void ForceNotify();
+
+		public void AddUpNotify();
 	}
 
 	public sealed class NotifiableProperty<T> : INotifiableProperty
 	{
 		private T innerValue;
-		private readonly HashSet<NotifiableProperty<T>> connectors = new();
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -74,54 +75,9 @@ namespace T3Framework.Static.Event
 			if (!IsLastAssignmentNotified) ForceNotify();
 		}
 
-		private void OnOtherPropertyChanged(object o, PropertyChangedEventArgs args)
-		{
-			var other = (NotifiableProperty<T>)o;
-			Value = other.Value;
-		}
+		public void Dispose() => PropertyChanged = null;
 
-		/// <summary>
-		/// On connect, the caller's value will override the callee.
-		/// </summary>
-		public bool Connect(NotifiableProperty<T> other)
-		{
-			if (!connectors.Add(other) || !other.connectors.Add(this)) return false;
-			other.PropertyChanged += OnOtherPropertyChanged;
-			PropertyChanged += other.OnOtherPropertyChanged;
-			other.Value = Value;
-			return true;
-		}
-
-		public bool Disconnect(NotifiableProperty<T> other)
-		{
-			if (!connectors.Remove(other) || !other.connectors.Remove(this)) return false;
-			other.PropertyChanged -= OnOtherPropertyChanged;
-			PropertyChanged -= other.OnOtherPropertyChanged;
-			return true;
-		}
-
-		public void DisconnectAll()
-		{
-			foreach (var connector in connectors)
-			{
-				connector.connectors.Remove(this);
-				connector.PropertyChanged -= OnOtherPropertyChanged;
-				PropertyChanged -= connector.OnOtherPropertyChanged;
-			}
-
-			connectors.Clear();
-		}
-
-		public void Dispose()
-		{
-			PropertyChanged = null;
-			DisconnectAll();
-		}
-
-		public static implicit operator T(NotifiableProperty<T> property)
-		{
-			return property.Value;
-		}
+		public static implicit operator T(NotifiableProperty<T> property) => property.Value;
 
 		private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
 		{

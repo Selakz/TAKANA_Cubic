@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using Object = UnityEngine.Object;
 
 namespace T3Framework.Runtime.ECS
 {
@@ -39,6 +40,14 @@ namespace T3Framework.Runtime.ECS
 			if (!go.TryGetComponent<PrefabHandler>(out var handler)) handler = go.AddComponent<PrefabHandler>();
 			go.SetActive(isActive);
 			return handler;
+		}
+
+		public GameObject SimpleInstantiate(Transform parent, bool isActive = true)
+		{
+			Initialize();
+			var go = Object.Instantiate(Prefab, parent);
+			go.SetActive(isActive);
+			return go;
 		}
 	}
 }

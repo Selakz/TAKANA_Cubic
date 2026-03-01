@@ -5,7 +5,7 @@ using T3Framework.Runtime.Event;
 
 namespace T3Framework.Runtime.ECS
 {
-	public readonly struct ComponentRegistrar : IEventRegistrar
+	public class ComponentRegistrar : IEventRegistrar
 	{
 		private readonly IComponent component;
 		private readonly EventHandler handler;
@@ -33,7 +33,7 @@ namespace T3Framework.Runtime.ECS
 		}
 	}
 
-	public readonly struct DatasetRegistrar<T> : IEventRegistrar where T : IComponent
+	public class DatasetRegistrar<T> : IEventRegistrar where T : IComponent
 	{
 		public enum RegisterTarget
 		{

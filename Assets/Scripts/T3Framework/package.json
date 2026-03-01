@@ -1,0 +1,20 @@
+{
+  "name": "com.senolytics.t3framework",
+  "version": "0.0.0",
+  "displayName": "T3Framework",
+  "description": "Personal cross-project utility library enriched during development",
+  "unity": "2022.3",
+  "keywords": [
+    "tools",
+    "utility"
+  ],
+  "author": {
+    "name": "Senolytics"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": "2.5.10",
+    "jp.hadashikick.vcontainer": "1.17.0",
+    "com.unity.inputsystem": "1.14.0",
+    "com.unity.textmeshpro": "3.0.9"
+  }
+}

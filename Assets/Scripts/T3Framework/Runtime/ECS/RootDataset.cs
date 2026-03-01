@@ -15,6 +15,8 @@ namespace T3Framework.Runtime.ECS
 		public event Action<T>? BeforeDataRemovedInherit;
 		public event Action<T>? OnDataUpdated;
 
+		private Dictionary<object, Dictionary<HashSet<object>, IReadOnlyDataset<T>>>? subDatasets = new();
+
 		public abstract int Count { get; }
 
 		public void UnionWith(IEnumerable<T> other)
@@ -55,6 +57,19 @@ namespace T3Framework.Runtime.ECS
 			foreach (var item in list) Remove(item);
 		}
 
+		public IReadOnlyDataset<T> SubDataset<TClass>(IClassifier<TClass> classifier, params TClass[] targetClasses)
+		{
+			subDatasets ??= new();
+
+			if (!subDatasets.ContainsKey(classifier))
+				subDatasets.Add(classifier, new(SetComparer<object>.Instance));
+			var classes = new HashSet<object>(targetClasses.Cast<object>());
+			var datasets = subDatasets[classifier];
+			if (!datasets.ContainsKey(classes))
+				datasets.Add(classes, new SubDataset<T, TClass>(this, classifier, targetClasses));
+			return datasets[classes];
+		}
+
 		public abstract bool Contains(T item);
 
 		private void OnDataModelUpdated(object itemObject, EventArgs _)
@@ -82,5 +97,19 @@ namespace T3Framework.Runtime.ECS
 
 		/// <summary> Clear itself. </summary>
 		public virtual void Dispose() => Clear();
+
+		private class SetComparer<T1> : IEqualityComparer<HashSet<T1>>
+		{
+			public static SetComparer<T1> Instance => new Lazy<SetComparer<T1>>(() => new SetComparer<T1>()).Value;
+
+			public bool Equals(HashSet<T1> x, HashSet<T1> y) => x == y || x.SetEquals(y);
+
+			public int GetHashCode(HashSet<T1> set)
+			{
+				return set.Count == 0
+					? 0
+					: set.Aggregate(0, (current, item) => current ^ (item?.GetHashCode() ?? 0));
+			}
+		}
 	}
 }

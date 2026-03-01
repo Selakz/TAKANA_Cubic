@@ -1,6 +1,8 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace T3Framework.Runtime.Event
 {
@@ -11,6 +13,11 @@ namespace T3Framework.Runtime.Event
 		public UnionRegistrar(params IEventRegistrar[] registrars)
 		{
 			this.registrars = registrars;
+		}
+
+		public UnionRegistrar(Func<IEnumerable<IEventRegistrar>> factory)
+		{
+			registrars = factory.Invoke().ToArray();
 		}
 
 		public void Register()

@@ -23,6 +23,9 @@ namespace T3Framework.Runtime.ECS
 		public int Count { get; }
 
 		public bool Contains(T component);
+
+		public IReadOnlyDataset<T> SubDataset<TClass>(IClassifier<TClass> classifier, params TClass[] targetClasses) =>
+			new SubDataset<T, TClass>(this, classifier, targetClasses);
 	}
 
 	public interface IDataset<T> : IReadOnlyDataset<T> where T : IComponent

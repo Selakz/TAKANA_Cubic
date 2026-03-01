@@ -9,19 +9,21 @@ namespace T3Framework.Preset.Select
 {
 	public class PollingRaycastMode<T> : ISelectRaycastMode<T> where T : IComponent
 	{
-		private static readonly IComparer<KeyValuePair<RaycastHit, T>> comparer =
-			Comparer<KeyValuePair<RaycastHit, T>>.Create(
-				(x, y) => x.Key.colliderInstanceID.CompareTo(y.Key.colliderInstanceID));
-
+		private readonly IComparer<KeyValuePair<RaycastHit, T>> comparer;
 		private readonly bool isCtrl;
 
-		private PollingRaycastMode(bool isCtrl) => this.isCtrl = isCtrl;
-
 		public static PollingRaycastMode<T> InstanceSole { get; } =
-			new Lazy<PollingRaycastMode<T>>(() => new(false)).Value;
+			new Lazy<PollingRaycastMode<T>>(() => new()).Value;
 
 		public static PollingRaycastMode<T> InstanceCtrl { get; } =
-			new Lazy<PollingRaycastMode<T>>(() => new(true)).Value;
+			new Lazy<PollingRaycastMode<T>>(() => new(null, true)).Value;
+
+		public PollingRaycastMode(IComparer<KeyValuePair<RaycastHit, T>>? comparer = null, bool isCtrl = false)
+		{
+			this.comparer = comparer ?? Comparer<KeyValuePair<RaycastHit, T>>.Create(
+				(x, y) => x.Key.colliderInstanceID.CompareTo(y.Key.colliderInstanceID));
+			this.isCtrl = isCtrl;
+		}
 
 		public void HandleSelect(ISelectDataset<T> dataset, KeyValuePair<RaycastHit, T>[] hitData, int length = -1)
 		{

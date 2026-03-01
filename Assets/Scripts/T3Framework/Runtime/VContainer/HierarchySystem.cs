@@ -12,6 +12,9 @@ namespace T3Framework.Runtime.VContainer
 		// TODO: Use key to register component after VContainer supports it
 		public virtual string? Key => null;
 
+		public virtual bool AsImplementedInterfaces => false;
+
+		// TODO: refactor it to NotifiableProperty<bool>
 		public bool IsEnabled
 		{
 			get => gameObject.activeInHierarchy;
@@ -28,7 +31,11 @@ namespace T3Framework.Runtime.VContainer
 		// Constructor
 		public virtual void SelfInstall(IContainerBuilder builder)
 		{
-			if (this is T self) builder.RegisterComponent(self).AsSelf();
+			if (this is T self)
+			{
+				var registration = builder.RegisterComponent(self).AsSelf();
+				if (AsImplementedInterfaces) registration.AsImplementedInterfaces();
+			}
 		}
 	}
 }

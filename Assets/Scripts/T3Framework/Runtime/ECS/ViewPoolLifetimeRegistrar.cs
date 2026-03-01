@@ -10,13 +10,16 @@ namespace T3Framework.Runtime.ECS
 	{
 		private readonly IViewPool<T> viewPool;
 		private readonly Func<PrefabHandler, IEventRegistrar> registrarFactory;
+		private readonly bool isCovering;
+
 		private readonly Dictionary<PrefabHandler, IEventRegistrar> registrars = new();
 
 		public ViewPoolLifetimeRegistrar
-			(IViewPool<T> viewPool, Func<PrefabHandler, IEventRegistrar> registrarFactory)
+			(IViewPool<T> viewPool, Func<PrefabHandler, IEventRegistrar> registrarFactory, bool isCovering = false)
 		{
 			this.viewPool = viewPool;
 			this.registrarFactory = registrarFactory;
+			this.isCovering = isCovering;
 		}
 
 		public void OnGet(object sender, PrefabHandler handler)
@@ -35,6 +38,14 @@ namespace T3Framework.Runtime.ECS
 		{
 			viewPool.OnGet += OnGet;
 			viewPool.OnRelease += OnRelease;
+			if (isCovering)
+			{
+				foreach (var component in viewPool)
+				{
+					var handler = viewPool[component]!;
+					OnGet(this, handler);
+				}
+			}
 		}
 
 		public void Unregister()
