@@ -1,7 +1,9 @@
 #nullable enable
 
 using MusicGame.ChartEditor.InScreenEdit.Grid;
+using MusicGame.Models;
 using T3Framework.Runtime;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
@@ -10,10 +12,16 @@ using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
+	public enum SingleNotePlaceType
+	{
+		SelectedTrack,
+		NearestTrack
+	}
+
 	public class InScreenEditInstaller : HierarchyInstaller
 	{
+		// Serializable and Public
 		[SerializeField] private SequencePriority defaultModule = default!;
-		[SerializeField] private SequencePriority chartEditPriority = default!;
 
 		public override void SelfInstall(IContainerBuilder builder)
 		{
@@ -29,9 +37,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 
 			builder.RegisterEntryPoint<ChartEditSystem>()
 				.AsSelf();
-			builder.RegisterEntryPoint<ChartEditInputSystem>()
-				.AsSelf()
-				.WithParameter("chartEditPriority", chartEditPriority.Value);
+
+			// Note Editing
+			builder.RegisterNotifiableProperty(T3Flag.Tap);
+			builder.RegisterNotifiableProperty(SingleNotePlaceType.SelectedTrack);
+			builder.Register<IDataset<NoteRawInfo>, HashDataset<NoteRawInfo>>(Lifetime.Singleton);
+
+			// Track Editing
+			builder.Register<IDataset<TrackRawInfo>, HashDataset<TrackRawInfo>>(Lifetime.Singleton);
 
 			// ModuleInfo
 			builder.Register<ModuleInfo>(Lifetime.Singleton)

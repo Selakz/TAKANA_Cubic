@@ -15,9 +15,6 @@ namespace MusicGame.ChartEditor.Select
 {
 	public class SelectInstaller : HierarchyInstaller
 	{
-		[Header("Select Raycast")] [SerializeField]
-		private InspectorDictionary<T3Flag, ChartRaycastConfig> raycastConfig = new();
-
 		[Header("Select Collider")] [SerializeField]
 		private Transform colliderRoot = default!;
 
@@ -32,11 +29,6 @@ namespace MusicGame.ChartEditor.Select
 			// SelectInputSystem
 			builder.RegisterInstance(new NotifiableProperty<ISelectRaycastMode<ChartComponent>>
 				(PollingRaycastMode<ChartComponent>.InstanceSole)).AsSelf();
-			builder.RegisterInstance(raycastConfig.Value)
-				.AsSelf()
-				.Keyed("select-input");
-			builder.RegisterEntryPoint<SelectInputSystem>()
-				.AsSelf();
 
 			// SelectColliderPluginSystem
 			builder.Register<IViewPool<ChartComponent>, ViewPool<ChartComponent>>(Lifetime.Singleton)

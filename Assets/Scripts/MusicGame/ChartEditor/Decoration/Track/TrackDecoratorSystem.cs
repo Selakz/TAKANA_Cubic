@@ -13,12 +13,10 @@ namespace MusicGame.ChartEditor.Decoration.Track
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new DatasetRegistrar<ChartComponent>(trackDataset,
-				DatasetRegistrar<ChartComponent>.RegisterTarget.DataAdded,
-				component => decoratorPool.Add(component)),
-			new DatasetRegistrar<ChartComponent>(trackDataset,
-				DatasetRegistrar<ChartComponent>.RegisterTarget.DataRemoved,
-				component => decoratorPool.Remove(component))
+			new DatasetLifetimeRegistrar<ChartComponent>(trackDataset,
+				component => new CustomRegistrar(
+					() => decoratorPool.Add(component),
+					() => decoratorPool.Remove(component)), true)
 		};
 
 		// Private

@@ -91,7 +91,7 @@ namespace MusicGame.ChartEditor.TrackLine
 					if (command.SetInit(track)) commandManager.Add(command);
 					return false;
 				}),
-			new InputRegistrar("InScreenEdit", "Delete", "delete", chartEditPriority.Value,
+			new InputRegistrar("InScreenEdit", "Delete", chartEditPriority.Value,
 				() =>
 				{
 					if (nodeSelectDataset.Count == 0) return true;

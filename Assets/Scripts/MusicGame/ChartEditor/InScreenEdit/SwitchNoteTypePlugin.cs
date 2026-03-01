@@ -5,6 +5,7 @@ using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
 using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
 using VContainer;
 using VContainer.Unity;
 
@@ -19,13 +20,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		};
 
 		// Private
-		private ChartEditInputSystem system = default!;
+		private NotifiableProperty<T3Flag> noteType = default!;
 
 		// Defined Functions
 		[Inject]
-		private void Construct(ChartEditInputSystem system)
+		private void Construct(
+			NotifiableProperty<T3Flag> noteType)
 		{
-			this.system = system;
+			this.noteType = noteType;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
@@ -33,14 +35,14 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		// Event Handlers
 		private void SwitchNoteType()
 		{
-			var newNoteType = system.NoteType.Value switch
+			var newNoteType = noteType.Value switch
 			{
 				T3Flag.Tap => T3Flag.Slide,
 				T3Flag.Slide => T3Flag.Hold,
 				T3Flag.Hold => T3Flag.Tap,
 				_ => T3Flag.Tap
 			};
-			system.NoteType.Value = newNoteType;
+			noteType.Value = newNoteType;
 		}
 	}
 }

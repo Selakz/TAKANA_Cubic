@@ -19,10 +19,13 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			value => CurrentModule.Value = value,
 			_ => defaultModule);
 
-
 		public ModuleInfo(int defaultModule)
 		{
 			this.defaultModule = defaultModule;
 		}
+
+		public void Register(int moduleId) => ModuleModifier.Assign(moduleId, moduleId);
+
+		public void Unregister(int moduleId) => ModuleModifier.Unregister(moduleId);
 	}
 }

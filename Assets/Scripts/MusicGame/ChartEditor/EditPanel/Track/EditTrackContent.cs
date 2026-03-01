@@ -8,6 +8,8 @@ using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
 using MusicGame.ChartEditor.TrackLayer;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Models;
+using MusicGame.Models.Note;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.ECS;
@@ -144,7 +146,8 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 						var newLayer = layerIds![newValue];
 						if (component.BelongingChart?.GetsLayersInfo() is not { } layersInfo) return;
 						if (layersInfo[newLayer] is not { } newInfo) return;
-						if (newInfo.IsDecoration && component.Children.Count > 0)
+						if (newInfo.IsDecoration &&
+						    component.Children.Any(c => c.Model is INote && !c.Model.IsEditorOnly()))
 						{
 							T3Logger.Log("Notice", "TrackLayer_Decoration_SetDecorationFail", T3LogType.Warn);
 							editTrackContent.LayerDropdown.SetValueWithoutNotify(Array.IndexOf(layerIds, oldLayer));

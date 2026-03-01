@@ -127,6 +127,7 @@ namespace MusicGame.Gameplay.Chart
 				}
 			}
 
+			if (chartInfo.Count > 0) chartInfo.generalId = chartInfo.Max(component => component.Id) + 1;
 			return chartInfo;
 		}
 

@@ -1,6 +1,6 @@
 #nullable enable
 
-using MusicGame.ChartEditor.Decoration.Track;
+using MusicGame.ChartEditor.TrackLayer;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Speed;

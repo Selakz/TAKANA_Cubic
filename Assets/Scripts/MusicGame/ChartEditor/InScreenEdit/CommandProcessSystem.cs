@@ -5,6 +5,7 @@ using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
 using T3Framework.Runtime;
@@ -42,6 +43,16 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				{
 					selectDataset.Clear();
 					var list = components.ToList();
+					list.RemoveAll(component =>
+					{
+						if (component.Model.IsEditorOnly())
+						{
+							component.BelongingChart = null;
+							return true;
+						}
+
+						return false;
+					});
 					if (list.Any(component => component.Model is ITrack))
 					{
 						foreach (var track in list.Where(component => component.Model is ITrack))

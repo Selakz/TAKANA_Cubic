@@ -18,42 +18,33 @@ namespace MusicGame.ChartEditor.TrackLine.Preview
 	{
 		// Serializable and Public
 		[SerializeField] private SequencePriority nodePreviewModuleId = default!;
-		[SerializeField] private SequencePriority nodePreviewModulePriority = default!;
 		[SerializeField] private SequencePriority nodeDragModuleId = default!;
-		[SerializeField] private SequencePriority nodeDragModulePriority = default!;
 		[SerializeField] private SequencePriority copyPasteModuleId = default!;
-		[SerializeField] private SequencePriority copyPasteModulePriority = default!;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<ChartComponent?>(chartSelectDataset.CurrentSelecting,
-				() => { moduleInfo.ModuleModifier.Unregister(nodePreviewModulePriority); }),
+				() => moduleInfo.Unregister(nodePreviewModuleId)),
 			new PropertyRegistrar<EdgeNodeComponent?>(nodeSelectDataset.CurrentSelecting, () =>
 			{
 				if (nodeSelectDataset.CurrentSelecting.LastValue is null &&
 				    nodeSelectDataset.CurrentSelecting.Value is not null)
 				{
-					moduleInfo.ModuleModifier.Assign(nodePreviewModuleId, nodePreviewModulePriority);
+					moduleInfo.Register(nodePreviewModuleId);
 				}
 			}),
 			new PropertyRegistrar<bool>(nodeDragPlugin.IsDragging, () =>
 			{
 				var value = nodeDragPlugin.IsDragging.Value;
-				if (value) moduleInfo.ModuleModifier.Assign(nodeDragModuleId, nodeDragModulePriority);
-				else moduleInfo.ModuleModifier.Unregister(nodeDragModulePriority);
+				if (value) moduleInfo.Register(nodeDragModuleId);
+				else moduleInfo.Unregister(nodeDragModuleId);
 			}),
 			new PropertyRegistrar<NodeCopyPastePlugin.PasteMode>(nodeCopyPastePlugin.Mode, () =>
 			{
 				var mode = nodeCopyPastePlugin.Mode.Value;
-				if (mode != NodeCopyPastePlugin.PasteMode.None)
-				{
-					moduleInfo.ModuleModifier.Register(_ => copyPasteModuleId.Value, copyPasteModulePriority.Value);
-				}
-				else
-				{
-					moduleInfo.ModuleModifier.Unregister(copyPasteModulePriority.Value);
-				}
+				if (mode != NodeCopyPastePlugin.PasteMode.None) moduleInfo.Register(copyPasteModuleId);
+				else moduleInfo.Unregister(copyPasteModuleId);
 			})
 		};
 

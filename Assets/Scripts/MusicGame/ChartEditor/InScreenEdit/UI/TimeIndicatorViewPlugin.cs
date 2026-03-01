@@ -8,6 +8,7 @@ using T3Framework.Runtime.Event;
 using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
+using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -20,6 +21,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 		[SerializeField] private Color legalColor;
 		[SerializeField] private Color illegalColor;
 		[SerializeField] private Color pastingColor;
+
+		[SerializeField] private SequencePriorities copyPasteModules = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -39,53 +42,58 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 					timeIndicator.TextModifier.Unregister(2);
 				}
 			}),
-			new PropertyRegistrar<CopyPastePlugin.PasteMode>(copyPastePlugin.Mode, () =>
-			{
-				var mode = copyPastePlugin.Mode.Value;
-				var isPasting = mode != CopyPastePlugin.PasteMode.None;
-				if (isPasting)
-				{
-					var pasteText = I18NSystem.GetText(mode switch
-					{
-						CopyPastePlugin.PasteMode.NormalPaste => "Edit_CopyPaste_Pasting",
-						CopyPastePlugin.PasteMode.ExactPaste => "Edit_CopyPaste_ExactPasting",
-						_ => "Fallback"
-					});
-					timeIndicator.ColorModifier.Register(_ => pastingColor, 1);
-					timeIndicator.TextModifier.Register(text => $"{pasteText} - {text}", 1);
-				}
-				else
-				{
-					timeIndicator.ColorModifier.Unregister(1);
-					timeIndicator.TextModifier.Unregister(1);
-				}
-			})
+			new PropertyRegistrar<int>(moduleInfo.CurrentModule, UpdateCopyPasteView),
+			new PropertyRegistrar<PasteMode>(pasteMode, UpdateCopyPasteView)
 		};
 
 		// Private
+		private ModuleInfo moduleInfo = default!;
 		private StageMouseTimeRetriever timeRetriever = default!;
 		private TimeIndicator timeIndicator = default!;
 		private NoteDragPlugin noteDragPlugin = default!;
-		private CopyPastePlugin copyPastePlugin = default!;
+		private NotifiableProperty<PasteMode> pasteMode = default!;
 
 		private Color? draggingColor = new(0.4f, 0.9f, 0.5f);
 		private bool shouldUpdateDraggingView = false;
 
-		// Defined Functions
+		// Constructor
 		[Inject]
 		private void Construct(
+			ModuleInfo moduleInfo,
 			StageMouseTimeRetriever timeRetriever,
 			TimeIndicator timeIndicator,
 			NoteDragPlugin noteDragPlugin,
-			CopyPastePlugin copyPastePlugin)
+			NotifiableProperty<PasteMode> pasteMode)
 		{
+			this.moduleInfo = moduleInfo;
 			this.timeRetriever = timeRetriever;
 			this.timeIndicator = timeIndicator;
 			this.noteDragPlugin = noteDragPlugin;
-			this.copyPastePlugin = copyPastePlugin;
+			this.pasteMode = pasteMode;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+
+		// Defined Functions
+		private void UpdateCopyPasteView()
+		{
+			if (copyPasteModules.Values.All(id => id != moduleInfo.CurrentModule))
+			{
+				timeIndicator.ColorModifier.Unregister(1);
+				timeIndicator.TextModifier.Unregister(1);
+				return;
+			}
+
+			var mode = pasteMode.Value;
+			var pasteText = I18NSystem.GetText(mode switch
+			{
+				PasteMode.NormalPaste => "Edit_CopyPaste_Pasting",
+				PasteMode.ExactPaste => "Edit_CopyPaste_ExactPasting",
+				_ => "Fallback"
+			});
+			timeIndicator.ColorModifier.Register(_ => pastingColor, 1);
+			timeIndicator.TextModifier.Register(text => $"{pasteText} - {text}", 1);
+		}
 
 		// System Functions
 		void Update()

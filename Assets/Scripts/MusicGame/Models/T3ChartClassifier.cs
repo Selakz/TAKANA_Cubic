@@ -22,6 +22,8 @@ namespace MusicGame.Models
 
 	public class T3ChartClassifier : IClassifier<T3Flag>
 	{
+		public static T3ChartClassifier Instance { get; } = new Lazy<T3ChartClassifier>(() => new()).Value;
+
 		public T3Flag Classify(IComponent component)
 		{
 			if (component is not ChartComponent chartComponent) return T3Flag.None;

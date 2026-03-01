@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace MusicGame.ChartEditor.Decoration.Track
+namespace MusicGame.ChartEditor.TrackLayer
 {
 	public class TrackDecorator : MonoBehaviour
 	{

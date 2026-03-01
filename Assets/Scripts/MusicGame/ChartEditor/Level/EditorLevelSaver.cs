@@ -83,6 +83,7 @@ namespace MusicGame.ChartEditor.Level
 		{
 			if (levelInfo.Value is not { } info) return;
 			ChartInfo chart = GetPlayableChart(info.Chart);
+			ReassignIds(chart);
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
 			var chartName = projectSetting.GetChartFileName(info.Difficulty);
 			var token = chart.GetSerializationToken();
@@ -96,6 +97,7 @@ namespace MusicGame.ChartEditor.Level
 		{
 			if (levelInfo.Value is not { } info) return;
 			ChartInfo chart = (IChartSerializable.Clone(info.Chart) as ChartInfo)!;
+			ReassignIds(chart);
 			List<ChartComponent> toRemove = chart.Where(component => component.Model.IsEditorOnly()).ToList();
 			foreach (var component in toRemove) chart.RemoveComponent(component);
 
@@ -122,6 +124,23 @@ namespace MusicGame.ChartEditor.Level
 			EditorPreference preference = info.Preference as EditorPreference ?? new();
 			preference.BpmList = info.Chart.GetsBpmList().ToDictionary();
 			ISetting<EditorPreference>.Save(preference, preferencePath);
+		}
+
+		private static void ReassignIds(ChartInfo chart)
+		{
+			int maxId = chart.Max(component => component.Id);
+			foreach (var component in chart)
+			{
+				if (component.Parent is null) AssignIdsRecursively(component);
+			}
+
+			return;
+
+			void AssignIdsRecursively(ChartComponent component)
+			{
+				if (component.Id == 0) component.Id = ++maxId;
+				foreach (var child in component.Children) AssignIdsRecursively(child);
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@ using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
-	public class HoldEditPlugin : T3MonoBehaviour, ISelfInstaller
+	public class HoldEditInputSystem : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -34,17 +34,20 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
 		private ChartEditSystem system = default!;
 		private ChartSelectDataset dataset = default!;
+		private CommandManager commandManager = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
 			NotifiableProperty<ITimeRetriever> timeRetriever,
 			ChartEditSystem system,
-			ChartSelectDataset dataset)
+			ChartSelectDataset dataset,
+			CommandManager commandManager)
 		{
 			this.timeRetriever = timeRetriever;
 			this.system = system;
 			this.dataset = dataset;
+			this.commandManager = commandManager;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
@@ -65,7 +68,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				}
 			}
 
-			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToNext"));
+			commandManager.Add(new BatchCommand(commands, "HoldEndToNext"));
 		}
 
 		private void HoldEndToPrevious()
@@ -83,7 +86,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				}
 			}
 
-			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToPrevious"));
+			commandManager.Add(new BatchCommand(commands, "HoldEndToPrevious"));
 		}
 
 		private void HoldEndToNextBeat()
@@ -101,7 +104,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				}
 			}
 
-			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToNextBeat"));
+			commandManager.Add(new BatchCommand(commands, "HoldEndToNextBeat"));
 		}
 
 		private void HoldEndToPreviousBeat()
@@ -119,7 +122,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				}
 			}
 
-			CommandManager.Instance.Add(new BatchCommand(commands, "HoldEndToPreviousBeat"));
+			commandManager.Add(new BatchCommand(commands, "HoldEndToPreviousBeat"));
 		}
 
 		private void CreateHoldBetween()
@@ -128,8 +131,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			var notes = dataset.ToArray();
 
 			var command = new CreateHoldBetweenCommand(notes[0], notes[1]);
-			if (!command.SetInit()) return;
-			CommandManager.Instance.Add(command);
+			if (command.SetInit()) commandManager.Add(command);
 		}
 	}
 }

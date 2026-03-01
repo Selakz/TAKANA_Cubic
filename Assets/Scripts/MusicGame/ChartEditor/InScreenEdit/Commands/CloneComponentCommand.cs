@@ -22,9 +22,18 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 		private readonly Action<ChartComponent>? postAction;
 		private readonly List<ChartComponent> clonedComponents = new();
 
-		public CloneComponentCommand(ChartComponent component, Action<ChartComponent>? postAction = null)
+		public CloneComponentCommand(
+			ChartComponent component, Action<ChartComponent>? postAction = null)
 		{
 			chart = component.BelongingChart;
+			this.component = component;
+			this.postAction = postAction;
+		}
+
+		public CloneComponentCommand(
+			ChartComponent component, ChartInfo? chart, Action<ChartComponent>? postAction = null)
+		{
+			this.chart = chart;
 			this.component = component;
 			this.postAction = postAction;
 		}

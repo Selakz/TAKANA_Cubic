@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
@@ -80,7 +81,7 @@ namespace MusicGame.ChartEditor.TrackLayer
 				{
 					if (component.Model is not ITrack track || track.GetLayerId() != layer.Model.Id) continue;
 					var children = component.Children;
-					if (children.Any(c => c.Model is INote))
+					if (children.Any(c => c.Model is INote && !c.Model.IsEditorOnly()))
 					{
 						T3Logger.Log("Notice",
 							$"TrackLayer_Decoration_SetTrueFailForNote|{component.Id}", T3LogType.Warn);
