@@ -8532,9 +8532,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b931c0c9e1427e8b1883f9a9122458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chartEditPriority:
-    config: {fileID: 11400000, guid: acf3ffa4f6c080b4bb33851054477722, type: 2}
-    id: note
 --- !u!1 &242169537
 GameObject:
   m_ObjectHideFlags: 0
@@ -54208,6 +54205,7 @@ Transform:
   - {fileID: 1699929495}
   - {fileID: 2042084251}
   - {fileID: 2078033886}
+  - {fileID: 1968223714}
   - {fileID: 241005240}
   - {fileID: 2117070059}
   - {fileID: 589021304}
@@ -69385,6 +69383,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963456158}
   m_CullTransparentMesh: 1
+--- !u!1 &1968223713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1968223714}
+  - component: {fileID: 1968223715}
+  m_Layer: 0
+  m_Name: DeleteInputSystem - S
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1968223714
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968223713}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1552120982}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1968223715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968223713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d34adb5b216b4f45a784511198b739cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moduleIds:
+    config: {fileID: 11400000, guid: acf3ffa4f6c080b4bb33851054477722, type: 2}
+    ids:
+    - note
 --- !u!1 &1968637970
 GameObject:
   m_ObjectHideFlags: 0

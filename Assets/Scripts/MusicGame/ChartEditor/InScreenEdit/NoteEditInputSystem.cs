@@ -7,7 +7,6 @@ using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Models.Note;
-using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
@@ -21,9 +20,6 @@ namespace MusicGame.ChartEditor.InScreenEdit
 {
 	public class NoteEditInputSystem : HierarchySystem<NoteEditInputSystem>
 	{
-		// Serializable and Public
-		[SerializeField] private SequencePriority chartEditPriority = default!;
-
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -45,12 +41,6 @@ namespace MusicGame.ChartEditor.InScreenEdit
 					}
 
 					commandManager.Add(new BatchCommand(commands, "Create"));
-				}),
-			new InputRegistrar("InScreenEdit", "Delete",
-				() =>
-				{
-					var command = system.DeleteSelected();
-					if (command is not null) commandManager.Add(command);
 				}),
 			new InputRegistrar("InScreenEdit", "ToNext",
 				() =>
