@@ -1,26 +1,31 @@
 #nullable enable
 
 using System.Collections.Generic;
-using T3Framework.Runtime;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Input;
-using T3Framework.Runtime.Log;
+using T3Framework.Runtime.Movement;
+using T3Framework.Runtime.Serialization.Inspector;
+using T3Framework.Runtime.Threading;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
-using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine.UI
 {
-	public class EaseSwitcher : T3MonoBehaviour, ISelfInstaller
+	public class EaseSwitcher : HierarchySystem<EaseSwitcher>
 	{
 		// Serializable and Public
-		[SerializeField] private GameObject headerCurveTextObject = default!;
-		[SerializeField] private TMP_Text currentCurveText = default!;
+		[SerializeField] private InspectorDictionary<int, Toggle> easeToggles = default!;
+		[SerializeField] private int closeDelayMs = 1500;
+		[SerializeField] private RectTransform panelRoot = default!;
+		[SerializeField] private FloatMovementContainer openMovement = default!;
+		[SerializeField] private FloatMovementContainer closeMovement = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -34,27 +39,40 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 			new InputRegistrar("CurveSwitch", "SwitchToBack", () => ChangeEase(8)),
 			new InputRegistrar("CurveSwitch", "SwitchToElastic", () => ChangeEase(9)),
 			new InputRegistrar("CurveSwitch", "SwitchToBounce", () => ChangeEase(0)),
-			new InputRegistrar("CurveSwitch", "CheckCurve", CheckEase, InputActionPhase.Started),
-			new InputRegistrar("CurveSwitch", "CheckCurve", HideEase, InputActionPhase.Performed),
-			new InputRegistrar("CurveSwitch", "CheckCurve", HideEase, InputActionPhase.Canceled),
+			new InputRegistrar("CurveSwitch", "CheckCurve", CheckEase),
+
+			new PropertyRegistrar<int>(easeId, id =>
+			{
+				easeToggles.Value[id].SetIsOnWithoutNotify(true);
+				if (easeToggles.Value.Values.Any(t => t.gameObject == EventSystem.current.currentSelectedGameObject))
+				{
+					EventSystem.current.SetSelectedGameObject(easeToggles.Value[id].gameObject);
+				}
+			}),
+			new UnionRegistrar(() =>
+			{
+				List<IEventRegistrar> registrars = new(easeToggles.Value.Count);
+				foreach (var (id, toggle) in easeToggles.Value)
+				{
+					registrars.Add(new ToggleRegistrar(toggle, isOn =>
+					{
+						if (isOn)
+						{
+							closeRcts.CancelAndReset();
+							ChangeEase(id);
+						}
+					}));
+				}
+
+				return registrars;
+			})
 		};
 
 		// Private
-		private readonly Dictionary<int, string> easeIdToName = new()
-		{
-			{ 1, "Sine" },
-			{ 2, "Quad" },
-			{ 3, "Cubic" },
-			{ 4, "Quart" },
-			{ 5, "Quint" },
-			{ 6, "Expo" },
-			{ 7, "Circ" },
-			{ 8, "Back" },
-			{ 9, "Elastic" },
-			{ 0, "Bounce" },
-		};
+		private readonly ReusableCancellationTokenSource closeRcts = new();
 
 		private NotifiableProperty<int> easeId = default!;
+		private bool isOpening = false;
 
 		// Defined Functions
 		[Inject]
@@ -64,24 +82,40 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 			this.easeId = easeId;
 		}
 
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
 		// Event Handlers
 		private void ChangeEase(int id)
 		{
 			easeId.Value = id;
-			T3Logger.Log("Notice", $"TrackLine_ChangeEase|{easeIdToName[id]}", T3LogType.Info);
+			Open();
+			WaitForClose();
 		}
 
 		private void CheckEase()
 		{
-			currentCurveText.text = I18NSystem.GetText("TrackLine_CheckEase", easeIdToName[easeId]);
-			headerCurveTextObject.SetActive(true);
+			Open();
+			WaitForClose();
 		}
 
-		private void HideEase()
+		private void Open()
 		{
-			headerCurveTextObject.SetActive(false);
+			if (isOpening) return;
+			isOpening = true;
+			easeToggles.Value[easeId.Value].SetIsOnWithoutNotify(true);
+			EventSystem.current.SetSelectedGameObject(easeToggles.Value[easeId.Value].gameObject);
+			openMovement.Move(() => panelRoot.anchoredPosition.y, y => panelRoot.anchoredPosition = new Vector2(0, y));
+		}
+
+		private void Close()
+		{
+			isOpening = false;
+			closeRcts.CancelAndReset();
+			closeMovement.Move(() => panelRoot.anchoredPosition.y, y => panelRoot.anchoredPosition = new Vector2(0, y));
+			EventSystem.current.SetSelectedGameObject(null);
+		}
+
+		private void WaitForClose()
+		{
+			UniTask.Delay(closeDelayMs, cancellationToken: closeRcts.Token).ContinueWith(Close).Forget();
 		}
 	}
 }
