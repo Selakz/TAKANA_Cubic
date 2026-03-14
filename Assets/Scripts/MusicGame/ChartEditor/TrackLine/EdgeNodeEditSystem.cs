@@ -12,10 +12,12 @@ using MusicGame.ChartEditor.TrackLine.Commands;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using MusicGame.Models.Track.Movement;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Input;
+using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Easing;
@@ -142,6 +144,12 @@ namespace MusicGame.ChartEditor.TrackLine
 						select command)
 					.Cast<ICommand>().ToList();
 				commandManager.Add(new BatchCommand(commands, "Delete Nodes"));
+			}),
+
+			new PropertyRegistrar<int>(currentEaseId, id =>
+			{
+				ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId.Value = id;
+				ISingletonSetting<TrackLineSetting>.SaveInstance();
 			})
 		};
 
