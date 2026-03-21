@@ -18,5 +18,7 @@ MonoBehaviour:
       value: 0
     - key: track-layer
       value: 1
-    - key: select
+    - key: hold-order
       value: 2
+    - key: select
+      value: 3
