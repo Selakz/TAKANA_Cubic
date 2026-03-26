@@ -65,7 +65,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 			{
 				oldHoldTimeEnd = hold1.TimeEnd;
 				note2.BelongingChart = null;
-				note1.UpdateModel(_ => hold1.TimeEnd = model2!.TimeJudge);
+				note1.UpdateModel(_ => hold1.NudgeEnd(model2!.TimeJudge - oldHoldTimeEnd));
 			}
 			else
 			{
@@ -75,8 +75,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 					note1.BelongingChart = null;
 					note2.UpdateModel(_ =>
 					{
-						hold2.TimeEnd = hold2.TimeJudge;
-						hold2.TimeJudge = model1!.TimeJudge;
+						hold2.NudgeEnd(hold2.TimeJudge - hold2.TimeEnd);
+						hold2.NudgeJudge(model1!.TimeJudge - hold2.TimeJudge);
 					});
 				}
 				else
@@ -101,7 +101,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 		{
 			if (model1 is Hold hold1)
 			{
-				note1.UpdateModel(_ => hold1.TimeEnd = oldHoldTimeEnd);
+				note1.UpdateModel(_ => hold1.NudgeEnd(oldHoldTimeEnd - hold1.TimeEnd));
 				note2.BelongingChart = chart;
 				note2.Parent = note1.Parent;
 			}
@@ -111,8 +111,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 				{
 					note2.UpdateModel(_ =>
 					{
-						hold2.TimeJudge = hold2.TimeEnd;
-						hold2.TimeEnd = oldHoldTimeEnd;
+						hold2.NudgeJudge(hold2.TimeEnd - hold2.TimeJudge);
+						hold2.NudgeEnd(oldHoldTimeEnd - hold2.TimeEnd);
 					});
 					note1.BelongingChart = chart;
 					note1.Parent = note2.Parent;
