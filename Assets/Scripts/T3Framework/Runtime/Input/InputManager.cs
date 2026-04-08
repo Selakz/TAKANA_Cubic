@@ -53,6 +53,11 @@ namespace T3Framework.Runtime.Input
 
 					ActionAsset.Enable();
 				}
+			}),
+			new PropertyRegistrar<bool>(GlobalInputEnabled, value =>
+			{
+				if (value) ActionAsset?.Enable();
+				else ActionAsset?.Disable();
 			})
 		};
 

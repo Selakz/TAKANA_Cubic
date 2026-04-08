@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace T3Framework.Static
 {
@@ -28,7 +29,8 @@ namespace T3Framework.Static
 		{
 			var stopPriority = 0;
 			var shouldContinue = true;
-			foreach (var (priority, tuple) in priorityFunctions)
+			// Have to copy the array, because one function might cause others to register or unregister.
+			foreach (var (priority, tuple) in priorityFunctions.ToArray())
 			{
 				if (shouldContinue)
 				{
