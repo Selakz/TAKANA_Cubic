@@ -8,7 +8,7 @@ using UnityEngine;
 namespace MusicGame.ChartEditor.TrackLine
 {
 	// TODO: Make it abstract and support other form of movement
-	public class PositionNodeView : MonoBehaviour
+	public class PositionNodeView : MonoBehaviour, INodeView
 	{
 		// Serializable and Public
 		[field: SerializeField]
@@ -118,6 +118,13 @@ namespace MusicGame.ChartEditor.TrackLine
 				next.x - current.x, next.y - current.y,
 				logicLinePrecision, maxSegment);
 			LineCollider.sharedMesh = logicMesh;
+		}
+
+		// System Functions
+		void Awake()
+		{
+			LineRenderer.sortingLayerID = NodeRenderer.sortingLayerID;
+			LineRenderer.sortingOrder = NodeRenderer.sortingOrder;
 		}
 	}
 }

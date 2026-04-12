@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime.ECS;
@@ -55,41 +56,48 @@ namespace MusicGame.ChartEditor.Decoration.Track
 
 			// Track's TrackDirectMovement's ChartPosMoveList's IPositionMoveItem Decorator (Again a four-layer nesting!!)
 			directNodePool.Register<ViewPool<DirectNodeComponent, NodeClassifyType>, DirectNodeComponent>(
-				builder, Lifetime.Singleton, new NodeClassifier());
+				builder, Lifetime.Singleton, NodeClassifier.Instance);
 		}
 	}
 
+	[Flags]
 	public enum NodeClassifyType
 	{
-		None,
-		Ease,
-		Bezier
+		None = 0,
+		Ease = 1,
+		Bezier = 1 << 1,
+		Width = 1 << 2,
+		Position = 1 << 3
 	}
 
 	public class NodeClassifier : IClassifier<NodeClassifyType>
 	{
+		public static NodeClassifier Instance { get; } = new();
+
 		public NodeClassifyType Classify(IComponent component)
 		{
 			return component switch
 			{
 				EdgeNodeComponent edgeNode => edgeNode.Model switch
 				{
-					V1EMoveItem => NodeClassifyType.Ease,
-					V1BMoveItem => NodeClassifyType.Bezier,
+					V1EMoveItem => NodeClassifyType.Ease | NodeClassifyType.Position,
+					V1BMoveItem => NodeClassifyType.Bezier | NodeClassifyType.Position,
 					_ => NodeClassifyType.None
 				},
 				DirectNodeComponent directNode => directNode.Model switch
 				{
-					V1EMoveItem => NodeClassifyType.Ease,
-					V1BMoveItem => NodeClassifyType.Bezier,
+					V1EMoveItem when directNode.Locator.IsPos => NodeClassifyType.Ease | NodeClassifyType.Position,
+					V1EMoveItem when !directNode.Locator.IsPos => NodeClassifyType.Ease | NodeClassifyType.Width,
+					V1BMoveItem when directNode.Locator.IsPos => NodeClassifyType.Bezier | NodeClassifyType.Position,
+					V1BMoveItem when !directNode.Locator.IsPos => NodeClassifyType.Bezier | NodeClassifyType.Width,
 					_ => NodeClassifyType.None
 				},
 				_ => NodeClassifyType.None
 			};
 		}
 
-		public bool IsOfType(IComponent component, NodeClassifyType type) => Classify(component) == type;
+		public bool IsOfType(IComponent component, NodeClassifyType type) => Classify(component).HasFlag(type);
 
-		public bool IsSubType(NodeClassifyType subType, NodeClassifyType type) => subType == type;
+		public bool IsSubType(NodeClassifyType subType, NodeClassifyType type) => type.HasFlag(subType);
 	}
 }

@@ -7,6 +7,7 @@ using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using UnityEngine.EventSystems;
 using VContainer;
 using VContainer.Unity;
 
@@ -19,6 +20,7 @@ namespace MusicGame.ChartEditor.Level
 		{
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
 			{
+				EventSystem.current.SetSelectedGameObject(null);
 				if (levelInfo.Value is { Preference: EditorPreference preference })
 				{
 					speed.Value = new T3Speed(preference.Speed);

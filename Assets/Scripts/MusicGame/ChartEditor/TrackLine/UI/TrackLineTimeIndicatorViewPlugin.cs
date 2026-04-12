@@ -1,5 +1,8 @@
 #nullable enable
 
+using System.Linq;
+using MusicGame.ChartEditor.InScreenEdit;
+using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
 using MusicGame.ChartEditor.InScreenEdit.UI;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
@@ -10,69 +13,38 @@ using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine.UI
 {
-	public class TrackLineTimeIndicatorViewPlugin : T3MonoBehaviour, ISelfInstaller
+	public class TrackLineTimeIndicatorViewPlugin : HierarchySystem<TrackLineTimeIndicatorViewPlugin>
 	{
 		// Serializable and Public
 		[SerializeField] private Color draggingColor;
 		[SerializeField] private Color pastingColor;
 
+		[SerializeField] private SequencePriorities copyPasteModules = default!;
+
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<bool>(nodeDragPlugin.IsDragging, UpdateDraggingText),
-			new PropertyRegistrar<bool>(isShiftPressing, UpdateDraggingText),
-			new PropertyRegistrar<NodeCopyPastePlugin.PasteMode>(copyPastePlugin.Mode, () =>
-			{
-				var mode = copyPastePlugin.Mode.Value;
-				var isPasting = mode != NodeCopyPastePlugin.PasteMode.None;
-				if (isPasting)
-				{
-					var pasteText = I18NSystem.GetText(mode switch
-					{
-						NodeCopyPastePlugin.PasteMode.NormalPaste => "TrackLine_Pasting",
-						NodeCopyPastePlugin.PasteMode.ExactPaste => "TrackLine_ExactPasting",
-						_ => "Fallback"
-					});
-					timeIndicator.ColorModifier.Register(_ => pastingColor, 19);
-					timeIndicator.TextModifier.Register(text => $"{pasteText} - {text}", 19);
-				}
-				else
-				{
-					timeIndicator.ColorModifier.Unregister(19);
-					timeIndicator.TextModifier.Unregister(19);
-				}
-			}),
+			new PropertyRegistrar<bool>(nodeDragPlugin.IsDragging, UpdateDraggingView),
+			new PropertyRegistrar<bool>(isShiftPressing, UpdateDraggingView),
+			new PropertyRegistrar<int>(moduleInfo.CurrentModule, UpdateCopyPasteView),
+			new PropertyRegistrar<PasteMode>(pasteMode, UpdateCopyPasteView),
 			new InputPressingRegistrar("General", "Shift", value => isShiftPressing.Value = value)
 		};
 
 		// Private
-		private TimeIndicator timeIndicator = default!;
-		private NodeDragPlugin nodeDragPlugin = default!;
-		private NodeCopyPastePlugin copyPastePlugin = default!;
+		[Inject] private readonly ModuleInfo moduleInfo = default!;
+		[Inject] private readonly TimeIndicator timeIndicator = default!;
+		[Inject] private readonly NodeDragPlugin nodeDragPlugin = default!;
+		[Inject] private readonly NotifiableProperty<PasteMode> pasteMode = default!;
 
 		private string draggingText = string.Empty;
 		private readonly NotifiableProperty<bool> isShiftPressing = new(false);
 
-		// Constructor
-		[Inject]
-		private void Construct(
-			TimeIndicator timeIndicator,
-			NodeDragPlugin nodeDragPlugin,
-			NodeCopyPastePlugin copyPastePlugin)
-		{
-			this.timeIndicator = timeIndicator;
-			this.nodeDragPlugin = nodeDragPlugin;
-			this.copyPastePlugin = copyPastePlugin;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
 		// Defined Functions
-		private void UpdateDraggingText()
+		private void UpdateDraggingView()
 		{
 			var isDragging = nodeDragPlugin.IsDragging.Value;
 			if (isDragging)
@@ -88,6 +60,25 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 				timeIndicator.ColorModifier.Unregister(20);
 				timeIndicator.TextModifier.Unregister(20);
 			}
+		}
+
+		private void UpdateCopyPasteView()
+		{
+			if (copyPasteModules.Values.All(id => id != moduleInfo.CurrentModule))
+			{
+				timeIndicator.ColorModifier.Unregister(19);
+				timeIndicator.TextModifier.Unregister(19);
+				return;
+			}
+
+			var pasteText = I18NSystem.GetText(pasteMode.Value switch
+			{
+				PasteMode.NormalPaste => "TrackLine_Pasting",
+				PasteMode.ExactPaste => "TrackLine_ExactPasting",
+				_ => "Fallback"
+			});
+			timeIndicator.ColorModifier.Register(_ => pastingColor, 19);
+			timeIndicator.TextModifier.Register(text => $"{pasteText} - {text}", 19);
 		}
 	}
 }

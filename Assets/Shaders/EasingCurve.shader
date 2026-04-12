@@ -14,12 +14,16 @@ Shader "Unlit/Plane Curve"
     {
         Tags
         {
-            "Queue" = "Transparent" "RenderType" = "Transparent"
+            "Queue"="Transparent"
+            "RenderType"="Transparent"
         }
         LOD 100
 
         Pass
         {
+            Cull Off
+            ZWrite Off
+            ZTest LEqual
             Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #include "Lib/Easings.hlsl"

@@ -44,7 +44,8 @@ namespace MusicGame.ChartEditor.TrackLine.UI
 			new PropertyRegistrar<int>(easeId, id =>
 			{
 				easeToggles.Value[id].SetIsOnWithoutNotify(true);
-				if (easeToggles.Value.Values.Any(t => t.gameObject == EventSystem.current.currentSelectedGameObject))
+				if (EventSystem.current != null &&
+				    easeToggles.Value.Values.Any(t => t.gameObject == EventSystem.current.currentSelectedGameObject))
 				{
 					EventSystem.current.SetSelectedGameObject(easeToggles.Value[id].gameObject);
 				}

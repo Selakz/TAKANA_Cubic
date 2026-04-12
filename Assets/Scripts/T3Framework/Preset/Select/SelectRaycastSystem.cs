@@ -53,24 +53,31 @@ namespace T3Framework.Preset.Select
 
 		public ReadOnlySpan<KeyValuePair<RaycastHit, T>> DoRaycast(ISelectRaycastMode<T> raycastMode)
 		{
-			// Ray ray = RayMaker.GetRay();
-			// var hitCount = Physics.RaycastNonAlloc(ray.origin, ray.direction, hitBuffer, MaxDistance, RaycastLayerMask);
-			// var dataCount = 0;
-			// for (var i = 0; i < hitCount; i++)
-			// {
-			// 	var hit = hitBuffer[i];
-			// 	var data = GetData(hit);
-			// 	if (data is null) continue;
-			// 	dataBuffer[dataCount] = new(hit, data);
-			// 	dataCount++;
-			// }
-			//
-			// raycastMode.HandleSelect(dataset, dataBuffer, dataCount);
-			// return dataBuffer.AsSpan(0, dataCount);
-
 			var span = DoRaycastNonSelect();
 			raycastMode.HandleSelect(dataset, dataBuffer, span.Length);
 			return span;
+		}
+	}
+
+	public class ViewSelectRaycastSystem<T> : SelectRaycastSystem<T> where T : IComponent
+	{
+		public IViewPool<T>? ViewPool { private get; set; }
+
+		private readonly Func<Collider, PrefabHandler> getHandlerFunc;
+
+		public ViewSelectRaycastSystem(
+			ISelectDataset<T> dataset, ISelectRayMaker rayMaker, int bufferSize,
+			Func<Collider, PrefabHandler> getHandlerFunc) :
+			base(dataset, rayMaker, bufferSize)
+		{
+			this.getHandlerFunc = getHandlerFunc;
+		}
+
+		public override T? GetData(Collider collider)
+		{
+			if (ViewPool is null) return default;
+			var handler = getHandlerFunc.Invoke(collider);
+			return handler is null ? default : ViewPool[handler];
 		}
 	}
 }

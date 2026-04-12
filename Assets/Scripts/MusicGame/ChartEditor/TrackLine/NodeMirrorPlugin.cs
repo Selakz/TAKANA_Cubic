@@ -28,16 +28,19 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		// Private
 		private CommandManager commandManager = default!;
-		private EdgeNodeSelectDataset nodeSelectDataset = default!;
+		private EdgeNodeSelectDataset edgeNodeSelectDataset = default!;
+		private DirectNodeSelectDataset directNodeSelectDataset = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
 			CommandManager commandManager,
-			EdgeNodeSelectDataset nodeSelectDataset)
+			EdgeNodeSelectDataset edgeNodeSelectDataset,
+			DirectNodeSelectDataset directNodeSelectDataset)
 		{
 			this.commandManager = commandManager;
-			this.nodeSelectDataset = nodeSelectDataset;
+			this.edgeNodeSelectDataset = edgeNodeSelectDataset;
+			this.directNodeSelectDataset = directNodeSelectDataset;
 		}
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
@@ -45,14 +48,26 @@ namespace MusicGame.ChartEditor.TrackLine
 		// Event Handlers
 		private bool NodeMirror()
 		{
-			if (nodeSelectDataset.Count == 0) return true;
+			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return true;
 			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-			foreach (var node in nodeSelectDataset)
+			foreach (var node in edgeNodeSelectDataset)
 			{
 				var item = node.Model;
 				var newItem = item.SetPosition(-item.Position);
 				var time = node.Locator.Time;
 				var arg = new UpdateMoveListArg(node.Locator.IsLeft, time, new(time, newItem));
+				var track = node.Locator.Track;
+				if (!args.ContainsKey(track)) args[track] = new() { arg };
+				else args[track].Add(arg);
+			}
+
+			foreach (var node in directNodeSelectDataset)
+			{
+				if (!node.Locator.IsPos) continue;
+				var item = node.Model;
+				var newItem = item.SetPosition(-item.Position);
+				var time = node.Locator.Time;
+				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(time, newItem));
 				var track = node.Locator.Track;
 				if (!args.ContainsKey(track)) args[track] = new() { arg };
 				else args[track].Add(arg);

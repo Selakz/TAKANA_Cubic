@@ -8,7 +8,7 @@ namespace MusicGame.ChartEditor.TrackLine
 {
 	public static class LineDrawer
 	{
-		private static void PointsToMesh(Mesh mesh, Vector2[] points, float lineWidth)
+		public static void PointsToMesh(Mesh mesh, Vector2[] points, float lineWidth)
 		{
 			if (points.Length <= 1) return;
 
@@ -91,8 +91,23 @@ namespace MusicGame.ChartEditor.TrackLine
 		}
 
 		/// <summary> Recommend to draw in editor mode and save to asset. </summary>
-		public static void DrawMesh(Mesh mesh, Eases ease, float lineWidth, float width, float height, float precision,
-			float maxSegment)
+		public static void DrawMesh(Mesh mesh, Func<float, float> pointCalculator,
+			float lineWidth, float width, float height, float precision, float maxSegment)
+		{
+			List<Vector2> points = new() { new(0, 0) };
+			precision = Mathf.Max(precision, height / maxSegment);
+			for (float i = precision; i < height; i += precision)
+			{
+				points.Add(new(pointCalculator(i), i));
+			}
+
+			points.Add(new(width, height));
+			PointsToMesh(mesh, points.ToArray(), lineWidth);
+		}
+
+		/// <summary> Recommend to draw in editor mode and save to asset. </summary>
+		public static void DrawMesh(Mesh mesh, Eases ease,
+			float lineWidth, float width, float height, float precision, float maxSegment)
 		{
 			List<Vector2> points = new() { new(0, 0) };
 			switch (ease)
@@ -162,7 +177,6 @@ namespace MusicGame.ChartEditor.TrackLine
 		public static void DrawCurve(EdgeCollider2D line, Vector2 start, Vector2 end, string label, float precision)
 		{
 			List<Vector2> points = new();
-			// 对两种简单曲线做优化
 			if (label == "u")
 			{
 				points.Add(new(start.x, start.y));

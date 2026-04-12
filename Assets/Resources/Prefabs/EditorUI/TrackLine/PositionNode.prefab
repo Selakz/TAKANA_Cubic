@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 6269999574361317950}
   - component: {fileID: 7001581286148906064}
   - component: {fileID: 5215097678470728173}
+  - component: {fileID: 4639539116860009454}
+  - component: {fileID: 8717702735776309227}
+  - component: {fileID: 636547600552778747}
   m_Layer: 8
   m_Name: PositionNode
   m_TagString: Untagged
@@ -58,6 +61,51 @@ MonoBehaviour:
   <NodeRenderer>k__BackingField: {fileID: 1563111312670538112}
   <LineRenderer>k__BackingField: {fileID: 4060208825624729425}
   <NodeCollider>k__BackingField: {fileID: 850854002351099546}
+  <LineCollider>k__BackingField: {fileID: 5450350009257091390}
+--- !u!114 &4639539116860009454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240143492235198761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5811a4f757c4446dba8bc0468d005ec4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <EaseMaterial>k__BackingField: {fileID: 2100000, guid: 33c139754d2c79146afe99847fad3536, type: 2}
+  <LineRenderer>k__BackingField: {fileID: 4060208825624729425}
+  <LineCollider>k__BackingField: {fileID: 5450350009257091390}
+--- !u!114 &8717702735776309227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240143492235198761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd9e17faa2894dcf924204620e892ac7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <BezierMaterial>k__BackingField: {fileID: 2100000, guid: 4122fdfff86255b4eb7c3ae37f4e5d2a, type: 2}
+  <LineRenderer>k__BackingField: {fileID: 4060208825624729425}
+  <LineCollider>k__BackingField: {fileID: 5450350009257091390}
+--- !u!114 &636547600552778747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240143492235198761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0e9e25e8b2b45ebb8d9f52b4a7e523d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <AnyMaterial>k__BackingField: {fileID: 2100000, guid: 495f05ca36f18ca4981fb0ba7adf738a, type: 2}
+  <LineRenderer>k__BackingField: {fileID: 4060208825624729425}
   <LineCollider>k__BackingField: {fileID: 5450350009257091390}
 --- !u!1 &6244995467373688787
 GameObject:

@@ -28,3 +28,5 @@ MonoBehaviour:
       value: 5
     - key: node-drag
       value: 6
+    - key: bezier-drag
+      value: 7

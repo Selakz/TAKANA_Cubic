@@ -62,6 +62,13 @@ namespace MusicGame.Models.Track.Movement
 		public IPositionMoveItem<float> SetPosition(float newPosition) =>
 			new V1BMoveItem(newPosition, StartControlFactor, EndControlFactor);
 
+		public V1BMoveItem(float position)
+		{
+			Position = position;
+			StartControlFactor = new(0.25f, 0.25f);
+			EndControlFactor = new(0.75f, 0.75f);
+		}
+
 		public V1BMoveItem(float position, Vector2 startControlFactor, Vector2 endControlFactor)
 		{
 			Position = position;

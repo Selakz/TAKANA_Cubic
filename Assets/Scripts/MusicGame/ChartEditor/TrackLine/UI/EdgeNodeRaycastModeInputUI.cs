@@ -9,7 +9,7 @@ using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine.UI
 {
-	public class NodeRaycastModeInputUI : RaycastModeInputUI<EdgeNodeComponent>, ISelfInstaller
+	public class EdgeNodeRaycastModeInputUI : RaycastModeInputUI<EdgeNodeComponent>, ISelfInstaller
 	{
 		protected override NotifiableProperty<ISelectRaycastMode<EdgeNodeComponent>> RaycastMode => raycastMode;
 

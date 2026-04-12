@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using MusicGame.ChartEditor.TrackLine.Render;
 using MusicGame.Gameplay.Speed;
 using MusicGame.Models.Track;
 using MusicGame.Models.Track.Movement;
@@ -10,19 +11,17 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Easing;
 using T3Framework.Static.Event;
+using VContainer;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
-	public class EdgeNodeInitSystem : T3System
+	public class EdgeNodeInitSystem : HierarchySystem<EdgeNodeInitSystem>
 	{
-		private readonly NotifiableProperty<ISpeed> speed;
-		private readonly EdgeNodeDataset nodeDataset;
-		private readonly IViewPool<EdgePMLComponent> moveListViewPool;
-		private readonly IViewPool<EdgeNodeComponent> nodePool;
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<ISpeed>(speed, () =>
 			{
@@ -36,19 +35,13 @@ namespace MusicGame.ChartEditor.TrackLine
 				component => UniTask.DelayFrame(1).ContinueWith(() => SetNodePosition(component)))
 		};
 
-		public EdgeNodeInitSystem(
-			NotifiableProperty<ISpeed> speed,
-			EdgeNodeDataset nodeDataset,
-			IViewPool<EdgePMLComponent> moveListViewPool,
-			IViewPool<EdgeNodeComponent> nodePool) : base(true)
-		{
-			this.speed = speed;
-			this.nodeDataset = nodeDataset;
-			this.moveListViewPool = moveListViewPool;
-			this.nodePool = nodePool;
-			nodePool.IsGetActive = false;
-		}
+		// Private
+		[Inject] private readonly NotifiableProperty<ISpeed> speed = default!;
+		[Inject] private readonly EdgeNodeDataset nodeDataset = default!;
+		[Inject] private readonly IViewPool<EdgePMLComponent> moveListViewPool = default!;
+		[Inject] private readonly IViewPool<EdgeNodeComponent> nodePool = default!;
 
+		// Defined Functions
 		private void SetNodePosition(EdgePMLComponent moveList)
 		{
 			PrefabHandler? lastHandler = null;
@@ -59,14 +52,25 @@ namespace MusicGame.ChartEditor.TrackLine
 			foreach (var node in nodes)
 			{
 				var track = (node.Locator.Track.Model as ITrack)!;
-				if (lastHandler is not null && lastNode?.Model is V1EMoveItem item && lastNodeTime is not null)
+				if (lastHandler is not null && lastNode?.Model is not null && lastNodeTime is not null)
 				{
-					var nodeView = lastHandler.Script<PositionNodeView>();
+					var speedRate = speed.Value.SpeedRate;
 					var lastX = lastNode.Model.Position;
-					var lastY = (lastNodeTime - track.TimeStart).Value.Second * speed.Value.SpeedRate;
+					var lastY = (lastNodeTime - track.TimeStart).Value.Second * speedRate;
 					var x = node.Model.Position;
-					var y = (moveList.Model[node.Model] - track.TimeStart)!.Value.Second * speed.Value.SpeedRate;
-					nodeView.Init(item.Ease, new(lastX, lastY), new(x, y));
+					var y = (moveList.Model[node.Model] - track.TimeStart)!.Value.Second * speedRate;
+					switch (lastNode.Model)
+					{
+						case V1EMoveItem easeItem:
+							var easeRenderer = lastHandler.Script<EaseLineRenderer>();
+							easeRenderer.Init(easeItem.Ease, new(lastX, lastY), new(x, y));
+							break;
+						case V1BMoveItem bezierItem:
+							var bezierRenderer = lastHandler.Script<BezierLineRenderer>();
+							bezierRenderer.Init(bezierItem.StartControlFactor, bezierItem.EndControlFactor,
+								new(lastX, lastY), new(x, y));
+							break;
+					}
 				}
 
 				lastHandler = nodePool[node];
@@ -77,11 +81,18 @@ namespace MusicGame.ChartEditor.TrackLine
 			if (lastHandler is not null && lastNode is not null && lastNodeTime is not null)
 			{
 				var track = (lastNode.Locator.Track.Model as ITrack)!;
-				var nodeView = lastHandler.Script<PositionNodeView>();
+				var easeRenderer = lastHandler.Script<EaseLineRenderer>();
 				var lastX = lastNode.Model.Position;
 				var lastY = (lastNodeTime - track.TimeStart).Value.Second * speed.Value.SpeedRate;
-				nodeView.Init(Eases.Unmove, new(lastX, lastY), new(lastX, lastY));
+				easeRenderer.Init(Eases.Unmove, new(lastX, lastY), new(lastX, lastY));
 			}
+		}
+
+		// System Functions
+		protected override void Awake()
+		{
+			base.Awake();
+			nodePool.IsGetActive = false;
 		}
 	}
 }

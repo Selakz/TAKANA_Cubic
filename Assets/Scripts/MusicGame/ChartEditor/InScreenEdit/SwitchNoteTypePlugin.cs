@@ -16,20 +16,15 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		// Serializable and Public
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new InputRegistrar("InScreenEdit", "SwitchCreateType", SwitchNoteType)
+			new InputRegistrar("InScreenEdit", "SwitchCreateType", SwitchNoteType),
+			new InputRegistrar("InScreenEdit", "SwitchPlaceType", SwitchPlaceType)
 		};
 
 		// Private
-		private NotifiableProperty<T3Flag> noteType = default!;
+		[Inject] private readonly NotifiableProperty<T3Flag> noteType = default!;
+		[Inject] private readonly NotifiableProperty<SingleNotePlaceType> notePlaceType = default!;
 
 		// Defined Functions
-		[Inject]
-		private void Construct(
-			NotifiableProperty<T3Flag> noteType)
-		{
-			this.noteType = noteType;
-		}
-
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Event Handlers
@@ -43,6 +38,17 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				_ => T3Flag.Tap
 			};
 			noteType.Value = newNoteType;
+		}
+
+		private void SwitchPlaceType()
+		{
+			var newNotePlaceType = notePlaceType.Value switch
+			{
+				SingleNotePlaceType.NearestTrack => SingleNotePlaceType.SelectedTrack,
+				SingleNotePlaceType.SelectedTrack => SingleNotePlaceType.NearestTrack,
+				_ => SingleNotePlaceType.NearestTrack
+			};
+			notePlaceType.Value = newNotePlaceType;
 		}
 	}
 }

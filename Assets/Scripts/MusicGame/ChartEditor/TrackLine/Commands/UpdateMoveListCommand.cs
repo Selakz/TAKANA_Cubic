@@ -173,8 +173,10 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 			{
 				if (arg.NewItem is not null)
 				{
+					var item = arg.NewItem.Value.Value;
+					if (model.Movement is TrackDirectMovement && !arg.IsFirst) item.Position = Mathf.Abs(item.Position);
 					var moveList = arg.IsFirst ? moveList1 : moveList2;
-					moveList.Insert(arg.NewItem.Value.Key, arg.NewItem.Value.Value);
+					moveList.Insert(arg.NewItem.Value.Key, item);
 				}
 			}
 

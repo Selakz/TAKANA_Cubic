@@ -18,6 +18,8 @@ namespace T3Framework.Static.Movement
 		public TPosition GetPosition(T3Time thisTime, T3Time targetTime, T3Time nextTime, TPosition nextPosition);
 
 		public IPositionMoveItem<TPosition> SetPosition(TPosition newPosition);
+
+		public IPositionMoveItem<TPosition> Clone() => SetPosition(Position);
 	}
 
 	public class PositionMoveList<TPosition> : IMoveList<IPositionMoveItem<TPosition>>, IMovement<TPosition>

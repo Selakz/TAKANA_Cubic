@@ -15,7 +15,6 @@ using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
@@ -31,7 +30,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		}
 	}
 
-	public class NodeDragSelectPlugin : T3MonoBehaviour, ISelfInstaller
+	public class NodeDragSelectPlugin : HierarchySystem<NodeDragSelectPlugin>
 	{
 		// Serializable and Public
 		[SerializeField] private SequencePriority nodePreviewModuleId = default!;
@@ -44,7 +43,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		{
 			new PropertyRegistrar<bool>(dragHelper.IsDragging, () =>
 			{
-				if (dragHelper.IsDragging && !isCtrlPressing) dataset.Clear();
+				if (dragHelper.IsDragging && !isCtrlPressing) edgeDataset.Clear();
 			}),
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", dragPriority.Value, OnBeginDragInput,
 				InputActionPhase.Started),
@@ -58,8 +57,9 @@ namespace MusicGame.ChartEditor.TrackLine
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
 		private ModuleInfo moduleInfo = default!;
 		private Camera levelCamera = default!;
-		private EdgeNodeSelectDataset dataset = default!;
-		private EdgeNodeSelectInputSystem inputSystem = default!;
+		private EdgeNodeSelectDataset edgeDataset = default!;
+		private DirectNodeSelectDataset directNodeDataset = default!;
+		private NodeSelectInputSystem inputSystem = default!;
 		private NodeSelectionBoxHelper dragHelper = default!;
 
 		private bool isCtrlPressing = false;
@@ -69,12 +69,14 @@ namespace MusicGame.ChartEditor.TrackLine
 		private void Construct(
 			ModuleInfo moduleInfo,
 			[Key("stage")] Camera levelCamera,
-			EdgeNodeSelectDataset dataset,
-			EdgeNodeSelectInputSystem inputSystem)
+			EdgeNodeSelectDataset edgeDataset,
+			DirectNodeSelectDataset directNodeDataset,
+			NodeSelectInputSystem inputSystem)
 		{
 			this.moduleInfo = moduleInfo;
 			this.levelCamera = levelCamera;
-			this.dataset = dataset;
+			this.edgeDataset = edgeDataset;
+			this.directNodeDataset = directNodeDataset;
 			this.inputSystem = inputSystem;
 
 			if (listener.Collider is not BoxCollider boxCollider)
@@ -86,8 +88,6 @@ namespace MusicGame.ChartEditor.TrackLine
 			listener.Layer = selectColliderLayer;
 			dragHelper = new(levelCamera, boxCollider, gamePlane);
 		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Event Handlers
 		private bool OnBeginDragInput()
@@ -120,8 +120,10 @@ namespace MusicGame.ChartEditor.TrackLine
 		private void OnCollisionChange(Collider collider)
 		{
 			if (collider is MeshCollider) return; // Exclude line mesh
-			var data = inputSystem.System.GetData(collider);
-			if (data is not null) dataset.ToggleSelecting(data);
+			var edgeData = inputSystem.EdgeSystem.GetData(collider);
+			if (edgeData is not null) edgeDataset.ToggleSelecting(edgeData);
+			var directData = inputSystem.DirectSystem.GetData(collider);
+			if (directData is not null) directNodeDataset.ToggleSelecting(directData);
 		}
 
 		// System Functions
