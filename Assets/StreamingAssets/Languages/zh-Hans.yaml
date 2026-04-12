@@ -111,6 +111,8 @@ Editor:
     SelectOpacity: 选中不透明度
     UnselectOpacity: 隐藏不透明度
   TrackLine:
+    TrackTypeLabel: 轨道
+    CurveTypeLabel: 曲线
     CurveInstruction: |-
       数字键切换曲线族，Tab键切换曲线运动方式
       1 Sine | 2 Quad | 3 Cubic | 4 Quart | 5 Quint | 6 Expo | 7 Circ | 8 Back | 9 Elastic | 0 Bounce
@@ -212,6 +214,14 @@ LevelSelect:
   
 LevelResult:
   SetDeviation: 立即设置
+  
+Tutorial:
+  Title: 教程
+  Doc: 文档
+  Interactive: 交互式教程
+  
+  AllInOne: 一文集合版使用说明书（跳转外部链接）
+  FirstMeet: 初次见面...？
   
 # It's so boring chore. LLM helps me with this.
 Setting:
@@ -332,3 +342,54 @@ Setting:
     WidthGridOffset: 纵向位置格线偏移
     BpmList: BPM列表，键为时间，值为BPM值
   
+InputRebinding:
+  Title: 键位绑定
+  Reset: 重置
+  Basic: 基础
+  Editor: 编辑器
+  CurveSwitch: 曲线切换
+  
+  Undo: 撤销
+  Redo: 重做
+  Save: 保存
+
+  Delete: 删除选中的物件
+  SwitchCreateType: 切换Note创建类型
+  SwitchPlaceType: 切换Note放置模式
+  ToNext: 时间后移
+  ToPrevious: 时间前移
+  ToNextBeat: 时间后移至下一拍线
+  ToPreviousBeat: 时间前移至上一拍线
+  ToLeft: 节点左移
+  ToLeftGrid: 节点左移至格线
+  ToRight: 节点右移
+  ToRightGrid: 节点右移至格线
+  Cut: 剪切
+  Copy: 复制
+  Paste: 粘贴
+  ExactPaste: 原位粘贴
+  Mirror: 镜像
+  MirrorCopy: 镜像复制
+  CheckClipboard: 检查剪贴板
+  ToggleDummy: 切换Note真假
+  
+  ChangeNodeState: 切换节点缓动类型
+  CheckCurve: 打开曲线族选择面板
+  SwitchToSine: 切换至正弦族 (Sine)
+  SwitchToQuad: 切换至二次族 (Quad)
+  SwitchToCubic: 切换至三次族 (Cubic)
+  SwitchToQuart: 切换至四次族 (Quart)
+  SwitchToQuint: 切换至五次族 (Quint)
+  SwitchToExpo: 切换至指数族 (Expo)
+  SwitchToBack: 切换至回弹族 (Back)
+  SwitchToCirc: 切换至圆形族 (Circ)
+  SwitchToElastic: 切换至弹性族 (Elastic)
+  SwitchToBounce: 切换至弹跳族 (Bounce)
+  
+  HoldEndToNext: 长条结尾时间后移
+  HoldEndToNextBeat: 长条结尾时间后移至下一拍线
+  HoldEndToPrevious: 长条结尾时间前移
+  HoldEndToPreviousBeat: 长条结尾时间前移至上一拍线
+  CreateHoldBetween: 使用两个Note创建长条
+  
+  ConnectTrack: 连接两个同类轨道

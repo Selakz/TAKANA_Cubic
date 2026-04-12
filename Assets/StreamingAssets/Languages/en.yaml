@@ -111,6 +111,8 @@ Editor:
     SelectOpacity: Selected
     UnselectOpacity: Hidden
   TrackLine:
+    TrackTypeLabel: Track
+    CurveTypeLabel: Curve
     CurveInstruction: |-
       Number keys switch curve family, Tab key switches easing mode
       1 Sine | 2 Quad | 3 Cubic | 4 Quart | 5 Quint | 6 Expo | 7 Circ | 8 Back | 9 Elastic | 0 Bounce
@@ -212,6 +214,14 @@ LevelSelect:
   
 LevelResult:
   SetDeviation: Set Now
+  
+Tutorial:
+  Title: Tutorial
+  Doc: Documentation
+  Interactive: Interactive Tutorial
+  
+  AllInOne: "All-in-one tutorial (opens external link)"
+  FirstMeet: "First meet...?"
   
 Setting:
   SelectSetting:
@@ -330,3 +340,55 @@ Setting:
     WidthGridInterval: Vertical position grid density | Range [0, ?)
     WidthGridOffset: Vertical position grid offset
     BpmList: "BPM list (Key: Time, Value: BPM)"
+
+InputRebinding:
+  Title: Key Bindings
+  Reset: Reset
+  Basic: Basic
+  Editor: Editor
+  CurveSwitch: Curve Switch
+  
+  Undo: Undo
+  Redo: Redo
+  Save: Save
+
+  Delete: Delete Selected Object
+  SwitchCreateType: Switch Note Creation Type
+  SwitchPlaceType: Switch Note Placement Mode
+  ToNext: Move Time Forward
+  ToPrevious: Move Time Backward
+  ToNextBeat: Move Time to Next Beat Line
+  ToPreviousBeat: Move Time to Previous Beat Line
+  ToLeft: Move Node Left
+  ToLeftGrid: Move Node Left to Grid Line
+  ToRight: Move Node Right
+  ToRightGrid: Move Node Right to Grid Line
+  Cut: Cut
+  Copy: Copy
+  Paste: Paste
+  ExactPaste: Paste in Place
+  Mirror: Mirror
+  MirrorCopy: Mirror Copy
+  CheckClipboard: Check Clipboard
+  ToggleDummy: Toggle Note Dummy Status
+  
+  ChangeNodeState: Switch Node Easing Type
+  CheckCurve: Open Curve Family Selection Panel
+  SwitchToSine: Switch to Sine Family
+  SwitchToQuad: Switch to Quad Family
+  SwitchToCubic: Switch to Cubic Family
+  SwitchToQuart: Switch to Quart Family
+  SwitchToQuint: Switch to Quint Family
+  SwitchToExpo: Switch to Expo Family
+  SwitchToBack: Switch to Back Family
+  SwitchToCirc: Switch to Circ Family
+  SwitchToElastic: Switch to Elastic Family
+  SwitchToBounce: Switch to Bounce Family
+  
+  HoldEndToNext: Move Hold End Time Forward
+  HoldEndToNextBeat: Move Hold End Time to Next Beat Line
+  HoldEndToPrevious: Move Hold End Time Backward
+  HoldEndToPreviousBeat: Move Hold End Time to Previous Beat Line
+  CreateHoldBetween: Create Hold Using Two Notes
+  
+  ConnectTrack: Connect Two Similar Tracks

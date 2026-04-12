@@ -64,8 +64,10 @@ Special thanks to these projects for their inspiration and technical contributio
 - [GlitchEnzo / NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity)
 - [Demigiant / dotween](https://github.com/Demigiant/dotween)
 - [hadashiA / VContainer](https://github.com/hadashiA/VContainer)
+- [YarnSpinner](https://yarnspinner.dev)
 
 Below are some sources of the project's resources：
 
 - Icons mainly from [Flaticon](https://www.flaticon.com)
 - Background music source of app entry: Amethyst Cove / KhantLOL from B.M.P.O.A.T. Original SoundTrack
+- Music source of built-in tutorial level: Stream / Kyaai
