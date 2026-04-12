@@ -1,0 +1,121 @@
+﻿title: FirstMeet
+position: -65,-25
+---
+选择语言 #line:064268a 
+-> 简体中文 #line:05e4626 
+    <<language "zh-Hans">>
+-> English #line:0e1e3a9 
+    <<language "en">>
+
+尽管你已经与绫地宁宁在另一个时空再次相遇， #line:0785796 
+
+尽管你已经借助着“9”的力量带领着异能少女们打败了邪恶反派， #line:04c991e 
+
+尽管你已经被富婆妹包养，享受着无与伦比的废宅生活...... #line:0e9fe0c 
+
+此刻你最好奇的仍然是，一个音游制谱器居然弹出了对话框。 #line:0db1661 
+
+？？？: 那便是我...... #line:07d3cb4 
+？？？: 因为预知了宇宙的归宿，而被囚禁在这个程序里的暗黑魔法使...... #line:06f2838 
+
+<<draw Senoz laugh>>
+<<anim Senoz JumpIn>>
+
+？？？: 最好是真的有那种东西啦！你好。 #line:0d27b8d 
+
+-> 你是...？ #line:071b2b0 
+    ？？？: 啊，还有不可或缺的自我介绍环节是吗。 #line:00db691 
+    <<jump Introduction>>
+-> 还有人类吗 #line:062ff0f 
+    <<draw Senoz calm>>
+    ？？？: 没有人类了。 #line:0922af8 
+    你肯定一眼就看出来了，现在这个立绘根本就是AI跑出来的。 #line:01d8bb0 
+    哎但是凑合着用吧！以后如果有人工立绘的话肯定会立马换掉的。 #line:0b6cc03 
+    毕竟你开这个程序肯定也不是为了进什么神秘剧情的吧。 #line:0f795fa 
+    -> 别废话，说正题 #line:0de9ee5 
+        <<jump Introduction>>
+    -> 为何不可呢 #line:0fc55d3 
+        <<draw Senoz speechless>>
+        ？？？: 来真的啊。 #line:02f8310 
+        ？？？: 这样吧，我给你出道题，如果答对了就奖励一张神秘CG哦。 #line:0be3e1f 
+        我不仅是屌丝，我还是joker，我还是咸鱼，这辈子没谈过一场恋爱，胆怯又自卑，我的青春就是一场又一场的意淫，每一天幻想着我也能有一个女孩子和我一起压马路，一起逛街，一起玩，现实却是爆了父母金币，读了个烂学校，混日子之后找班上，没有理想，没有目标，没有能力的三无人员，每次看到你能在网上开屌丝的玩笑，我都想哭，我就是地底下的老鼠，透过下水井的缝隙，窥探地上的各种美好，每一次看到这种都是对我心灵的一次伤害，对我生存空间的一次压缩，求求哥们给我们这种小丑一点活路吧，我真的不想在白天把枕巾哭湿一大片 #line:0c4af72 
+        -> 我哭了。。 #line:0f4543f 
+        -> 这是什么。。 #line:096caef 
+        -> 这不是我！ #line:01f6861 
+        神秘CG是不会有的，正如音游制谱器里不会有Galgame一样。 #line:0c757f1 
+        <<jump Introduction>>
+===
+
+title: Introduction
+---
+<<draw Senoz calm>>
+？？？: 那就介绍一下我自己吧。 #line:0309a6c 
+Senoz: 我是斯诺子，是从人类强烈而纯洁的情感汇聚融合而成的奇异物质中诞生的异态生命体。 #line:0b86352 
+Senoz: 那个情感是什么来着......“好想让TAKANA³有个看板娘啊” #line:09bb95b 
+Senoz: 总之！看到我就代表你进教程了，想来点入门教学吗？ #line:0c49133 
+-> 好的！ #line:02ecaab 
+    <<jump Tutorial>>
+-> 我更喜欢直接看文档 #line:00a412f 
+    <<jump Ending>>
+-> 我已经很会写谱了 #line:0aacf11 
+    <<draw Senoz laugh>>
+    大神啊/拜谢/拜谢/拜谢/续标识/续标识/续标识 #line:031dd88 
+    写塔库米谱的人实在太少了（泪）感谢你的支持！ #line:07e92f8 
+    <<jump Ending>>
+===
+
+title: Tutorial
+---
+Senoz: 接下来请尽量照着指示走哦！乱点可能会导致对话进行不下去，那就只能重启了。 #line:0d1eec2 
+<<draw Senoz nerd>>
+Senoz: 那么我们就用这首歌作为演示吧——Stream / kyaai #line:0bdf512 
+<<task LoadLevel>>
+Senoz: 说到写谱，确定好要写什么歌后，第一件事是什么呢？ #line:0aedb8d 
+-> 测出歌曲的bpm和offset #line:03c817e 
+    Senoz: 正确！ #line:0bd4346 
+-> 库库塞爆！ #line:0388807 
+    Senoz: 在塞爆前，总得先把音对准吧。 #line:0abc2fb 
+-> 不写谱 #line:053e9f3 
+    Senoz: 收到。 #line:0d41898 
+<<anim Senoz MoveLeft>>
+<<task ShowBpm>>
+Senoz: 现在我已经帮你把这首歌的offset和bpm都填好了。 #line:0d27bb7 
+Senoz: 需要记住一点：这个制谱器里的所有时间都是[b]以毫秒为单位[/b]的整数。 #line:0413ba5 
+Senoz: 看到屏幕上的格线了吗？开启格线时，你的所有与时间有关的操作都会吸附到格线上，方便你对准音。 #line:0aa85f0 
+Senoz: 同时，开启格线时，你也可以通过[b]鼠标滚轮[/b]快速地按格线滚动音乐时间。 #line:0409546 
+Senoz: 使用[b]Q键[/b]或[b]Space键[/b]切换音频的播放与暂停。 #line:0b69645 
+Senoz: 好！那么，要写一张TAKUMI³的谱面，首先肯定得创建一个轨道。 #line:013e3cd 
+Senoz: 你可以使用[b]Shift + 右键[/b]创建轨道，[b]左键[/b]点击轨道来选中它。 #line:0d97b75 
+Senoz: 选中轨道后，可以看到半透明的Note预览，此时[b]右键[/b]即可在对应的位置上创建一个Note。 #line:09cbfc4 
+Senoz: 来试试看吧！创建一个轨道，然后在上面放置3个Tap。 #line:0fd915b 
+<<task TryCreateTrackAndNote openForEdit>>
+Senoz: 只放Tap肯定不够意思吧？可以用[b]` 浪号键[/b]切换Note类型，或者直接在底部的UI上选择。 #line:0c8495e 
+Senoz: 另外，一个调整Hold长度的快捷方法是选中两个Note后按[b]H键[/b]，此时会把这两个Note变成一个长度为二者时间差的Hold。 #line:05c116c 
+Senoz: [b]左键[/b]点击Note来选中它，按住[b]Ctrl键[/b]可以多选，或者也可以[b]左键并拖动[/b]来框选多个Note。 #line:094b3b9 
+Senoz: 来试试看吧！放置3个Slide，然后将两个Note连接成一个Hold。 #line:09ecd87 
+<<task TrySwitchAndCreateHold openForEdit>>
+Senoz: 接下来就是让轨道动起来了。 #line:0fd1bd2 
+Senoz: 你一定注意到了选中轨道时出现的左右两个线条，在TAKANA³里，轨道的运动轨迹由[b]结点[/b]进行定义，每个结点标志着轨道此刻的位置，以及它会如何移动到下一个结点，也就是结点间的线条。这样的结点便构成了轨道的运动轨迹。 #line:0ed2bbf 
+Senoz: 左右两边的结点即表示轨道左右两端的位置，这样的轨道称为[b]L/R[/b]轨道。 #line:0e18ca6 
+Senoz: [b]左键[/b]点击任意的结点或线条即可选中它并进入结点编辑模式，并将Note预览转变为结点预览，此时[b]右键[/b]即可在对应的位置上创建一个结点。 #line:02d30bc 
+Senoz: 来试试看吧！选中一个轨道，然后在其左右两边分别创建3个结点，看看轨道的运动会发生什么变化。 #line:0b963a0 
+<<task TryCreateNode openForEdit>>
+Senoz: 初始创建的结点并不会让轨道平滑地移动，只会在时间来到下一个结点的瞬间立刻将位置调整到下一个结点的位置上。 #line:0a51a8e 
+Senoz: 想要让轨道平滑地移动，只需选中结点然后按[b]Tab[/b]键。多次Tab可以在不同的缓动模式中进行切换。 #line:03f5d06 
+Senoz: 默认的缓动曲线均为正弦函数曲线。想要切换不同的曲线族，可以按[b]- 减号键[/b]弹出缓动选择面板，也可以直接按数字键快速进行切换。 #line:0b8ab81 
+Senoz: 来试试看吧！切换5次结点的缓动模式，并切换1次曲线族。 #line:0405d8c 
+<<task TrySwitchEase openForEdit>>
+Senoz: 现在，你已经学会了制作一张TAKUMI³自制谱的所有基本要素，入门教程到这里就结束了。 #line:0c83a5e 
+Senoz: 你可以继续在这个演练场里熟悉其他功能，也可以创建一个真正的新项目。 #line:0c6e39e 
+<<jump Ending>>
+===
+
+title: Ending
+---
+<<draw Senoz calm>>
+Senoz: 如果想看文档的话，请到工具面板里点击“查看教程”按钮，在里面即可进行跳转。 #line:0dbd909
+Senoz: 更多像这样的交互教程也在这里面，可以反复体验。 #line:0e46c16 
+Senoz: 最后，期待你写出令人惊叹的神谱。那么再见！ #line:0c03c36 
+<<destroy Senoz>>
+<<complete FirstMeet>>
+===

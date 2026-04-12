@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "properties": {
+    "offset": {
+      "value": 60,
+      "type": "offset"
+    }
+  },
+  "editorconfig": {
+    "layers": {
+      "value": [
+        {
+          "id": 0,
+          "name": "默认图层",
+          "color": "(000000, 1.00)",
+          "isDecoration": false,
+          "isSelected": true
+        }
+      ],
+      "type": "trackLayers"
+    },
+    "bpm": {
+      "list": ["(0,  128.0000)"],
+      "type": "bpm"
+    }
+  },
+  "components": [{ "id": 0, "model": { "type": "line" } }]
+}

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: f46a49b48d149224b938bea9f47510c1
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 053561912b1654d80a424bb0696a74ae, type: 3}
+  generateVariablesSourceFile: 0
+  variablesClassName: YarnVariables
+  variablesClassNamespace: 
+  variablesClassParent: Yarn.Unity.InMemoryVariableStorage
+  useAddressableAssets: 0
+  unityLocalisationStringTableCollectionGUID: 
+  UseUnityLocalisationSystem: 0

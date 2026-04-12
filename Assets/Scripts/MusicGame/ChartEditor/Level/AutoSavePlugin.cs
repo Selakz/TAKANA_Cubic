@@ -9,6 +9,7 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
+using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
@@ -69,14 +70,23 @@ namespace MusicGame.ChartEditor.Level
 		private void AutoSave()
 		{
 			Debug.Log("AutoSave");
-			if (levelInfo.Value is not { } info) return;
-			var folderPath = FileHelper.GetAbsolutePathFromRelative(info.LevelPath, "AutoSave");
-			Directory.CreateDirectory(folderPath);
-			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
-			var fileName =
-				$"{DateTime.Now:yyyy-MM-dd_HH-mm}_{projectSetting.GetChartFileName(info.Difficulty)}.editing.json";
-			editorLevelSaver.SaveEditorChart(Path.Combine(folderPath, fileName));
-			editorLevelSaver.SaveSettings();
+			try
+			{
+				if (levelInfo.Value is not { } info || !File.Exists(info.LevelPath) ||
+				    !Path.IsPathFullyQualified(info.LevelPath)) return;
+				var folderPath = FileHelper.GetAbsolutePathFromRelative(info.LevelPath, "AutoSave");
+				Directory.CreateDirectory(folderPath);
+				T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
+				var fileName =
+					$"{DateTime.Now:yyyy-MM-dd_HH-mm}_{projectSetting.GetChartFileName(info.Difficulty)}.editing.json";
+				editorLevelSaver.SaveEditorChart(Path.Combine(folderPath, fileName));
+				editorLevelSaver.SaveSettings();
+			}
+			catch (Exception ex)
+			{
+				Debug.Log(ex);
+				T3Logger.Log("Notice", "App_SaveError", T3LogType.Error);
+			}
 		}
 	}
 }

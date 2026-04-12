@@ -1,0 +1,17 @@
+{
+  "projectFileVersion": 4,
+  "sourceFiles": [
+    "**/*.yarn"
+  ],
+  "excludeFiles": [
+    "**/*~/*",
+    "./Samples/Yarn Spinner*/*"
+  ],
+  "localisation": {
+    "en": {
+      "strings": "Localization\\TutorialProject-en.csv"
+    }
+  },
+  "baseLanguage": "zh-Hans",
+  "compilerOptions": {}
+}

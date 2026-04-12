@@ -64,10 +64,10 @@ namespace T3Framework.Runtime.Input
 		// Private
 		private readonly struct InputActionIndex : IEquatable<InputActionIndex>
 		{
-			private string ActionMapName { get; }
-			private string ActionName { get; }
-			private string SequenceGroup { get; }
-			private InputActionPhase Phase { get; }
+			public string ActionMapName { get; }
+			public string ActionName { get; }
+			public string SequenceGroup { get; }
+			public InputActionPhase Phase { get; }
 
 			public InputActionIndex
 				(string actionMapName, string actionName, string sequenceGroup, InputActionPhase phase)
@@ -158,6 +158,8 @@ namespace T3Framework.Runtime.Input
 
 		private readonly Dictionary<InputActionIndex, InputActionSequence> sequenceActionMap = new();
 		private readonly Dictionary<InputActionIndex, InputAction.CallbackContext> sequenceContextMap = new();
+		private bool isInBanState = false;
+		private readonly HashSet<(string, string)> allowedActions = new();
 
 		// Defined Functions
 		private InputAction.CallbackContext GetContext(InputActionIndex index) => sequenceContextMap[index];
@@ -190,7 +192,8 @@ namespace T3Framework.Runtime.Input
 
 			sequenceActionMap[index].Sequence.Register(priority, () =>
 			{
-				if (!GlobalInputEnabled || IsFocusingOnTextField()) return true;
+				if (!GlobalInputEnabled || IsFocusingOnTextField() || !IsAllowed(actionMapName, actionName))
+					return true;
 				var context = GetContext(index);
 				var result = action.Invoke(context);
 				return result;
@@ -214,6 +217,29 @@ namespace T3Framework.Runtime.Input
 			}
 		}
 
+		public void Invoke(string actionMapName, string actionName, InputActionPhase phase = InputActionPhase.Performed)
+		{
+			foreach (var (index, actionSequence) in sequenceActionMap)
+			{
+				if (index.ActionMapName == actionMapName && index.ActionName == actionName && index.Phase == phase)
+				{
+					actionSequence.Sequence.Invoke();
+				}
+			}
+		}
+
+		public void BanAllExcept(params (string, string)[] exceptActions)
+		{
+			isInBanState = true;
+			allowedActions.Clear();
+			allowedActions.UnionWith(exceptActions);
+		}
+
+		public void AllowAll()
+		{
+			isInBanState = false;
+		}
+
 		private static bool IsFocusingOnTextField()
 		{
 			var selected = EventSystem.current.currentSelectedGameObject;
@@ -221,6 +247,11 @@ namespace T3Framework.Runtime.Input
 			InputField inputField = selected.GetComponent<InputField>();
 			TMP_InputField inputField2 = selected.GetComponent<TMP_InputField>();
 			return (inputField != null && inputField.isFocused) || (inputField2 != null && inputField2.isFocused);
+		}
+
+		private bool IsAllowed(string actionMapName, string actionName)
+		{
+			return !isInBanState || allowedActions.Contains((actionMapName, actionName));
 		}
 
 		// System Functions

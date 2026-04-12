@@ -1,0 +1,16 @@
+# 初始默认选择的难度 | 1 ~ 5 依次为 Normal ~ Ravage
+difficulty: 3
+# 谱面时间偏移量
+offset: 0
+# 音乐音量大小百分比（整数） | 范围 [0, 100]
+musicVolumePercent: 100
+# 初始默认设置的速度 | 范围 [0, 10]
+speed: 0
+# 横向时间格线密度 | 范围 [0, ?)
+timeGridLineCount: 4
+# 纵向位置格线密度 | 范围 [0, ?)
+widthGridInterval: 1.5
+# 纵向位置格线偏移
+widthGridOffset: 0
+# BPM列表，键为时间，值为BPM值
+bpmList: {}

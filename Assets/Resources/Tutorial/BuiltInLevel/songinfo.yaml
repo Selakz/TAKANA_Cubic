@@ -1,0 +1,22 @@
+# 歌曲的唯一标识符
+id: BuiltIn.Stream
+# 展示的曲名
+title:
+  en: Stream
+# 展示的曲师
+composer:
+  en: Kyaai
+# 展示的画师
+illustrator: {}
+# 展示的BPM信息
+bpmDisplay: "128"
+# 对歌曲的描述
+description: {}
+# 各难度信息
+difficulties:
+  3:
+    # 展示的难度等级文字
+    levelDisplay: 01
+    # 展示的谱师信息
+    charter:
+      en: Built-in
