@@ -9,6 +9,8 @@ namespace MusicGame.Gameplay.Judge.T3
 {
 	public class T3ComboFactory : IComboFactory
 	{
+		public const float ExtraRange = 0.1f;
+
 		public IEnumerable<IComboItem> CreateCombo(ChartComponent component)
 		{
 			if (component.Model is not INote note || note.IsDummy()) yield break;
@@ -29,8 +31,8 @@ namespace MusicGame.Gameplay.Judge.T3
 					yield return new HitCombo(component)
 					{
 						ExpectedTime = hold.TimeJudge,
-						LeftEdge = leftEdge,
-						RightEdge = rightEdge,
+						LeftEdge = leftEdge + ExtraRange, // Cut the range back to avoid false judgement of finger
+						RightEdge = rightEdge - ExtraRange,
 						NeedTap = true
 					};
 					yield return new HoldEndCombo(component)
@@ -52,13 +54,12 @@ namespace MusicGame.Gameplay.Judge.T3
 				return;
 			}
 
-			const float extraRange = 0.1f;
 			// TODO: May calculate an interval before the time judge to add up range
 			var left = track.Movement.GetLeftPos(component.Model.TimeMin);
 			var right = track.Movement.GetRightPos(component.Model.TimeMin);
 			if (left > right) (left, right) = (right, left);
-			leftEdge = left - extraRange;
-			rightEdge = right + extraRange;
+			leftEdge = left - ExtraRange;
+			rightEdge = right + ExtraRange;
 		}
 	}
 }

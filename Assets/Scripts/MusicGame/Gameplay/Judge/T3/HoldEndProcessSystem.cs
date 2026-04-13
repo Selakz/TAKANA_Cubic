@@ -106,9 +106,8 @@ namespace MusicGame.Gameplay.Judge.T3
 					else
 					{
 						if (endCombo.FromComponent.Parent?.Model is not ITrack track) return true;
-						// TODO: Share the same reference in T3ComboFactory
-						var leftEdge = track.Movement.GetLeftPos(chartTime) - 0.1f;
-						var rightEdge = track.Movement.GetRightPos(chartTime) + 0.1f;
+						var leftEdge = track.Movement.GetLeftPos(chartTime) - T3ComboFactory.ExtraRange;
+						var rightEdge = track.Movement.GetRightPos(chartTime) + T3ComboFactory.ExtraRange;
 						if (leftEdge > rightEdge) (leftEdge, rightEdge) = (rightEdge, leftEdge);
 						if (leftEdge > position || rightEdge < position)
 						{

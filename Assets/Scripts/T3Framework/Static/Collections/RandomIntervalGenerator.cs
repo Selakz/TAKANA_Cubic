@@ -15,26 +15,27 @@ namespace T3Framework.Static.Collections
 		private readonly float[] intervalLengthBuffer;
 		private readonly float[] gapLengthBuffer;
 		private readonly Interval[] intervalBuffer;
+		private readonly Func<double> valueGetter;
 
-		public RandomIntervalGenerator(int bufferSize)
+		public RandomIntervalGenerator(int bufferSize, Func<double>? valueGetter = null)
 		{
 			BufferSize = bufferSize;
 			intervalLengthBuffer = new float[bufferSize];
 			gapLengthBuffer = new float[bufferSize + 1];
 			intervalBuffer = new Interval[bufferSize];
+			this.valueGetter = valueGetter ?? new Random().NextDouble;
 		}
 
 		public ReadOnlySpan<Interval> Generate(int maxCount)
 		{
 			maxCount = Math.Min(maxCount, BufferSize);
 
-			Random rand = new Random();
 			float totalRange = MaxEdge - MinEdge;
 			int actualCount = 0;
 			float currentSum = 0;
 			for (int i = 0; i < maxCount; i++)
 			{
-				float nextLen = (float)(rand.NextDouble() * (MaxSize - MinSize) + MinSize);
+				float nextLen = (float)(valueGetter.Invoke() * (MaxSize - MinSize) + MinSize);
 				if (currentSum + nextLen > totalRange) break;
 
 				intervalLengthBuffer[i] = nextLen;
@@ -46,7 +47,7 @@ namespace T3Framework.Static.Collections
 			double weightSum = 0;
 			for (int i = 0; i < actualCount + 1; i++)
 			{
-				gapLengthBuffer[i] = (float)rand.NextDouble();
+				gapLengthBuffer[i] = (float)valueGetter.Invoke();
 				weightSum += gapLengthBuffer[i];
 			}
 
