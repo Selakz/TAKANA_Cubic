@@ -61,7 +61,7 @@ namespace MusicGame.ChartEditor.Level
 		// TODO: threading
 		public static ChartInfo GetPlayableChart(ChartInfo editingChart)
 		{
-			ChartInfo chart = (IChartSerializable.Clone(editingChart) as ChartInfo)!;
+			ChartInfo chart = IChartSerializable.Clone(editingChart);
 			chart.EditorConfig.Clear();
 			List<ChartComponent> toRemove = new();
 			foreach (var component in chart)
@@ -96,7 +96,7 @@ namespace MusicGame.ChartEditor.Level
 		public void SaveEditorChart(string? filePath = null)
 		{
 			if (levelInfo.Value is not { } info) return;
-			ChartInfo chart = (IChartSerializable.Clone(info.Chart) as ChartInfo)!;
+			ChartInfo chart = IChartSerializable.Clone(info.Chart);
 			ReassignIds(chart);
 			List<ChartComponent> toRemove = chart.Where(component => component.Model.IsEditorOnly()).ToList();
 			foreach (var component in toRemove) chart.RemoveComponent(component);

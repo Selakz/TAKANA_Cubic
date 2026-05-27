@@ -28,10 +28,10 @@ namespace MusicGame.Models
 	{
 		private static readonly Dictionary<string, Type> typeDict = new();
 
-		public static IStringSerializable Clone(IStringSerializable obj)
+		public static T Clone<T>(T obj) where T : IStringSerializable
 		{
 			var serialized = obj.Serialize(true);
-			return (IStringSerializable)Deserialize(serialized);
+			return (T)Deserialize(serialized);
 		}
 
 		public string Serialize();

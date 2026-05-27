@@ -32,12 +32,12 @@ namespace MusicGame.Models
 	{
 		private static readonly Dictionary<string, Type> typeDict = new();
 
-		public static IChartSerializable Clone(IChartSerializable obj, object? context = null)
+		public static T Clone<T>(T obj, object? context = null) where T : IChartSerializable
 		{
 			var serialized = obj.Serialize(true);
 			return context is null
-				? (IChartSerializable)Deserialize(serialized)
-				: (IChartSerializable)Deserialize(serialized, context);
+				? (T)Deserialize(serialized)
+				: (T)Deserialize(serialized, context);
 		}
 
 		public JObject GetSerializationToken();
