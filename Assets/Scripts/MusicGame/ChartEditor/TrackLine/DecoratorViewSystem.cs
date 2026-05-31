@@ -1,10 +1,10 @@
 #nullable enable
 
-using MusicGame.ChartEditor.TrackLayer;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Speed;
 using MusicGame.Models.Track;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
@@ -29,7 +29,11 @@ namespace MusicGame.ChartEditor.TrackLine
 				handler => UpdateView(decoratorPool[handler]!)),
 			new DatasetRegistrar<ChartComponent>(decoratorPool,
 				DatasetRegistrar<ChartComponent>.RegisterTarget.DataUpdated,
-				UpdateView)
+				UpdateView),
+			new PropertyRegistrar<ISpeed>(speed, _ =>
+			{
+				foreach (var component in decoratorPool) UpdateView(component);
+			})
 		};
 
 		// Defined Functions
@@ -50,13 +54,18 @@ namespace MusicGame.ChartEditor.TrackLine
 		{
 			if (component.Model is not ITrack track || decoratorPool[component] is not { } handler) return;
 			var decorator = handler.Script<TrackDecorator>();
-			decorator.Indicator.size = decorator.Indicator.size with
-			{
-				x = track.Movement.GetWidth(track.TimeStart)
-			};
+			// Start Indicator
+			decorator.Indicator.size =
+				decorator.Indicator.size with { x = track.Movement.GetWidth(track.TimeStart) };
 			var position = decorator.Indicator.transform.localPosition;
 			position.x = track.Movement.GetPos(track.TimeStart);
 			decorator.Indicator.transform.localPosition = position;
+			// End Indicator
+			decorator.EndIndicator.size =
+				decorator.EndIndicator.size with { x = track.Movement.GetWidth(track.TimeEnd) };
+			position = new(
+				track.Movement.GetPos(track.TimeEnd), speed.Value.SpeedRate * (track.TimeEnd - track.TimeStart).Second);
+			decorator.EndIndicator.transform.localPosition = position;
 		}
 
 		// System Functions
