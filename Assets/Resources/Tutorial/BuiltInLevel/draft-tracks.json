@@ -1,0 +1,164 @@
+{
+  "version": 3,
+  "properties": {
+    "offset": {
+      "value": 0,
+      "type": "offset"
+    }
+  },
+  "editorconfig": {
+    "bpm": {
+      "list": [
+        "(0,  128.0000)"
+      ],
+      "type": "bpm"
+    },
+    "layers": {
+      "value": [
+        {
+          "id": 0,
+          "name": "默认图层",
+          "color": "(000000, 1.00)",
+          "isDecoration": false,
+          "isSelected": true
+        }
+      ],
+      "type": "trackLayers"
+    }
+  },
+  "components": [
+    {
+      "id": 6,
+      "model": {
+        "type": "line"
+      },
+      "children": [
+        {
+          "id": 3,
+          "model": {
+            "timeStart": -1000,
+            "timeEnd": 141792,
+            "movement": {
+              "left": {
+                "list": {
+                  "-1000": "v1e_(-0.90, u)",
+                  "141792": "v1e_(-0.90, u)"
+                },
+                "type": "position"
+              },
+              "right": {
+                "list": {
+                  "-1000": "v1e_(0.90, u)",
+                  "141792": "v1e_(0.00, u)"
+                },
+                "type": "position"
+              },
+              "type": "trackEdgeMovement"
+            },
+            "type": "track"
+          }
+        },
+        {
+          "id": 1,
+          "model": {
+            "timeStart": -1000,
+            "timeEnd": 141792,
+            "movement": {
+              "left": {
+                "list": {
+                  "-1000": "v1e_(-4.50, u)",
+                  "141792": "v1e_(-4.50, u)"
+                },
+                "type": "position"
+              },
+              "right": {
+                "list": {
+                  "-1000": "v1e_(-2.70, u)",
+                  "141792": "v1e_(-3.60, u)"
+                },
+                "type": "position"
+              },
+              "type": "trackEdgeMovement"
+            },
+            "type": "track"
+          }
+        },
+        {
+          "id": 2,
+          "model": {
+            "timeStart": -1000,
+            "timeEnd": 141792,
+            "movement": {
+              "left": {
+                "list": {
+                  "-1000": "v1e_(-2.70, u)",
+                  "141792": "v1e_(-2.70, u)"
+                },
+                "type": "position"
+              },
+              "right": {
+                "list": {
+                  "-1000": "v1e_(-0.90, u)",
+                  "141792": "v1e_(-1.80, u)"
+                },
+                "type": "position"
+              },
+              "type": "trackEdgeMovement"
+            },
+            "type": "track"
+          }
+        },
+        {
+          "id": 4,
+          "model": {
+            "timeStart": -1000,
+            "timeEnd": 141792,
+            "movement": {
+              "left": {
+                "list": {
+                  "-1000": "v1e_(0.90, u)",
+                  "141792": "v1e_(0.90, u)"
+                },
+                "type": "position"
+              },
+              "right": {
+                "list": {
+                  "-1000": "v1e_(2.70, u)",
+                  "141792": "v1e_(1.80, u)"
+                },
+                "type": "position"
+              },
+              "type": "trackEdgeMovement"
+            },
+            "type": "track"
+          }
+        },
+        {
+          "id": 5,
+          "model": {
+            "timeStart": -1000,
+            "timeEnd": 141792,
+            "movement": {
+              "left": {
+                "list": {
+                  "-1000": "v1e_(2.70, u)",
+                  "141792": "v1e_(2.70, u)"
+                },
+                "type": "position"
+              },
+              "right": {
+                "list": {
+                  "-1000": "v1e_(4.50, u)",
+                  "141792": "v1e_(3.60, u)"
+                },
+                "type": "position"
+              },
+              "type": "trackEdgeMovement"
+            },
+            "type": "track"
+          }
+        }
+      ]
+    }
+  ]
+}

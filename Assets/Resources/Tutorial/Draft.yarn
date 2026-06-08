@@ -1,0 +1,104 @@
+﻿title: Draft
+---
+
+Senoz: 就是说...... #line:0a72e47
+ 
+<<draw HalfCg draft-intro>>
+Senoz: 老实写谱很枯燥吧？ #line:02a8ab1
+ 
+<<destroy HalfCg>>
+Senoz: 脑子里有了一段惊为天人的配置，打开制谱器却发现还要一个个先创建轨道、调整轨道的位置，灵感都跑没了不是吗。 #line:0201a29 
+
+Senoz: 草稿功能正是为了解决这个问题而生的，可以放置不在轨道上的自由Note，之后再把它们安排回轨道上。 #line:0531eff 
+
+Senoz: 接下来就来看看怎么使用吧。 #line:073486c 
+
+-> 简单介绍版 #line:0888cfe 
+    <<jump DraftBrief>>
+-> 实践教学版 #line:0582fbe 
+    <<jump DraftTutorial>>
+===
+
+title: DraftBrief
+---
+
+按[b]Ctrl + D[/b]切换草稿模式，在草稿模式下[b]右键[/b]即可放置草稿Note。 #line:012123e 
+
+草稿Note支持复制粘贴、拖动、框选、多选等操作，与普通Note和轨道结点的操作方式基本一致。 #line:02d5b4a 
+
+[b]Z键[/b]和[b]X键[/b]用于修改草稿Note的宽度，[b]Shift+Z[/b]和[b]Shift+X[/b]则将宽度对齐到格线。未选中任何草稿Note时，会修改预览Note的宽度。 #line:041e7ef 
+
+草稿模式下可以选中轨道，此时选中的草稿Note与轨道可同时存在。 #line:0e2ea37 
+
+按[b]B键[/b]可将选中的草稿Note自动吸附到位置与宽度最接近的轨道上，成为正式Note。若同时选中了轨道，则仅在选中的轨道中寻找目标。 #line:09db00e 
+
+选中一个轨道和若干草稿Note时，按[b]H键[/b]可将草稿Note转换为该轨道的结点，用于锚定轨道的运动轨迹。 #line:0cac099 
+
+按[b]T键[/b]可将每个选中的草稿Note转换为独立的单个轨道，适合制作闪现特效。 #line:08cc0ad 
+
+<<jump DraftEnding>>
+===
+
+title: DraftTutorial
+---
+
+<<task LoadLevel>>
+现在我们已经加载了示例关卡。 #line:0ec2713 
+
+按[b]Ctrl + D[/b]切换草稿模式，然后右键放置你的第一个草稿Note吧。 #line:028670a 
+
+<<task TryCreateDraftNote openForEdit>>
+草稿Note的操作与普通Note、轨道结点基本一致，比如可以复制粘贴、拖动，可以选中两个草稿Note后按[b]H键[/b]将它们连接成Hold。 #line:0b26afb 
+
+[b]Z键[/b]和[b]X键[/b]用于修改草稿Note的宽度，[b]Shift+Z[/b]和[b]Shift+X[/b]则将宽度对齐到格线。如果没有选中任何草稿Note的话，会修改预览Note的宽度哦。 #line:0abbaf1 
+
+Senoz: 然而Ctrl+Z是撤销，Ctrl+X是剪切，真是十分奇怪呢（ #line:01a75e4 
+
+不管怎样，让我们多来点草稿—— #line:06d132c 
+
+<<append draft-notes>>
+<<time -1000>>
+现在试着修改5次草稿Note的宽度吧。最好开着格线和不开格线都试一试？ #line:0e0c01d 
+
+<<task TryChangeDraftWidth openForEdit>>
+草稿模式下的选中模式与一般模式下有所不同。 #line:07cb3f5 
+
+一般模式下无法选中草稿Note，而草稿模式下亦无法选中普通Note。 #line:07fd764 
+
+一般模式下Note和轨道不能同时选中，但草稿Note是可以跟轨道同时选中的。 #line:09132b2 
+
+那么，下面要介绍的三个功能都旨在将草稿Note进行“转正”。 #line:05dcef2 
+
+第一个功能：按[b]B键[/b]将选中的草稿Note自动吸附到位置与宽度最接近的轨道上，成为正式Note。 #line:0a7cdee 
+
+分两种情况：如果只选中了草稿Note，那就会在整个谱面中寻找最合适的轨道；如果同时还选中了一些轨道，则只会在选中的轨道里找。 #line:0b972b4 
+
+<<append draft-tracks>>
+<<time -1000>>
+关卡里现在多了5个轨道。现在试着把5个草稿Note吸附到轨道上吧。 #line:0b24aac 
+
+<<task TryBindDraftToTrack openForEdit>>
+第二个功能：选中一个轨道和若干草稿Note时，按[b]H键[/b]会把草稿Note变成轨道的结点。 #line:0e7faad 
+
+这也就意味着草稿除了锚定配置外，还可以锚定轨道的大致运动轨迹。 #line:0234058 
+
+现在试着把5个草稿Note变成轨道的结点吧。 #line:070eb03 
+
+<<task TryDraftToNode openForEdit>>
+第三个功能：按[b]T键[/b]将每个选中的草稿Note变成独立的单个轨道。这个功能适合做闪现特效的时候用。 #line:0fd740d 
+
+现在试着把5个草稿Note变成单独的轨道吧。 #line:062226b 
+
+<<task TryDraftToTrack openForEdit>>
+<<jump DraftEnding>>
+===
+
+title: DraftEnding
+---
+顺带一提，在底部的谱面格式化功能里可以把全部草稿删除哦。 #line:04b9e78 
+
+那么草稿Note的功能就介绍到这了，希望能对你的写谱有所帮助。 #line:0b6f8c7 
+
+<<destroy Senoz>>
+<<complete Draft>>
+===

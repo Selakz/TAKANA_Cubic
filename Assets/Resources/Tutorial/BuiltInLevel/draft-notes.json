@@ -1,0 +1,1089 @@
+{
+  "version": 3,
+  "properties": {
+    "offset": {
+      "value": 0,
+      "type": "offset"
+    }
+  },
+  "editorconfig": {
+    "layers": {
+      "value": [
+        {
+          "id": 0,
+          "name": "默认图层",
+          "color": "(000000, 1.00)",
+          "isDecoration": false,
+          "isSelected": true
+        }
+      ],
+      "type": "trackLayers"
+    },
+    "bpm": {
+      "list": [
+        "(0,  128.0000)"
+      ],
+      "type": "bpm"
+    }
+  },
+  "components": [
+    {
+      "id": 137,
+      "model": {
+        "type": "line"
+      },
+      "children": [
+        {
+          "id": 71,
+          "model": {
+            "timeJudge": 7968,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 1,
+          "model": {
+            "timeJudge": 0,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 2,
+          "model": {
+            "timeJudge": 0,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 5,
+          "model": {
+            "timeJudge": 703,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 4,
+          "model": {
+            "timeJudge": 468,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 3,
+          "model": {
+            "timeJudge": 234,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 6,
+          "model": {
+            "timeJudge": 820,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 7,
+          "model": {
+            "timeJudge": 1054,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 8,
+          "model": {
+            "timeJudge": 1171,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 9,
+          "model": {
+            "timeJudge": 1406,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 10,
+          "model": {
+            "timeJudge": 1640,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 70,
+          "model": {
+            "timeJudge": 7968,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 68,
+          "model": {
+            "timeJudge": 7500,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 69,
+          "model": {
+            "timeJudge": 7734,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 67,
+          "model": {
+            "timeJudge": 7500,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 64,
+          "model": {
+            "timeJudge": 7148,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 60,
+          "model": {
+            "timeJudge": 6679,
+            "hitType": "Tap",
+            "position": -2.25,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 63,
+          "model": {
+            "timeJudge": 7031,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 62,
+          "model": {
+            "timeJudge": 6914,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 14,
+          "model": {
+            "timeJudge": 3515,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 15,
+          "model": {
+            "timeJudge": 3046,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 16,
+          "model": {
+            "timeJudge": 2578,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 17,
+          "model": {
+            "timeJudge": 3281,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 18,
+          "model": {
+            "timeJudge": 2343,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 19,
+          "model": {
+            "timeJudge": 2109,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 20,
+          "model": {
+            "timeJudge": 2695,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 21,
+          "model": {
+            "timeJudge": 2929,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 22,
+          "model": {
+            "timeJudge": 1875,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 23,
+          "model": {
+            "timeJudge": 1875,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 24,
+          "model": {
+            "timeJudge": 5390,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 25,
+          "model": {
+            "timeJudge": 4921,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 26,
+          "model": {
+            "timeJudge": 4453,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 27,
+          "model": {
+            "timeJudge": 5156,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 28,
+          "model": {
+            "timeJudge": 4218,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 29,
+          "model": {
+            "timeJudge": 3984,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 30,
+          "model": {
+            "timeJudge": 4570,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 31,
+          "model": {
+            "timeJudge": 4804,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 32,
+          "model": {
+            "timeJudge": 3750,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 33,
+          "model": {
+            "timeJudge": 3750,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 66,
+          "model": {
+            "timeJudge": 7382,
+            "hitType": "Tap",
+            "position": 3.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 61,
+          "model": {
+            "timeJudge": 6796,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 36,
+          "model": {
+            "timeJudge": 6328,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.79999971,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 65,
+          "model": {
+            "timeJudge": 7265,
+            "hitType": "Tap",
+            "position": 2.25,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 38,
+          "model": {
+            "timeJudge": 6093,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 39,
+          "model": {
+            "timeJudge": 5859,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 59,
+          "model": {
+            "timeJudge": 6562,
+            "hitType": "Tap",
+            "position": -3.75,
+            "width": 1.7,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 42,
+          "model": {
+            "timeJudge": 5625,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 43,
+          "model": {
+            "timeJudge": 5625,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 72,
+          "model": {
+            "timeJudge": 8203,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 75,
+          "model": {
+            "timeJudge": 8437,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 74,
+          "model": {
+            "timeJudge": 8320,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 76,
+          "model": {
+            "timeJudge": 8554,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 77,
+          "model": {
+            "timeJudge": 8671,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 78,
+          "model": {
+            "timeJudge": 8906,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 79,
+          "model": {
+            "timeJudge": 8906,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 80,
+          "model": {
+            "timeJudge": 9140,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 81,
+          "model": {
+            "timeJudge": 9257,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 82,
+          "model": {
+            "timeJudge": 9375,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 83,
+          "model": {
+            "timeJudge": 9375,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 84,
+          "model": {
+            "timeJudge": 9609,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 85,
+          "model": {
+            "timeJudge": 9843,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 88,
+          "model": {
+            "timeJudge": 10078,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 87,
+          "model": {
+            "timeJudge": 9843,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 89,
+          "model": {
+            "timeJudge": 10195,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 90,
+          "model": {
+            "timeJudge": 10312,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 91,
+          "model": {
+            "timeJudge": 10429,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 92,
+          "model": {
+            "timeJudge": 10546,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 93,
+          "model": {
+            "timeJudge": 10781,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 94,
+          "model": {
+            "timeJudge": 10781,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 95,
+          "model": {
+            "timeJudge": 11015,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 96,
+          "model": {
+            "timeJudge": 11250,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 97,
+          "model": {
+            "timeJudge": 11250,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 98,
+          "model": {
+            "timeJudge": 11132,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.80000019,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 99,
+          "model": {
+            "timeJudge": 11484,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 100,
+          "model": {
+            "timeJudge": 11718,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 101,
+          "model": {
+            "timeJudge": 11718,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 102,
+          "model": {
+            "timeJudge": 11953,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 103,
+          "model": {
+            "timeJudge": 12070,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 104,
+          "model": {
+            "timeJudge": 12187,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 105,
+          "model": {
+            "timeJudge": 12304,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 106,
+          "model": {
+            "timeJudge": 12421,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 107,
+          "model": {
+            "timeJudge": 12656,
+            "hitType": "Tap",
+            "position": -1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 108,
+          "model": {
+            "timeJudge": 12656,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 109,
+          "model": {
+            "timeJudge": 12890,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 110,
+          "model": {
+            "timeJudge": 13007,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 111,
+          "model": {
+            "timeJudge": 13125,
+            "hitType": "Tap",
+            "position": -2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 112,
+          "model": {
+            "timeJudge": 13242,
+            "hitType": "Tap",
+            "position": -3.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 113,
+          "model": {
+            "timeJudge": 13359,
+            "hitType": "Tap",
+            "position": -2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 114,
+          "model": {
+            "timeJudge": 13476,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 115,
+          "model": {
+            "timeJudge": 13593,
+            "hitType": "Tap",
+            "position": -2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 116,
+          "model": {
+            "timeJudge": 13710,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 117,
+          "model": {
+            "timeJudge": 13828,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 118,
+          "model": {
+            "timeJudge": 13945,
+            "hitType": "Tap",
+            "position": 2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 119,
+          "model": {
+            "timeJudge": 14062,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 120,
+          "model": {
+            "timeJudge": 14179,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 121,
+          "model": {
+            "timeJudge": 14296,
+            "hitType": "Tap",
+            "position": 2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 122,
+          "model": {
+            "timeJudge": 14414,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 123,
+          "model": {
+            "timeJudge": 14531,
+            "hitType": "Tap",
+            "position": -0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 124,
+          "model": {
+            "timeJudge": 14648,
+            "hitType": "Tap",
+            "position": 0.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 125,
+          "model": {
+            "timeJudge": 14765,
+            "hitType": "Tap",
+            "position": 2.25,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 126,
+          "model": {
+            "timeJudge": 14882,
+            "hitType": "Tap",
+            "position": 3.75,
+            "width": 1.5,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 127,
+          "model": {
+            "timeJudge": 13125,
+            "hitType": "Tap",
+            "position": 0.0,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 128,
+          "model": {
+            "timeJudge": 13828,
+            "hitType": "Tap",
+            "position": -3.6,
+            "width": 1.8,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 136,
+          "model": {
+            "timeJudge": 6445,
+            "hitType": "Tap",
+            "position": 3.6,
+            "width": 1.79999983,
+            "type": "draftHit"
+          }
+        },
+        {
+          "id": 135,
+          "model": {
+            "timeJudge": 6328,
+            "hitType": "Tap",
+            "position": 1.8,
+            "width": 1.79999983,
+            "type": "draftHit"
+          }
+        }
+      ]
+    }
+  ]
+}

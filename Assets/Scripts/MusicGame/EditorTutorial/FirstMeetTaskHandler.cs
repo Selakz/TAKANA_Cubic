@@ -6,16 +6,13 @@ using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
-using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
 using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
-using Newtonsoft.Json.Linq;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
-using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Event;
@@ -35,30 +32,8 @@ namespace MusicGame.EditorTutorial
 		[SerializeField] private int bpmTabIndex = 3;
 
 		// Event Registrars
-		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
+		protected override IEventRegistrar[] EnableRegistrars => new[]
 		{
-			dispatcher.Registrar("LoadLevel", () =>
-			{
-				timeRetriever.Value = defaultTimeRetriever;
-				var music = Resources.Load<AudioClip>("Tutorial/BuiltInLevel/music");
-				var chartText = Resources.Load<TextAsset>("Tutorial/BuiltInLevel/chart").text;
-				var chart = ChartInfo.Deserialize(JObject.Parse(chartText));
-				var songInfoText = Resources.Load<TextAsset>("Tutorial/BuiltInLevel/songinfo").text;
-				var songInfo = SettingConvertHelper.Deserializer.Deserialize<SongInfo>(songInfoText);
-				var preferenceText = Resources.Load<TextAsset>("Tutorial/BuiltInLevel/preference").text;
-				var preference = SettingConvertHelper.Deserializer.Deserialize<EditorPreference>(preferenceText);
-				var info = new LevelInfo
-				{
-					LevelPath = "BuiltInResource",
-					Chart = chart,
-					Music = music,
-					SongInfo = songInfo,
-					Preference = preference,
-					Difficulty = preference.Difficulty
-				};
-				levelInfo.Value = info;
-				return YarnTask.CompletedTask;
-			}),
 			dispatcher.Registrar("ShowBpm", () =>
 			{
 				timeRetriever.Value = gridTimeRetriever;
