@@ -1,60 +1,49 @@
 #nullable enable
 
-using System;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models;
 using MusicGame.Models.Track;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Basic.T3
 {
-	public class T3TrackViewSystem : IInitializable
+	public class T3TrackViewSystem : HierarchySystem<T3TrackViewSystem>
 	{
-		private readonly int positionPriority;
-		private readonly int widthPriority;
-		private readonly IGameAudioPlayer music;
-		private readonly SubViewPool<ChartComponent, Type> trackPool;
+		// Serializable and Public
+		[SerializeField] private SequencePriority positionPriority = default!;
+		[SerializeField] private SequencePriority widthPriority = default!;
 
-		public IViewPool<ChartComponent> TrackPool => trackPool;
-
-		public T3TrackViewSystem(
-			int positionPriority,
-			int widthPriority,
-			IGameAudioPlayer music,
-			[Key("stage")] IViewPool<ChartComponent> viewPool)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			this.positionPriority = positionPriority;
-			this.widthPriority = widthPriority;
-			this.music = music;
-			trackPool = new SubViewPool<ChartComponent, Type>(viewPool, new TypeClassifier<IChartModel>(),
-				typeof(Track));
-			trackPool.OnDataAdded += OnDataAdded;
-			trackPool.BeforeDataRemoved += BeforeDataRemoved;
-		}
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() =>
+				{
+					var track = viewPool[handler]!;
+					if (track.Model is not ITrack trackModel) return;
+					var presenter = handler.Script<T3TrackViewPresenter>();
+					presenter.PositionModifier.Register(
+						_ => trackModel.Movement.GetPos(music.ChartTime), positionPriority, true);
+					presenter.WidthModifier.Register(
+						_ => trackModel.Movement.GetWidth(music.ChartTime), widthPriority, true);
+				},
+				() =>
+				{
+					var track = viewPool[handler]!;
+					if (track.Model is not ITrack) return;
+					var presenter = handler.Script<T3TrackViewPresenter>();
+					presenter.PositionModifier.Unregister(positionPriority, true);
+					presenter.WidthModifier.Unregister(widthPriority, true);
+				}))
+		};
 
-		private void OnDataAdded(ChartComponent track)
-		{
-			var presenter = trackPool[track]!.Script<T3TrackViewPresenter>();
-			presenter.PositionModifier.Register(
-				_ => (track.Model as ITrack)!.Movement.GetPos(music.ChartTime),
-				positionPriority, true);
-			presenter.WidthModifier.Register(
-				_ => (track.Model as ITrack)!.Movement.GetWidth(music.ChartTime),
-				widthPriority, true);
-		}
-
-		private void BeforeDataRemoved(ChartComponent track)
-		{
-			var presenter = trackPool[track]!.Script<T3TrackViewPresenter>();
-			presenter.PositionModifier.Unregister(positionPriority, true);
-			presenter.WidthModifier.Unregister(widthPriority, true);
-		}
-
-		public void Initialize()
-		{
-		}
+		// Private
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 	}
 }

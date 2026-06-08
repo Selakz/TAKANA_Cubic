@@ -10,7 +10,9 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
 using MusicGame.Models.Note;
 using T3Framework.Preset.Drag;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Input;
 using T3Framework.Runtime.Log;
@@ -20,55 +22,99 @@ using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit
 {
-	public class NoteDragHelper : DragHelper
+	public class NoteDragHelper : DragHelper, IComponentDragHelper
 	{
-		private readonly ChartSelectDataset dataset;
+		private readonly ChartSelectDataset selectDataset;
 		private readonly StageMouseTimeRetriever timeRetriever;
 		private readonly CommandManager commandManager;
+		private readonly IDataset<NoteRawInfo> rawDataset;
+		private readonly INoteRawInfoService service;
 
-		private readonly List<ChartComponent> draggingNotes = new();
+		private readonly List<NoteRawInfo> draggingInfos = new();
+		private T3Time lastTime = 0;
 
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
 		public override Vector3 CurrentScreenPoint => Input.mousePosition;
 
-		public IReadOnlyList<ChartComponent> DraggingNotes => draggingNotes;
+		public IReadOnlyList<NoteRawInfo> DraggingInfos => draggingInfos;
 
 		public T3Time BeginTime { get; private set; }
 
+		public IChartModel? BaseModel { get; private set; }
+
 		public NoteDragHelper(
 			StageMouseTimeRetriever timeRetriever,
-			ChartSelectDataset dataset,
-			CommandManager commandManager)
+			ChartSelectDataset selectDataset,
+			CommandManager commandManager,
+			IDataset<NoteRawInfo> rawDataset,
+			INoteRawInfoService service)
 		{
-			this.dataset = dataset;
+			this.selectDataset = selectDataset;
 			this.timeRetriever = timeRetriever;
 			this.commandManager = commandManager;
+			this.rawDataset = rawDataset;
+			this.service = service;
 		}
 
-		public void Prepare(T3Time beginTime)
+		public void Prepare(IChartModel model)
 		{
-			BeginTime = beginTime;
-			draggingNotes.Clear();
-			draggingNotes.AddRange(dataset.Where(c => c.Model is INote));
-			draggingNotes.Sort((a, b) => a.Model.TimeMin.CompareTo(b.Model.TimeMin));
+			BaseModel = IChartSerializable.Clone(model);
+			BeginTime = model.TimeMin;
 		}
+
+		protected virtual NoteRawInfo? FromComponent(ChartComponent note) => NoteRawInfo.FromComponent(note);
 
 		protected override void BeginDragLogic()
 		{
-			if (draggingNotes.Count == 0) CancelDrag();
+			var notes = selectDataset.Where(c => c.Model is INote).ToList();
+			if (notes.Count == 0)
+			{
+				CancelDrag();
+				return;
+			}
+
+			rawDataset.Clear();
+			draggingInfos.Clear();
+			foreach (var note in notes)
+			{
+				if (FromComponent(note) is { } info)
+				{
+					rawDataset.Add(info);
+					draggingInfos.Add(info);
+				}
+			}
+
+			lastTime = BeginTime;
 		}
 
 		protected override void OnDraggingLogic()
 		{
+			if (draggingInfos.Count == 0 || !timeRetriever.GetMouseTimeStart(out var timeJudge)) return;
+
+			var distance = timeJudge - lastTime;
+			foreach (var info in draggingInfos)
+			{
+				if (distance > 0)
+				{
+					info.TimeEnd.Value += distance;
+					info.TimeJudge.Value += distance;
+				}
+				else
+				{
+					info.TimeJudge.Value += distance;
+					info.TimeEnd.Value += distance;
+				}
+			}
+
+			lastTime = timeJudge;
 		}
 
 		protected override void EndDragLogic()
 		{
-			if (draggingNotes.Count > 0 && timeRetriever.GetMouseTimeStart(out var newTime))
+			if (draggingInfos.Count > 0 && timeRetriever.GetMouseTimeStart(out var newTime))
 			{
 				var distance = newTime - BeginTime;
 				if (Mathf.Abs(distance) < ISingleton<InScreenEditSetting>.Instance.TimeDragThreshold.Value)
@@ -76,33 +122,48 @@ namespace MusicGame.ChartEditor.InScreenEdit
 					return;
 				}
 
-				if (draggingNotes.Any(c => !c.IsWithinParentRange(distance)))
+				if (draggingInfos.Any(info => service.IsValid(info) is not null))
 				{
 					T3Logger.Log("Notice", "Edit_NoteTimeOutOfRange", T3LogType.Warn);
 					return;
 				}
 
-				var commands = draggingNotes.Select(c => new UpdateComponentCommand(
-					component => component.Nudge(distance),
-					component => component.Nudge(-distance), c));
+				List<ICommand> commands = new();
+				foreach (var info in draggingInfos)
+				{
+					var model = info.GenerateModel();
+					if (info.Parent.Value is { BelongingChart: { } chart } parent)
+						commands.Add(new AddComponentCommand(chart, model, parent));
+				}
+
+				commands.AddRange(selectDataset
+					.Where(c => c.Model is INote)
+					.Select(note => new DeleteComponentCommand(note)));
 
 				commandManager.Add(new BatchCommand(commands, "Dragging Notes"));
 			}
 		}
 
-		protected override void CancelDragLogic() => draggingNotes.Clear();
+		protected override void CancelDragLogic()
+		{
+			rawDataset.Clear();
+			draggingInfos.Clear();
+		}
 	}
 
-	public class NoteDragPlugin : T3MonoBehaviour, ISelfInstaller
+	public class NoteDragPlugin : HierarchySystem<NoteDragPlugin>
 	{
 		// Serializable and Public
+		[SerializeField] private SequencePriority moduleId = default!;
 		[SerializeField] private SequencePriority dragPriority = default!;
 
-		public NotifiableProperty<bool> IsDragging => dragHelper.IsDragging;
+		public NotifiableProperty<bool> IsDragging => DragHelper.IsDragging;
 
-		public T3Time BeginTime => dragHelper.BeginTime;
+		public T3Time BeginTime => DragHelper.BaseModel?.TimeMin ?? 0;
 
-		public IReadOnlyList<ChartComponent> DraggingNotes => dragHelper.DraggingNotes;
+		public IReadOnlyList<NoteRawInfo> DraggingInfos => ((NoteDragHelper)DragHelper.Current.Value).DraggingInfos;
+
+		public OverridableComponentDragHelper DragHelper { get; private set; } = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -110,33 +171,36 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				InputActionPhase.Started),
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", dragPriority.Value, OnEndDragInput,
 				InputActionPhase.Performed),
-			new InputRegistrar("General", "Escape", OnCancelDragInput)
+			new InputRegistrar("General", "Escape", OnCancelDragInput),
+
+			new PropertyRegistrar<bool>(DragHelper.IsDragging, value =>
+			{
+				if (value) moduleInfo.Register(moduleId);
+				else moduleInfo.Unregister(moduleId);
+			})
 		};
 
 		// Private
-		private SelectInputSystem inputSystem = default!;
-		private ChartSelectDataset dataset = default!;
-		private NoteDragHelper dragHelper = default!;
+		[Inject] private ModuleInfo moduleInfo = default!;
+		[Inject] private SelectInputSystem inputSystem = default!;
+		[Inject] private ChartSelectDataset dataset = default!;
 
 		// Defined Functions
 		[Inject]
 		private void Construct(
-			SelectInputSystem inputSystem,
 			ChartSelectDataset dataset,
 			StageMouseTimeRetriever timeRetriever,
-			CommandManager commandManager)
+			CommandManager commandManager,
+			IDataset<NoteRawInfo> rawDataset,
+			INoteRawInfoService service)
 		{
-			this.inputSystem = inputSystem;
-			this.dataset = dataset;
-
-			dragHelper = new NoteDragHelper(timeRetriever, dataset, commandManager);
+			var defaultDragHelper = new NoteDragHelper(timeRetriever, dataset, commandManager, rawDataset, service);
+			DragHelper = new OverridableComponentDragHelper(defaultDragHelper);
 		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
 		private bool OnBeginDragInput()
 		{
-			if (dragHelper.IsDragging.Value) return true;
+			if (DragHelper.IsDragging.Value) return true;
 			if (!inputSystem.RaycastSystems.TryGetValue(T3Flag.Note, out var raycastSystem)) return true;
 
 			var span = raycastSystem.DoRaycastNonSelect();
@@ -144,16 +208,16 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			{
 				if (dataset.Contains(pair.Value))
 				{
-					dragHelper.Prepare(pair.Value.Model.TimeMin);
-					return !dragHelper.BeginDrag();
+					DragHelper.Prepare(pair.Value.Model);
+					return !DragHelper.BeginDrag();
 				}
 			}
 
 			return true;
 		}
 
-		private bool OnEndDragInput() => !dragHelper.EndDrag();
+		private bool OnEndDragInput() => !DragHelper.EndDrag();
 
-		private void OnCancelDragInput() => dragHelper.CancelDrag();
+		private void OnCancelDragInput() => DragHelper.CancelDrag();
 	}
 }

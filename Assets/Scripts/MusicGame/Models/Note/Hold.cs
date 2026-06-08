@@ -59,7 +59,7 @@ namespace MusicGame.Models.Note
 			TailMovement.Nudge(distance);
 		}
 
-		public JObject GetSerializationToken()
+		public virtual JObject GetSerializationToken()
 		{
 			var dict = new JObject();
 			dict.Add("timeJudge", TimeJudge.Milli);

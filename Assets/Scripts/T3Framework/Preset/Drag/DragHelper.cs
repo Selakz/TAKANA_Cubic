@@ -5,9 +5,21 @@ using UnityEngine;
 
 namespace T3Framework.Preset.Drag
 {
-	public abstract class DragHelper
+	public interface IDragHelper
+	{
+		public NotifiableProperty<bool> IsDragging { get; }
+
+		public bool BeginDrag();
+
+		public bool EndDrag();
+
+		public void CancelDrag();
+	}
+
+	public abstract class DragHelper : IDragHelper
 	{
 		// Serializable and Public
+		/// <summary> This is changed before <see cref="BeginDrag"/> and after <see cref="EndDrag"/> </summary>
 		public NotifiableProperty<bool> IsDragging { get; } = new(false);
 
 		public abstract int DragThreshold { get; }
@@ -81,6 +93,8 @@ namespace T3Framework.Preset.Drag
 		protected abstract void BeginDragLogic();
 		protected abstract void OnDraggingLogic();
 		protected abstract void EndDragLogic();
+
+		/// <summary> Will always be called no matter the drag is canceled or not </summary>
 		protected abstract void CancelDragLogic();
 	}
 }

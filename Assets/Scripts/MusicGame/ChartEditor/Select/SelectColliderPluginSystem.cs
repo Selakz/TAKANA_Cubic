@@ -6,21 +6,15 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Select
 {
-	public class SelectColliderPluginSystem : T3System, ITickable
+	public class SelectColliderPluginSystem : HierarchySystem<SelectColliderPluginSystem>
 	{
-		// Private
-		private readonly IClassifier<T3Flag> classifier;
-		private readonly IGameAudioPlayer music;
-		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly IViewPool<ChartComponent> pluginPool;
-		private readonly Dictionary<T3Flag, TextureAlignInfo> textureAlignInfos;
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new ViewPoolPluginRegistrar<ChartComponent>(viewPool, pluginPool, "select-collider",
 				data =>
@@ -42,22 +36,18 @@ namespace MusicGame.ChartEditor.Select
 				data => !data.Model.IsEditorOnly())
 		};
 
-		// Defined Functions
-		public SelectColliderPluginSystem(
-			IGameAudioPlayer music,
-			[Key("stage")] IViewPool<ChartComponent> viewPool,
-			[Key("select-collider")] IViewPool<ChartComponent> pluginPool,
-			[Key("select-collider")] Dictionary<T3Flag, TextureAlignInfo> textureAlignInfos) : base(true)
-		{
-			classifier = new T3ChartClassifier();
-			this.music = music;
-			this.viewPool = viewPool;
-			this.pluginPool = pluginPool;
-			this.textureAlignInfos = textureAlignInfos;
-		}
+		// Private
+		[Inject] private readonly IGameAudioPlayer music = default!;
+		[Inject, Key("stage")] private readonly IViewPool<ChartComponent> viewPool = default!;
+		[Inject, Key("select-collider")] private readonly IViewPool<ChartComponent> pluginPool = default!;
+
+		[Inject, Key("select-collider")]
+		private readonly Dictionary<T3Flag, TextureAlignInfo> textureAlignInfos = default!;
+
+		private readonly IClassifier<T3Flag> classifier = new T3ChartClassifier();
 
 		// System Functions
-		public void Tick()
+		void Update()
 		{
 			foreach (var component in pluginPool)
 			{

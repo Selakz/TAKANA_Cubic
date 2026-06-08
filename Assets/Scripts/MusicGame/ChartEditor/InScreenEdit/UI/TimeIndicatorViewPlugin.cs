@@ -11,11 +11,10 @@ using T3Framework.Static;
 using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit.UI
 {
-	public class TimeIndicatorViewPlugin : T3MonoBehaviour, ISelfInstaller
+	public class TimeIndicatorViewPlugin : HierarchySystem<TimeIndicatorViewPlugin>
 	{
 		// Serializable and Public
 		[SerializeField] private Color legalColor;
@@ -47,32 +46,15 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 		};
 
 		// Private
-		private ModuleInfo moduleInfo = default!;
-		private StageMouseTimeRetriever timeRetriever = default!;
-		private TimeIndicator timeIndicator = default!;
-		private NoteDragPlugin noteDragPlugin = default!;
-		private NotifiableProperty<PasteMode> pasteMode = default!;
+		[Inject] private ModuleInfo moduleInfo = default!;
+		[Inject] private StageMouseTimeRetriever timeRetriever = default!;
+		[Inject] private TimeIndicator timeIndicator = default!;
+		[Inject] private NoteDragPlugin noteDragPlugin = default!;
+		[Inject] private NotifiableProperty<PasteMode> pasteMode = default!;
+		[Inject] private INoteRawInfoService service = default!;
 
 		private Color? draggingColor = new(0.4f, 0.9f, 0.5f);
 		private bool shouldUpdateDraggingView = false;
-
-		// Constructor
-		[Inject]
-		private void Construct(
-			ModuleInfo moduleInfo,
-			StageMouseTimeRetriever timeRetriever,
-			TimeIndicator timeIndicator,
-			NoteDragPlugin noteDragPlugin,
-			NotifiableProperty<PasteMode> pasteMode)
-		{
-			this.moduleInfo = moduleInfo;
-			this.timeRetriever = timeRetriever;
-			this.timeIndicator = timeIndicator;
-			this.noteDragPlugin = noteDragPlugin;
-			this.pasteMode = pasteMode;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Defined Functions
 		private void UpdateCopyPasteView()
@@ -110,7 +92,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 					return;
 				}
 
-				if (noteDragPlugin.DraggingNotes.Any(c => !c.IsWithinParentRange(distance)))
+				if (noteDragPlugin.DraggingInfos.Any(info => service.IsValid(info) is not null))
 				{
 					if (draggingColor != illegalColor)
 					{

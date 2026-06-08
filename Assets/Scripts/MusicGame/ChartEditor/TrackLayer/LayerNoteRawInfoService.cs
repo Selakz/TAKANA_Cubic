@@ -14,6 +14,8 @@ namespace MusicGame.ChartEditor.TrackLayer
 		// Defined Functions
 		public string? IsValid(NoteRawInfo info)
 		{
+			if (info.GetType() != typeof(NoteRawInfo)) return null; // Exclude subclasses
+
 			if (info.Parent.Value?.Model is not ITrack model)
 				return "Edit_SelectTrackToPlaceNote";
 

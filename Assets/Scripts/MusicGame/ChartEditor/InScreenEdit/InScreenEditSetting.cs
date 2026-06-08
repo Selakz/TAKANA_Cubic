@@ -37,6 +37,9 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		[Description("WidthGridColor")]
 		public NotifiableProperty<Color> WidthGridColor { get; set; } = new(new(0f, 0.8f, 1f, 1f));
 
+		[Description("WidthGridSecondColor")]
+		public NotifiableProperty<Color> WidthGridSecondColor { get; set; } = new(new(0f, 0.8f, 1f, 0.25f));
+
 		[Description("BeatColor")]
 		public NotifiableProperty<Color> BeatColor { get; set; } = new(new(0.6f, 0, 0, 0.9f));
 

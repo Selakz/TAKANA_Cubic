@@ -1,53 +1,42 @@
 #nullable enable
 
-using System;
 using MusicGame.Gameplay.Basic.T3;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models;
-using MusicGame.Models.Note;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
+using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Speed
 {
-	public class NoteSpeedSystem : IInitializable
+	public class NoteSpeedSystem : HierarchySystem<NoteSpeedSystem>
 	{
-		private readonly int positionPriority;
-		private readonly SpeedDataContainer speedContainer;
-		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly SubDataset<ChartComponent, Type> notePool;
+		// Serializable and Public
+		[SerializeField] private SequencePriority positionPriority = default!;
 
-		public NoteSpeedSystem(
-			int positionPriority,
-			SpeedDataContainer speedContainer,
-			[Key("stage")] IViewPool<ChartComponent> viewPool)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			this.positionPriority = positionPriority;
-			this.speedContainer = speedContainer;
-			this.viewPool = viewPool;
-			notePool = new SubDataset<ChartComponent, Type>(viewPool, new TypeClassifier<IChartModel>(),
-				typeof(Hit), typeof(Hold));
-		}
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() =>
+				{
+					if (handler.TryScript<T3NoteViewPresenter>() is not { } presenter) return;
+					presenter.PositionModifier.Register(
+						value => new(value.x, value.y * speed.Value.SpeedRate),
+						positionPriority, true);
+				},
+				() =>
+				{
+					if (handler.TryScript<T3NoteViewPresenter>() is not { } presenter) return;
+					presenter.PositionModifier.Unregister(positionPriority, true);
+				}))
+		};
 
-		private void OnDataAdded(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			presenter.PositionModifier.Register(
-				value => new(value.x, value.y * speedContainer.Property.Value.SpeedRate),
-				positionPriority, true);
-		}
-
-		private void BeforeDataRemoved(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			presenter.PositionModifier.Unregister(positionPriority, true);
-		}
-
-		public void Initialize()
-		{
-			notePool.OnDataAdded += OnDataAdded;
-			notePool.BeforeDataRemoved += BeforeDataRemoved;
-		}
+		// Private
+		[Inject] private NotifiableProperty<ISpeed> speed = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 	}
 }

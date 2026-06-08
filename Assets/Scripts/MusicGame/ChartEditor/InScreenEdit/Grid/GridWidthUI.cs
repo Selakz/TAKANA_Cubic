@@ -15,6 +15,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		// Serializable and Public
 		[SerializeField] private Toggle toggle = default!;
 		[SerializeField] private Button changeUIButton = default!;
+		[SerializeField] private Toggle enableSecondColorToggle = default!;
 
 		[SerializeField] private GameObject gridTypeRoot = default!;
 		[SerializeField] private TMP_InputField gridIntervalInputField = default!;
@@ -27,7 +28,10 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<bool>(retriever.IsOn, value => toggle.SetIsOnWithoutNotify(value)),
+			new PropertyRegistrar<bool>(retriever.IsOn,
+				value => toggle.SetIsOnWithoutNotify(value)),
+			new PropertyRegistrar<bool>(retriever.EnableSecondColor,
+				value => enableSecondColorToggle.SetIsOnWithoutNotify(value)),
 			new PropertyRegistrar<float>(retriever.GridInterval, value =>
 			{
 				gridIntervalInputField.SetTextWithoutNotify(value.ToString("0.000"));
@@ -40,6 +44,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			}),
 
 			new ToggleRegistrar(toggle, isOn => retriever.IsOn.Value = isOn),
+			new ToggleRegistrar(enableSecondColorToggle, isOn => retriever.EnableSecondColor.Value = isOn),
 			new ButtonRegistrar(changeUIButton, () =>
 			{
 				gridTypeRoot.SetActive(!gridTypeRoot.activeSelf);
@@ -77,17 +82,10 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		};
 
 		// Private
-		private GridWidthRetriever retriever = default!;
+		[Inject] private GridWidthRetriever retriever = default!;
 
 		// Static
 		private const float KeyBaseWidth = 9f;
-
-		// Constructor
-		[Inject]
-		private void Construct(GridWidthRetriever retriever)
-		{
-			this.retriever = retriever;
-		}
 
 		// Defined Functions
 		private void UpdateKeyUI()
@@ -95,7 +93,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			var interval = retriever.GridInterval.Value;
 			var offset = retriever.GridOffset.Value;
 			keyCountInputField.SetTextWithoutNotify((KeyBaseWidth / interval).ToString("0.0"));
-			var percent = Mathf.RoundToInt(offset / interval * 100f) % 100;
+			var percent = Mathf.RoundToInt(offset / interval * 100f) % 200;
 			keyPercentInputField.SetTextWithoutNotify(percent.ToString());
 		}
 	}

@@ -66,7 +66,7 @@ namespace MusicGame.ChartEditor.Level
 			List<ChartComponent> toRemove = new();
 			foreach (var component in chart)
 			{
-				if (component.Model.IsEditorOnly())
+				if (component.Model.IsEditorOnly() || T3ChartClassifier.Instance.IsOfType(component, T3Flag.Draft))
 				{
 					toRemove.Add(component);
 					continue;

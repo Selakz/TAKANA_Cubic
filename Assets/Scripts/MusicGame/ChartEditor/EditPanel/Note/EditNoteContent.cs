@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
@@ -6,6 +7,7 @@ using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Note;
+using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Event.UI;
@@ -56,16 +58,19 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 
 	public class NoteContentRegistrar : IEventRegistrar
 	{
-		private readonly EditNoteContent noteContent;
-		private readonly ChartComponent component;
+		protected readonly EditNoteContent noteContent;
+		protected readonly ChartComponent component;
 		private readonly IEventRegistrar[] registrars;
+
+		protected virtual IEnumerable<IEventRegistrar> Registrars => registrars;
 
 		public NoteContentRegistrar(
 			EditNoteContent noteContent,
 			ChartComponent component,
 			ChartSelectDataset dataset,
 			IGameAudioPlayer audioPlayer,
-			ChartEditSystem chartEditSystem)
+			ChartEditSystem chartEditSystem,
+			CommandManager commandManager)
 		{
 			this.noteContent = noteContent;
 			this.component = component;
@@ -80,12 +85,13 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 				new ButtonRegistrar(noteContent.DeleteButton, () =>
 				{
 					var command = new DeleteComponentCommand(component);
-					CommandManager.Instance.Add(command);
+					commandManager.Add(command);
 				}),
 				new ButtonRegistrar(noteContent.JumpToTrackButton, () =>
 				{
 					dataset.Clear();
-					if (component.Parent is not null) dataset.Add(component.Parent);
+					if (component.Parent?.Model is not ITrack) return;
+					dataset.Add(component.Parent);
 					audioPlayer.ChartTime = ((INote)component.Model).TimeJudge;
 				}),
 				new InputFieldRegistrar(noteContent.TimeJudgeInputField,
@@ -98,7 +104,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 							if (newTimeJudge == note.TimeJudge) return;
 							var distance = newTimeJudge - note.TimeJudge;
 							var command = chartEditSystem.NudgeNoteJudge(component, distance);
-							if (command is not null) CommandManager.Instance.Add(command);
+							if (command is not null) commandManager.Add(command);
 						}
 						else
 						{
@@ -116,7 +122,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 							if (newTimeEnd == model.TimeEnd) return;
 							var distance = newTimeEnd - model.TimeEnd;
 							var command = chartEditSystem.NudgeHoldEnd(component, distance) ?? EmptyCommand.Instance;
-							CommandManager.Instance.Add(command);
+							commandManager.Add(command);
 						}
 						else
 						{
@@ -133,7 +139,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 						{
 							var note = (INote)component.Model;
 							var isDummy = !note.IsDummy();
-							CommandManager.Instance.Add(new UpdateComponentCommand(component,
+							commandManager.Add(new UpdateComponentCommand(component,
 								_ => note.SetDummy(isDummy), _ => note.SetDummy(!isDummy)));
 							noteContent.IsNoteDummyImage.sprite = isDummy
 								? noteContent.Config.DummyNoteImage
@@ -144,7 +150,7 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 			};
 		}
 
-		private void UpdateUI()
+		protected virtual void UpdateUI()
 		{
 			var note = (INote)component.Model;
 			noteContent.TimeJudgeInputField.text = note.TimeJudge.ToString();
@@ -162,18 +168,19 @@ namespace MusicGame.ChartEditor.EditPanel.Note
 				Hold => noteContent.Config.HoldImage,
 				_ => null
 			};
+			noteContent.JumpToTrackButton.interactable = component.Parent?.Model is ITrack;
 			noteContent.transform.localScale = Vector3.one;
 		}
 
 		public void Register()
 		{
 			UpdateUI();
-			foreach (var registrar in registrars) registrar.Register();
+			foreach (var registrar in Registrars) registrar.Register();
 		}
 
 		public void Unregister()
 		{
-			foreach (var registrar in registrars) registrar.Unregister();
+			foreach (var registrar in Registrars) registrar.Unregister();
 		}
 	}
 }

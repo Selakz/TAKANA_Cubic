@@ -9,16 +9,17 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 {
 	public class UpdateComponentCommand : ICommand
 	{
-		public string Name => $"Update Component: {component.Id}";
+		public string Name => $"Update Component: {Component.Id}";
 
-		private readonly ChartComponent component;
+		public ChartComponent Component { get; }
+
 		private readonly Action<ChartComponent> doAction;
 		private readonly Action<ChartComponent> undoAction;
 
 		public UpdateComponentCommand
 			(ChartComponent component, Action<IChartModel> doAction, Action<IChartModel> undoAction)
 		{
-			this.component = component;
+			Component = component;
 			this.doAction = c => c.UpdateModel(doAction);
 			this.undoAction = c => c.UpdateModel(undoAction);
 		}
@@ -26,13 +27,13 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 		public UpdateComponentCommand
 			(Action<ChartComponent> doAction, Action<ChartComponent> undoAction, ChartComponent component)
 		{
-			this.component = component;
+			Component = component;
 			this.doAction = doAction;
 			this.undoAction = undoAction;
 		}
 
-		public void Do() => doAction.Invoke(component);
+		public void Do() => doAction.Invoke(Component);
 
-		public void Undo() => undoAction.Invoke(component);
+		public void Undo() => undoAction.Invoke(Component);
 	}
 }

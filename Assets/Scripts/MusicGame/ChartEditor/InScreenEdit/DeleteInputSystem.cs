@@ -2,7 +2,6 @@
 
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.Select;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -31,6 +30,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				{
 					var command = system.DeleteSelected();
 					if (command is not null) commandManager.Add(command);
+					else print("DeleteSelected failed");
 				}),
 		};
 
@@ -38,6 +38,5 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		[Inject] private readonly ModuleInfo moduleInfo = default!;
 		[Inject] private readonly CommandManager commandManager = default!;
 		[Inject] private readonly ChartEditSystem system = default!;
-		[Inject] private readonly ChartSelectDataset dataset = default!;
 	}
 }

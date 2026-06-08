@@ -66,6 +66,22 @@ namespace MusicGame.ChartEditor.TrackLine
 					if (timeRetriever.TimeRetriever.Value is not GridTimeRetriever retriever) return;
 					UpdateTime(time => retriever.GetFloorTime(time));
 				}),
+			new InputRegistrar("InScreenEdit", "Widen",
+				() => UpdateWidth(width => width + ISingleton<TrackLineSetting>.Instance.NodePositionNudgeDistance)),
+			new InputRegistrar("InScreenEdit", "WidenToGrid",
+				() =>
+				{
+					if (widthRetriever.WidthRetriever.Value is not GridWidthRetriever retriever) return;
+					UpdateWidth(width => retriever.GetRightAttachedPosition(width));
+				}),
+			new InputRegistrar("InScreenEdit", "Narrow",
+				() => UpdateWidth(width => width - ISingleton<TrackLineSetting>.Instance.NodePositionNudgeDistance)),
+			new InputRegistrar("InScreenEdit", "NarrowToGrid",
+				() =>
+				{
+					if (widthRetriever.WidthRetriever.Value is not GridWidthRetriever retriever) return;
+					UpdateWidth(width => retriever.GetLeftAttachedPosition(width));
+				}),
 			new InputRegistrar("InScreenEdit", "Create",
 				CreateNodes),
 			new InputRegistrar("InScreenEdit", "Delete",
@@ -222,6 +238,32 @@ namespace MusicGame.ChartEditor.TrackLine
 				var time = node.Locator.Time;
 				var newTime = newTimeFunc.Invoke(time);
 				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(newTime, item));
+				var track = node.Locator.Track;
+				if (!args.ContainsKey(track)) args[track] = new() { arg };
+				else args[track].Add(arg);
+			}
+
+			BatchCommand command = new(args
+					.Select(pair => (Track: pair.Key, Command: new UpdateMoveListCommand(pair.Value)))
+					.Where(tuple => tuple.Command.SetInit(tuple.Track))
+					.Select(tuple => tuple.Command),
+				"UpdateMoveList");
+			commandManager.Add(command);
+		}
+
+		public void UpdateWidth(Func<float, float> newWidthFunc)
+		{
+			if (moduleInfo.CurrentModule.Value != updateModuleId.Value) return;
+			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
+			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
+			foreach (var node in directNodeSelectDataset.Where(node => !node.Locator.IsPos))
+			{
+				var item = node.Model;
+				var newWidth = newWidthFunc.Invoke(item.Position);
+				if (newWidth < 0) continue;
+				var newItem = item.SetPosition(newWidth);
+				var time = node.Locator.Time;
+				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(time, newItem));
 				var track = node.Locator.Track;
 				if (!args.ContainsKey(track)) args[track] = new() { arg };
 				else args[track].Add(arg);

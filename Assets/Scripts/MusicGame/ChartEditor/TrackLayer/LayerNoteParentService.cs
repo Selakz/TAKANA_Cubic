@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Collections.Generic;
+using System.Linq;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Chart;
@@ -56,6 +58,12 @@ namespace MusicGame.ChartEditor.TrackLayer
 				default:
 					return null;
 			}
+		}
+
+		public IEnumerable<ChartComponent> GetAvailableTracks(IEnumerable<ChartComponent> components)
+		{
+			return components.Where(component =>
+				component.Model is ITrack && component.GetLayerInfo() is { IsDecoration: false, IsSelected: true });
 		}
 
 		// Constructor

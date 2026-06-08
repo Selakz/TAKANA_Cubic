@@ -2,6 +2,7 @@
 
 using MusicGame.ChartEditor.Command;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Models;
 using MusicGame.Models.Note;
 using T3Framework.Runtime;
 using UnityEngine;
@@ -44,6 +45,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 			    !ReferenceEquals(note1.Parent, note2.Parent) ||
 			    note1.Model is not INote note1Model ||
 			    note2.Model is not INote note2Model ||
+			    !T3ChartClassifier.Instance.IsOfType(note1, T3Flag.Live) ||
+			    !T3ChartClassifier.Instance.IsOfType(note2, T3Flag.Live) ||
 			    note1Model.TimeJudge == note2Model.TimeJudge) return false;
 
 			model1 = note1Model;

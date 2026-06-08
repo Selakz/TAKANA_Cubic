@@ -9,7 +9,6 @@ using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Select
 {
@@ -24,7 +23,6 @@ namespace MusicGame.ChartEditor.Select
 		public override void SelfInstall(IContainerBuilder builder)
 		{
 			builder.Register<ChartSelectDataset>(Lifetime.Singleton);
-			builder.RegisterEntryPoint<SelectManageSystem>();
 
 			// SelectInputSystem
 			builder.RegisterInstance(new NotifiableProperty<ISelectRaycastMode<ChartComponent>>
@@ -38,7 +36,6 @@ namespace MusicGame.ChartEditor.Select
 			builder.RegisterInstance(textureAlignInfos.Value)
 				.AsSelf()
 				.Keyed("select-collider");
-			builder.RegisterEntryPoint<SelectColliderPluginSystem>();
 		}
 	}
 }

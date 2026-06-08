@@ -25,6 +25,7 @@ namespace MusicGame.Utility.UI
 		[SerializeField] private Toggle removeOutOfRangeToggle = default!;
 		[SerializeField] private Toggle removeOverlapNoteToggle = default!;
 		[SerializeField] private Toggle removeZeroWidthTrackNoteToggle = default!;
+		[SerializeField] private Toggle removeDraftToggle = default!;
 		[SerializeField] private Button executeButton = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -54,6 +55,7 @@ namespace MusicGame.Utility.UI
 			count += removeOutOfRangeToggle.isOn ? RemoveOutOfRangeComponents(chart) : 0;
 			count += removeOverlapNoteToggle.isOn ? RemoveOverlapNotes(chart) : 0;
 			count += removeZeroWidthTrackNoteToggle.isOn ? RemoveZeroWidthTrackNotes(chart) : 0;
+			count += removeDraftToggle.isOn ? RemoveDraftNotes(chart) : 0;
 
 			if (count > 0)
 			{
@@ -117,6 +119,15 @@ namespace MusicGame.Utility.UI
 				if (component.Parent?.Model is not ITrack track) continue;
 				if (Mathf.Approximately(track.Movement.GetWidth(note.TimeMin), 0)) toRemove.Add(component);
 			}
+
+			foreach (var component in toRemove) chart.RemoveComponent(component);
+			return toRemove.Count;
+		}
+
+		private static int RemoveDraftNotes(ChartInfo chart)
+		{
+			List<ChartComponent> toRemove = chart.Where(
+				component => T3ChartClassifier.Instance.IsOfType(component, T3Flag.Draft)).ToList();
 
 			foreach (var component in toRemove) chart.RemoveComponent(component);
 			return toRemove.Count;

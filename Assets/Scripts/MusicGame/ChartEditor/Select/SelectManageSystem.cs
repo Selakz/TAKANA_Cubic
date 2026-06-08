@@ -1,25 +1,35 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
-using MusicGame.Models.Note;
-using MusicGame.Models.Track;
+using MusicGame.Models;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using UnityEngine;
+using VContainer;
 
 namespace MusicGame.ChartEditor.Select
 {
-	public class SelectManageSystem : T3System
+	[Serializable]
+	public struct SelectInclusionConfig
 	{
-		private readonly NotifiableProperty<LevelInfo?> levelInfo;
-		private readonly ChartSelectDataset dataset;
+		public T3Flag selectedType;
+		public bool isInclusion;
+		public List<T3Flag> targetTypes;
+	}
 
+	public class SelectManageSystem : HierarchySystem<SelectManageSystem>
+	{
 		// Serializable and Public
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		[SerializeField] private List<SelectInclusionConfig> selectInclusionConfigs = new();
+
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			// Clear dataset when chart change
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () => dataset.Clear()),
@@ -28,26 +38,27 @@ namespace MusicGame.ChartEditor.Select
 			{
 				var selecting = dataset.CurrentSelecting.Value;
 				if (selecting is null) return;
-				switch (selecting.Model)
-				{
-					case ITrack:
-						if (dataset.CurrentSelecting.LastValue?.Model is ITrack) return;
-						RemoveNotOfType<ITrack>();
-						break;
-					case INote:
-						if (dataset.CurrentSelecting.LastValue?.Model is INote) return;
-						RemoveNotOfType<INote>();
-						break;
-				}
 
-				return;
-
-				void RemoveNotOfType<T>()
+				var selectedType = Classifier.Classify(selecting);
+				foreach (var config in selectInclusionConfigs)
 				{
+					if (!Classifier.IsSubType(config.selectedType, selectedType)) continue;
 					var selected = dataset.ToArray();
-					foreach (var component in selected)
+					if (config.isInclusion)
 					{
-						if (component.Model is not T) dataset.Remove(component);
+						foreach (var component in selected)
+						{
+							if (!config.targetTypes.Any(flag => Classifier.IsOfType(component, flag)))
+								dataset.Remove(component);
+						}
+					}
+					else
+					{
+						foreach (var component in selected)
+						{
+							if (config.targetTypes.Any(flag => Classifier.IsOfType(component, flag)))
+								dataset.Remove(component);
+						}
 					}
 				}
 			}),
@@ -57,13 +68,10 @@ namespace MusicGame.ChartEditor.Select
 				component => dataset.Remove(component)))
 		};
 
-		// Defined Functions
-		public SelectManageSystem(
-			NotifiableProperty<LevelInfo?> levelInfo,
-			ChartSelectDataset dataset) : base(true)
-		{
-			this.levelInfo = levelInfo;
-			this.dataset = dataset;
-		}
+		// Private
+		[Inject] private readonly NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private readonly ChartSelectDataset dataset = default!;
+
+		private static T3ChartClassifier Classifier => T3ChartClassifier.Instance;
 	}
 }

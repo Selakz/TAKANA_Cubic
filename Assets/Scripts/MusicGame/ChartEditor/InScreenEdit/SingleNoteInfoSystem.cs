@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using System.Linq;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
@@ -17,6 +18,8 @@ namespace MusicGame.ChartEditor.InScreenEdit
 	public interface INoteParentService
 	{
 		public ChartComponent? GetParent(SingleNotePlaceType notePlaceType);
+
+		public IEnumerable<ChartComponent> GetAvailableTracks(IEnumerable<ChartComponent> components);
 	}
 
 	public class SingleNoteInfoSystem : HierarchySystem<SingleNoteInfoSystem>
@@ -39,30 +42,12 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		};
 
 		// Private
-		private ModuleInfo moduleInfo = default!;
-		private IDataset<NoteRawInfo> dataset = default!;
-		private NotifiableProperty<T3Flag> noteType = default!;
-		private NotifiableProperty<SingleNotePlaceType> notePlaceType = default!;
-		private INoteParentService noteParentService = default!;
-		private StageMouseTimeRetriever timeRetriever = default!;
-
-		// Constructor
-		[Inject]
-		private void Construct(
-			ModuleInfo moduleInfo,
-			IDataset<NoteRawInfo> dataset,
-			NotifiableProperty<T3Flag> noteType,
-			NotifiableProperty<SingleNotePlaceType> notePlaceType,
-			INoteParentService noteParentService,
-			StageMouseTimeRetriever timeRetriever)
-		{
-			this.moduleInfo = moduleInfo;
-			this.dataset = dataset;
-			this.noteType = noteType;
-			this.notePlaceType = notePlaceType;
-			this.noteParentService = noteParentService;
-			this.timeRetriever = timeRetriever;
-		}
+		[Inject] private ModuleInfo moduleInfo = default!;
+		[Inject] private IDataset<NoteRawInfo> dataset = default!;
+		[Inject] private NotifiableProperty<T3Flag> noteType = default!;
+		[Inject] private NotifiableProperty<SingleNotePlaceType> notePlaceType = default!;
+		[Inject] private INoteParentService noteParentService = default!;
+		[Inject] private StageMouseTimeRetriever timeRetriever = default!;
 
 		// System Functions
 		protected override void OnEnable()

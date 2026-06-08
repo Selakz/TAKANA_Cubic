@@ -4,7 +4,6 @@ using System;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
@@ -12,11 +11,10 @@ using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.Pool;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class GridWidthRetriever : T3MonoBehaviour, IWidthRetriever, ISelfInstaller
+	public class GridWidthRetriever : HierarchySystem<GridWidthRetriever>, IWidthRetriever
 	{
 		// Serializable and Public
 		[SerializeField] private Transform widthGridRoot = default!;
@@ -25,6 +23,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		public event Action OnBeforeResetGrid = delegate { };
 
 		public NotifiableProperty<bool> IsOn { get; } = new(false);
+
+		public NotifiableProperty<bool> EnableSecondColor { get; } = new(false);
 
 		public NotifiableProperty<float> GridInterval { get; } = new(1.0f);
 
@@ -70,9 +70,9 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		};
 
 		// Private
-		private IObjectResolver resolver = default!;
-		private NotifiableProperty<LevelInfo?> levelInfo = default!;
-		private NotifiableProperty<IWidthRetriever> widthRetriever = default!;
+		[Inject] private IObjectResolver resolver = default!;
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private NotifiableProperty<IWidthRetriever> widthRetriever = default!;
 
 		private ObjectPool<WidthGridController> WidthGridPool => widthGridPool ??= new(
 			() => gridPrefab.Instantiate(resolver, widthGridRoot).GetComponent<WidthGridController>(),
@@ -86,19 +86,6 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		private const float GameWidth = 6f;
 
 		// Defined Functions
-		[Inject]
-		private void Construct(
-			IObjectResolver resolver,
-			NotifiableProperty<LevelInfo?> levelInfo,
-			NotifiableProperty<IWidthRetriever> widthRetriever)
-		{
-			this.resolver = resolver;
-			this.levelInfo = levelInfo;
-			this.widthRetriever = widthRetriever;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
-
 		public float GetWidth(Vector3 position)
 		{
 			int lineCount = Mathf.FloorToInt((position.x - GridOffset) / GridInterval);

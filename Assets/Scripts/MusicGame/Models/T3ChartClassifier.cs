@@ -18,6 +18,8 @@ namespace MusicGame.Models
 		Hold = 1 << 3,
 		Track = 1 << 10,
 		JudgeLine = 1 << 20,
+		Draft = 1 << 30,
+		Live = 1 << 31 // Contrary to Draft
 	}
 
 	public class T3ChartClassifier : IClassifier<T3Flag>
@@ -30,17 +32,25 @@ namespace MusicGame.Models
 			var model = chartComponent.Model;
 			return model switch
 			{
-				Hit { Type: HitType.Tap } => T3Flag.Note | T3Flag.Tap,
-				Hit { Type: HitType.Slide } => T3Flag.Note | T3Flag.Slide,
-				Hold => T3Flag.Note | T3Flag.Hold,
-				Track.Track => T3Flag.Track,
-				StaticJudgeLine => T3Flag.JudgeLine,
+				DraftHit { Type: HitType.Tap } => T3Flag.Draft | T3Flag.Note | T3Flag.Tap,
+				DraftHit { Type: HitType.Slide } => T3Flag.Draft | T3Flag.Note | T3Flag.Slide,
+				DraftHold => T3Flag.Draft | T3Flag.Note | T3Flag.Hold,
+				Hit { Type: HitType.Tap } => T3Flag.Live | T3Flag.Note | T3Flag.Tap,
+				Hit { Type: HitType.Slide } => T3Flag.Live | T3Flag.Note | T3Flag.Slide,
+				Hold => T3Flag.Live | T3Flag.Note | T3Flag.Hold,
+				Track.Track => T3Flag.Live | T3Flag.Track,
+				StaticJudgeLine => T3Flag.Live | T3Flag.JudgeLine,
 				_ => T3Flag.None
 			};
 		}
 
 		public bool IsOfType(IComponent component, T3Flag type) => Classify(component).HasFlag(type);
 
+		/// <summary>
+		/// subType: more general, i.e. T3Flag.Note<br/>
+		/// type: more specific, i.e. T3Flag.Live | T3Flag.Note | T3Flag.Tap<br/>
+		/// The "sub" here means that subType is a subset of type. It may be a little weird...
+		/// </summary>
 		public bool IsSubType(T3Flag subType, T3Flag type) => type.HasFlag(subType);
 	}
 }

@@ -23,6 +23,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Preview
 					model.SetDummy(true);
 					model.SetIsEditorOnly(true);
 					previewMap[info] = new ChartComponent(model) { Parent = info.Parent };
+					print($"Add preview {model.GetType().Name}");
 				}),
 			new DatasetRegistrar<NoteRawInfo>(dataset,
 				DatasetRegistrar<NoteRawInfo>.RegisterTarget.DataUpdated, info =>

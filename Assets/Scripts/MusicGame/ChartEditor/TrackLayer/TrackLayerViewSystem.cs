@@ -2,44 +2,41 @@
 
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Basic;
-using MusicGame.Gameplay.Basic.T3;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using UnityEngine;
+using VContainer;
 
 namespace MusicGame.ChartEditor.TrackLayer
 {
-	public class TrackLayerViewSystem : T3System
+	public class TrackLayerViewSystem : HierarchySystem<TrackLayerViewSystem>
 	{
-		private readonly int layerColorPriority;
-		private readonly int layerSortingOrderPriority;
-		private readonly TrackLayerManageSystem manageSystem;
-		private readonly IViewPool<ChartComponent> trackPool;
+		// Serializable and Public
+		[SerializeField] private SequencePriority layerColorPriority = default!;
+		[SerializeField] private SequencePriority layerSortingOrderPriority = default!;
 
-		public TrackLayerViewSystem(
-			int layerColorPriority,
-			int layerSortingOrderPriority,
-			TrackLayerManageSystem manageSystem,
-			T3TrackViewSystem trackViewSystem) : base(true)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			this.layerColorPriority = layerColorPriority;
-			this.layerSortingOrderPriority = layerSortingOrderPriority;
-			this.manageSystem = manageSystem;
-			trackPool = trackViewSystem.TrackPool;
-		}
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
-		{
-			new CustomRegistrar(
-				() => trackPool.OnDataAdded += OnDataAdded,
-				() => trackPool.OnDataAdded -= OnDataAdded),
-			new CustomRegistrar(
-				() => trackPool.BeforeDataRemoved += BeforeDataRemoved,
-				() => trackPool.BeforeDataRemoved -= BeforeDataRemoved),
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() =>
+				{
+					var track = viewPool[handler]!;
+					if (track.Model is not ITrack) return;
+					RegisterTrackView(track);
+				},
+				() =>
+				{
+					var track = viewPool[handler]!;
+					if (track.Model is not ITrack) return;
+					UnregisterTrackView(track);
+				})),
 			new PropertyRegistrar<LayersInfo?>(manageSystem.LayersInfo, (_, _) =>
 			{
 				var lastInfo = manageSystem.LayersInfo.LastValue;
@@ -66,14 +63,15 @@ namespace MusicGame.ChartEditor.TrackLayer
 				() => manageSystem.OnTrackUpdate += OnTrackUpdate, () => manageSystem.OnTrackUpdate -= OnTrackUpdate)
 		};
 
-		private void OnDataAdded(ChartComponent track) => RegisterTrackView(track);
-
-		private void BeforeDataRemoved(ChartComponent track) => UnregisterTrackView(track);
+		// Private
+		[Inject] private TrackLayerManageSystem manageSystem = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 
 		private void OnLayerUpdate(LayerComponent layer)
 		{
-			foreach (var track in trackPool)
+			foreach (var track in viewPool)
 			{
+				if (track.Model is not ITrack) continue;
 				var layerInfo = manageSystem.GetLayer(track);
 				if (layerInfo.Id != layer.Model.Id) continue;
 				RegisterTrackView(track);
@@ -82,19 +80,22 @@ namespace MusicGame.ChartEditor.TrackLayer
 
 		private void ResetLayerView()
 		{
-			foreach (var track in trackPool)
+			foreach (var track in viewPool)
 			{
+				if (track.Model is not ITrack) continue;
 				UnregisterTrackView(track);
 			}
 		}
 
-		private void OnTrackUpdate(ChartComponent track) => RegisterTrackView(track);
+		private void OnTrackUpdate(ChartComponent track)
+		{
+			if (viewPool.Contains(track)) RegisterTrackView(track);
+		}
 
 		private void RegisterTrackView(ChartComponent track)
 		{
-			if (!trackPool.Contains(track)) return;
 			var layerInfo = manageSystem.GetLayer(track);
-			var handler = trackPool[track]!;
+			var handler = viewPool[track]!;
 			var presenter = handler.Script<IT3ModelViewPresenter>();
 			presenter.ColorModifier.Register(
 				color =>
@@ -138,8 +139,7 @@ namespace MusicGame.ChartEditor.TrackLayer
 
 		private void UnregisterTrackView(ChartComponent track)
 		{
-			if (!trackPool.Contains(track)) return;
-			var handler = trackPool[track]!;
+			var handler = viewPool[track]!;
 			var presenter = handler.Script<IT3ModelViewPresenter>();
 			presenter.ColorModifier.Unregister(layerColorPriority, true);
 			presenter.Textures["main"].SortingOrderModifier.Unregister(layerSortingOrderPriority);
@@ -154,9 +154,10 @@ namespace MusicGame.ChartEditor.TrackLayer
 
 		private void UpdateTrackView()
 		{
-			foreach (var track in trackPool)
+			foreach (var track in viewPool)
 			{
-				var handler = trackPool[track]!;
+				if (track.Model is not ITrack) continue;
+				var handler = viewPool[track]!;
 				var presenter = handler.Script<IT3ModelViewPresenter>();
 				presenter.Textures["leftLine"].ColorModifier.Update();
 				presenter.Textures["rightLine"].ColorModifier.Update();
@@ -164,9 +165,9 @@ namespace MusicGame.ChartEditor.TrackLayer
 			}
 		}
 
-		public override void Dispose()
+		protected override void OnDestroy()
 		{
-			base.Dispose();
+			base.OnDestroy();
 			var info = manageSystem.LayersInfo.Value;
 			if (info is not null) info.OnDataUpdated -= OnLayerUpdate;
 			ResetLayerView();

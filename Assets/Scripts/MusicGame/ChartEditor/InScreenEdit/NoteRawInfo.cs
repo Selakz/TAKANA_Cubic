@@ -43,7 +43,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 
 		public void UpdateNotify() => OnComponentUpdated?.Invoke(this, EventArgs.Empty);
 
-		public INote GenerateModel()
+		public virtual INote GenerateModel()
 		{
 			return NoteFlag.Value switch
 			{
@@ -55,7 +55,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		}
 
 		/// <summary> For preview system only </summary>
-		public ChartComponent UpdateModel(ChartComponent note)
+		public virtual ChartComponent UpdateModel(ChartComponent note)
 		{
 			var type = T3ChartClassifier.Instance.Classify(note);
 			if (!T3ChartClassifier.Instance.IsSubType(NoteFlag, type))

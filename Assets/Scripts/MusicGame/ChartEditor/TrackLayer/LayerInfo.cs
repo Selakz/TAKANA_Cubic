@@ -58,7 +58,7 @@ namespace MusicGame.ChartEditor.TrackLayer
 		{
 			var index = layers.FindIndex(l => l.Model.Id == id);
 			if (index is -1) return -1;
-			else return Count - index;
+			else return Count - 1 - index;
 		}
 
 		protected override bool AddToDataset(LayerComponent item)

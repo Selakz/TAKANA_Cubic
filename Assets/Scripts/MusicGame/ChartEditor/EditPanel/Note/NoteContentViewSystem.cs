@@ -1,47 +1,40 @@
 #nullable enable
 
+using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
-using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.EditPanel.Note
 {
-	public class NoteContentViewSystem : T3MonoBehaviour, ISelfInstaller
+	public class NoteContentViewSystem : HierarchySystem<NoteContentViewSystem>
 	{
 		// Serializable and Public
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new ViewPoolLifetimeRegistrar<ChartComponent>(decoratorPool, handler => new NoteContentRegistrar(
-				handler.Script<EditNoteContent>(), decoratorPool[handler]!, selectDataset, music, system))
+			new ViewPoolLifetimeRegistrar<ChartComponent>(decoratorPool, handler =>
+			{
+				if (handler.TryScript<EditDraftNoteContent>() is { } content)
+				{
+					return new DraftNoteContentRegistrar(content,
+						decoratorPool[handler]!, selectDataset, music, system, commandManager);
+				}
+
+				return new NoteContentRegistrar(handler.Script<EditNoteContent>(),
+					decoratorPool[handler]!, selectDataset, music, system, commandManager);
+			})
 		};
 
 		// Private
-		private IViewPool<ChartComponent> decoratorPool = default!;
-		private ChartSelectDataset selectDataset = default!;
-		private IGameAudioPlayer music = default!;
-		private ChartEditSystem system = default!;
-
-		// Defined Functions
-		[Inject]
-		private void Construct(
-			[Key("note-decoration")] IViewPool<ChartComponent> decoratorPool,
-			ChartSelectDataset selectDataset,
-			IGameAudioPlayer music,
-			ChartEditSystem system)
-		{
-			this.decoratorPool = decoratorPool;
-			this.selectDataset = selectDataset;
-			this.music = music;
-			this.system = system;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+		[Inject, Key("note-decoration")] private IViewPool<ChartComponent> decoratorPool = default!;
+		[Inject] private ChartSelectDataset selectDataset = default!;
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private ChartEditSystem system = default!;
+		[Inject] private CommandManager commandManager = default!;
 	}
 }

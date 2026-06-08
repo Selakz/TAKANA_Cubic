@@ -1,61 +1,52 @@
 #nullable enable
 
-using System;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models;
 using MusicGame.Models.Note;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Basic.T3
 {
-	public class T3HoldLengthSystem : IInitializable
+	public class T3HoldLengthSystem : HierarchySystem<T3HoldLengthSystem>
 	{
-		private readonly int lengthPriority;
-		private readonly IGameAudioPlayer music;
-		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly SubDataset<ChartComponent, Type> notePool;
+		// Serializable and Public
+		[SerializeField] private SequencePriority lengthPriority = default!;
 
-		public T3HoldLengthSystem(
-			int lengthPriority,
-			IGameAudioPlayer music,
-			[Key("stage")] IViewPool<ChartComponent> viewPool)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			this.lengthPriority = lengthPriority;
-			this.music = music;
-			this.viewPool = viewPool;
-			notePool = new SubDataset<ChartComponent, Type>(viewPool, new TypeClassifier<IChartModel>(), typeof(Hold));
-			notePool.OnDataAdded += OnDataAdded;
-			notePool.BeforeDataRemoved += BeforeDataRemoved;
-		}
-
-		private void OnDataAdded(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			if (note.Model is Hold hold)
-			{
-				foreach (var modifier in presenter.HeightModifiers)
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() =>
 				{
-					modifier.Register(value => new(value.x,
-							hold.TailMovement.GetPos(music.ChartTime) - hold.Movement.GetPos(music.ChartTime)),
-						lengthPriority, true);
-				}
-			}
-		}
+					var note = viewPool[handler]!;
+					if (note.Model is not Hold hold) return;
+					var presenter = handler.Script<T3NoteViewPresenter>();
+					foreach (var modifier in presenter.HeightModifiers)
+					{
+						modifier.Register(value => new(value.x,
+								hold.TailMovement.GetPos(music.ChartTime) - hold.Movement.GetPos(music.ChartTime)),
+							lengthPriority, true);
+					}
+				},
+				() =>
+				{
+					var note = viewPool[handler]!;
+					if (note.Model is not Hold) return;
+					var presenter = handler.Script<T3NoteViewPresenter>();
+					foreach (var modifier in presenter.HeightModifiers)
+					{
+						modifier.Unregister(lengthPriority, true);
+					}
+				}))
+		};
 
-		private void BeforeDataRemoved(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			foreach (var modifier in presenter.HeightModifiers)
-			{
-				modifier.Unregister(lengthPriority, true);
-			}
-		}
-
-		public void Initialize()
-		{
-		}
+		// Private
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 	}
 }

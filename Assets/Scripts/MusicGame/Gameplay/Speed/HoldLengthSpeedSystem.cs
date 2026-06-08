@@ -1,58 +1,48 @@
 #nullable enable
 
-using System;
 using MusicGame.Gameplay.Basic.T3;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models;
-using MusicGame.Models.Note;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
+using T3Framework.Static.Event;
+using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Speed
 {
-	public class HoldLengthSpeedSystem : IInitializable
+	public class HoldLengthSpeedSystem : HierarchySystem<HoldLengthSpeedSystem>
 	{
-		private readonly int lengthPriority;
-		private readonly SpeedDataContainer speedContainer;
-		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly SubDataset<ChartComponent, Type> notePool;
+		// Serializable and Public
+		[SerializeField] private SequencePriority lengthPriority = default!;
 
-		public HoldLengthSpeedSystem(
-			int lengthPriority,
-			SpeedDataContainer speedContainer,
-			[Key("stage")] IViewPool<ChartComponent> viewPool)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			this.lengthPriority = lengthPriority;
-			this.speedContainer = speedContainer;
-			this.viewPool = viewPool;
-			notePool = new SubDataset<ChartComponent, Type>(viewPool, new TypeClassifier<IChartModel>(), typeof(Hold));
-		}
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() =>
+				{
+					if (handler.TryScript<T3NoteViewPresenter>() is not { } presenter) return;
+					foreach (var modifier in presenter.HeightModifiers)
+					{
+						modifier.Register(
+							value => new(value.x, value.y * speed.Value.SpeedRate),
+							lengthPriority, true);
+					}
+				},
+				() =>
+				{
+					if (handler.TryScript<T3NoteViewPresenter>() is not { } presenter) return;
+					foreach (var modifier in presenter.HeightModifiers)
+					{
+						modifier.Unregister(lengthPriority, true);
+					}
+				}))
+		};
 
-		private void OnDataAdded(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			foreach (var modifier in presenter.HeightModifiers)
-			{
-				modifier.Register(
-					value => new(value.x, value.y * speedContainer.Property.Value.SpeedRate),
-					lengthPriority, true);
-			}
-		}
-
-		private void BeforeDataRemoved(ChartComponent note)
-		{
-			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			foreach (var modifier in presenter.HeightModifiers)
-			{
-				modifier.Unregister(lengthPriority, true);
-			}
-		}
-
-		public void Initialize()
-		{
-			notePool.OnDataAdded += OnDataAdded;
-			notePool.BeforeDataRemoved += BeforeDataRemoved;
-		}
+		// Private
+		[Inject] private NotifiableProperty<ISpeed> speed = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 	}
 }
