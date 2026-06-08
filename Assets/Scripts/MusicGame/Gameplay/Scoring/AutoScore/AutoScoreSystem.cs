@@ -1,51 +1,46 @@
 #nullable enable
 
 using MusicGame.Gameplay.Audio;
+using MusicGame.Gameplay.Judge;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Scoring.AutoScore
 {
-	public class AutoScoreSystem : T3System, ITickable
+	public class AutoScoreSystem : HierarchySystem<AutoScoreSystem>
 	{
-		private const double MaxScore = 1_000_000;
-		private readonly NotifiableProperty<double> score;
-		private readonly NotifiableProperty<int> combo;
-		private readonly NotifiableProperty<LevelInfo?> levelInfo;
-		private readonly IGameAudioPlayer music;
-
+		// Serializable and Public
 		public NotifiableProperty<NoteSortedDataset?> Dataset { get; } = new(null);
 
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
 			{
 				Dataset.Value?.Dispose();
 				Dataset.Value = null;
 				var info = levelInfo.Value;
-				if (info is not null) Dataset.Value = new(info.Chart);
+				if (info is not null) Dataset.Value = new(info.Chart, comboFactory);
 			})
 		};
 
-		public AutoScoreSystem(
-			[Key("score")] NotifiableProperty<double> score,
-			[Key("combo")] NotifiableProperty<int> combo,
-			NotifiableProperty<LevelInfo?> levelInfo,
-			IGameAudioPlayer music) : base(true)
-		{
-			this.score = score;
-			this.combo = combo;
-			this.levelInfo = levelInfo;
-			this.music = music;
-		}
+		// Private
+		[Inject, Key("score")] private readonly NotifiableProperty<double> score = default!;
+		[Inject, Key("combo")] private readonly NotifiableProperty<int> combo = default!;
+		[Inject] private readonly NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private readonly IGameAudioPlayer music = default!;
+		[Inject] private readonly IComboFactory comboFactory = default!;
 
-		public void Tick()
+		// Static
+		private const double MaxScore = 1_000_000;
+
+		// System Functions
+		void Update()
 		{
 			if (Dataset.Value is null || Dataset.Value.Times.Count == 0)
 			{

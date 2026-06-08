@@ -14,6 +14,8 @@ namespace MusicGame.Gameplay.Judge.T3
 
 		public bool NeedTap { get; set; }
 
+		public bool PlayHitSound { get; set; }
+
 		public float LeftEdge { get; set; }
 
 		public float RightEdge { get; set; }

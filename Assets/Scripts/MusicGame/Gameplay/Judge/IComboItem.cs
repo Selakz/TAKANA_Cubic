@@ -11,6 +11,8 @@ namespace MusicGame.Gameplay.Judge
 
 		public T3Time ExpectedTime { get; set; }
 
+		public bool PlayHitSound { get; set; }
+
 		public IJudgeItem GetNewJudgeItem();
 	}
 }

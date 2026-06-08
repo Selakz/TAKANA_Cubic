@@ -24,7 +24,8 @@ namespace MusicGame.Gameplay.Judge.T3
 						ExpectedTime = hit.TimeJudge,
 						LeftEdge = leftEdge,
 						RightEdge = rightEdge,
-						NeedTap = hit.Type == HitType.Tap
+						NeedTap = hit.Type == HitType.Tap,
+						PlayHitSound = true
 					};
 					break;
 				case Hold hold:
@@ -33,11 +34,13 @@ namespace MusicGame.Gameplay.Judge.T3
 						ExpectedTime = hold.TimeJudge,
 						LeftEdge = leftEdge + ExtraRange, // Cut the range back to avoid false judgement of finger
 						RightEdge = rightEdge - ExtraRange,
-						NeedTap = true
+						NeedTap = true,
+						PlayHitSound = true
 					};
 					yield return new HoldEndCombo(component)
 					{
 						ExpectedTime = hold.TimeEnd,
+						PlayHitSound = false
 					};
 					break;
 				default:

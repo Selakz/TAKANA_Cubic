@@ -3,56 +3,42 @@
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Basic.T3;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models;
 using MusicGame.Models.Note;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Scoring.AutoScore
 {
-	public class AutoScoreViewSystem : T3System, ITickable
+	public class AutoScoreViewSystem : HierarchySystem<AutoScoreViewSystem>
 	{
-		private readonly IGameAudioPlayer music;
-		private readonly int colorPriority;
-		private readonly int positionPriority;
-		private readonly int heightPriority;
+		// Serializable and Public
+		[SerializeField] private SequencePriority colorPriority = default!;
+		[SerializeField] private SequencePriority positionPriority = default!;
+		[SerializeField] private SequencePriority heightPriority = default!;
 
-		public IViewPool<ChartComponent> NotePool { get; }
-
-		public AutoScoreViewSystem(
-			[Key("stage")] IViewPool<ChartComponent> viewPool,
-			IGameAudioPlayer music,
-			int colorPriority,
-			int positionPriority,
-			int heightPriority) : base(true)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			NotePool = new SubViewPool<ChartComponent, T3Flag>
-				(viewPool, new T3ChartClassifier(), T3Flag.Note);
-			this.music = music;
-			this.colorPriority = colorPriority;
-			this.positionPriority = positionPriority;
-			this.heightPriority = heightPriority;
-			NotePool.OnDataAdded += OnDataAdded;
-			NotePool.BeforeDataRemoved += BeforeDataRemoved;
-		}
+			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
+				() => OnDataAdded(viewPool[handler]!),
+				() => BeforeDataRemoved(viewPool[handler]!)))
+		};
 
-		public void Tick()
-		{
-			foreach (var note in NotePool)
-			{
-				var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
-				presenter.Textures["main"].ColorModifier.Update();
-			}
-		}
+		// Private
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
+		[Inject] private IGameAudioPlayer music = default!;
 
+		// Event Handlers
 		private void OnDataAdded(ChartComponent note)
 		{
 			if (note.Model is not INote model) return;
 
-			var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
+			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
 			presenter.MainTexture.ColorModifier.Register(color => music.ChartTime < model.TimeJudge
 				? model.IsDummy()
 					? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
@@ -87,7 +73,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		{
 			if (note.Model is not INote model) return;
 
-			var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
+			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
 			presenter.MainTexture.ColorModifier.Unregister(colorPriority, true);
 
 			if (model is Hold)
@@ -98,12 +84,21 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			}
 		}
 
-		public override void Dispose()
+		// System Functions
+		void Update()
 		{
-			base.Dispose();
-			NotePool.OnDataAdded -= OnDataAdded;
-			NotePool.BeforeDataRemoved -= BeforeDataRemoved;
-			NotePool.Dispose();
+			foreach (var note in viewPool)
+			{
+				if (note.Model is not INote) return;
+				var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
+				presenter.MainTexture.ColorModifier.Update();
+			}
+		}
+
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+			viewPool.Dispose();
 		}
 	}
 }

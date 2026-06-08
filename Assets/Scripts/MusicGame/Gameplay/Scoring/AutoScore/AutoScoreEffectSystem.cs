@@ -8,87 +8,54 @@ using MusicGame.Gameplay.Level;
 using MusicGame.Models.Note;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
+using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using UnityEngine;
 using UnityEngine.Pool;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Scoring.AutoScore
 {
 	// Play hit sound and hit effect
-	public class AutoScoreEffectSystem : T3System, ITickable
+	public class AutoScoreEffectSystem : HierarchySystem<AutoScoreEffectSystem>
 	{
-		private readonly IViewPool<ChartComponent> viewPool;
-		private readonly IGameAudioPlayer music;
-		private readonly ObjectPool<HitEffectAnimator> hitEffectPool;
-		private readonly AudioSource hitSound;
-		private readonly AutoScoreSystem system;
-		private readonly AutoScoreViewSystem viewSystem;
+		// Serializable and Public
+		[SerializeField] private AudioSource hitSound = default!;
+		[SerializeField] private PrefabObject hitEffectPrefab = default!;
+
+		// Event Registrars
+		protected override IEventRegistrar[] AwakeRegistrars => new IEventRegistrar[]
+		{
+			new CustomRegistrar(() => music.OnTimeJump += SkipOneFrame, () => music.OnTimeJump -= SkipOneFrame)
+		};
+
+		// Private
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private AutoScoreSystem system = default!;
+
+		private ObjectPool<HitEffectAnimator> hitEffectPool = default!;
+
+		// Constructor
+		[Inject]
+		private void Construct(IObjectResolver resolver)
+		{
+			hitEffectPool = new ObjectPool<HitEffectAnimator>(
+				() => hitEffectPrefab.Instantiate
+					(resolver, viewPool.DefaultTransform, false).GetComponent<HitEffectAnimator>(),
+				animator => animator.gameObject.SetActive(true),
+				animator => animator.gameObject.SetActive(false),
+				animator => Destroy(animator.gameObject),
+				defaultCapacity: 0);
+		}
 
 		private T3Time lastFrameTime;
 		private double lastHitTime;
 
-		public AutoScoreEffectSystem(
-			IObjectResolver resolver,
-			[Key("stage")] IViewPool<ChartComponent> viewPool,
-			IGameAudioPlayer music,
-			PrefabObject hitEffectPrefab,
-			AudioSource hitSound,
-			AutoScoreSystem system,
-			AutoScoreViewSystem viewSystem) : base(true)
-		{
-			this.viewPool = viewPool;
-			this.music = music;
-			this.hitSound = hitSound;
-			hitEffectPool = new ObjectPool<HitEffectAnimator>(
-				() => hitEffectPrefab.Instantiate
-					(resolver, viewSystem.NotePool.DefaultTransform, false).GetComponent<HitEffectAnimator>(),
-				animator => animator.gameObject.SetActive(true),
-				animator => animator.gameObject.SetActive(false),
-				animator => Object.Destroy(animator.gameObject),
-				defaultCapacity: 0);
-			this.system = system;
-			this.viewSystem = viewSystem;
-			music.OnTimeJump += SkipOneFrame;
-		}
-
 		private void SkipOneFrame()
 		{
 			lastFrameTime = T3Time.MaxValue;
-		}
-
-		public void Tick()
-		{
-			foreach (var component in viewSystem.NotePool)
-			{
-				var model = (component.Model as INote)!;
-				var comboInfo = system.Dataset.Value?[component];
-				if (comboInfo is null) continue;
-				foreach (var time in comboInfo.ComboTimes)
-				{
-					if (lastFrameTime < time && music.ChartTime >= time)
-					{
-						var animator = hitEffectPool.Get();
-						Vector3 position = viewSystem.NotePool[component]!.transform.position;
-						position.y = 0;
-						position.z -= 0.01f;
-						animator.transform.position = position;
-						animator.PlayComboAnimation();
-						AudioOnPlayHitSound(model);
-						TempRelease(animator).Forget();
-
-						// LaneBeam
-						if (component.Parent is not null && viewPool[component.Parent] is var handler)
-						{
-							var laneBeamPlugin = handler?.GetPlugin("lane-beam")?.TryScript<LaneBeamPlugin>();
-							laneBeamPlugin?.PlayAnimation();
-						}
-					}
-				}
-			}
-
-			lastFrameTime = music.ChartTime;
 		}
 
 		private async UniTaskVoid TempRelease(HitEffectAnimator animator)
@@ -114,10 +81,38 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			lastHitTime = currentTime;
 		}
 
-		public override void Dispose()
+		// System Functions
+		public void Update()
 		{
-			base.Dispose();
-			music.OnTimeJump -= SkipOneFrame;
+			foreach (var component in viewPool)
+			{
+				if (component.Model is not INote model) continue;
+				var comboItems = system.Dataset.Value?[component];
+				if (comboItems is null) continue;
+				foreach (var item in comboItems)
+				{
+					if (lastFrameTime < item.ExpectedTime && music.ChartTime >= item.ExpectedTime)
+					{
+						var animator = hitEffectPool.Get();
+						Vector3 position = viewPool[component]!.transform.position;
+						position.y = 0;
+						position.z -= 0.01f;
+						animator.transform.position = position;
+						animator.PlayComboAnimation();
+						if (item.PlayHitSound) AudioOnPlayHitSound(model);
+						TempRelease(animator).Forget();
+
+						// LaneBeam
+						if (component.Parent is not null && viewPool[component.Parent] is var handler)
+						{
+							var laneBeamPlugin = handler?.GetPlugin("lane-beam")?.TryScript<LaneBeamPlugin>();
+							laneBeamPlugin?.PlayAnimation();
+						}
+					}
+				}
+			}
+
+			lastFrameTime = music.ChartTime;
 		}
 	}
 }

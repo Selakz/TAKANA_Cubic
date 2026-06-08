@@ -12,6 +12,8 @@ namespace MusicGame.Gameplay.Judge.T3
 
 		public T3Time ExpectedTime { get; set; }
 
+		public bool PlayHitSound { get; set; }
+
 		public HoldEndCombo(ChartComponent component) => FromComponent = component;
 
 		public IJudgeItem GetNewJudgeItem() => new HoldEndJudgeItem(this);

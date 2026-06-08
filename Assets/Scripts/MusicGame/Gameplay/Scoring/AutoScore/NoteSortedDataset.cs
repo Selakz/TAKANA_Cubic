@@ -4,8 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Judge;
 using MusicGame.Models.Note;
-using MusicGame.Models.Note.Combo;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 
@@ -14,14 +14,15 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 	public class NoteSortedDataset : IReadOnlyDataset<ChartComponent>
 	{
 		private readonly ChartInfo chart;
-		private readonly Dictionary<ChartComponent, IComboInfo> dataset = new();
+		private readonly IComboFactory comboFactory;
+		private readonly Dictionary<ChartComponent, List<IComboItem>> dataset = new();
 		private readonly List<T3Time> times = new();
 
 		public int Count => dataset.Count;
 
 		public IReadOnlyList<T3Time> Times => times;
 
-		public IComboInfo? this[ChartComponent component] => dataset.GetValueOrDefault(component);
+		public IReadOnlyList<IComboItem>? this[ChartComponent component] => dataset.GetValueOrDefault(component);
 
 		public event Action<ChartComponent>? OnDataAdded;
 		public event Action<ChartComponent>? OnDataAddedInherit;
@@ -29,9 +30,10 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		public event Action<ChartComponent>? BeforeDataRemovedInherit;
 		public event Action<ChartComponent>? OnDataUpdated;
 
-		public NoteSortedDataset(ChartInfo chart)
+		public NoteSortedDataset(ChartInfo chart, IComboFactory comboFactory)
 		{
 			this.chart = chart;
+			this.comboFactory = comboFactory;
 			chart.OnComponentAdded += OnComponentAdded;
 			chart.OnComponentRemoved += OnComponentRemoved;
 			chart.OnComponentModelUpdated += OnComponentModelUpdated;
@@ -56,14 +58,14 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 
 		private void OnComponentAdded(ChartComponent component)
 		{
-			if (component.Model is not INote note) return;
-			var combo = T3ComboGetter.GetComboInfo(note, null);
+			if (component.Model is not INote) return;
+			var combos = new List<IComboItem>(comboFactory.CreateCombo(component));
 
-			dataset[component] = combo;
-			foreach (var time in combo.ComboTimes)
+			dataset[component] = combos;
+			foreach (var combo in combos)
 			{
-				int insertIndex = GetLowerBoundIndex(time);
-				times.Insert(insertIndex, time);
+				int insertIndex = GetLowerBoundIndex(combo.ExpectedTime);
+				times.Insert(insertIndex, combo.ExpectedTime);
 			}
 
 			OnDataAddedInherit?.Invoke(component);
@@ -72,11 +74,11 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 
 		private void OnComponentRemoved(ChartComponent component)
 		{
-			if (!dataset.Remove(component, out var combo)) return;
+			if (!dataset.Remove(component, out var combos)) return;
 
-			foreach (var time in combo.ComboTimes)
+			foreach (var combo in combos)
 			{
-				int index = GetLowerBoundIndex(time);
+				int index = GetLowerBoundIndex(combo.ExpectedTime);
 				times.RemoveAt(index);
 			}
 
@@ -86,21 +88,21 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 
 		private void OnComponentModelUpdated(ChartComponent component)
 		{
-			if (!dataset.ContainsKey(component) || component.Model is not INote note) return;
+			if (!dataset.ContainsKey(component) || component.Model is not INote) return;
 
-			var oldCombo = dataset[component];
-			foreach (var time in oldCombo.ComboTimes)
+			var oldCombos = dataset[component];
+			foreach (var combo in oldCombos)
 			{
-				int index = GetLowerBoundIndex(time);
+				int index = GetLowerBoundIndex(combo.ExpectedTime);
 				times.RemoveAt(index);
 			}
 
-			var newCombo = T3ComboGetter.GetComboInfo(note, oldCombo);
-			dataset[component] = newCombo;
-			foreach (var time in newCombo.ComboTimes)
+			var newCombos = new List<IComboItem>(comboFactory.CreateCombo(component));
+			dataset[component] = newCombos;
+			foreach (var combo in newCombos)
 			{
-				int insertIndex = GetLowerBoundIndex(time);
-				times.Insert(insertIndex, time);
+				int insertIndex = GetLowerBoundIndex(combo.ExpectedTime);
+				times.Insert(insertIndex, combo.ExpectedTime);
 			}
 
 			OnDataUpdated?.Invoke(component);
