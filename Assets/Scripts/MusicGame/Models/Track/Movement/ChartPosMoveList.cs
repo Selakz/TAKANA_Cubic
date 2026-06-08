@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
+using T3Framework.Static.Easing;
 using T3Framework.Static.Movement;
 
 namespace MusicGame.Models.Track.Movement
@@ -16,6 +17,11 @@ namespace MusicGame.Models.Track.Movement
 
 		public ChartPosMoveList(IDictionary<T3Time, IPositionMoveItem<float>> items) : base(items)
 		{
+		}
+
+		public override void Insert(T3Time time, float position)
+		{
+			Insert(time, new V1EMoveItem(position, Eases.Unmove));
 		}
 
 		public JObject GetSerializationToken()

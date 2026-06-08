@@ -22,7 +22,7 @@ namespace T3Framework.Static.Movement
 		public IPositionMoveItem<TPosition> Clone() => SetPosition(Position);
 	}
 
-	public class PositionMoveList<TPosition> : IMoveList<IPositionMoveItem<TPosition>>, IMovement<TPosition>
+	public abstract class PositionMoveList<TPosition> : IMoveList<IPositionMoveItem<TPosition>>, IMovement<TPosition>
 	{
 		private readonly SortedList<T3Time, IPositionMoveItem<TPosition>> list;
 		private int lastIndex = 0;
@@ -103,6 +103,8 @@ namespace T3Framework.Static.Movement
 		{
 			foreach (var item in list.Values) item.Position = item.Add(item.Position, offset);
 		}
+
+		public abstract void Insert(T3Time time, TPosition position);
 
 		public int BinarySearch(T3Time time) => list.BinarySearch(time);
 

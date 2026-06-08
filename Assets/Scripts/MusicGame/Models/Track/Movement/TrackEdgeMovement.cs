@@ -44,6 +44,12 @@ namespace MusicGame.Models.Track.Movement
 			Movement2.Shift(offset);
 		}
 
+		public void Insert(T3Time time, float position, float width)
+		{
+			Movement1.Insert(time, position - width / 2);
+			Movement2.Insert(time, position + width / 2);
+		}
+
 		public JObject GetSerializationToken()
 		{
 			return new JObject()

@@ -48,7 +48,15 @@ namespace MusicGame.ChartEditor.InScreenEdit
 
 				var command = new ConnectTrackCommand(tracks[0], tracks[1]);
 				if (command.SetInit()) commandManager.Add(command);
-			})
+			}),
+			new InputRegistrar("TrackEdit", "SplitTrack", () =>
+			{
+				if (selectDataset.Count != 1 || !timeRetriever.GetMouseTimeStart(out var timeStart)) return;
+				var track = selectDataset.First();
+
+				var command = new SplitTrackCommand(track, timeStart);
+				if (command.SetInit()) commandManager.Add(command);
+			}),
 		};
 
 		// Private

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
@@ -58,6 +59,11 @@ namespace MusicGame.Models.Note.Movement
 		/// <summary> Note's movement should not be shifted, since it should be 0 when judge time. </summary>
 		public void Shift(float offset)
 		{
+		}
+
+		public void Insert(T3Time time, float position)
+		{
+			throw new NotImplementedException();
 		}
 
 		public T3Time FirstTimeWhen(float edge, bool lesserThan)

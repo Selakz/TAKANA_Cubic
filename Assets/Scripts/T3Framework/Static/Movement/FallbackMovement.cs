@@ -23,6 +23,10 @@ namespace T3Framework.Static.Movement
 		{
 		}
 
+		public void Insert(T3Time time, TPosition position)
+		{
+		}
+
 		public IMovement<TPosition> Clone(T3Time timeOffset, TPosition positionOffset) => Instance;
 	}
 }

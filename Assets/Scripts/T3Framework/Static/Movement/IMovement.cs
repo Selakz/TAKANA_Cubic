@@ -9,5 +9,7 @@ namespace T3Framework.Static.Movement
 		public void Nudge(T3Time distance);
 
 		public void Shift(TPosition offset);
+
+		public void Insert(T3Time time, TPosition position);
 	}
 }

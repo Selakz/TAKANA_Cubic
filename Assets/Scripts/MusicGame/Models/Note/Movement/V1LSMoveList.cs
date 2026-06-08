@@ -124,6 +124,11 @@ namespace MusicGame.Models.Note.Movement
 
 		public void Shift(float offset) => BaseTime += offset;
 
+		public void Insert(T3Time time, float position)
+		{
+			throw new NotImplementedException();
+		}
+
 		private float GetRelativePos(T3Time time)
 		{
 			if (time < list.Keys[0])

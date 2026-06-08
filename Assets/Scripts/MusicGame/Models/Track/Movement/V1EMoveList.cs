@@ -148,6 +148,11 @@ namespace MusicGame.Models.Track.Movement
 			throw new NotImplementedException();
 		}
 
+		public void Insert(T3Time time, float position)
+		{
+			Insert(time, new V1EMoveItem(position, Eases.Unmove));
+		}
+
 		public IMovement<float> Clone(T3Time timeOffset, float positionOffset)
 		{
 			if (Count == 0) return new V1EMoveList();

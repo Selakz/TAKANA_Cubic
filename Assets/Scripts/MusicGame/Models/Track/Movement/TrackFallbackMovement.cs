@@ -40,6 +40,10 @@ namespace MusicGame.Models.Track.Movement
 		{
 		}
 
+		public void Insert(T3Time time, float position, float width)
+		{
+		}
+
 		public ITrackMovement Clone(T3Time timeOffset, float positionOffset) => Instance;
 
 		public JObject GetSerializationToken() => new();

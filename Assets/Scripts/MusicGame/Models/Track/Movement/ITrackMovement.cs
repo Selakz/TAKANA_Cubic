@@ -20,5 +20,7 @@ namespace MusicGame.Models.Track.Movement
 		public void Nudge(T3Time distance);
 
 		public void Shift(float offset);
+
+		public void Insert(T3Time time, float position, float width);
 	}
 }
