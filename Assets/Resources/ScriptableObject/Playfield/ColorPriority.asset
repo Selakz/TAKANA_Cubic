@@ -20,3 +20,5 @@ MonoBehaviour:
       value: 2
     - key: auto-score
       value: 3
+    - key: draft
+      value: 4

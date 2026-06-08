@@ -166,6 +166,7 @@ Edit:
     RemoveOutOfRange: 移除所有超出轨道时间范围的Note
     RemoveOverlap: 移除所有重叠的同类型Note
     RemoveZeroWidth: 移除所有宽度为0的Note
+    RemoveDraft: 移除所有草稿Note
     FormattingSuccess: 成功删除 {0} 个符合条件的元件
     NoNeedToFormat: 没有符合条件的元件需要删除
   
@@ -180,6 +181,12 @@ Edit:
     TrackClipboard: 已复制{0}个轨道
     Pasting: 正在普通粘贴
     ExactPasting: 正在原位粘贴
+    
+  Draft:
+    EnterDraftMode: 草稿模式
+    TrackAnchorInvalid: 选中一个轨道及若干草稿Note以创建结点
+    CreateTrackInvalid: 选中若干草稿Note以创建轨道
+    AttachNoteFail: 无法将草稿Note附着到轨道
 
 TrackLayer:
   Basic:
@@ -222,6 +229,7 @@ Tutorial:
   
   AllInOne: 一文集合版使用说明书（跳转外部链接）
   FirstMeet: 初次见面...？
+  Draft: 草稿模式
   
 # It's so boring chore. LLM helps me with this.
 Setting:
@@ -284,6 +292,7 @@ Setting:
     ShowTimeIndicator: 是否显示时间指示器
     ShowPositionIndicator: 是否显示位置指示器
     WidthGridColor: 纵向格线颜色
+    WidthGridSecondColor: 纵向格线第二颜色
     BeatColor: 四分音符（拍）的横向格线颜色
     QuaverColor: 八分音符的横向格线颜色
     SemiQuaverColor: 十六分音符的横向格线颜色
@@ -347,6 +356,7 @@ InputRebinding:
   Reset: 重置
   Basic: 基础
   Editor: 编辑器
+  Draft: 草稿
   CurveSwitch: 曲线切换
   
   Undo: 撤销
@@ -364,6 +374,10 @@ InputRebinding:
   ToLeftGrid: 节点左移至格线
   ToRight: 节点右移
   ToRightGrid: 节点右移至格线
+  Widen: 扩大Note或结点宽度
+  Narrow: 缩小Note或结点宽度
+  WidenToGrid: 扩大Note或结点宽度至格线
+  NarrowToGrid: 缩小Note或结点宽度至格线
   Cut: 剪切
   Copy: 复制
   Paste: 粘贴
@@ -393,3 +407,11 @@ InputRebinding:
   CreateHoldBetween: 使用两个Note创建长条
   
   ConnectTrack: 连接两个同类轨道
+  SplitTrack: 分割轨道
+  UpSelectTrackLayer: 上移图层选择
+  DownSelectTrackLayer: 下移图层选择
+
+  ToggleDraftMode: 切换草稿模式
+  TrackAnchor: 将草稿Note作为轨道结点
+  CreateTrack: 从草稿Note创建轨道
+  AttachNote: 将草稿Note附着到最近的轨道上

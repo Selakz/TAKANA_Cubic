@@ -166,6 +166,7 @@ Edit:
     RemoveOutOfRange: Remove all notes outside the track time range
     RemoveOverlap: Remove all overlapping same-type notes
     RemoveZeroWidth: Remove all notes with width 0
+    RemoveDraft: Remove all draft notes
     FormattingSuccess: "{0} elements formatted successfully"
     NoNeedToFormat: "No elements need to be formatted"
   
@@ -180,6 +181,12 @@ Edit:
     TrackClipboard: "{0} tracks copied"
     Pasting: Pasting
     ExactPasting: Pasting in place
+    
+  Draft:
+    EnterDraftMode: Enter Draft Mode
+    TrackAnchorInvalid: Select a track and some draft notes to create nodes
+    CreateTrackInvalid: Select some draft notes to create tracks
+    AttachNoteFail: Failed to attach the draft note to a track
 
 TrackLayer:
   Basic:
@@ -222,6 +229,7 @@ Tutorial:
   
   AllInOne: "All-in-one tutorial (opens external link)"
   FirstMeet: "First meet...?"
+  Draft: "Draft Mode"
   
 Setting:
   SelectSetting:
@@ -283,6 +291,7 @@ Setting:
     ShowTimeIndicator: Show time indicator
     ShowPositionIndicator: Show position indicator
     WidthGridColor: Vertical grid color
+    WidthGridSecondColor: Vertical grid second color
     BeatColor: Grid color for Quarter notes (Beats)
     QuaverColor: Grid color for Eighth notes
     SemiQuaverColor: Grid color for Sixteenth notes
@@ -346,6 +355,7 @@ InputRebinding:
   Reset: Reset
   Basic: Basic
   Editor: Editor
+  Draft: Draft
   CurveSwitch: Curve Switch
   
   Undo: Undo
@@ -363,6 +373,10 @@ InputRebinding:
   ToLeftGrid: Move Node Left to Grid Line
   ToRight: Move Node Right
   ToRightGrid: Move Node Right to Grid Line
+  Widen: Widen Notes or Nodes
+  Narrow: Narrow Notes or Nodes
+  WidenToGrid: Widen Notes or Nodes to Grid Line
+  NarrowToGrid: Narrow Notes or Nodes to Grid Line
   Cut: Cut
   Copy: Copy
   Paste: Paste
@@ -392,3 +406,11 @@ InputRebinding:
   CreateHoldBetween: Create Hold Using Two Notes
   
   ConnectTrack: Connect Two Similar Tracks
+  SplitTrack: Split Track
+  UpSelectTrackLayer: Change Layer Selection Upwards
+  DownSelectTrackLayer: Change Layer Selection Downwards
+  
+  ToggleDraftMode: Toggle Draft Mode
+  TrackAnchor: Make Draft Notes Track's Nodes
+  CreateTrack: Create Track From Draft Notes
+  AttachNote: Attach Draft Notes to its Nearest Track

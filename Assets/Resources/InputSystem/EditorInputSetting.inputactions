@@ -458,12 +458,12 @@
             "actions": [
                 {
                     "name": "Raycast",
-                    "type": "Value",
-                    "id": "852bc4a0-a323-4e35-8de4-7d9e08848b77",
+                    "type": "Button",
+                    "id": "35d7b83f-b1a0-4b16-88bf-f63f4a419f33",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
+                    "interactions": "Tap(duration=999)",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Create",
@@ -649,6 +649,42 @@
                     "name": "ToggleDummy",
                     "type": "Value",
                     "id": "65d7eef3-539e-430b-89b5-8246bd7912e0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Widen",
+                    "type": "Value",
+                    "id": "a632dddb-c860-4d7f-9146-b9d2110cb990",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "WidenToGrid",
+                    "type": "Value",
+                    "id": "c881d29f-6188-427b-96f9-6b81f1e52671",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Narrow",
+                    "type": "Value",
+                    "id": "e06e1bd3-c83e-45b3-9482-565c94d9fc0c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "NarrowToGrid",
+                    "type": "Value",
+                    "id": "6b42ae54-5b09-42e6-8c4a-eb3953493526",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1093,6 +1129,226 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "448c1de2-c23e-4fd2-962a-bcc1bde3ce0c",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Widen",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "e846e8f2-1548-457d-9807-594a2a3fc18a",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Widen",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "8be312e7-9164-432c-b361-dfd0e0888cd4",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Widen",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "7b2949c6-1abf-482e-9f88-498ee4016e29",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Widen",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "a42e8083-cbd9-41de-b74e-6bb555477c3d",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Widen",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "c5636010-8ce7-467d-a3d0-3b70eca149c6",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WidenToGrid",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "4e3d18ce-c124-4eec-a5ea-8c065532a5f6",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WidenToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "8fe56465-8c5f-4317-8d86-5cef27de0519",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WidenToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "b332404b-e480-40af-a549-2c8f2ca63258",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WidenToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "31502b79-5aeb-4575-8e5a-78b92544af26",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WidenToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "f93b6b4f-b80b-4fda-8ff3-7a25bfa602d3",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Narrow",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "b5d15aea-954d-43f9-85e5-91e314eb5ef9",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Narrow",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "2bd7177d-079f-4943-8872-1bb4627d5aa2",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Narrow",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "76b28c60-5038-4e44-a9b7-0c99c491ce47",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Narrow",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "17a4060a-c0bf-448b-bea8-245adce298d7",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Narrow",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "41c33893-35ac-4c70-9fd3-dcac3dd495cc",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NarrowToGrid",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "45a565e3-2bee-477a-897c-2d32cd5c2886",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NarrowToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "88c6e56b-29dc-4ccd-8934-e7b740cae412",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NarrowToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "7d5ece52-44d7-4650-8e30-e073c87c3a2e",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NarrowToGrid",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "d4888d74-fd13-49b1-b80f-012e884062e1",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NarrowToGrid",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -1647,169 +1903,15 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "Key With Modifiers",
-                    "id": "13fbe3c7-30e2-41d6-b004-41de14cf5439",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "e8627345-5f5e-4ea4-a484-6c4de84fc4b4",
+                    "name": "",
+                    "id": "e33fade4-f9b3-4d5a-b26e-a8ad0b6cec8d",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "IgnoreUI",
                     "groups": "",
                     "action": "Raycast",
                     "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "d340b0ba-a6f5-414e-b9ad-216b3f66c0c9",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "e9e7a4a7-e667-410e-bf32-0f4633c2a559",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "172943f0-2ee9-42f7-89e3-d7bbd5be3a81",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "4add9642-6cfd-4cea-addf-1ac8c5628187",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey(needModifier1=true)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": true,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "32ef270f-82f7-4af9-ab18-9862559b8fba",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "IgnoreUI",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "4a78e767-c84f-4bd9-902f-2d875ab54fd6",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "3a09b383-efe3-44bb-9db3-a000ed5d3690",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "e831dd75-4d94-4204-a9f2-c2f2f2b13901",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Key With Modifiers",
-                    "id": "7d59af0a-2cc8-481c-8fa7-d37795e088a3",
-                    "path": "KeyWithModifiers",
-                    "interactions": "HotKey(needModifier3=true)",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "key",
-                    "id": "f411b503-ec7b-4602-b3ad-432de9ed84fd",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "IgnoreUI",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier1",
-                    "id": "87d2077d-fd20-48ab-822c-68728e4f8b91",
-                    "path": "<Keyboard>/ctrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier2",
-                    "id": "05d067ef-9206-4e71-9f5f-1838f58f3b5f",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "modifier3",
-                    "id": "7c88fff6-f32e-428b-a3c9-9efe9506ca1e",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raycast",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "Key With Modifiers",
@@ -3094,6 +3196,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "SplitTrack",
+                    "type": "Value",
+                    "id": "89a0ef0b-9a11-4e0e-acaf-748cc5ff6eb6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "UpSelectTrackLayer",
+                    "type": "Value",
+                    "id": "e270e29b-6c07-446d-99a6-7c2360d63d80",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "DownSelectTrackLayer",
+                    "type": "Value",
+                    "id": "4eabcf3f-482b-4e3c-896c-370109a23e80",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -3149,6 +3278,435 @@
                     "processors": "",
                     "groups": "",
                     "action": "ConnectTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "ee1918b9-1d0f-4c3e-8fb7-c82fddd79f86",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier3=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SplitTrack",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "a1c460e2-7938-47fd-953a-e17404bb5733",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SplitTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "77c4d3d4-d583-4d2b-81f8-ca652bf6692d",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SplitTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "7325d412-8075-43d0-a43b-9d276191a6c4",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SplitTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "8cf8b9ce-6b14-408a-8009-4bc9c6c49253",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SplitTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "bf8f73d4-4dd9-4776-a15c-74717a1d3e5d",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpSelectTrackLayer",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "0131622c-8744-46e1-a6e3-2a5b17cd553b",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "87860fd0-cc67-41fd-841a-4c26407e3337",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "0e4be0ae-0456-429a-97fd-b05e27b2e5b1",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "3b4e5552-fe43-48e3-ba33-6eafee9d4e99",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "46331d99-a459-4b60-9749-29a5b9d3688f",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownSelectTrackLayer",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "ca205095-c8c0-4440-b981-80a731eba891",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "5b89de61-73ed-4c4f-951b-f60702efe757",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "9ea930fb-543e-4b72-8feb-93a9585f401f",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "118f4845-8f10-403e-a7ad-64c05b2bf1da",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownSelectTrackLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Draft",
+            "id": "b52fdb4b-a05f-4e33-8b37-a86c4bc2e0af",
+            "actions": [
+                {
+                    "name": "ToggleDraftMode",
+                    "type": "Value",
+                    "id": "6e16c73d-c6de-4eb8-98f4-3806b5da09b0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TrackAnchor",
+                    "type": "Value",
+                    "id": "a6f81b70-81e2-4f44-98ce-ec33ff61f232",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "CreateTrack",
+                    "type": "Value",
+                    "id": "94055254-2fa3-4ec1-bb99-60fbdb39c009",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "AttachNote",
+                    "type": "Value",
+                    "id": "d4f585af-0bc4-427f-80c9-99bee53171ac",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "Key With Modifiers",
+                    "id": "4313a5a8-2f34-40d9-88c2-db1b450e08aa",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey(needModifier1=true)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDraftMode",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "06baa1fd-8316-4fac-8373-d4e6061cf864",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDraftMode",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "5f54128f-86bc-4b8a-a028-4263043a79a5",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDraftMode",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "78379e58-bb2b-4196-b946-43b9a7ad9dd3",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDraftMode",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "16f820e3-a3b8-4663-b34b-5fbcd852dbce",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleDraftMode",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "9065832b-33d9-409f-845b-6a928fb6ef93",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackAnchor",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "6d248fd5-7c01-46a1-b63b-3ffc66804333",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackAnchor",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "33c614af-a75f-472b-ab3f-2f9ed030f6ce",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackAnchor",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "a9ec9126-53b0-4095-bedb-bbbd11a1c503",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackAnchor",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "ff112dbf-d07e-40b6-8a10-af05dbb06444",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackAnchor",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "c9d1ad1d-05d0-4fd9-b923-4fb9b7bc0edf",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "27dda3d3-3019-4379-91e4-efa9ceae241e",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "b4d62a36-72c4-41e2-b1de-9e00ec23d055",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "64afbffa-b282-4b0f-b52b-793fb310207f",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "793ffcb0-514c-4300-afdc-bbcf1b416dd0",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CreateTrack",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "aae1fac0-6af9-4a3b-a110-cc43da7aef44",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttachNote",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "729136b7-1390-4ba3-995b-61de44282f36",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttachNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "9673dc93-39ce-4f88-9b0c-7f4d01941ccf",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttachNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "d72d0b55-4a00-4353-af6c-ca6d01cefdff",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttachNote",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "8e0f5d11-88de-4ce8-b318-efcf761f52a3",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttachNote",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
