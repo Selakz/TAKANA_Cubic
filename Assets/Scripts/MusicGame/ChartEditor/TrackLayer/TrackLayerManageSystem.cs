@@ -11,30 +11,33 @@ using T3Framework.Preset.Event;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using VContainer;
 
 namespace MusicGame.ChartEditor.TrackLayer
 {
-	public class TrackLayerManageSystem : T3System
+	public class TrackLayerManageSystem : HierarchySystem<TrackLayerManageSystem>
 	{
 		// Serializable and Public
 		public NotifiableProperty<LayersInfo?> LayersInfo { get; } = new(null);
 
 		public event Action<ChartComponent>? OnTrackUpdate;
 
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new PropertyRegistrar<LevelInfo?>(levelInfoProperty, (_, _) =>
+			new PropertyRegistrar<LevelInfo?>(levelInfo, (_, _) =>
 			{
-				var levelInfo = levelInfoProperty.Value;
-				if (levelInfo is null)
+				var info = levelInfo.Value;
+				if (info is null)
 				{
 					LayersInfo.Value = null;
 					return;
 				}
 
 				if (chart is not null) chart.OnComponentModelUpdated -= OnTrackUpdated;
-				chart = levelInfo.Chart;
+				chart = info.Chart;
 				chart.OnComponentModelUpdated += OnTrackUpdated;
 				LayersInfo.Value = chart.GetsLayersInfo();
 			}),
@@ -55,16 +58,11 @@ namespace MusicGame.ChartEditor.TrackLayer
 		};
 
 		// Private
-		private readonly NotifiableProperty<LevelInfo?> levelInfoProperty;
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+
 		private ChartInfo? chart;
 
 		// Defined Functions
-		public TrackLayerManageSystem(
-			NotifiableProperty<LevelInfo?> levelInfoProperty) : base(true)
-		{
-			this.levelInfoProperty = levelInfoProperty;
-		}
-
 		public LayerInfo GetLayer(ChartComponent component)
 		{
 			if (component.Model is not ITrack track) return LayersInfo.Value!.DefaultLayer;
@@ -115,9 +113,9 @@ namespace MusicGame.ChartEditor.TrackLayer
 		}
 
 		// System Functions
-		protected override void OnInactive()
+		protected override void OnDisable()
 		{
-			base.OnInactive();
+			base.OnDisable();
 			if (chart is not null) chart.OnComponentModelUpdated -= OnTrackUpdated;
 		}
 	}

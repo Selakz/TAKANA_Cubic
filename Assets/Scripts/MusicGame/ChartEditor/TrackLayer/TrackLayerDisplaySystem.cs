@@ -1,93 +1,45 @@
 #nullable enable
 
 using System;
-using System.Collections.Generic;
 using MusicGame.ChartEditor.TrackLayer.UI;
 using T3Framework.Preset.Event;
 using T3Framework.Preset.UICollection;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using UnityEngine;
 using VContainer;
 
 namespace MusicGame.ChartEditor.TrackLayer
 {
-	public class TrackLayerDisplaySystem : T3System
+	public class TrackLayerDisplaySystem : HierarchySystem<TrackLayerDisplaySystem>
 	{
-		private readonly ListViewManualSorter<LayerComponent> sorter;
-		private readonly TrackLayerManageSystem manageSystem;
-		private readonly Dictionary<PrefabHandler, LayerContentRegistrar> registrars = new();
-
-		public TrackLayerDisplaySystem(
-			[Key("trackLayer")] IViewPool<LayerComponent> viewPool,
-			TrackLayerManageSystem manageSystem) : base(true)
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			sorter = new(viewPool);
-			this.manageSystem = manageSystem;
-		}
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
-		{
-			new PropertyRegistrar<LayersInfo?>(manageSystem.LayersInfo, (_, _) =>
-			{
-				foreach (var registrar in registrars.Values) registrar.Unregister();
-				registrars.Clear();
-				sorter.ViewPool.Clear();
-				var lastInfo = manageSystem.LayersInfo.LastValue;
-				if (lastInfo is not null)
-				{
-					lastInfo.OnDataAdded -= OnLayerAdded;
-					lastInfo.BeforeDataRemoved -= BeforeLayerRemoved;
-				}
-
-				var info = manageSystem.LayersInfo.Value;
-				if (info is not null)
-				{
-					info.OnDataAdded += OnLayerAdded;
-					info.BeforeDataRemoved += BeforeLayerRemoved;
-					foreach (var layer in info)
-					{
-						if (sorter.ViewPool.Add(layer))
-						{
-							var handler = sorter.ViewPool[layer]!;
-							var registrar = new LayerContentRegistrar(this, handler, info, layer);
-							registrar.Register();
-							registrars[handler] = registrar;
-						}
-					}
-				}
-			})
+			new PropertyNestedRegistrar<LayersInfo?>(manageSystem.LayersInfo, info =>
+				new AutoViewPoolRegistrar<LayerComponent>(info!, sorter.ViewPool, true)),
+			new ViewPoolLifetimeRegistrar<LayerComponent>(sorter.ViewPool, handler =>
+				new LayerContentRegistrar(this, handler, manageSystem.LayersInfo.Value!, sorter.ViewPool[handler]!))
 		};
 
-		private void OnLayerAdded(LayerComponent layer)
-		{
-			if (manageSystem.LayersInfo.Value is not { } info) return;
-			if (sorter.ViewPool.Add(layer))
-			{
-				var handler = sorter.ViewPool[layer]!;
-				var registrar = new LayerContentRegistrar(this, handler, info, layer);
-				registrar.Register();
-				registrars[handler] = registrar;
-			}
-		}
+		// Private
+		[Inject] private TrackLayerManageSystem manageSystem = default!;
 
-		private void BeforeLayerRemoved(LayerComponent layer)
+		private ListViewManualSorter<LayerComponent> sorter = default!;
+
+		// Constructor
+		[Inject]
+		private void Construct([Key("trackLayer")] IViewPool<LayerComponent> viewPool)
 		{
-			var handler = sorter.ViewPool[layer]!;
-			if (sorter.ViewPool.Remove(layer))
-			{
-				var registrar = registrars[handler];
-				registrar.Unregister();
-				registrars.Remove(handler);
-			}
+			sorter = new(viewPool);
 		}
 
 		/// <summary> Sets the view, listen the events. </summary>
 		private class LayerContentRegistrar : IEventRegistrar
 		{
-			private readonly LayersInfo layersInfo;
 			private readonly LayerComponent layer;
 			private readonly EditLayerContent content;
 			private readonly IEventRegistrar[] registrars;
@@ -95,7 +47,6 @@ namespace MusicGame.ChartEditor.TrackLayer
 			public LayerContentRegistrar(
 				TrackLayerDisplaySystem system, PrefabHandler handler, LayersInfo layersInfo, LayerComponent layer)
 			{
-				this.layersInfo = layersInfo;
 				this.layer = layer;
 				content = handler.Script<EditLayerContent>();
 				registrars = new IEventRegistrar[]
@@ -181,20 +132,6 @@ namespace MusicGame.ChartEditor.TrackLayer
 			public void Unregister()
 			{
 				foreach (var registrar in registrars) registrar.Unregister();
-			}
-		}
-
-		public override void Dispose()
-		{
-			base.Dispose();
-			foreach (var registrar in registrars.Values) registrar.Unregister();
-			registrars.Clear();
-			sorter.ViewPool.Clear();
-			var info = manageSystem.LayersInfo.Value;
-			if (info is not null)
-			{
-				info.OnDataAdded -= OnLayerAdded;
-				info.BeforeDataRemoved -= BeforeLayerRemoved;
 			}
 		}
 	}

@@ -53,7 +53,7 @@ namespace T3Framework.Runtime.ECS
 				LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 		}
 
-		private void Sort()
+		public void Sort()
 		{
 			List<T> keys = new List<T>(ViewPool);
 			keys.Sort(ListSorter);

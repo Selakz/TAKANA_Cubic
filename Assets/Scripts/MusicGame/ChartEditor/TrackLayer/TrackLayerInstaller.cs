@@ -5,7 +5,6 @@ using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLayer
 {
@@ -28,7 +27,6 @@ namespace MusicGame.ChartEditor.TrackLayer
 				.WithParameter("prefab", contentPrefab)
 				.WithParameter("defaultTransform", contentRoot)
 				.Keyed("trackLayer");
-			builder.RegisterEntryPoint<TrackLayerDisplaySystem>();
 		}
 	}
 }
