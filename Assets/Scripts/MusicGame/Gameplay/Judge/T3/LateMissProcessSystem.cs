@@ -70,7 +70,7 @@ namespace MusicGame.Gameplay.Judge.T3
 				}
 
 				lastPotentialIndex++;
-				if (lastPotentialIndex >= touches.Count) break;
+				if (lastPotentialIndex >= comboStorage.Combos.Count) break;
 				combo = comboStorage.Combos[lastPotentialIndex];
 			}
 		}

@@ -67,12 +67,12 @@ namespace MusicGame.Gameplay.Judge.T3
 				var chartTime = aligner.GetChartTime(touch.startTime);
 				var position = retriever.GetPosition(touch.startScreenPosition);
 
-				var startIndex = comboStorage.GetLowerBoundIndex(chartTime + startDistance);
+				var startIndex = comboStorage.GetLowerBoundIndex(chartTime - endDistance);
 				int nearestCount = 0;
 				bool isNearestPending = false;
 				T3JudgeResult result = T3JudgeResult.LateMiss;
 				for (int i = startIndex;
-				     i < comboStorage.Combos.Count && comboStorage.Combos[i].ExpectedTime < chartTime + endDistance;
+				     i < comboStorage.Combos.Count && comboStorage.Combos[i].ExpectedTime < chartTime - startDistance;
 				     i++)
 				{
 					bool isPending = false;

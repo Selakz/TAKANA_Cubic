@@ -56,9 +56,9 @@ namespace MusicGame.Gameplay.Judge.T3
 					: aligner.GetChartTime(touch.time);
 				var position = retriever.GetPosition(touch.screenPosition);
 
-				var startIndex = comboStorage.GetLowerBoundIndex(chartTime + startDistance);
+				var startIndex = comboStorage.GetLowerBoundIndex(chartTime - endDistance);
 				for (int i = startIndex;
-				     i < comboStorage.Combos.Count && comboStorage.Combos[i].ExpectedTime < chartTime + endDistance;
+				     i < comboStorage.Combos.Count && comboStorage.Combos[i].ExpectedTime < chartTime - startDistance;
 				     i++)
 				{
 					var combo = comboStorage.Combos[i];
