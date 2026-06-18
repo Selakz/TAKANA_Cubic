@@ -138,8 +138,11 @@ namespace MusicGame.Gameplay.Chart
 		public bool IsNewTimeMinValid(T3Time newTimeMin)
 		{
 			if (newTimeMin > Model.TimeMax) return false; // TODO: It's not quite right for notes
-			if (Children.Count > 0 &&
-			    newTimeMin > Children.Where(c => !c.Model.IsEditorOnly()).Min(c => c.Model.TimeMin)) return false;
+			if (newTimeMin > Children
+				    .Where(c => !c.Model.IsEditorOnly())
+				    .Select(c => c.Model.TimeMin)
+				    .DefaultIfEmpty(T3Time.MaxValue)
+				    .Min()) return false;
 			if (Parent is not null && newTimeMin < Parent.Model.TimeMin) return false;
 			return true;
 		}
@@ -147,8 +150,11 @@ namespace MusicGame.Gameplay.Chart
 		public bool IsNewTimeMaxValid(T3Time newTimeMax)
 		{
 			if (newTimeMax < Model.TimeMin) return false;
-			if (Children.Count > 0 &&
-			    newTimeMax < Children.Where(c => !c.Model.IsEditorOnly()).Max(c => c.Model.TimeMax)) return false;
+			if (newTimeMax < Children
+				    .Where(c => !c.Model.IsEditorOnly())
+				    .Select(c => c.Model.TimeMax)
+				    .DefaultIfEmpty(T3Time.MinValue)
+				    .Max()) return false;
 			if (Parent is not null && newTimeMax > Parent.Model.TimeMax) return false;
 			return true;
 		}
