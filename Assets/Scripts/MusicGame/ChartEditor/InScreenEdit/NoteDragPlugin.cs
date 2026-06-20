@@ -39,6 +39,8 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
 		public override Vector3 CurrentScreenPoint => Input.mousePosition;
 
+		public virtual T3Time TimeDragThreshold => ISingleton<InScreenEditSetting>.Instance.TimeDragThreshold.Value;
+
 		public IReadOnlyList<NoteRawInfo> DraggingInfos => draggingInfos;
 
 		public T3Time BeginTime { get; private set; }
@@ -117,10 +119,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			if (draggingInfos.Count > 0 && timeRetriever.GetMouseTimeStart(out var newTime))
 			{
 				var distance = newTime - BeginTime;
-				if (Mathf.Abs(distance) < ISingleton<InScreenEditSetting>.Instance.TimeDragThreshold.Value)
-				{
-					return;
-				}
+				if (Mathf.Abs(distance) < TimeDragThreshold) return;
 
 				if (draggingInfos.Any(info => service.IsValid(info) is not null))
 				{

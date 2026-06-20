@@ -7,6 +7,7 @@ using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Note;
 using T3Framework.Preset.Event;
+using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
@@ -20,6 +21,8 @@ namespace MusicGame.ChartEditor.Draft
 		private float lastPosition = 0;
 
 		protected override NoteRawInfo? FromComponent(ChartComponent note) => DraftNoteRawInfo.FromComponent(note);
+
+		public override T3Time TimeDragThreshold => 0;
 
 		protected override void BeginDragLogic()
 		{
