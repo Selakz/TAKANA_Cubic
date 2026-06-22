@@ -244,8 +244,7 @@ Setting:
     Speed: 游玩谱面时的默认速度 | 范围 [0, 10]
     AudioDeviation: 游玩时的音押偏移量（Fast多则加，Late多则减） | 单位：毫秒
     InputDeviation: 游玩时的目押偏移量（Fast多则加，Late多则减） | 单位：毫秒
-    TrackGap1: Tap和Hold与轨道边界的间隔大小
-    TrackGap2: Slide与轨道边界的间隔大小
+    TrackGap: Tap和Hold与轨道边界的间隔大小
     CameraPosition: 主相机位置
     CameraRotation: 主相机旋转角度
     TimeAfterEnd: Note下落时如果未被判定，则其视图层内容在判定时间之后延迟销毁的时间（非必要请勿修改）

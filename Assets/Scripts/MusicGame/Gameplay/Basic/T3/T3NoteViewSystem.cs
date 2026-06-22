@@ -38,10 +38,11 @@ namespace MusicGame.Gameplay.Basic.T3
 					Func<Vector2, Vector2> function = value =>
 					{
 						if (note.Parent?.Model is not ITrack track) return new(1, value.y);
-						var gap = note.Model is not Hit { Type: HitType.Slide }
-							? ISingleton<PlayfieldSetting>.Instance.TrackGap1.Value
-							: ISingleton<PlayfieldSetting>.Instance.TrackGap2.Value;
 						var width = track.Movement.GetWidth(music.ChartTime);
+						var baseGap = ISingleton<PlayfieldSetting>.Instance.TrackGap.Value;
+						var gap = note.Model is not Hit { Type: HitType.Slide }
+							? baseGap
+							: Mathf.Max(2, 8 * width / StageWidth) * baseGap;
 						return new(
 							width > 2 * gap ? width - gap : width,
 							value.y);
@@ -67,5 +68,8 @@ namespace MusicGame.Gameplay.Basic.T3
 		// Private
 		[Inject] private IGameAudioPlayer music = default!;
 		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
+
+		// Static
+		private const float StageWidth = 9f;
 	}
 }

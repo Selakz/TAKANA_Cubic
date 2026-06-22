@@ -243,8 +243,7 @@ Setting:
     Speed: Default playback speed | Range [0, 10]
     AudioDeviation: "Audio offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
     InputDeviation: "Visual offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
-    TrackGap1: Gap between Tap/Hold and track boundaries
-    TrackGap2: Gap between Slide and track boundaries
+    TrackGap: Gap between Tap/Hold and track boundaries
     CameraPosition: Main camera position
     CameraRotation: Main camera rotation
     TimeAfterEnd: "Delay before a missed Note's view is destroyed (Do not modify unless necessary)"

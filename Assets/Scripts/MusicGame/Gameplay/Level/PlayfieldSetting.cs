@@ -32,11 +32,8 @@ namespace MusicGame.Gameplay.Level
 		[Description("InputDeviation")]
 		public NotifiableProperty<T3Time> InputDeviation { get; set; } = new(0);
 
-		[Description("TrackGap1")]
-		public NotifiableProperty<float> TrackGap1 { get; set; } = new(0.15f);
-
-		[Description("TrackGap2")]
-		public NotifiableProperty<float> TrackGap2 { get; set; } = new(0.3f);
+		[Description("TrackGap")]
+		public NotifiableProperty<float> TrackGap { get; set; } = new(0.15f);
 
 		[Description("CameraPosition")]
 		public NotifiableProperty<Vector3> CameraPosition { get; set; } = new(Vector3.zero);
