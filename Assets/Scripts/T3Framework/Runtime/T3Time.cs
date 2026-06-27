@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace T3Framework.Runtime
 {
@@ -9,7 +10,7 @@ namespace T3Framework.Runtime
 		public float Second
 		{
 			get => Milli / 1000f;
-			set => Milli = (int)(value * 1000f);
+			set => Milli = Mathf.RoundToInt(value * 1000f);
 		}
 
 		public T3Time(int milliseconds)
@@ -19,7 +20,7 @@ namespace T3Framework.Runtime
 
 		public T3Time(float seconds)
 		{
-			Milli = (int)(seconds * 1000);
+			Milli = Mathf.RoundToInt(seconds * 1000f);
 		}
 
 		public static T3Time MinValue => new(int.MinValue);
