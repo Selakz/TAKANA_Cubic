@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
@@ -40,19 +41,12 @@ namespace MusicGame.ChartEditor.Level
 		};
 
 		// Private
-		private CancellationTokenSource? cts;
-		private EditorLevelSaver editorLevelSaver = default!;
-		private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private EditorLevelSaver editorLevelSaver = default!;
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private IGameAudioPlayer music = default!;
 
-		// Constructor
-		[Inject]
-		private void Construct(
-			EditorLevelSaver editorLevelSaver,
-			NotifiableProperty<LevelInfo?> levelInfo)
-		{
-			this.editorLevelSaver = editorLevelSaver;
-			this.levelInfo = levelInfo;
-		}
+		private CancellationTokenSource? cts;
+		private bool shouldSaveDelayed = false;
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
@@ -63,7 +57,8 @@ namespace MusicGame.ChartEditor.Level
 			{
 				var delay = ISingleton<EditorSetting>.Instance.AutoSaveInterval.Value.Milli;
 				await UniTask.Delay(delay, cancellationToken: token);
-				AutoSave();
+				if (!music.IsPlaying) AutoSave();
+				else shouldSaveDelayed = true;
 			}
 		}
 
@@ -86,6 +81,16 @@ namespace MusicGame.ChartEditor.Level
 			{
 				Debug.Log(ex);
 				T3Logger.Log("Notice", "App_SaveError", T3LogType.Error);
+			}
+		}
+
+		// System Functions
+		void Update()
+		{
+			if (shouldSaveDelayed && !music.IsPlaying)
+			{
+				AutoSave();
+				shouldSaveDelayed = false;
 			}
 		}
 	}

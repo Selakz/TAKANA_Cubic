@@ -58,7 +58,6 @@ namespace MusicGame.ChartEditor.Level
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
 		// Defined Functions
-		// TODO: threading
 		public static ChartInfo GetPlayableChart(ChartInfo editingChart)
 		{
 			ChartInfo chart = IChartSerializable.Clone(editingChart);
