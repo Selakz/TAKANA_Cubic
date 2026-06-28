@@ -26,7 +26,7 @@ namespace MusicGame.EditorEntry
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new ViewPoolDataRegistrar<LevelComponent<EditorPreference>>(dataset, viewPool),
+			new AutoViewPoolRegistrar<LevelComponent<EditorPreference>>(dataset, viewPool, true),
 			new ViewPoolLifetimeRegistrar<LevelComponent<EditorPreference>>(viewPool, handler =>
 				new ProjectItemRegistrar(handler.Script<ProjectItem>(),
 					viewPool[handler]!, dataset, levelInfo, entryCanvas)),
