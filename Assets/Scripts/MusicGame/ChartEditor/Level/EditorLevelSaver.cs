@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
@@ -107,6 +108,29 @@ namespace MusicGame.ChartEditor.Level
 				filePath ?? FileHelper.GetAbsolutePathFromRelative(info.LevelPath, chartName + ".editing.json");
 			File.WriteAllText(chartPath, JsonConvert.SerializeObject(token,
 				ISingleton<EditorSetting>.Instance.SaveIndented ? Formatting.Indented : Formatting.None));
+		}
+
+		public async Task SaveEditorChartAsync(string? filePath = null)
+		{
+			if (levelInfo.Value is not { } info) return;
+			ChartInfo chart = IChartSerializable.Clone(info.Chart);
+			ReassignIds(chart);
+			List<ChartComponent> toRemove = chart.Where(component => component.Model.IsEditorOnly()).ToList();
+			foreach (var component in toRemove) chart.RemoveComponent(component);
+
+			T3ProjSetting projectSetting = await ISetting<T3ProjSetting>.LoadAsync(info.LevelPath);
+			var chartName = projectSetting.GetChartFileName(info.Difficulty);
+			var token = chart.GetSerializationToken();
+			var chartPath =
+				filePath ?? FileHelper.GetAbsolutePathFromRelative(info.LevelPath, chartName + ".editing.json");
+			await using var fileStream = File.Create(chartPath);
+			await using var streamWriter = new StreamWriter(fileStream);
+			using var jsonWriter = new JsonTextWriter(streamWriter);
+			jsonWriter.Formatting = ISingleton<EditorSetting>.Instance.SaveIndented
+				? Formatting.Indented
+				: Formatting.None;
+			new JsonSerializer().Serialize(jsonWriter, token);
+			await jsonWriter.FlushAsync();
 		}
 
 		public void SaveSettings()

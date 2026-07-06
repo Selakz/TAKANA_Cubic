@@ -74,7 +74,7 @@ namespace MusicGame.ChartEditor.Level
 				T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
 				var fileName =
 					$"{DateTime.Now:yyyy-MM-dd_HH-mm}_{projectSetting.GetChartFileName(info.Difficulty)}.editing.json";
-				editorLevelSaver.SaveEditorChart(Path.Combine(folderPath, fileName));
+				editorLevelSaver.SaveEditorChartAsync(Path.Combine(folderPath, fileName)).AsUniTask().Forget();
 				editorLevelSaver.SaveSettings();
 			}
 			catch (Exception ex)
