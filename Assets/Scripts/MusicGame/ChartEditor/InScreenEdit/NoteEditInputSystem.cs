@@ -6,6 +6,7 @@ using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
 using MusicGame.ChartEditor.Select;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Note;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
@@ -100,6 +101,31 @@ namespace MusicGame.ChartEditor.InScreenEdit
 					}
 
 					commandManager.Add(new BatchCommand(commands, "Note to previous beat"));
+				}),
+			new InputRegistrar("InScreenEdit", "Link",
+				() =>
+				{
+					var notes = dataset.Where(c => c.Model is Hit).ToList();
+					if (notes.Count < 0) return;
+					var targetType = notes.Any(note => note.Model is Hit { Type: HitType.Tap })
+						? HitType.Slide
+						: HitType.Tap;
+					var commands = notes.SelectMany(note => ChangeHitTypeCommands(note, targetType));
+					commandManager.Add(new BatchCommand(commands, "Link or unlink notes"));
+					return;
+
+					static IEnumerable<ICommand> ChangeHitTypeCommands(ChartComponent note, HitType type)
+					{
+						if (note.Model is not Hit hit || hit.Type == type) yield break;
+						var chart = note.BelongingChart!;
+						var parent = note.Parent;
+						var originalType = hit.Type;
+						yield return new DeleteComponentCommand(note);
+						yield return new UpdateComponentCommand(note,
+							_ => hit.Type = type,
+							_ => hit.Type = originalType);
+						yield return new AddComponentCommand(chart, note, parent);
+					}
 				})
 		};
 
