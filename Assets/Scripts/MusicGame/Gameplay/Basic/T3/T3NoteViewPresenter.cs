@@ -33,15 +33,17 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		public Modifier<Vector2> PositionModifier { get; private set; } = default!;
 
-		public Modifier<Color> ColorModifier { get; private set; } = default!;
+		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => colorModifiers ??=
+			textures.Value.Values.Select(t => t.ColorModifier).ToArray();
+
+		// IT3ModelViewPresenter Explicit Implementation
+		RendererModifier IT3ModelViewPresenter.MainTexture => MainTexture;
+
+		IReadOnlyDictionary<string, RendererModifier> IT3ModelViewPresenter.Textures =>
+			texturesAsBase ??= textures.Value.ToDictionary(
+				kvp => kvp.Key, RendererModifier (kvp) => kvp.Value);
 
 		// Private
-		private Color SpriteColor
-		{
-			get => MainTexture.Value.color;
-			set => MainTexture.Value.color = value;
-		}
-
 		private Vector2 Position
 		{
 			get => transform.localPosition;
@@ -52,8 +54,11 @@ namespace MusicGame.Gameplay.Basic.T3
 			}
 		}
 
+		private Modifier<Color>[]? colorModifiers;
 		private Modifier<Vector2>[]? widthModifiers;
 		private Modifier<Vector2>[]? heightModifiers;
+		private Modifier<Vector2>? endPosModifier;
+		private Dictionary<string, RendererModifier>? texturesAsBase;
 
 		// System Functions
 		[Inject]
@@ -63,10 +68,6 @@ namespace MusicGame.Gameplay.Basic.T3
 				() => Position,
 				position => Position = position,
 				_ => new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold + 1));
-			ColorModifier = new Modifier<Color>(
-				() => SpriteColor,
-				color => SpriteColor = color,
-				_ => Color.white);
 		}
 
 		private void Update()

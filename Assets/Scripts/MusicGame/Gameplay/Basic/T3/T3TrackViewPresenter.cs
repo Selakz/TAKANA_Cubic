@@ -1,12 +1,12 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Serialization.Inspector;
-using T3Framework.Runtime.Setting;
 using T3Framework.Static;
 using UnityEngine;
 using VContainer;
@@ -23,20 +23,29 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		public SpriteRendererModifier MainTexture => textures.Value["main"];
 
+		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures => textures.Value;
+
 		public SpriteRenderer LeftLineTexture => leftLineTexture;
 
 		public SpriteRenderer RightLineTexture => rightLineTexture;
-
-		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures => textures.Value;
 
 		public Modifier<float> PositionModifier { get; private set; } = default!;
 
 		public Modifier<float> WidthModifier { get; private set; } = default!;
 
-		public Modifier<Color> ColorModifier { get; private set; } = default!;
+		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => colorModifiers ??=
+			new[] { MainTexture.ColorModifier };
+
+		// IT3ModelViewPresenter Explicit Implementation
+		RendererModifier IT3ModelViewPresenter.MainTexture => MainTexture;
+
+		IReadOnlyDictionary<string, RendererModifier> IT3ModelViewPresenter.Textures =>
+			texturesAsBase ??= textures.Value.ToDictionary(
+				kvp => kvp.Key, RendererModifier (kvp) => kvp.Value);
 
 		// Private
-		private SpriteRendererModifier? mainModifier;
+		private IReadOnlyCollection<Modifier<Color>>? colorModifiers;
+		private Dictionary<string, RendererModifier>? texturesAsBase;
 
 		private float Width
 		{
@@ -69,10 +78,9 @@ namespace MusicGame.Gameplay.Basic.T3
 				() => Width,
 				width => Width = width,
 				_ => 1);
-			ColorModifier = new Modifier<Color>(
-				() => mainTexture.color,
-				value => mainTexture.color = value,
-				_ => ISingletonSetting<PlayfieldSetting>.Instance.TrackFaceDefaultColor);
+			MainTexture.ColorModifier.Register(
+				_ => ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor,
+				-1);
 			Textures["leftLine"].ColorModifier.Register(
 				color => color with { a = ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor.Value.a },
 				-1);
@@ -85,7 +93,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		{
 			PositionModifier.Update();
 			WidthModifier.Update();
-			ColorModifier.Update();
+			foreach (var cm in ColorModifiers) cm.Update();
 		}
 	}
 }

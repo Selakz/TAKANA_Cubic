@@ -37,18 +37,8 @@ namespace MusicGame.ChartEditor.Draft
 						modifier.Register(value => new(note.Width, value.y), widthPriority, true);
 					}
 
-					presenter.MainTexture.ColorModifier.Register(
-						color => color with
-						{
-							a = draftContainer.IsInDraftMode.Value
-								? color.a
-								: ISingleton<DraftSetting>.Instance.DraftNoteOpacityInNormalMode.Value
-						},
-						draftNoteOpacityPriority, true);
-
-					if (note is Hold)
-					{
-						presenter.Textures["body"].ColorModifier.Register(
+					foreach (var cm in presenter.ColorModifiers)
+						cm.Register(
 							color => color with
 							{
 								a = draftContainer.IsInDraftMode.Value
@@ -56,7 +46,6 @@ namespace MusicGame.ChartEditor.Draft
 									: ISingleton<DraftSetting>.Instance.DraftNoteOpacityInNormalMode.Value
 							},
 							draftNoteOpacityPriority, true);
-					}
 				},
 				() =>
 				{
@@ -69,12 +58,8 @@ namespace MusicGame.ChartEditor.Draft
 						modifier.Unregister(widthPriority, true);
 					}
 
-					presenter.MainTexture.ColorModifier.Unregister(draftNoteOpacityPriority, true);
-
-					if (note is Hold)
-					{
-						presenter.Textures["body"].ColorModifier.Unregister(draftNoteOpacityPriority, true);
-					}
+					foreach (var cm in presenter.ColorModifiers)
+						cm.Unregister(draftNoteOpacityPriority, true);
 				}))
 		};
 

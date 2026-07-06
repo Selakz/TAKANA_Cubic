@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Serialization.Inspector;
@@ -15,12 +16,18 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private SpriteRenderer mainTexture = default!;
 		[SerializeField] private InspectorDictionary<string, SpriteRendererModifier> textures = new();
 
-		public Modifier<Color> ColorModifier => throw new NotImplementedException();
+		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => throw new NotImplementedException();
 
 		public SpriteRendererModifier MainTexture => mainModifier ??= new(mainTexture);
 
-		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures => textures.Value;
+		// IT3ModelViewPresenter Explicit Implementation
+		RendererModifier IT3ModelViewPresenter.MainTexture => MainTexture;
+
+		IReadOnlyDictionary<string, RendererModifier> IT3ModelViewPresenter.Textures =>
+			texturesAsBase ??= textures.Value.ToDictionary(
+				kvp => kvp.Key, RendererModifier (kvp) => kvp.Value);
 
 		private SpriteRendererModifier? mainModifier;
+		private Dictionary<string, RendererModifier>? texturesAsBase;
 	}
 }

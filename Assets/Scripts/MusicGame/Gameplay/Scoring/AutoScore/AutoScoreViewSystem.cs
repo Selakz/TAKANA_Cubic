@@ -60,12 +60,6 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 				presenter.PositionModifier.Register(
 					pos => music.ChartTime < hold.TimeJudge ? pos : new(pos.x, 0),
 					positionPriority, true);
-
-				presenter.Textures["body"].ColorModifier.Register(color => music.ChartTime < hold.TimeEnd
-					? model.IsDummy()
-						? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
-						: color
-					: Color.clear, colorPriority, true);
 			}
 		}
 
@@ -74,27 +68,17 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			if (note.Model is not INote model) return;
 
 			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			presenter.MainTexture.ColorModifier.Unregister(colorPriority, true);
+			foreach (var cm in presenter.ColorModifiers) cm.Unregister(baseColorPriority, true);
+			presenter.MainTexture.ColorModifier.Unregister(startColorPriority, true);
 
 			if (model is Hold)
 			{
 				foreach (var modifier in presenter.HeightModifiers) modifier.Unregister(heightPriority, true);
 				presenter.PositionModifier.Unregister(positionPriority, true);
-				presenter.Textures["body"].ColorModifier.Unregister(colorPriority, true);
 			}
 		}
 
 		// System Functions
-		void Update()
-		{
-			foreach (var note in viewPool)
-			{
-				if (note.Model is not INote) return;
-				var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-				presenter.MainTexture.ColorModifier.Update();
-			}
-		}
-
 		protected override void OnDestroy()
 		{
 			base.OnDestroy();

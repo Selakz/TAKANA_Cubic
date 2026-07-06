@@ -7,11 +7,11 @@ using UnityEngine;
 namespace T3Framework.Preset.Wrapper
 {
 	[Serializable]
-	public class SpriteRendererModifier
+	public class SpriteRendererModifier : RendererModifier
 	{
 		[SerializeField] private SpriteRenderer spriteRenderer;
 
-		public SpriteRenderer Value => spriteRenderer;
+		public sealed override Renderer Value => spriteRenderer;
 
 		public Modifier<Sprite> SpriteModifier
 		{
@@ -25,7 +25,7 @@ namespace T3Framework.Preset.Wrapper
 			}
 		}
 
-		public Modifier<int> SortingOrderModifier
+		public override Modifier<int> SortingOrderModifier
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace T3Framework.Preset.Wrapper
 			}
 		}
 
-		public Modifier<Color> ColorModifier
+		public override Modifier<Color> ColorModifier
 		{
 			get
 			{

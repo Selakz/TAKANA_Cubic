@@ -9,10 +9,11 @@ namespace MusicGame.Gameplay.Basic
 {
 	public interface IT3ModelViewPresenter
 	{
-		public Modifier<Color> ColorModifier { get; }
+		/// <summary> The color modifiers of what you think is the "main part" of this presenter. </summary>
+		public IReadOnlyCollection<Modifier<Color>> ColorModifiers { get; }
 
-		public SpriteRendererModifier MainTexture { get; }
+		public RendererModifier MainTexture { get; }
 
-		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures { get; }
+		public IReadOnlyDictionary<string, RendererModifier> Textures { get; }
 	}
 }

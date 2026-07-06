@@ -5,6 +5,7 @@ using System.Linq;
 using MusicGame.Gameplay.Basic;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
+using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
@@ -103,18 +104,20 @@ namespace MusicGame.ChartEditor.Select
 				{
 					foreach (var textures in pair.Value)
 					{
-						presenter.Textures[textures.Key].SpriteModifier.Register
-							(_ => textures.Value, noteSpritePriority.Value);
-						presenter.Textures[textures.Key].SortingOrderModifier.Register
-							(value => value + 1, noteSortingOrderPriority.Value);
+						if (presenter.Textures.TryGetValue(textures.Key, out var modifier) &&
+						    modifier is SpriteRendererModifier srm)
+						{
+							srm.SpriteModifier.Register(_ => textures.Value, noteSpritePriority.Value);
+							srm.SortingOrderModifier.Register(value => value + 1, noteSortingOrderPriority.Value);
+						}
 					}
 				}
 			}
 
 			if (classifier.IsSubType(T3Flag.Track, type))
 			{
-				presenter.ColorModifier.Register
-					(_ => ISingleton<SelectSetting>.Instance.TrackSelectedColor, trackColorPriority.Value);
+				foreach (var cm in presenter.ColorModifiers)
+					cm.Register(_ => ISingleton<SelectSetting>.Instance.TrackSelectedColor, trackColorPriority.Value);
 				presenter.Textures["main"].SortingOrderModifier.Assign
 					(50, trackSortingOrderPriority.Value); // Temp
 			}
@@ -129,16 +132,19 @@ namespace MusicGame.ChartEditor.Select
 				{
 					foreach (var textures in pair.Value)
 					{
-						presenter.Textures[textures.Key].SpriteModifier.Unregister(noteSpritePriority.Value);
-						presenter.Textures[textures.Key].SortingOrderModifier
-							.Unregister(noteSortingOrderPriority.Value);
+						if (presenter.Textures.TryGetValue(textures.Key, out var modifier) &&
+						    modifier is SpriteRendererModifier srm)
+						{
+							srm.SpriteModifier.Unregister(noteSpritePriority.Value);
+							srm.SortingOrderModifier.Unregister(noteSortingOrderPriority.Value);
+						}
 					}
 				}
 			}
 
 			if (classifier.IsSubType(T3Flag.Track, type))
 			{
-				presenter.ColorModifier.Unregister(trackColorPriority.Value);
+				foreach (var cm in presenter.ColorModifiers) cm.Unregister(trackColorPriority.Value);
 				presenter.Textures["main"].SortingOrderModifier.Unregister(trackSortingOrderPriority.Value);
 			}
 		}
