@@ -31,9 +31,9 @@ namespace MusicGame.Gameplay.Judge
 
 		public T3Time ChartTime
 		{
-			get => chartTime is null || gameAudioPlayer.AudioTime == AudioLength
+			get => chartTime is null || gameAudioPlayer.AudioTime == AudioLength || !IsPlaying
 				? gameAudioPlayer.ChartTime.Second
-				: chartTime.Value.Second + (float)(Time.realtimeSinceStartupAsDouble - pacedStartUnityTime);
+				: chartTime.Value.Second + (float)(Time.realtimeSinceStartupAsDouble - pacedStartUnityTime) * Pitch;
 			set => AudioTime = value - AudioDeviation + Offset;
 		}
 
@@ -54,7 +54,11 @@ namespace MusicGame.Gameplay.Judge
 		public float Pitch
 		{
 			get => gameAudioPlayer.Pitch;
-			set => gameAudioPlayer.Pitch = value;
+			set
+			{
+				gameAudioPlayer.Pitch = value;
+				Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			}
 		}
 
 		public AudioClip Clip => gameAudioPlayer.Clip;
@@ -100,7 +104,7 @@ namespace MusicGame.Gameplay.Judge
 		{
 			var inputChartTime = chartTime is null || gameAudioPlayer.AudioTime == AudioLength
 				? gameAudioPlayer.ChartTime.Second
-				: chartTime.Value.Second + (float)(inputTime - pacedStartUnityTime);
+				: chartTime.Value.Second + (float)(inputTime - pacedStartUnityTime) * Pitch;
 			return inputChartTime;
 		}
 

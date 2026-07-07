@@ -43,6 +43,7 @@ namespace T3Framework.Runtime.Audio
 				}
 				else
 				{
+					if (isPseudoPlaying) audioSource.Stop();
 					isPseudoPlaying = false;
 					remainingNegativeTime = 0;
 					// Time assignment fails when audio ends, stops and jumps to 0, So you need to load it again.
