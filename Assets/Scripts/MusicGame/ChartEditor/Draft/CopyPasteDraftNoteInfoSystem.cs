@@ -86,9 +86,9 @@ namespace MusicGame.ChartEditor.Draft
 				}
 			}
 
-			if (baseInfo is null && dataset.Count > 0)
+			if (baseInfo is null)
 			{
-				Debug.LogError("CopyPasteDraftNoteInfoSystem: baseInfo is null");
+				if (dataset.Count > 0) Debug.LogError("CopyPasteDraftNoteInfoSystem: baseInfo is null");
 				return;
 			}
 

@@ -113,15 +113,15 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 				}
 			}
 
-			if (baseInfo is null && dataset.Count > 0)
+			if (baseInfo is null)
 			{
-				Debug.LogError("CopyPasteTrackInfoSystem: baseInfo is null");
+				if (dataset.Count > 0) Debug.LogError("CopyPasteTrackInfoSystem: baseInfo is null");
 				return;
 			}
 
+			var distance = timeStart - baseInfo!.Track.Model.TimeMin;
 			foreach (var info in dataset)
 			{
-				var distance = timeStart - baseInfo!.Track.Model.TimeMin;
 				info.Track.Nudge(distance);
 				var offset = 0f;
 				if (pasteMode.Value is PasteMode.NormalPaste)

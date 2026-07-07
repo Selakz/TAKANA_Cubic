@@ -110,15 +110,15 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 				}
 			}
 
-			if (baseInfo is null && dataset.Count > 0)
+			if (baseInfo is null)
 			{
-				Debug.LogError("CopyPasteNoteInfoSystem: baseInfo is null");
+				if (dataset.Count > 0) Debug.LogError("CopyPasteNoteInfoSystem: baseInfo is null");
 				return;
 			}
 
+			var distance = timeJudge - baseInfo!.TimeJudge;
 			foreach (var info in dataset)
 			{
-				var distance = timeJudge - baseInfo!.TimeJudge;
 				// If working as expected, either execution order should be ok. But actually it doesn't, IDK why.
 				if (distance > 0)
 				{
