@@ -84,6 +84,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 		// System Functions
 		public void Update()
 		{
+			var thisFrameTime = music.ChartTime;
 			foreach (var component in viewPool)
 			{
 				if (component.Model is not INote model) continue;
@@ -91,7 +92,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 				if (comboItems is null) continue;
 				foreach (var item in comboItems)
 				{
-					if (lastFrameTime < item.ExpectedTime && music.ChartTime >= item.ExpectedTime)
+					if (lastFrameTime < item.ExpectedTime && thisFrameTime >= item.ExpectedTime)
 					{
 						var animator = hitEffectPool.Get();
 						Vector3 position = viewPool[component]!.transform.position;
@@ -112,7 +113,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 				}
 			}
 
-			lastFrameTime = music.ChartTime;
+			lastFrameTime = thisFrameTime;
 		}
 	}
 }
