@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Utility.Dakumi;
+using MusicGame.Utility.Deemo;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using T3Framework.Preset.Event;
@@ -25,6 +26,7 @@ namespace MusicGame.EditorEntry
 	public enum FromChartType
 	{
 		Dakumi,
+		Deemo,
 	}
 
 	public class ChartConversionPanel : HierarchySystem<ChartConversionPanel>
@@ -44,7 +46,7 @@ namespace MusicGame.EditorEntry
 
 		// Private
 		private FromChartType[]? options;
-		private readonly List<FromChartType> fromChartTypes = new() { FromChartType.Dakumi };
+		private readonly List<FromChartType> fromChartTypes = new() { FromChartType.Dakumi, FromChartType.Deemo };
 
 		// Defined Functions
 		private string GetConvertedPath()
@@ -78,9 +80,17 @@ namespace MusicGame.EditorEntry
 				{
 					case FromChartType.Dakumi:
 						var dakumiChart = DakumiChart.FromJObject(JObject.Parse(content));
-						var chart = DakumiToTakanaConverter.DeserializeFromDakumi(dakumiChart);
-						var token = chart.GetSerializationToken();
-						await File.WriteAllTextAsync(convertedPath, JsonConvert.SerializeObject(token,
+						var chartConvertedFromDakumi = DakumiToTakanaConverter.DeserializeFromDakumi(dakumiChart);
+						var tokenFromDakumi = chartConvertedFromDakumi.GetSerializationToken();
+						await File.WriteAllTextAsync(convertedPath, JsonConvert.SerializeObject(tokenFromDakumi,
+							ISingleton<EditorSetting>.Instance.SaveIndented ? Formatting.Indented : Formatting.None));
+						break;
+					case FromChartType.Deemo:
+						var deemoChart = DeemoChartParser.Parse(content);
+						if (deemoChart is null) break;
+						var chartConvertedFromDeemo = DeemoToTakanaConverter.Convert(deemoChart);
+						var tokenFromDeemo = chartConvertedFromDeemo.GetSerializationToken();
+						await File.WriteAllTextAsync(convertedPath, JsonConvert.SerializeObject(tokenFromDeemo,
 							ISingleton<EditorSetting>.Instance.SaveIndented ? Formatting.Indented : Formatting.None));
 						break;
 				}
