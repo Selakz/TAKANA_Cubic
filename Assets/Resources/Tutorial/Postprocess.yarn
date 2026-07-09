@@ -1,0 +1,31 @@
+﻿title: Postprocess
+---
+
+先来说说谱面工程吧。存放谱面编辑所需文件的文件夹，就叫谱面工程文件夹。 #line:project-folder-intro
+
+一个谱面工程里包含不少文件：音源文件、曲绘文件，还有记录曲名、难度等信息的关卡信息文件，以及记录流速和BPM列表等的偏好文件。 #line:project-files-list
+
+不同难度的谱面文件也都在里面，有Normal、Hard、Master、Insanity、Ravage，一共五个难度。 #line:project-difficulties
+
+而编辑器获知如何读取这些文件的方式则是通过文件夹里的t3proj文件。如需修改读取的文件名，可以用记事本打开该文件，里面有详细的注释。 #line:project-t3proj
+
+编辑器中默认保存的谱面文件后缀是[b]editing.json[/b]，比如[b]master.editing.json[/b]这样。这是因为编辑时难免会引入一些只有编辑器才用得到的内容。 #line:project-editing-format
+
+在编辑器里把谱面工程打包成可游玩的t3pkg文件时，这些编辑器专用的内容会被自动清理掉，谱面文件后缀也会被改为[b].json[/b]。 #line:project-package
+
+随着创作的推进，谱面工程文件夹里会多出AutoSave和Logs两个文件夹，分别存放自动保存的文件和编辑过程中的异常日志。 #line:project-autosave
+
+如果在编辑时出了什么异常，请把Logs里当天的日志文件通过提交issue或者其他方式告诉作者。 #line:project-logs
+
+然后说点值得注意的地方吧。首先，编辑器里所有的时间都是以毫秒为单位的整数。 #line:note-time
+
+预览界面的正中心横坐标是0，界面边界横坐标是±5，游戏边界线横坐标是±4.5。 #line:note-coord
+
+编辑谱面时很容易不小心引入一些难以发现的错误，比如把Note放到了宽度为零的轨道上。 #line:note-format-why
+
+这时候可以点击界面底部的小箭头，在弹出的工具条里选择谱面格式化功能，它会自动修正谱面里的潜在错误。 #line:note-format-how
+
+决定打包成游玩包之前，请务必先运行一次格式化。 #line:note-format-reminder
+
+<<complete Postprocess>>
+===

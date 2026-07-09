@@ -229,7 +229,8 @@ Tutorial:
   
   AllInOne: "All-in-one tutorial (opens external link)"
   FirstMeet: "First meet...?"
-  Draft: "Draft Mode"
+  Draft: "Draft mode"
+  Postprocess: "Project structure and pre-release check"
   
 Setting:
   SelectSetting:

@@ -6,6 +6,14 @@ position: -65,-25
     <<language "zh-Hans">>
 -> English #line:0e1e3a9 
     <<language "en">>
+    
+需要进行交互式的入门教学吗？ #line:0ba76bd 
+-> 不用了 #line:0b2ff30 
+	<<jump Ending>>
+-> 来点正经的 #line:02db476 
+	<<jump Tutorial>>
+-> 来点带整活的 #line:00fd66c 
+	那就不客气了。 #line:0739851 
 
 尽管你已经与绫地宁宁在另一个时空再次相遇， #line:0785796 
 
