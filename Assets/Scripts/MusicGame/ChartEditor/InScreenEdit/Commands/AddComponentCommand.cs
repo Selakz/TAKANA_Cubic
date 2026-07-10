@@ -24,6 +24,14 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 			this.parent = parent;
 		}
 
+		public AddComponentCommand(ChartInfo chart, ChartComponent component, ChartComponent? parent)
+		{
+			this.chart = chart;
+			this.parent = parent;
+			model = component.Model;
+			Component = component;
+		}
+
 		public void Do()
 		{
 			if (Component is null) Component = chart.AddComponent(model);
