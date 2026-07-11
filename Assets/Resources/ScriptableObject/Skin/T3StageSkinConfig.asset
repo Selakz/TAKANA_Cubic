@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dfe992af25744869377c3c3ec126c41, type: 3}
+  m_Name: T3StageSkinConfig
+  m_EditorClassIdentifier: 
+  skinNameLocalized: T3
+  prefabs:
+    pairs:
+    - key: -2147483646
+      value:
+        prefab: {fileID: 4084715830090435349, guid: 3059ed6867c3c27428ef058863462319, type: 3}
+    - key: -2147483644
+      value:
+        prefab: {fileID: 1194706225428846281, guid: ece2ed676a61c8c4a81389f3cde6daa0, type: 3}
+    - key: -2147483640
+      value:
+        prefab: {fileID: 4084715830090435349, guid: 0848c5981b4ba584a9f0145cf93edf6f, type: 3}
+    - key: 1048576
+      value:
+        prefab: {fileID: 3127251656482245531, guid: 580cc394b3c6d5b4d9e559b506303d2f, type: 3}
+    - key: 1024
+      value:
+        prefab: {fileID: 302434689131171516, guid: 24ca6070c74f17a458c060872b26c50d, type: 3}
+    - key: 1073741826
+      value:
+        prefab: {fileID: 5048854927555503224, guid: bfcb82d5875da3143a8adb79aa2d9f16, type: 3}
+    - key: 1073741828
+      value:
+        prefab: {fileID: 1788597939060435713, guid: 19e43997ce3f5fc46b83e2f7f4a90fbf, type: 3}
+    - key: 1073741832
+      value:
+        prefab: {fileID: 3914402922504209137, guid: af04a5e5c89181c4ba34aa5b88498802, type: 3}
+  trackBehaviour: 0
+  noteWidthAlignWithTrack: 1
+  laneBeamPrefab:
+    prefab: {fileID: 8509644942823287123, guid: 66a70d607d632914993d9498bc34723f, type: 3}
+  sprites:
+    pairs:
+    - key: -2147483646
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: 9df7a6302723d15469705748dcfa7fe4, type: 3}
+    - key: -2147483644
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: 83348df50ef0ff14785ffeaa89e4dbed, type: 3}
+    - key: -2147483640
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: d3d18182531ea1745a86221347375952, type: 3}
+        - key: body
+          value: {fileID: 21300000, guid: 260aa99b716528e458d6825e74aa34cd, type: 3}
+    - key: 1073741826
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: 4e886349ff378e44fbb1a8501de62cc8, type: 3}
+    - key: 1073741828
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: cb36c3defc908dd4aad12ff571b5f89a, type: 3}
+    - key: 1073741832
+      value:
+        pairs:
+        - key: main
+          value: {fileID: 21300000, guid: 318eec2048e18184b8b686f5702269ea, type: 3}
+        - key: body
+          value: {fileID: 21300000, guid: 4cab6e0b98428784dbc9e2a5c5a8bb41, type: 3}
+  textureAlignInfos:
+    pairs:
+    - key: 2
+      value:
+        textureName: main
+        offset: {x: 0, y: 0}
+        updateInterval: 500
+        colliderLayer: 7
+    - key: 4
+      value:
+        textureName: main
+        offset: {x: 0, y: 0}
+        updateInterval: 500
+        colliderLayer: 7
+    - key: 8
+      value:
+        textureName: body
+        offset: {x: 0, y: 0.5}
+        updateInterval: 500
+        colliderLayer: 7
+    - key: 1024
+      value:
+        textureName: main
+        offset: {x: 0, y: 0}
+        updateInterval: 200
+        colliderLayer: 6

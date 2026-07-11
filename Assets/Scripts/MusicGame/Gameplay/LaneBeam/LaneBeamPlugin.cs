@@ -1,8 +1,6 @@
 #nullable enable
 
 using Cysharp.Threading.Tasks;
-using MusicGame.Gameplay.Basic.T3;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Movement;
 using T3Framework.Runtime.Threading;
 using UnityEngine;
@@ -25,11 +23,14 @@ namespace MusicGame.Gameplay.LaneBeam
 			}
 		}
 
+		public float Width
+		{
+			get => transform.localScale.x;
+			set => transform.localScale = new(value, transform.localScale.y);
+		}
+
 		// Private
 		private readonly ReusableCancellationTokenSource rcts = new();
-
-		private PrefabHandler handler = default!;
-		private T3TrackViewPresenter? presenter;
 		private Color laneBeamColor;
 
 		// Defined Functions
@@ -49,23 +50,11 @@ namespace MusicGame.Gameplay.LaneBeam
 		}
 
 		// System Functions
-		void Awake()
-		{
-			handler = GetComponent<PrefabHandler>();
-		}
-
 		void OnEnable()
 		{
-			presenter = handler.Parent!.Script<T3TrackViewPresenter>();
 			transform.localPosition = Vector3.zero;
 		}
 
 		void OnDisable() => StopAnimation();
-
-		void Update()
-		{
-			if (presenter is null) return;
-			transform.localScale = new(presenter.WidthModifier.Value, transform.localScale.y);
-		}
 	}
 }

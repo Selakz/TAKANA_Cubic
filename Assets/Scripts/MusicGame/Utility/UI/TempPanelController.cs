@@ -7,13 +7,14 @@ using T3Framework.Runtime.Event.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace MusicGame.ChartEditor.Record.UI
+namespace MusicGame.Utility.UI
 {
 	public class TempPanelController : T3MonoBehaviour
 	{
 		// Serializable and Public
 		[SerializeField] private PointerEnterExitListener pointerEnterExitListener = default!;
 		[SerializeField] private NotifiableDataContainer<bool> isInRecordModeContainer = default!;
+		[SerializeField] private bool isWorkInRecordMode = true;
 		[SerializeField] private GameObject targetPanel = default!;
 		[SerializeField] private Vector2 showPosition;
 		[SerializeField] private int duration = 1000;
@@ -25,7 +26,7 @@ namespace MusicGame.ChartEditor.Record.UI
 				() => pointerEnterExitListener.PointerEnter -= Show),
 			new CustomRegistrar(
 				() => pointerEnterExitListener.PointerExit += Hide,
-				() => pointerEnterExitListener.PointerEnter -= Hide)
+				() => pointerEnterExitListener.PointerExit -= Hide)
 		};
 
 		// Private
@@ -35,7 +36,7 @@ namespace MusicGame.ChartEditor.Record.UI
 		// Event Handlers
 		private void Show(PointerEventData data)
 		{
-			if (!isInRecordModeContainer.Property.Value) return;
+			if (isInRecordModeContainer.Property.Value != isWorkInRecordMode) return;
 			currentTween?.Kill(true);
 			((RectTransform)targetPanel.transform).anchoredPosition = startPosition;
 			currentTween = DOTween.To(
@@ -46,9 +47,7 @@ namespace MusicGame.ChartEditor.Record.UI
 
 		private void Hide(PointerEventData data)
 		{
-			// if (!isInRecordModeContainer.Property.Value) return;
-			currentTween?.Kill(true);
-			((RectTransform)targetPanel.transform).anchoredPosition = showPosition;
+			currentTween?.Kill();
 			currentTween = DOTween.To(
 				() => ((RectTransform)targetPanel.transform).anchoredPosition,
 				x => ((RectTransform)targetPanel.transform).anchoredPosition = x,

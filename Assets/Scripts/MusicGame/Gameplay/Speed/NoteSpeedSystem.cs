@@ -26,7 +26,7 @@ namespace MusicGame.Gameplay.Speed
 					if (handler.TryScript<T3NoteViewPresenter>() is not { } presenter) return;
 					presenter.PositionModifier.Register(
 						value => new(value.x, value.y * speed.Value.SpeedRate),
-						positionPriority, true);
+						positionPriority);
 				},
 				() =>
 				{

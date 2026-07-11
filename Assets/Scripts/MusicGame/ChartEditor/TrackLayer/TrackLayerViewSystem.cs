@@ -36,7 +36,7 @@ namespace MusicGame.ChartEditor.TrackLayer
 					var track = viewPool[handler]!;
 					if (track.Model is not ITrack) return;
 					UnregisterTrackView(track);
-				})),
+				}), true),
 			new PropertyRegistrar<LayersInfo?>(manageSystem.LayersInfo, (_, _) =>
 			{
 				var lastInfo = manageSystem.LayersInfo.LastValue;
@@ -60,12 +60,26 @@ namespace MusicGame.ChartEditor.TrackLayer
 			new PropertyRegistrar<float>(ISingleton<TrackLayerSetting>.Instance.UnselectLayerOpacityRatio,
 				UpdateTrackView),
 			new CustomRegistrar(
-				() => manageSystem.OnTrackUpdate += OnTrackUpdate, () => manageSystem.OnTrackUpdate -= OnTrackUpdate)
+				() => manageSystem.OnTrackUpdate += OnTrackUpdate, () => manageSystem.OnTrackUpdate -= OnTrackUpdate),
+			new ViewPoolLifetimeRegistrar<ChartComponent>(pluginPool, handler => new CustomRegistrar(
+				() =>
+				{
+					var track = pluginPool[handler]!;
+					var layerInfo = manageSystem.GetLayer(track);
+					var plugin = handler.Script<SelectColliderPlugin>();
+					plugin.ColliderModifier.EnabledModifier.Register(_ => layerInfo.IsSelected, layerColorPriority);
+				},
+				() =>
+				{
+					var plugin = handler.Script<SelectColliderPlugin>();
+					plugin.ColliderModifier.EnabledModifier.Unregister(layerColorPriority);
+				}), true)
 		};
 
 		// Private
 		[Inject] private TrackLayerManageSystem manageSystem = default!;
 		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
+		[Inject, Key("select-collider")] private readonly IViewPool<ChartComponent> pluginPool = default!;
 
 		private void OnLayerUpdate(LayerComponent layer)
 		{
@@ -97,13 +111,14 @@ namespace MusicGame.ChartEditor.TrackLayer
 			var layerInfo = manageSystem.GetLayer(track);
 			var handler = viewPool[track]!;
 			var presenter = handler.Script<IT3ModelViewPresenter>();
-			presenter.ColorModifier.Register(
-				color =>
-				{
-					float alphaRate = layerInfo.Color.a * LayerAlphaRate();
-					return new Color(layerInfo.Color.r, layerInfo.Color.g, layerInfo.Color.b, color.a * alphaRate);
-				},
-				layerColorPriority, true);
+			foreach (var cm in presenter.ColorModifiers)
+				cm.Register(
+					color =>
+					{
+						float alphaRate = layerInfo.Color.a * LayerAlphaRate();
+						return new Color(layerInfo.Color.r, layerInfo.Color.g, layerInfo.Color.b, color.a * alphaRate);
+					},
+					layerColorPriority, true);
 			// TODO: Rearrange it and select sorting order after fix IT3ModelViewPresenter
 			presenter.Textures["main"].SortingOrderModifier.Register(value =>
 			{
@@ -124,12 +139,6 @@ namespace MusicGame.ChartEditor.TrackLayer
 					return color with { a = alphaRate };
 				},
 				layerColorPriority);
-			if (handler["select-collider"] is { } colliderHandler)
-			{
-				var colliderPlugin = colliderHandler.Script<SelectColliderPlugin>();
-				colliderPlugin.ColliderModifier.EnabledModifier.Register(_ => layerInfo.IsSelected, layerColorPriority);
-			}
-
 			return;
 
 			float LayerAlphaRate() => layerInfo.IsSelected
@@ -141,15 +150,10 @@ namespace MusicGame.ChartEditor.TrackLayer
 		{
 			var handler = viewPool[track]!;
 			var presenter = handler.Script<IT3ModelViewPresenter>();
-			presenter.ColorModifier.Unregister(layerColorPriority, true);
+			foreach (var cm in presenter.ColorModifiers) cm.Unregister(layerColorPriority, true);
 			presenter.Textures["main"].SortingOrderModifier.Unregister(layerSortingOrderPriority);
 			presenter.Textures["leftLine"].ColorModifier.Unregister(layerColorPriority);
 			presenter.Textures["rightLine"].ColorModifier.Unregister(layerColorPriority);
-			if (handler["select-collider"] is { } colliderHandler)
-			{
-				var colliderPlugin = colliderHandler.Script<SelectColliderPlugin>();
-				colliderPlugin.ColliderModifier.EnabledModifier.Unregister(layerColorPriority);
-			}
 		}
 
 		private void UpdateTrackView()

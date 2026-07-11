@@ -20,6 +20,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private InspectorDictionary<string, SpriteRendererModifier> textures = new();
 		[SerializeField] private string[] widthTextures = default!;
 		[SerializeField] private string[] heightTextures = default!;
+		[SerializeField] private string endTexture = default!;
 
 		public SpriteRendererModifier MainTexture => textures.Value["main"];
 
@@ -28,8 +29,25 @@ namespace MusicGame.Gameplay.Basic.T3
 		public IReadOnlyCollection<Modifier<Vector2>> WidthModifiers => widthModifiers ??=
 			widthTextures.Select(name => textures.Value[name].SizeModifier).ToArray();
 
-		public IReadOnlyCollection<Modifier<Vector2>> HeightModifiers => heightModifiers ??=
-			heightTextures.Select(name => textures.Value[name].SizeModifier).ToArray();
+		public IReadOnlyCollection<Modifier<Vector2>> HeightModifiers
+		{
+			get
+			{
+				if (heightModifiers is not null) return heightModifiers;
+				var modifiers = heightTextures.Select(name => textures.Value[name].SizeModifier);
+				if (!string.IsNullOrEmpty(endTexture) && textures.Value.TryGetValue(endTexture, out var endModifier))
+				{
+					endPosModifier = new Modifier<Vector2>(
+						() => endModifier.Value.transform.localPosition,
+						size => endModifier.Value.transform.localPosition = size,
+						_ => endModifier.Value.transform.localPosition);
+					modifiers = modifiers.Append(endPosModifier);
+				}
+
+				heightModifiers = modifiers.ToArray();
+				return heightModifiers;
+			}
+		}
 
 		public Modifier<Vector2> PositionModifier { get; private set; } = default!;
 
@@ -78,6 +96,8 @@ namespace MusicGame.Gameplay.Basic.T3
 				modifier.SizeModifier.Update();
 				modifier.ColorModifier.Update();
 			}
+
+			endPosModifier?.Update();
 		}
 	}
 }

@@ -28,7 +28,7 @@ namespace MusicGame.Gameplay.Speed
 					{
 						modifier.Register(
 							value => new(value.x, value.y * speed.Value.SpeedRate),
-							lengthPriority, true);
+							lengthPriority);
 					}
 				},
 				() =>

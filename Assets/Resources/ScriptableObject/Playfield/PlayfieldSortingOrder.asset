@@ -32,14 +32,22 @@ MonoBehaviour:
       value: 140
     - key: PlayfieldUILower
       value: 160
+    - key: TrackStartLine
+      value: 179
     - key: TrackLeftEdge
       value: 180
     - key: TrackRightEdge
       value: 180
+    - key: TrackMidLine
+      value: 190
+    - key: TrackMidBlock
+      value: 191
     - key: HoldBody
       value: 200
-    - key: Hold
+    - key: HoldEnd
       value: 201
+    - key: Hold
+      value: 202
     - key: SelectedHoldBody
       value: 250
     - key: SelectedHold

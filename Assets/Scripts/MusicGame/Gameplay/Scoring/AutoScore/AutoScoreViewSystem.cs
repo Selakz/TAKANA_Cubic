@@ -17,7 +17,8 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 	public class AutoScoreViewSystem : HierarchySystem<AutoScoreViewSystem>
 	{
 		// Serializable and Public
-		[SerializeField] private SequencePriority colorPriority = default!;
+		[SerializeField] private SequencePriority baseColorPriority = default!;
+		[SerializeField] private SequencePriority startColorPriority = default!;
 		[SerializeField] private SequencePriority positionPriority = default!;
 		[SerializeField] private SequencePriority heightPriority = default!;
 
@@ -39,11 +40,17 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 			if (note.Model is not INote model) return;
 
 			var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
-			presenter.MainTexture.ColorModifier.Register(color => music.ChartTime < model.TimeJudge
-				? model.IsDummy()
-					? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
-					: color
-				: Color.clear, colorPriority, true);
+			foreach (var cm in presenter.ColorModifiers)
+			{
+				cm.Register(color => music.ChartTime < model.TimeMax
+					? model.IsDummy()
+						? color with { a = color.a * ISingleton<AutoScoreSetting>.Instance.DummyNoteOpacity }
+						: color
+					: Color.clear, baseColorPriority, true);
+			}
+
+			presenter.MainTexture.ColorModifier.Register(color =>
+				music.ChartTime < model.TimeJudge ? color : Color.clear, startColorPriority, true);
 
 			if (model is Hold hold)
 			{

@@ -21,6 +21,8 @@ Shader "Unlit/Any Plane Curve"
         Pass
         {
             Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+
             CGPROGRAM
             #include "Lib/Easings.hlsl"
             #pragma vertex vert

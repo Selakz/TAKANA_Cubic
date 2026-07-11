@@ -7,7 +7,6 @@ using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Stage
 {
@@ -15,6 +14,7 @@ namespace MusicGame.Gameplay.Stage
 	{
 		[SerializeField] private InspectorDictionary<T3Flag, PrefabObject> prefabs = default!;
 		[SerializeField] private Transform stageTransform = default!;
+		[SerializeField] private GameplayStageSkinConfig stageSkinConfig = default!;
 
 		public override void SelfInstall(IContainerBuilder builder)
 		{
@@ -28,13 +28,10 @@ namespace MusicGame.Gameplay.Stage
 			builder.RegisterInstance(stageTransform)
 				.Keyed("stage");
 			builder.Register<IViewPool<ChartComponent>, StageViewPool>(Lifetime.Singleton)
-				.Keyed("stage");
-			// StageManager
-			builder.RegisterEntryPoint<StageManager>()
+				.Keyed("stage")
 				.AsSelf();
 
-			// Trigger
-			builder.RegisterEntryPoint<LevelStarter>();
+			builder.RegisterNotifiableProperty(stageSkinConfig);
 		}
 	}
 }

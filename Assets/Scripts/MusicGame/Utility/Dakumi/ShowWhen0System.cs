@@ -1,8 +1,10 @@
 #nullable enable
 
-using MusicGame.Gameplay.Basic.T3;
+using MusicGame.Gameplay.Basic;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Stage;
 using MusicGame.Models.Track;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
@@ -18,6 +20,12 @@ namespace MusicGame.Utility.Dakumi
 		[SerializeField] private SequencePriority positionPriority = default!;
 
 		// Event Registrars
+		protected override IEventRegistrar[] AwakeRegistrars => new IEventRegistrar[]
+		{
+			new PropertyRegistrar<GameplayStageSkinConfig>(service.OnStageReset,
+				config => IsEnabled = config.trackBehaviour is TrackBehaviour.Instant)
+		};
+
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new ViewPoolRegistrar<ChartComponent>(viewPool,
@@ -26,7 +34,7 @@ namespace MusicGame.Utility.Dakumi
 				{
 					var track = viewPool[handler]!;
 					if (track.Model is not ITrack model) return;
-					var presenter = handler.Script<T3TrackViewPresenter>();
+					var presenter = handler.Script<ITrackViewPresenter>();
 					presenter.PositionModifier.Register(
 						position => Mathf.Approximately(presenter.WidthModifier.Value, 0) && !model.IsShowWhen0()
 							? 100
@@ -39,19 +47,13 @@ namespace MusicGame.Utility.Dakumi
 				{
 					var track = viewPool[handler]!;
 					if (track.Model is not ITrack) return;
-					var presenter = handler.Script<T3TrackViewPresenter>();
+					var presenter = handler.Script<ITrackViewPresenter>();
 					presenter.PositionModifier.Unregister(positionPriority, true);
 				})
 		};
 
 		// Private
-		private IViewPool<ChartComponent> viewPool = default!;
-
-		// Constructor
-		[Inject]
-		private void Construct([Key("stage")] IViewPool<ChartComponent> viewPool)
-		{
-			this.viewPool = viewPool;
-		}
+		[Inject] private IStageViewGenerateService service = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 	}
 }

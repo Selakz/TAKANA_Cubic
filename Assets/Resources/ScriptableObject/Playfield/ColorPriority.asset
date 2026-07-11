@@ -18,7 +18,13 @@ MonoBehaviour:
       value: 1
     - key: select-track
       value: 2
-    - key: auto-score
+    - key: auto-score-note-base
       value: 3
-    - key: draft
+    - key: auto-score-note-start
       value: 4
+    - key: judge-score-miss-hold
+      value: 5
+    - key: judge-score-note-start
+      value: 6
+    - key: draft
+      value: 7

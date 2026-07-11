@@ -31,6 +31,8 @@ MonoBehaviour:
           value: main
         - key: HoldBody
           value: body
+        - key: HoldEnd
+          value: end
     - key: 1024
       value:
         pairs:
@@ -40,6 +42,12 @@ MonoBehaviour:
           value: leftLine
         - key: TrackRightEdge
           value: rightLine
+        - key: TrackMidLine
+          value: midLine
+        - key: TrackMidBlock
+          value: midBlock
+        - key: TrackStartLine
+          value: startLine
     - key: 1048576
       value:
         pairs:

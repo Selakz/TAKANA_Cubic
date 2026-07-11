@@ -4,9 +4,11 @@ using System;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.Gameplay.Stage;
 using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
@@ -24,6 +26,12 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private SequencePriority widthPriority = default!;
 
 		// Event Registrars
+		protected override IEventRegistrar[] AwakeRegistrars => new IEventRegistrar[]
+		{
+			new PropertyRegistrar<GameplayStageSkinConfig>(service.OnStageReset,
+				config => IsEnabled = config.trackBehaviour is TrackBehaviour.Instant)
+		};
+
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new ViewPoolLifetimeRegistrar<ChartComponent>(viewPool, handler => new CustomRegistrar(
@@ -34,7 +42,7 @@ namespace MusicGame.Gameplay.Basic.T3
 					var presenter = handler.Script<T3NoteViewPresenter>();
 					presenter.PositionModifier.Register(
 						value => new(value.x, (note.Model as INote)!.Movement.GetPos(music.ChartTime)),
-						positionPriority, true);
+						positionPriority);
 					Func<Vector2, Vector2> function = value =>
 					{
 						if (note.Parent?.Model is not ITrack track) return new(1, value.y);
@@ -49,7 +57,7 @@ namespace MusicGame.Gameplay.Basic.T3
 					};
 					foreach (var modifier in presenter.WidthModifiers)
 					{
-						modifier.Register(function, widthPriority, true);
+						modifier.Register(function, widthPriority);
 					}
 				},
 				() =>
@@ -67,6 +75,7 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		// Private
 		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private IStageViewGenerateService service = default!;
 		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 
 		// Static

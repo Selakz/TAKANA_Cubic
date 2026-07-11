@@ -4,43 +4,34 @@ using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using VContainer;
 
 namespace MusicGame.Gameplay.Stage
 {
-	public class LevelStarter : T3System
+	public class LevelStarter : HierarchySystem<LevelStarter>
 	{
-		private readonly NotifiableProperty<LevelInfo?> levelInfo;
-		private readonly IGameAudioPlayer music;
-		private readonly StageManager stageManager;
-
-
 		// Event Registrars
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
 			{
-				stageManager.StopGenerate();
+				service.StopGenerate();
 				music.Pause();
 				if (levelInfo.Value is not { } info) return;
 
 				T3Time offset = info.Chart.GetsOffsetInfo().Value;
 				music.Load(info.Music!, offset);
 				music.Play();
-				stageManager.StartGenerate(info.Chart, music, new T3GeneralViewTimeCalculator());
+				service.StartGenerate(info.Chart, music);
 			})
 		};
 
-		public LevelStarter(
-			NotifiableProperty<LevelInfo?> levelInfo,
-			IGameAudioPlayer music,
-			StageManager stageManager) : base(true)
-		{
-			this.levelInfo = levelInfo;
-			this.music = music;
-			this.stageManager = stageManager;
-		}
+		// Private
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private IStageViewGenerateService service = default!;
 	}
 }

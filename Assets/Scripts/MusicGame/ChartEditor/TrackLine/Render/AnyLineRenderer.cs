@@ -1,5 +1,6 @@
 #nullable enable
 
+using T3Framework.Runtime.Setting;
 using UnityEngine;
 
 namespace MusicGame.ChartEditor.TrackLine.Render
@@ -15,6 +16,9 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 
 		[field: SerializeField]
 		public MeshCollider? LineCollider { get; set; }
+
+		// Private
+		private Mesh? logicMesh;
 
 		// Static
 		private static readonly int samplePointArray = Shader.PropertyToID("_SamplePointArray");
@@ -46,7 +50,7 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 			}
 
 			DrawViewMesh(samplePoints, current, next);
-			// TODO: DrawLogicMesh
+			DrawLogicMesh(samplePoints, current, next);
 		}
 
 		private void DrawViewMesh(Vector4[] samplePoints, Vector2 current, Vector2 next)
@@ -56,6 +60,31 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 			LineRenderer.material.SetFloat(amplitude, next.y - current.y);
 			LineRenderer.material.SetFloat(period, next.x - current.x);
 			LineRenderer.localBounds = new Bounds((next - current) / 2, next - current);
+		}
+
+		private void DrawLogicMesh(Vector4[] samplePoints, Vector2 current, Vector2 next)
+		{
+			if (LineCollider == null) return;
+			if (current == next)
+			{
+				LineCollider.enabled = false;
+				return;
+			}
+
+			LineCollider.enabled = true;
+			logicMesh ??= new();
+			var setting = ISingletonSetting<TrackLineSetting>.Instance;
+			var logicLineWidth = setting.LogicLineWidth.Value;
+			var logicLinePrecision = setting.LogicLinePrecision.Value;
+			var maxSegment = setting.MaxSegment.Value;
+			var converter = new VectorArrayConverter(samplePoints);
+			LineDrawer.DrawMesh(
+				logicMesh,
+				y => converter.Interpolate(y / (next.y - current.y)) * (next.x - current.x),
+				logicLineWidth,
+				next.x - current.x, next.y - current.y,
+				logicLinePrecision, maxSegment);
+			LineCollider.sharedMesh = logicMesh;
 		}
 	}
 }

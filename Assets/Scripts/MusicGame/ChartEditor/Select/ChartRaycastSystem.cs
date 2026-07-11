@@ -19,7 +19,8 @@ namespace MusicGame.ChartEditor.Select
 		public override ChartComponent? GetData(Collider collider)
 		{
 			if (ChartViewPool is null) return null;
-			var handler = collider.transform.GetComponent<PrefabHandler>().Parent;
+			var handler = collider.transform.GetComponent<PrefabHandler>()?.Parent ??
+			              collider.transform.parent.parent.parent.GetComponent<PrefabHandler>(); // Falling track chunk
 			return handler is null ? null : ChartViewPool[handler];
 		}
 	}

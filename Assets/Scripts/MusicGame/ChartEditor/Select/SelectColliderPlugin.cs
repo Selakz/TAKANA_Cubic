@@ -36,8 +36,9 @@ namespace MusicGame.ChartEditor.Select
 		// Defined Functions
 		public void StartAligning(TextureAlignInfo alignInfo)
 		{
+			handler = GetComponent<PrefabHandler>();
 			presenter = handler.Parent!.Script<IT3ModelViewPresenter>();
-			var texture = presenter.Textures[alignInfo.textureName].Value;
+			var texture = (SpriteRenderer)presenter.Textures[alignInfo.textureName].Value;
 			tokenSource?.Cancel();
 			tokenSource?.Dispose();
 			tokenSource = new CancellationTokenSource();
@@ -55,7 +56,7 @@ namespace MusicGame.ChartEditor.Select
 					boxCollider.center = new(offset.x * width, offset.y * height, boxCollider.center.z);
 				}
 
-				boxCollider.size = new(Mathf.Max(width, OutWidth), height + OutWidth, boxCollider.size.z);
+				boxCollider.size = new(Mathf.Max(width, OutWidth), Mathf.Max(height, OutWidth), boxCollider.size.z);
 
 				if (delay > 0) await UniTask.Delay(delay, cancellationToken: token);
 				else await UniTask.DelayFrame(1, cancellationToken: token);
@@ -63,11 +64,6 @@ namespace MusicGame.ChartEditor.Select
 		}
 
 		// System Functions
-		void Awake()
-		{
-			handler = GetComponent<PrefabHandler>();
-		}
-
 		void OnEnable()
 		{
 			transform.localPosition = Vector3.zero;

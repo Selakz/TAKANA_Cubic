@@ -1,17 +1,17 @@
 #nullable enable
 
 using System.Collections.Generic;
-using System.Linq;
 using MusicGame.Gameplay.Basic;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Stage;
 using MusicGame.Models;
 using T3Framework.Preset.Wrapper;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
+using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -25,7 +25,6 @@ namespace MusicGame.ChartEditor.Select
 		[SerializeField] private SequencePriority noteSpritePriority = default!;
 		[SerializeField] private SequencePriority trackSortingOrderPriority = default!;
 		[SerializeField] private SequencePriority noteSortingOrderPriority = default!;
-		[SerializeField] private InspectorDictionary<T3Flag, InspectorDictionary<string, Sprite>> sprites = default!;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -74,24 +73,22 @@ namespace MusicGame.ChartEditor.Select
 		};
 
 		// Private
-		private Dictionary<T3Flag, Dictionary<string, Sprite>> NoteSelectedSprites => noteSelectedSprites ??=
-			new(sprites.Value.Select(pair =>
-				new KeyValuePair<T3Flag, Dictionary<string, Sprite>>(pair.Key, pair.Value.Value)));
+		[Inject] private ChartSelectDataset selectDataset = default!;
+		[Inject] private NotifiableProperty<GameplayStageSkinConfig> skinConfig = default!;
+		[Inject, Key("stage")] private IViewPool<ChartComponent> viewPool = default!;
 
-		private readonly T3ChartClassifier classifier = new();
-		private Dictionary<T3Flag, Dictionary<string, Sprite>>? noteSelectedSprites;
-		private ChartSelectDataset selectDataset = default!;
-		private IViewPool<ChartComponent> viewPool = default!;
-
-		// Defined Functions
-		[Inject]
-		private void Construct(
-			ChartSelectDataset selectDataset,
-			[Key("stage")] IViewPool<ChartComponent> viewPool)
+		private Dictionary<T3Flag, Dictionary<string, Sprite>> NoteSelectedSprites
 		{
-			this.selectDataset = selectDataset;
-			this.viewPool = viewPool;
+			get
+			{
+				if (skinConfig.Value is EditorStageSkinConfig config) return config.SelectedSprites;
+				Debug.LogError("Current skin config is not EditorStageSkinConfig");
+				return null!;
+			}
 		}
+
+		private readonly T3ChartClassifier classifier = T3ChartClassifier.Instance;
+		private Dictionary<T3Flag, Dictionary<string, Sprite>>? noteSelectedSprites;
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
