@@ -60,6 +60,7 @@ MonoBehaviour:
   - body
   heightTextures:
   - body
+  endTexture: 
 --- !u!1 &4553275617780012087
 GameObject:
   m_ObjectHideFlags: 0

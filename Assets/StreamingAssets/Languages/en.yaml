@@ -213,6 +213,10 @@ TrackLine:
   
 LevelSelect:
   Speed: Chart Speed
+  Pitch: Music Speed
+  Bpm: BPM
+  Charter: Charter
+  Illustrator: Illustrator
   AudioDeviation: Audio Offset
   InputDeviation: Input Offset
   Loading: Loading
@@ -337,6 +341,13 @@ Setting:
     BpmDisplay: Display BPM info
     Description: Song description
     Difficulties: Info for each difficulty
+    PackId: Unique identifier for the package which the song is in, empty for single song
+  PackInfo:
+    All: All songs
+    Id: Unique identifier for the package
+    Title: Display title
+    Description: Package description
+    CoverFileName: Cover file name
   DifficultyInfo:
     LevelDisplay: Display difficulty level text
     Charter: Display charter info
@@ -355,6 +366,7 @@ InputRebinding:
   Reset: Reset
   Basic: Basic
   Editor: Editor
+  HoldAndTrack: Hold and Track
   Draft: Draft
   CurveSwitch: Curve Switch
   
@@ -385,6 +397,7 @@ InputRebinding:
   MirrorCopy: Mirror Copy
   CheckClipboard: Check Clipboard
   ToggleDummy: Toggle Note Dummy Status
+  Link: Link Taps to Slides
   
   ChangeNodeState: Switch Node Easing Type
   CheckCurve: Open Curve Family Selection Panel

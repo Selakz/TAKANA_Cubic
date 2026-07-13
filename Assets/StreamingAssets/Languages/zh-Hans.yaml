@@ -213,6 +213,10 @@ TrackLine:
   
 LevelSelect:
   Speed: 谱面流速
+  Pitch: 音乐流速
+  Bpm: BPM
+  Charter: 谱面作者
+  Illustrator: 曲绘作者
   AudioDeviation: 音乐偏移
   InputDeviation: 目押偏移
   Loading: 加载中
@@ -338,6 +342,13 @@ Setting:
     BpmDisplay: 展示的BPM信息
     Description: 对歌曲的描述
     Difficulties: 各难度信息
+    PackId: 包含该歌曲的曲包的唯一标识符，若为单曲则为空
+  PackInfo:
+    All: 全部曲目
+    Id: 曲包的唯一标识符
+    Title: 展示的曲包名
+    Description: 对曲包的描述
+    CoverFileName: 封面文件名称
   DifficultyInfo:
     LevelDisplay: 展示的难度等级文字
     Charter: 展示的谱师信息
@@ -356,6 +367,7 @@ InputRebinding:
   Reset: 重置
   Basic: 基础
   Editor: 编辑器
+  HoldAndTrack: Hold与轨道
   Draft: 草稿
   CurveSwitch: 曲线切换
   
@@ -386,6 +398,7 @@ InputRebinding:
   MirrorCopy: 镜像复制
   CheckClipboard: 检查剪贴板
   ToggleDummy: 切换Note真假
+  Link: 将Tap连接为Slide
   
   ChangeNodeState: 切换节点缓动类型
   CheckCurve: 打开曲线族选择面板

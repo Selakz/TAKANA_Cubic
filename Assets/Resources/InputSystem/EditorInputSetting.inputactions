@@ -655,6 +655,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Link",
+                    "type": "Value",
+                    "id": "d29129f0-1e4e-4aaa-a892-65ae9992c3e8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Widen",
                     "type": "Value",
                     "id": "a632dddb-c860-4d7f-9146-b9d2110cb990",
@@ -2075,6 +2084,61 @@
                     "processors": "",
                     "groups": "",
                     "action": "ToggleDummy",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "b6b7912b-3a24-46f3-8a37-80267059690f",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Link",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "2d4b4809-b18c-49d9-b8b9-73d93cba0332",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Link",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "911fa7be-d327-4b8a-8bec-c9a2d7507480",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Link",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "c5a8c5e6-5d77-412a-95ac-3deaa1d8338e",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Link",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "53bf56cf-116e-42e5-a157-b2dda4c459ee",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Link",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

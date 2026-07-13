@@ -118,6 +118,15 @@ namespace MusicGame.Gameplay.Basic.Falling
 				() => Position,
 				position => Position = position,
 				_ => new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold + 1));
+			MainTexture.ColorModifier.Register(
+				_ => ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor,
+				-1);
+			Textures["leftLine"].ColorModifier.Register(
+				color => color with { a = ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor.Value.a },
+				-1);
+			Textures["rightLine"].ColorModifier.Register(
+				color => color with { a = ISingleton<PlayfieldSetting>.Instance.TrackFaceDefaultColor.Value.a },
+				-1);
 		}
 
 		void Update()

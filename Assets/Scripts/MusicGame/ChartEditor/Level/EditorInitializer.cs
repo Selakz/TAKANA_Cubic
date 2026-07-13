@@ -20,9 +20,9 @@ namespace MusicGame.ChartEditor.Level
 		{
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
 			{
-				EventSystem.current.SetSelectedGameObject(null);
 				if (levelInfo.Value is { Preference: EditorPreference preference })
 				{
+					EventSystem.current.SetSelectedGameObject(null);
 					speed.Value = new T3Speed(preference.Speed);
 				}
 			})

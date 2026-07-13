@@ -3,6 +3,7 @@
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,10 @@ namespace T3Framework.Preset.UICollection
 		[SerializeField] private Image backgroundImage = default!;
 		[SerializeField] private Image arrowImage = default!;
 		[SerializeField] private GameObject content = default!;
+
+		public GameObject Content => content;
+		
+		public NotifiableProperty<bool> IsCollapsed => boolDataContainer.Property;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
