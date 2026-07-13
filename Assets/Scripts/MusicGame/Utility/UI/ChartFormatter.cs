@@ -81,7 +81,7 @@ namespace MusicGame.Utility.UI
 			var classifier = T3ChartClassifier.Instance;
 
 			var notesByParent = chart
-				.Where(c => c.Model is INote && c.Parent is not null)
+				.Where(c => c.Model is INote && c.Parent?.Model is ITrack)
 				.GroupBy(c => c.Parent);
 
 			foreach (var parentGroup in notesByParent)
