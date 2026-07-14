@@ -203,7 +203,7 @@ namespace MusicGame.Gameplay.Stage
 			foreach (var item in pendingCheck)
 			{
 				bool shouldInstantiate = instantiateContainer.TimeMap.TryGetValue(item, out var instantiateTime) &&
-				                         instantiateTime <= time;
+				                         instantiateTime < time;
 				bool shouldDestroy = destroyContainer.TimeMap.TryGetValue(item, out var destroyTime) &&
 				                     destroyTime <= time;
 				if (activeItems.Contains(item))

@@ -27,8 +27,10 @@ namespace MusicGame.Gameplay.Chart
 		public event Action<ChartComponent>? OnComponentRemoved;
 		public event Action<ChartComponent>? OnComponentModelUpdated;
 
-		/// <summary> The second parameter is its previous parent. </summary>
+		/// <summary> The second parameter is its new parent. </summary>
 		public event Action<ChartComponent, ChartComponent?>? BeforeComponentParentChanged;
+
+		public event Action<ChartComponent>? AfterComponentParentChanged;
 
 		private readonly HashSet<ChartComponent> components = new();
 		private int generalId = 0;
@@ -80,6 +82,7 @@ namespace MusicGame.Gameplay.Chart
 			component.OnComponentUpdated += OnComponentUpdated;
 			component.BeforeBelongingChartChanged += BeforeBelongingChartChanged;
 			component.BeforeParentChanged += BeforeParentChanged;
+			component.AfterParentChanged += AfterParentChanged;
 		}
 
 		/// <returns> components that are removed recursively in topological order. </returns>
@@ -146,6 +149,7 @@ namespace MusicGame.Gameplay.Chart
 			component.OnComponentUpdated -= OnComponentUpdated;
 			component.BeforeBelongingChartChanged -= BeforeBelongingChartChanged;
 			component.BeforeParentChanged -= BeforeParentChanged;
+			component.AfterParentChanged -= AfterParentChanged;
 			components.Remove(component);
 		}
 
@@ -156,6 +160,12 @@ namespace MusicGame.Gameplay.Chart
 			BeforeComponentParentChanged?.Invoke(component, newParent);
 		}
 
+		private void AfterParentChanged(object sender, EventArgs eventArgs)
+		{
+			if (sender is not ChartComponent component || component.BelongingChart != this) return;
+			AfterComponentParentChanged?.Invoke(component);
+		}
+
 		public void Dispose()
 		{
 			foreach (var component in components)
@@ -163,6 +173,7 @@ namespace MusicGame.Gameplay.Chart
 				component.OnComponentUpdated -= OnComponentUpdated;
 				component.BeforeBelongingChartChanged -= BeforeBelongingChartChanged;
 				component.BeforeParentChanged -= BeforeParentChanged;
+				component.AfterParentChanged -= AfterParentChanged;
 				component.BelongingChart = null;
 			}
 

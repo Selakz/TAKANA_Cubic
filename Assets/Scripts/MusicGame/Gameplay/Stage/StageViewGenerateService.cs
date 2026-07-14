@@ -57,6 +57,7 @@ namespace MusicGame.Gameplay.Stage
 			chart.OnComponentRemoved += OnComponentRemoved;
 			chart.OnComponentModelUpdated += OnComponentModelUpdated;
 			chart.BeforeComponentParentChanged += BeforeParentChanged;
+			chart.AfterComponentParentChanged += AfterParentChanged;
 			viewGenerator = new(stageSkinConfig.Value.GetViewTimeCalculator());
 			foreach (var component in chart) OnComponentAdded(component);
 		}
@@ -69,6 +70,7 @@ namespace MusicGame.Gameplay.Stage
 				chart.OnComponentRemoved -= OnComponentRemoved;
 				chart.OnComponentModelUpdated -= OnComponentModelUpdated;
 				chart.BeforeComponentParentChanged -= BeforeParentChanged;
+				chart.AfterComponentParentChanged -= AfterParentChanged;
 			}
 
 			viewPool.Clear();
@@ -86,8 +88,6 @@ namespace MusicGame.Gameplay.Stage
 
 		private void BeforeParentChanged(ChartComponent component, ChartComponent? newParent)
 		{
-			viewGenerator?.Update(component);
-
 			if (viewPool[component] is not { } handler) return;
 			if (newParent is null) handler.transform.SetParent(viewPool.DefaultTransform, false);
 			else
@@ -96,6 +96,11 @@ namespace MusicGame.Gameplay.Stage
 					return; // Do nothing, and later in Update this view will be released hopefully
 				handler.transform.SetParent(parentHandler.transform, false);
 			}
+		}
+
+		private void AfterParentChanged(ChartComponent component)
+		{
+			viewGenerator?.Update(component);
 		}
 
 		private void GenerateView(ChartComponent component)

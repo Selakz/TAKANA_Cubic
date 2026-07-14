@@ -61,6 +61,7 @@ namespace MusicGame.Gameplay.Chart
 		public event EventHandler? OnComponentUpdated;
 		public event EventHandler<ChartInfo?>? BeforeBelongingChartChanged;
 		public event EventHandler<ChartComponent?>? BeforeParentChanged;
+		public event EventHandler? AfterParentChanged;
 
 		public void UpdateNotify() => OnComponentUpdated?.Invoke(this, EventArgs.Empty);
 
@@ -113,6 +114,7 @@ namespace MusicGame.Gameplay.Chart
 				BeforeParentChanged?.Invoke(this, newParent);
 				previousParent?.children.Remove(this);
 				parent = null;
+				AfterParentChanged?.Invoke(this, EventArgs.Empty);
 				return true;
 			}
 
@@ -128,6 +130,7 @@ namespace MusicGame.Gameplay.Chart
 			parent?.children.Remove(this);
 			parent = newParent;
 			newParent.children.Add(this);
+			AfterParentChanged?.Invoke(this, EventArgs.Empty);
 			return true;
 		}
 
