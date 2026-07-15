@@ -20,7 +20,11 @@ namespace MusicGame.Gameplay.Judge
 		public T3Time AudioDeviation
 		{
 			get => gameAudioPlayer.AudioDeviation;
-			set => gameAudioPlayer.AudioDeviation = value;
+			set
+			{
+				gameAudioPlayer.AudioDeviation = value;
+				Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			}
 		}
 
 		public T3Time AudioTime
