@@ -14,7 +14,20 @@ namespace MusicGame.LevelSelect
 	public class LevelSetting : ISingletonSetting<LevelSetting>
 	{
 		[HideInGame]
-		public NotifiableProperty<string> StoragePath { get; set; } = new(
+		public NotifiableProperty<string> StoragePath
+		{
+			get
+			{
+#if UNITY_IOS && !UNITY_EDITOR
+				// Application.persistentDataPath changes every time the app is reinstalled
+				storagePath.Value = Path.Combine(Application.persistentDataPath, "Levels");
+#endif
+				return storagePath;
+			}
+			set => storagePath = value;
+		}
+
+		private NotifiableProperty<string> storagePath = new(
 #if UNITY_ANDROID && !UNITY_EDITOR
 			"/storage/emulated/0/data/takana"
 #elif UNITY_IOS && !UNITY_EDITOR

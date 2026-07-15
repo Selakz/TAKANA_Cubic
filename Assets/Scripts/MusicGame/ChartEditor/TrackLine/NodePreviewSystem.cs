@@ -23,7 +23,7 @@ using VContainer;
 namespace MusicGame.ChartEditor.TrackLine.Preview
 {
 	// The code is not very clean but this is not a core system so fine.
-	public class NodePreviewSystem1 : HierarchySystem<NodePreviewSystem1>
+	public class NodePreviewSystem : HierarchySystem<NodePreviewSystem>
 	{
 		// Serializable and Public
 		[SerializeField] private ViewPoolInstaller headPluginPoolInstaller;

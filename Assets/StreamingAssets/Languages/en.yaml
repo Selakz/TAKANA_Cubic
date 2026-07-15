@@ -344,6 +344,7 @@ Setting:
     PackId: Unique identifier for the package which the song is in, empty for single song
   PackInfo:
     All: All songs
+    Single: Single
     Id: Unique identifier for the package
     Title: Display title
     Description: Package description

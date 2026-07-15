@@ -17,10 +17,9 @@ namespace MusicGame.Gameplay.Performance
 		[Description("UseVSync")]
 		public NotifiableProperty<bool> UseVSync { get; set; } = new(true);
 
-		[DropdownOptions(30, 60, 90, 120, 144)]
 		[Description("TargetFrameRate")]
 		public NotifiableProperty<int> TargetFrameRate { get; set; } = new(120)
-			{ Clamp = value => Mathf.Clamp(value, 30, 144) };
+			{ Clamp = value => Mathf.Clamp(value, 30, 512) };
 
 		[DropdownOptions(0.25f, 0.5f, 0.75f, 1f)]
 		[Description("ResolutionRatio")]

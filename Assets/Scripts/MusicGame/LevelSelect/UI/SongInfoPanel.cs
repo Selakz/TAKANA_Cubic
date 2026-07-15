@@ -11,15 +11,15 @@ namespace MusicGame.LevelSelect.UI
 	public class SongInfoPanel : MonoBehaviour
 	{
 		// Serializable and Public
+		[SerializeField] private Texture defaultCover = default!;
 		[SerializeField] private RawImage coverImage = default!;
-		[SerializeField] private TextMeshProUGUI musicNameText = default!;
-		[SerializeField] private TextMeshProUGUI composerText = default!;
-		[SerializeField] private TextMeshProUGUI charterText = default!;
-		[SerializeField] private TextMeshProUGUI illustratorText = default!;
-		[SerializeField] private TextMeshProUGUI bpmDisplayText = default!;
+		[SerializeField] private TextMeshProUGUI? musicNameText = default!;
+		[SerializeField] private TextMeshProUGUI? composerText = default!;
+		[SerializeField] private TextMeshProUGUI? charterText = default!;
+		[SerializeField] private TextMeshProUGUI? illustratorText = default!;
+		[SerializeField] private TextMeshProUGUI? bpmDisplayText = default!;
 
 		// Private
-		private Texture defaultCover = default!;
 		private SongInfo? songInfo;
 
 		// Defined Functions
@@ -27,23 +27,17 @@ namespace MusicGame.LevelSelect.UI
 
 		public void LoadSongInfo(SongInfo? songInfo)
 		{
-			musicNameText.text = songInfo?.Title.Value ?? string.Empty;
-			composerText.text = songInfo?.Composer.Value ?? string.Empty;
-			// illustratorText.text = songInfo?.Illustrator.Value ?? string.Empty;
-			// bpmDisplayText.text = songInfo?.BpmDisplay ?? string.Empty;
+			if (musicNameText != null) musicNameText.text = songInfo?.Title.Value ?? string.Empty;
+			if (composerText != null) composerText.text = songInfo?.Composer.Value ?? string.Empty;
+			if (illustratorText != null) illustratorText.text = songInfo?.Illustrator.Value ?? string.Empty;
+			if (bpmDisplayText != null) bpmDisplayText.text = songInfo?.BpmDisplay ?? string.Empty;
 		}
 
 		public void LoadDifficulty(int difficulty)
 		{
 			DifficultyInfo? info = null;
 			songInfo?.Difficulties.TryGetValue(difficulty, out info);
-			charterText.text = info?.Charter.Value ?? string.Empty;
-		}
-
-		// System Functions
-		void Awake()
-		{
-			defaultCover = coverImage.texture;
+			if (charterText != null) charterText.text = info?.Charter.Value ?? string.Empty;
 		}
 	}
 }

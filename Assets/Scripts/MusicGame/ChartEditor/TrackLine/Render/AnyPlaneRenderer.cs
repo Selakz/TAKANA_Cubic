@@ -83,7 +83,7 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 			float leftAmplitudeVal, float leftPeriodVal, float leftOffsetVal,
 			float rightAmplitudeVal, float rightPeriodVal, float rightOffsetVal)
 		{
-			if (PlaneCollider is null) return;
+			if (PlaneCollider == null) return;
 
 			PlaneCollider.enabled = true;
 			logicMesh ??= new();
@@ -108,8 +108,18 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 				float rightX = rightConverter.Interpolate(t) * rightPeriodVal + rightOffsetVal;
 				float rightY = t * rightAmplitudeVal;
 
-				vertices[i * 2] = new Vector3(leftX, leftY, 0);
-				vertices[i * 2 + 1] = new Vector3(rightX, rightY, 0);
+				float xA = leftX, yA = leftY, xB = rightX, yB = rightY;
+				if (xA > xB)
+				{
+					(xA, xB) = (xB, xA);
+					(yA, yB) = (yB, yA);
+				}
+
+				xB = Mathf.Max(xB, xA + 0.05f);
+				print($"{xA}, {yA}, {xB}, {yB}");
+
+				vertices[i * 2] = new Vector3(xA, yA, 0);
+				vertices[i * 2 + 1] = new Vector3(xB, yB, 0);
 			}
 
 			for (int i = 0; i < steps; i++)

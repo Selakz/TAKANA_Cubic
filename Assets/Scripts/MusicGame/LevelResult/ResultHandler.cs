@@ -38,13 +38,16 @@ namespace MusicGame.LevelResult
 			{
 				if (resultInfo.Value is not { } info) return;
 
-				if (info.LevelInfo is { } levelInfo)
+				if (info.LevelInfo is { Preference: GameplayPreference preference } levelInfo)
 				{
-					ISingletonSetting<PlayInfo>.Instance.SetHighScore(
-						info.LevelInfo.SongInfo.Id, info.LevelInfo.Difficulty, Mathf.RoundToInt((float)info.Score));
-					ISingletonSetting<PlayInfo>.SaveInstance(); // TODO: Async
 					UpdateSongInfo(levelInfo);
 					coverImage.LoadTextureCover(levelInfo.Cover ?? defaultTexture);
+					if (!preference.IsAuto && Mathf.Approximately(preference.Pitch, 1))
+					{
+						ISingletonSetting<PlayInfo>.Instance.SetHighScore(
+							info.LevelInfo.SongInfo.Id, info.LevelInfo.Difficulty, Mathf.RoundToInt((float)info.Score));
+						ISingletonSetting<PlayInfo>.SaveInstance(); // TODO: Async
+					}
 				}
 
 				UpdateScore(info);

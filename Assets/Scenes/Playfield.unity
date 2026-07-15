@@ -2878,6 +2878,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: T3Basic - M
       objectReference: {fileID: 0}
+    - target: {fileID: 6304973967995126248, guid: 802182ed915ea1c4ba301c91a21445d5, type: 3}
+      propertyPath: trackChunkPrefab.prefab
+      value: 
+      objectReference: {fileID: 4550990173657866682, guid: db9f5d7d3589f3a4bb9b6ef4dd63b39b, type: 3}
     - target: {fileID: 7846210670109206269, guid: 802182ed915ea1c4ba301c91a21445d5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

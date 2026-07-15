@@ -2,24 +2,22 @@
 
 using System;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Event.UI;
+using T3Framework.Runtime.Extensions;
 using T3Framework.Static;
 using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace MusicGame.LevelSelect.UI
 {
 	public class LevelPanel : MonoBehaviour
 	{
-		// Serializable and Public
 		[field: SerializeField]
 		public PointerUpDownListener PointerListener { get; set; } = default!;
 
@@ -34,9 +32,6 @@ namespace MusicGame.LevelSelect.UI
 
 		[field: SerializeField]
 		public Button StartGameButton { get; set; } = default!;
-
-		[field: SerializeField]
-		public Button ChangeDifficultyButton { get; set; } = default!;
 
 		[field: SerializeField]
 		public TextMeshProUGUI DifficultyNameText { get; set; } = default!;
@@ -54,9 +49,8 @@ namespace MusicGame.LevelSelect.UI
 		private readonly NotifiableProperty<RawLevelInfo<GameplayPreference>?> rawLevelInfo;
 		private readonly NotifiableProperty<int> difficulty;
 		private readonly LevelComponent<GameplayPreference> component;
-		private readonly int playfieldSceneIndex;
 		private readonly DifficultyConfig difficultyConfig;
-		private readonly GameObject loadingPanel;
+		private readonly PreEntryPanel preEntryPanel;
 		private readonly Texture defaultCoverTexture;
 
 		private int currentDifficulty;
@@ -66,20 +60,17 @@ namespace MusicGame.LevelSelect.UI
 			NotifiableProperty<RawLevelInfo<GameplayPreference>?> rawLevelInfo,
 			NotifiableProperty<int> difficulty,
 			LevelComponent<GameplayPreference> component,
-			int playfieldSceneIndex,
 			DifficultyConfig difficultyConfig,
-			GameObject loadingPanel)
+			PreEntryPanel preEntryPanel)
 		{
 			this.levelPanel = levelPanel;
 			this.rawLevelInfo = rawLevelInfo;
 			this.difficulty = difficulty;
 			this.component = component;
-			this.playfieldSceneIndex = playfieldSceneIndex;
 			this.difficultyConfig = difficultyConfig;
-			this.loadingPanel = loadingPanel;
+			this.preEntryPanel = preEntryPanel;
 
 			defaultCoverTexture = levelPanel.CoverImage.texture;
-			currentDifficulty = this.component.Model.Preference.Value?.Difficulty ?? 3;
 		}
 
 		protected override IEventRegistrar[] InnerRegistrars => new IEventRegistrar[]
@@ -91,51 +82,36 @@ namespace MusicGame.LevelSelect.UI
 			CustomRegistrar.Generic<Action<PointerEventData>>(
 				e => levelPanel.PointerListener.PointerClick += e,
 				e => levelPanel.PointerListener.PointerClick -= e,
-				_ => { rawLevelInfo.Value = component.Model; }),
+				_ =>
+				{
+					rawLevelInfo.Value = component.Model;
+					difficulty.Value = currentDifficulty;
+				}),
 			new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(rawLevelInfo, info =>
 			{
 				levelPanel.BgImage.color = ReferenceEquals(info, component.Model)
 					? new(0.75f, 1, 1, 1)
 					: Color.white;
 			}),
-			new ButtonRegistrar(levelPanel.StartGameButton, () => TryStartGame().Forget()),
-			new ButtonRegistrar(levelPanel.ChangeDifficultyButton, () =>
+			new PropertyRegistrar<int>(difficulty, LoadDifficultyWithFallback),
+			new ButtonRegistrar(levelPanel.StartGameButton, () =>
 			{
-				if (component.Model.SongInfo.Value?.Difficulties is not { } difficulties) return;
-				var numbers = difficulties.Keys.ToArray();
-				if (numbers.Length == 0) return;
-				var index = Array.IndexOf(numbers, currentDifficulty);
-				LoadDifficulty(index < 0 ? numbers[0] : numbers[(index + 1) % numbers.Length]);
+				rawLevelInfo.Value = component.Model;
+				preEntryPanel.Show();
 			})
 		};
 
-		private async UniTaskVoid TryStartGame()
-		{
-			loadingPanel.SetActive(true);
-			var levelInfo = await component.Model.ToLevelInfo(currentDifficulty);
-			if (levelInfo is null)
-			{
-				Debug.Log("failed to load level info");
-				loadingPanel.SetActive(false);
-				return;
-			}
-
-			GameplayLevelLoader.SetLevelInfo(levelInfo);
-			SceneManager.LoadScene(playfieldSceneIndex);
-		}
-
-		private void LoadDifficulty(int difficulty)
+		private void LoadDifficulty(int diff)
 		{
 			if (component.Model.SongInfo.Value?.Difficulties is not { } difficulties ||
-			    !difficulties.TryGetValue(difficulty, out var difficultyInfo))
+			    !difficulties.TryGetValue(diff, out var difficultyInfo))
 			{
 				levelPanel.DifficultyNameText.text = string.Empty;
 				levelPanel.DifficultyValueText.text = string.Empty;
 				return;
 			}
 
-			currentDifficulty = difficulty;
-			if (difficultyConfig.Value.TryGetValue(difficulty, out var data))
+			if (difficultyConfig.Value.TryGetValue(diff, out var data))
 			{
 				levelPanel.DifficultyNameText.text = data.name;
 				levelPanel.DifficultyNameText.color = data.color;
@@ -143,29 +119,33 @@ namespace MusicGame.LevelSelect.UI
 			else levelPanel.DifficultyNameText.text = string.Empty;
 
 			levelPanel.DifficultyValueText.text = difficultyInfo.LevelDisplay;
+			levelPanel.ScoreText.text =
+				ISingleton<PlayInfo>.Instance.GetPlayData(component.Model.SongInfo.Value.Id, diff) is { } info
+					? info.Score.ToString("0000000")
+					: 0.ToString("0000000");
 
-			if (ISingleton<PlayInfo>.Instance.GetPlayData(component.Model.SongInfo.Value.Id, difficulty) is { } info)
-			{
-				levelPanel.ScoreText.text = info.Score.ToString("0000000");
-			}
+			currentDifficulty = diff;
+		}
+
+		private void LoadDifficultyWithFallback(int diff)
+		{
+			if (component.Model.SongInfo.Value?.Difficulties is { } difficulties)
+				LoadDifficulty(difficulties.ContainsKey(diff) ? diff : difficulties.Keys.DefaultIfEmpty(3).Max());
 			else
-			{
-				levelPanel.ScoreText.text = 0.ToString("0000000");
-			}
+				LoadDifficulty(difficulty);
 		}
 
 		protected override void Initialize()
 		{
 			var info = component.Model;
-			levelPanel.CoverImage.texture = info.Cover.Value ?? defaultCoverTexture;
+			levelPanel.CoverImage.LoadTextureCover(info.Cover.Value ?? defaultCoverTexture);
 			levelPanel.SongNameText.text = info.SongInfo.Value?.Title.Value;
-			if (info.Preference.Value is { } preference) currentDifficulty = preference.Difficulty;
-			LoadDifficulty(currentDifficulty);
+			LoadDifficultyWithFallback(difficulty);
 		}
 
 		protected override void Deinitialize()
 		{
-			levelPanel.CoverImage.texture = defaultCoverTexture;
+			levelPanel.CoverImage.LoadTextureCover(defaultCoverTexture);
 			levelPanel.SongNameText.text = string.Empty;
 		}
 	}

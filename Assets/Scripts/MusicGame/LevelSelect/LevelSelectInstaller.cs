@@ -12,12 +12,16 @@ namespace MusicGame.LevelSelect
 	{
 		public override void SelfInstall(IContainerBuilder builder)
 		{
-			builder.Register<IDataset<LevelComponent<GameplayPreference>>,
-				HashDataset<LevelComponent<GameplayPreference>>>(Lifetime.Singleton);
+			builder.Register<ListDataset<LevelComponent<GameplayPreference>>>(Lifetime.Singleton)
+				.AsImplementedInterfaces()
+				.AsSelf();
+			builder.Register<ListDataset<PackInfo>>(Lifetime.Singleton)
+				.AsImplementedInterfaces()
+				.AsSelf();
 			builder.Register<NotifiableProperty<RawLevelInfo<GameplayPreference>?>>(Lifetime.Singleton)
 				.WithParameter("initialValue", default(RawLevelInfo<GameplayPreference>?));
 			builder.Register<NotifiableProperty<int>>(Lifetime.Singleton) // selected difficulty
-				.WithParameter("initialValue", 0);
+				.WithParameter("initialValue", 3); // default to MASTER
 		}
 	}
 }

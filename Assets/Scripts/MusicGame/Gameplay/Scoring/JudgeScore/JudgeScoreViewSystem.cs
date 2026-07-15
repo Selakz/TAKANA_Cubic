@@ -23,7 +23,8 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 	public class JudgeScoreViewSystem : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
-		[SerializeField] private SequencePriority colorPriority = default!;
+		[SerializeField] private SequencePriority startJudgeColorPriority = default!;
+		[SerializeField] private SequencePriority missHoldColorPriority = default!;
 		[SerializeField] private SequencePriority positionPriority = default!;
 		[SerializeField] private SequencePriority heightPriority = default!;
 
@@ -67,8 +68,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 			    NotePool[note] is not { } handler) return;
 
 			var presenter = handler.Script<T3NoteViewPresenter>();
-			// TODO: IModifier, UnionModifier, ColorModifier in IT3ModelViewPresenter
-			presenter.Textures["main"].ColorModifier.Assign(Color.clear, colorPriority);
+			presenter.MainTexture.ColorModifier.Assign(Color.clear, startJudgeColorPriority);
 
 			// TODO: This should be done at hold generated
 			if (model is Hold hold)
@@ -87,11 +87,18 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 					pos => music.ChartTime < hold.TimeJudge ? pos : new(pos.x, 0),
 					positionPriority, true);
 
-				if (judgeItem is IT3JudgeItem { JudgeResult: T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss })
+				var a = judgeItem is IT3JudgeItem { JudgeResult: T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss }
+					? ISingleton<PlayfieldSetting>.Instance.MissHoldOpacity
+					: 1f;
+				foreach (var cm in presenter.ColorModifiers)
 				{
-					presenter.Textures["body"].ColorModifier.Register(
-						color => color with { a = ISingleton<PlayfieldSetting>.Instance.MissHoldOpacity },
-						colorPriority);
+					cm.Register(color =>
+						{
+							if (Mathf.Approximately(color.a, 0f)) return color;
+							if (music.ChartTime >= hold.TimeEnd) return Color.clear;
+							return color with { a = a };
+						},
+						missHoldColorPriority, true);
 				}
 			}
 		}
@@ -101,7 +108,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 			if (note.Model is not INote model) return;
 
 			var presenter = NotePool[note]!.Script<T3NoteViewPresenter>();
-			presenter.Textures["main"].ColorModifier.Unregister(colorPriority);
+			presenter.MainTexture.ColorModifier.Unregister(startJudgeColorPriority);
 
 			if (model is Hold)
 			{
@@ -111,7 +118,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 				}
 
 				presenter.PositionModifier.Unregister(positionPriority, true);
-				presenter.Textures["body"].ColorModifier.Unregister(colorPriority);
+				foreach (var cm in presenter.ColorModifiers) cm.Unregister(missHoldColorPriority, true);
 			}
 		}
 

@@ -17,7 +17,7 @@ namespace T3Framework.Runtime.Audio
 			{
 				if (isPseudoPlaying)
 				{
-					return (float)(AudioSettings.dspTime - scheduledDspTime);
+					return (float)((AudioSettings.dspTime - scheduledDspTime) * pitch);
 				}
 
 				return remainingNegativeTime > 0 ? (float)-remainingNegativeTime : audioSource.time;

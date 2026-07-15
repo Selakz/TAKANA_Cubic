@@ -50,5 +50,16 @@ namespace T3Framework.Runtime.I18N
 
 		public ICollection<Language> Keys => dict.Keys;
 		public ICollection<string> Values => dict.Values;
+
+		public static I18NString FromLocalized(string textKey)
+		{
+			I18NString ret = new();
+			foreach (var languagePack in I18NSystem.Languages)
+			{
+				ret.Add(languagePack.LanguageCode, languagePack.GetTranslationOrDefault(textKey) ?? textKey);
+			}
+
+			return ret;
+		}
 	}
 }

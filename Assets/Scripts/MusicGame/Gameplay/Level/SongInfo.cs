@@ -30,5 +30,8 @@ namespace MusicGame.Gameplay.Level
 
 		[Description("Difficulties")]
 		public Dictionary<int, DifficultyInfo> Difficulties { get; set; } = new();
+
+		[Description("PackId")]
+		public string PackId { get; set; } = string.Empty;
 	}
 }

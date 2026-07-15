@@ -1,8 +1,9 @@
 #nullable enable
 
+using Cysharp.Threading.Tasks;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
-using T3Framework.Runtime.Timer;
+using T3Framework.Runtime.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ namespace T3Framework.Preset.UICollection
 	[RequireComponent(typeof(Button))]
 	public class DoubleClickButton : MonoBehaviour
 	{
+		// Serializable and Public
 		[SerializeField] private int clickInterval = 3000;
 
 		public Button Button
@@ -31,26 +33,27 @@ namespace T3Framework.Preset.UICollection
 		}
 
 		public event UnityAction? OnFirstClick;
+		public event UnityAction? OnFirstClickCancelled;
 		public event UnityAction? OnSecondClick;
 
+		// Private
 		private Button button = default!;
-		private TriggerTimer timer = default!;
 		private bool hasFirstClicked = false;
+		private readonly ReusableCancellationTokenSource rcts = new();
 
 		// Event Handlers
-		private void OnTimerTrigger()
-		{
-			hasFirstClicked = false;
-		}
-
 		private void OnButtonClicked()
 		{
-			timer.Stop();
+			rcts.CancelAndReset();
 			if (!hasFirstClicked)
 			{
 				hasFirstClicked = true;
-				timer.TimeDelta = ClickInterval;
-				timer.Start();
+				UniTask.Delay(ClickInterval.Milli, cancellationToken: rcts.Token).ContinueWith(
+					() =>
+					{
+						hasFirstClicked = false;
+						OnFirstClickCancelled?.Invoke();
+					});
 				OnFirstClick?.Invoke();
 			}
 			else
@@ -66,8 +69,6 @@ namespace T3Framework.Preset.UICollection
 			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 			button ??= GetComponent<Button>();
 			Button.onClick.AddListener(OnButtonClicked);
-			timer = new TriggerTimer(ClickInterval.Milli);
-			timer.OnTrigger += OnTimerTrigger;
 		}
 	}
 
@@ -76,6 +77,7 @@ namespace T3Framework.Preset.UICollection
 		public enum RegisterTarget
 		{
 			First,
+			FirstCancelled,
 			Second
 		}
 
@@ -97,6 +99,9 @@ namespace T3Framework.Preset.UICollection
 				case RegisterTarget.First:
 					button.OnFirstClick += action;
 					break;
+				case RegisterTarget.FirstCancelled:
+					button.OnFirstClickCancelled += action;
+					break;
 				case RegisterTarget.Second:
 					button.OnSecondClick += action;
 					break;
@@ -109,6 +114,9 @@ namespace T3Framework.Preset.UICollection
 			{
 				case RegisterTarget.First:
 					button.OnFirstClick -= action;
+					break;
+				case RegisterTarget.FirstCancelled:
+					button.OnFirstClickCancelled -= action;
 					break;
 				case RegisterTarget.Second:
 					button.OnSecondClick -= action;

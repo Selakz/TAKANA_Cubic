@@ -345,6 +345,7 @@ Setting:
     PackId: 包含该歌曲的曲包的唯一标识符，若为单曲则为空
   PackInfo:
     All: 全部曲目
+    Single: 单曲
     Id: 曲包的唯一标识符
     Title: 展示的曲包名
     Description: 对曲包的描述
