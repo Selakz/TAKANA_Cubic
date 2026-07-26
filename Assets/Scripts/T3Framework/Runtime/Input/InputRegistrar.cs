@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace T3Framework.Runtime.Input
 {
-	public readonly struct InputRegistrar : IEventRegistrar
+	public class InputRegistrar : IEventRegistrar
 	{
 		private const string GeneralSequenceName = "<@GeneralSequence>";
 		private const string GeneralPrioritySequenceName = "<@GeneralPrioritySequence>";

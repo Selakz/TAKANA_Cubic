@@ -72,7 +72,7 @@ namespace T3Framework.Preset.UICollection
 		}
 	}
 
-	public readonly struct DoubleClickButtonRegistrar : IEventRegistrar
+	public class DoubleClickButtonRegistrar : IEventRegistrar
 	{
 		public enum RegisterTarget
 		{

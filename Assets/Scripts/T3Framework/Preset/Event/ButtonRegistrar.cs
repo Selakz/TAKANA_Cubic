@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace T3Framework.Preset.Event
 {
-	public readonly struct ButtonRegistrar : IEventRegistrar
+	public class ButtonRegistrar : IEventRegistrar
 	{
 		private readonly Button button;
 		private readonly UnityAction action;

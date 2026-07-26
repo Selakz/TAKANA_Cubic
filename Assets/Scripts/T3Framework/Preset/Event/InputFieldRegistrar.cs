@@ -7,7 +7,7 @@ using UnityEngine.Events;
 // ReSharper disable InconsistentNaming
 namespace T3Framework.Preset.Event
 {
-	public readonly struct InputFieldRegistrar : IEventRegistrar
+	public class InputFieldRegistrar : IEventRegistrar
 	{
 		public enum RegisterTarget
 		{

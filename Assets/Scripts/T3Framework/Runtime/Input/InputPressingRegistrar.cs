@@ -9,7 +9,7 @@ namespace T3Framework.Runtime.Input
 	/// <summary>
 	/// Check if an input action is pressing with no priority.
 	/// </summary>
-	public readonly struct InputPressingRegistrar : IEventRegistrar
+	public class InputPressingRegistrar : IEventRegistrar
 	{
 		private readonly Action<bool> setter;
 		private readonly InputRegistrar startedRegistrar;

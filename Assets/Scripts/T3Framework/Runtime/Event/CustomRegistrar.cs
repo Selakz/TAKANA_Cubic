@@ -4,7 +4,7 @@ using System;
 
 namespace T3Framework.Runtime.Event
 {
-	public readonly struct CustomRegistrar : IEventRegistrar
+	public class CustomRegistrar : IEventRegistrar
 	{
 		private readonly Action? registerAction;
 		private readonly Action? unregisterAction;

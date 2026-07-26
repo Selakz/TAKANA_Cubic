@@ -7,7 +7,7 @@ using T3Framework.Static.Event;
 
 namespace T3Framework.Preset.Event
 {
-	public readonly struct PropertyRegistrar<T> : IEventRegistrar
+	public class PropertyRegistrar<T> : IEventRegistrar
 	{
 		private readonly NotifiableProperty<T> property;
 		private readonly PropertyChangedEventHandler handler;

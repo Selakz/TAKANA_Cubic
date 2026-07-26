@@ -4,7 +4,6 @@ using System.Linq;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.VContainer;
@@ -15,7 +14,7 @@ using VContainer;
 
 namespace MusicGame.ChartEditor.EditPanel
 {
-	public class ComponentSearchInputField : T3MonoBehaviour, ISelfInstaller
+	public class ComponentSearchInputField : HierarchySystem<ComponentSearchInputField>
 	{
 		// Serializable and Public
 		[SerializeField] private TMP_InputField searchInputField = default!;
@@ -28,16 +27,8 @@ namespace MusicGame.ChartEditor.EditPanel
 		};
 
 		// Private
-		private NotifiableProperty<LevelInfo?> levelInfo = default!;
-		private ChartSelectDataset dataset = default!;
-
-		// Defined Functions
-		[Inject]
-		private void Construct(NotifiableProperty<LevelInfo?> levelInfo, ChartSelectDataset dataset)
-		{
-			this.levelInfo = levelInfo;
-			this.dataset = dataset;
-		}
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private ChartSelectDataset dataset = default!;
 
 		// Event Handler
 		private void OnSearchInputFieldEndEdit(string content)

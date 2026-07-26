@@ -7,7 +7,7 @@ using T3Framework.Runtime.Event;
 
 namespace MusicGame.ChartEditor.Command
 {
-	public readonly struct CommandFetchRegistrar<T, TData> : IEventRegistrar where T : ICommand
+	public class CommandFetchRegistrar<T, TData> : IEventRegistrar where T : ICommand
 	{
 		private readonly CommandRegistrar<T> singleRegistrar;
 		private readonly CommandRegistrar<BatchCommand> batchRegistrar;

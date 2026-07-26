@@ -5,7 +5,7 @@ using T3Framework.Runtime.Event;
 
 namespace T3Framework.Preset.Event
 {
-	public readonly struct DataContainerRegistrar<TData> : IEventRegistrar
+	public class DataContainerRegistrar<TData> : IEventRegistrar
 	{
 		private readonly NotifiableDataContainer<TData> notifiableDataContainer;
 		private readonly PropertyChangedEventHandler handler;
@@ -29,7 +29,7 @@ namespace T3Framework.Preset.Event
 		}
 	}
 
-	public readonly struct DataContainerRegistrar<TData, TContainer>
+	public class DataContainerRegistrar<TData, TContainer>
 		: IEventRegistrar where TContainer : NotifiableDataContainer<TData>
 	{
 		private readonly TContainer notifiableDataContainer;

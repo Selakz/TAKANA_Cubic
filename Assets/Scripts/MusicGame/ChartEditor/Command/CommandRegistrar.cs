@@ -12,7 +12,7 @@ namespace MusicGame.ChartEditor.Command
 		Redo
 	}
 
-	public readonly struct CommandRegistrar<T> : IEventRegistrar where T : ICommand
+	public class CommandRegistrar<T> : IEventRegistrar where T : ICommand
 	{
 		private readonly CommandManager commandManager;
 		private readonly CommandProcess process;

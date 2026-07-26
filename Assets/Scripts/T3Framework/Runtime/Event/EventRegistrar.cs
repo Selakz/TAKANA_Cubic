@@ -4,7 +4,7 @@ using System;
 
 namespace T3Framework.Runtime.Event
 {
-	public readonly struct EventRegistrar : IEventRegistrar
+	public class EventRegistrar : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action action;
@@ -26,7 +26,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct EventRegistrar<T> : IEventRegistrar
+	public class EventRegistrar<T> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<T> action;
@@ -48,7 +48,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct EventRegistrar<T1, T2> : IEventRegistrar
+	public class EventRegistrar<T1, T2> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<T1, T2> action;
@@ -70,7 +70,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct EventRegistrar<T1, T2, T3> : IEventRegistrar
+	public class EventRegistrar<T1, T2, T3> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<T1, T2, T3> action;
@@ -92,7 +92,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct EventRegistrar<T1, T2, T3, T4> : IEventRegistrar
+	public class EventRegistrar<T1, T2, T3, T4> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<T1, T2, T3, T4> action;
@@ -114,7 +114,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct VetoRegistrar : IEventRegistrar
+	public class VetoRegistrar : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<VetoArg> action;
@@ -136,7 +136,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct VetoRegistrar<T> : IEventRegistrar
+	public class VetoRegistrar<T> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<VetoArg, T> action;
@@ -158,7 +158,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct VetoRegistrar<T1, T2> : IEventRegistrar
+	public class VetoRegistrar<T1, T2> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<VetoArg, T1, T2> action;
@@ -180,7 +180,7 @@ namespace T3Framework.Runtime.Event
 		}
 	}
 
-	public readonly struct VetoRegistrar<T1, T2, T3> : IEventRegistrar
+	public class VetoRegistrar<T1, T2, T3> : IEventRegistrar
 	{
 		private readonly string eventName;
 		private readonly Action<VetoArg, T1, T2, T3> action;

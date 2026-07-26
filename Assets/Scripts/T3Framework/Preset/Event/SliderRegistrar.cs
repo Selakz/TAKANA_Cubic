@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace T3Framework.Preset.Event
 {
-	public readonly struct SliderRegistrar : IEventRegistrar
+	public class SliderRegistrar : IEventRegistrar
 	{
 		private readonly Slider slider;
 		private readonly UnityAction<float> action;

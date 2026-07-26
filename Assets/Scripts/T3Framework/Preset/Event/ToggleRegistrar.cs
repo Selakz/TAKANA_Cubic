@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace T3Framework.Preset.Event
 {
-	public readonly struct ToggleRegistrar : IEventRegistrar
+	public class ToggleRegistrar : IEventRegistrar
 	{
 		private readonly Toggle toggle;
 		private readonly UnityAction<bool> action;
