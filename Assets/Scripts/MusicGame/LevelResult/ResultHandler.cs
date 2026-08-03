@@ -7,7 +7,6 @@ using MusicGame.Gameplay.Judge.T3;
 using MusicGame.Gameplay.Level;
 using MusicGame.LevelResult.UI;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Setting;
@@ -17,11 +16,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.LevelResult
 {
-	public class ResultHandler : T3MonoBehaviour, ISelfInstaller
+	public class ResultHandler : HierarchySystem<ResultHandler>
 	{
 		// Serializable and Public
 		[SerializeField] private RawImage coverImage = default!;
@@ -67,8 +65,6 @@ namespace MusicGame.LevelResult
 			defaultTexture = coverImage.texture;
 		}
 
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
 		// Defined Functions
 		private void UpdateSongInfo(LevelInfo levelInfo)
 		{
@@ -88,6 +84,13 @@ namespace MusicGame.LevelResult
 				levelInfo.SongInfo.Difficulties.TryGetValue(levelInfo.Difficulty, out var difficulty)
 					? difficulty.LevelDisplay
 					: "00";
+
+			if (levelInfo.Preference is GameplayPreference preference)
+			{
+				infoHeaderView.AutoPlayIndicator.SetActive(preference.IsAuto);
+				infoHeaderView.PitchText.gameObject.SetActive(!Mathf.Approximately(preference.Pitch, 1));
+				infoHeaderView.PitchText.text = $"x{preference.Pitch:0.00}";
+			}
 		}
 
 		private void UpdateScore(ResultInfo resultInfo)

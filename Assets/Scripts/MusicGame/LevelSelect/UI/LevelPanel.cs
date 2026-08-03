@@ -96,6 +96,7 @@ namespace MusicGame.LevelSelect.UI
 			new PropertyRegistrar<int>(difficulty, LoadDifficultyWithFallback),
 			new ButtonRegistrar(levelPanel.StartGameButton, () =>
 			{
+				difficulty.Value = currentDifficulty;
 				rawLevelInfo.Value = component.Model;
 				preEntryPanel.Show();
 			})
@@ -115,8 +116,13 @@ namespace MusicGame.LevelSelect.UI
 			{
 				levelPanel.DifficultyNameText.text = data.name;
 				levelPanel.DifficultyNameText.color = data.color;
+				levelPanel.StartGameButton.interactable = true;
 			}
-			else levelPanel.DifficultyNameText.text = string.Empty;
+			else
+			{
+				levelPanel.DifficultyNameText.text = string.Empty;
+				levelPanel.StartGameButton.interactable = false;
+			}
 
 			levelPanel.DifficultyValueText.text = difficultyInfo.LevelDisplay;
 			levelPanel.ScoreText.text =

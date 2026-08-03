@@ -13,7 +13,6 @@ using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
-using T3Framework.Static;
 using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,6 +44,8 @@ namespace MusicGame.LevelSelect.UI
 				var registrars = new List<IEventRegistrar>
 				{
 					new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(rawLevelInfo, OnLevelSelectionChanged),
+					new PropertyRegistrar<int>(difficulty, diff => songInfoPanel.LoadDifficulty(diff)),
+
 					new PropertyRegistrar<float>(speedAdjuster.Property, speed =>
 					{
 						ISingletonSetting<PlayfieldSetting>.Instance.Speed.Value = speed;

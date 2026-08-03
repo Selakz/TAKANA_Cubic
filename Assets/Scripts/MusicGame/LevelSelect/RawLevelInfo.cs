@@ -51,12 +51,12 @@ namespace MusicGame.LevelSelect
 
 			var rawLevelInfo = new RawLevelInfo<TPreference>
 				{ LevelPath = projectSettingPath, ProjectSetting = projectSetting };
-			// 2. Load song info fire-and-forget
+
+			// 2. Load song info
 			var songInfoPath =
 				FileHelper.GetAbsolutePathFromRelative(projectSettingPath, projectSetting.SongInfoFileName);
-			ISetting<SongInfo>.LoadAsync(songInfoPath).AsUniTask()
-				.ContinueWith(songInfo => rawLevelInfo.SongInfo.Value = songInfo)
-				.Forget();
+			var songInfo = await ISetting<SongInfo>.LoadAsync(songInfoPath);
+			rawLevelInfo.SongInfo.Value = songInfo;
 
 			// 3. Load preference fire-and-forget
 			var preferencePath =

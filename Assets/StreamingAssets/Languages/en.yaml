@@ -223,6 +223,11 @@ LevelSelect:
   DetailSetting: Detailed Settings
   Camera: Camera Tilt (Range 0-4)
   
+  Sort:
+    ByName: Name
+    ByLevel: Level
+    ByScore: Score
+  
 LevelResult:
   SetDeviation: Set Now
   
@@ -328,11 +333,11 @@ Setting:
     SelectLayerOpacityRatio: Opacity multiplier for selected layers | Range [0, 1]
     UnselectLayerOpacityRatio: Opacity multiplier for unselected layers | Range [0, 1]
   T3ProjSetting:
-    MusicFileName: Music file name | Include file extension for the following
+    MusicFileName: Music file name | Include file extension for the following setting items
     CoverFileName: Cover file name
     SongInfoFileName: Song info file name
     PreferenceFileName: Preference file name (e.g., editor settings)
-    ChartFileName: Chart names for each difficulty | Do NOT include file extension
+    ChartFileName: Chart names for each difficulty | Do NOT include file extension for the following setting items
   SongInfo:
     Id: Unique identifier for the song
     Title: Display title

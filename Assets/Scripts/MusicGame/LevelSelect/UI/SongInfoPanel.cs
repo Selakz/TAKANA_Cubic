@@ -27,6 +27,7 @@ namespace MusicGame.LevelSelect.UI
 
 		public void LoadSongInfo(SongInfo? songInfo)
 		{
+			this.songInfo = songInfo;
 			if (musicNameText != null) musicNameText.text = songInfo?.Title.Value ?? string.Empty;
 			if (composerText != null) composerText.text = songInfo?.Composer.Value ?? string.Empty;
 			if (illustratorText != null) illustratorText.text = songInfo?.Illustrator.Value ?? string.Empty;

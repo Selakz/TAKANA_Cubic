@@ -223,6 +223,11 @@ LevelSelect:
   DetailSetting: 详细设置
   Camera: 相机倾斜度（范围0-4）
   
+  Sort:
+    ByName: 名称
+    ByLevel: 等级
+    ByScore: 分数
+  
 LevelResult:
   SetDeviation: 立即设置
   
@@ -329,11 +334,11 @@ Setting:
     SelectLayerOpacityRatio: 选中的图层的透明度倍率，范围为[0, 1]
     UnselectLayerOpacityRatio: 未选中的图层的透明度倍率，范围为[0, 1]
   T3ProjSetting:
-    MusicFileName: 音源文件名称 | 以下文件需要附带文件后缀名
+    MusicFileName: 音源文件名称 | 以下配置项需要附带文件后缀名
     CoverFileName: 封面文件名称
     SongInfoFileName: 乐曲信息文件名称
     PreferenceFileName: 偏好设置文件名称，例如在谱面编辑器中该项用来保存编辑器的一些设置
-    ChartFileName: 各难度谱面文件名称 | 以下文件不需要附带文件后缀
+    ChartFileName: 各难度谱面文件名称 | 以下配置项不需要附带文件后缀名
   SongInfo:
     Id: 歌曲的唯一标识符
     Title: 展示的曲名

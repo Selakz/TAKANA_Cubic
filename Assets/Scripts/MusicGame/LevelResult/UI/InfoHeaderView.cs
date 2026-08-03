@@ -15,5 +15,11 @@ namespace MusicGame.LevelResult.UI
 
 		[field: SerializeField]
 		public TextMeshProUGUI DifficultyValueText { get; set; } = default!;
+
+		[field: SerializeField]
+		public GameObject AutoPlayIndicator { get; set; } = default!;
+
+		[field: SerializeField]
+		public TMP_Text PitchText { get; set; } = default!;
 	}
 }
