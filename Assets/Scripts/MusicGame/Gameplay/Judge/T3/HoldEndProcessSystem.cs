@@ -75,6 +75,9 @@ namespace MusicGame.Gameplay.Judge.T3
 					? music.ChartTime
 					: aligner.GetChartTime(touch.time);
 				var position = retriever.GetPosition(touch.screenPosition);
+				var previousPosition = retriever.GetPosition(touch.screenPosition - touch.delta);
+				var minPosition = Mathf.Min(position, previousPosition);
+				var maxPosition = Mathf.Max(position, previousPosition);
 				endCombos.RemoveAll(endCombo =>
 				{
 					var timeEnd = endCombo.ExpectedTime;
@@ -109,7 +112,7 @@ namespace MusicGame.Gameplay.Judge.T3
 						var leftEdge = track.Movement.GetLeftPos(chartTime) - T3ComboFactory.ExtraRange;
 						var rightEdge = track.Movement.GetRightPos(chartTime) + T3ComboFactory.ExtraRange;
 						if (leftEdge > rightEdge) (leftEdge, rightEdge) = (rightEdge, leftEdge);
-						if (leftEdge > position || rightEdge < position)
+						if (leftEdge > maxPosition || rightEdge < minPosition)
 						{
 							judgeStorage.AddJudgeItem(new HoldEndJudgeItem(endCombo)
 							{

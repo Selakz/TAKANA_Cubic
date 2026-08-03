@@ -55,6 +55,9 @@ namespace MusicGame.Gameplay.Judge.T3
 					? music.ChartTime
 					: aligner.GetChartTime(touch.time);
 				var position = retriever.GetPosition(touch.screenPosition);
+				var previousPosition = retriever.GetPosition(touch.screenPosition - touch.delta);
+				var minPosition = Mathf.Min(position, previousPosition);
+				var maxPosition = Mathf.Max(position, previousPosition);
 
 				var startIndex = comboStorage.GetLowerBoundIndex(chartTime - endDistance);
 				for (int i = startIndex;
@@ -64,7 +67,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					var combo = comboStorage.Combos[i];
 					if (combo is not HitCombo { NeedTap: false } hitCombo) continue;
 					// 1. If not in range, skip
-					if (hitCombo.LeftEdge > position || hitCombo.RightEdge < position) continue;
+					if (hitCombo.LeftEdge > maxPosition || hitCombo.RightEdge < minPosition) continue;
 					// 2. If judged, skip
 					if (judgeStorage.ContainsOrToContain(hitCombo)) continue;
 					// 3. Judge it scheduled
