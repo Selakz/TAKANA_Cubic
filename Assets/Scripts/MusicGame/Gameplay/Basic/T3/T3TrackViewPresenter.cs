@@ -33,8 +33,7 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		public Modifier<float> WidthModifier { get; private set; } = default!;
 
-		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => colorModifiers ??=
-			new[] { MainTexture.ColorModifier };
+		public Modifier<Color>[] ColorModifiers => colorModifiers ??= new[] { MainTexture.ColorModifier };
 
 		// IT3ModelViewPresenter Explicit Implementation
 		RendererModifier IT3ModelViewPresenter.MainTexture => MainTexture;
@@ -44,7 +43,7 @@ namespace MusicGame.Gameplay.Basic.T3
 				kvp => kvp.Key, RendererModifier (kvp) => kvp.Value);
 
 		// Private
-		private IReadOnlyCollection<Modifier<Color>>? colorModifiers;
+		private Modifier<Color>[]? colorModifiers;
 		private Dictionary<string, RendererModifier>? texturesAsBase;
 
 		private float Width

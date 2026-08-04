@@ -22,11 +22,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (enabledModifier is not null) return enabledModifier;
 				var defaultEnabled = collider.enabled;
-				return enabledModifier ??= new Modifier<bool>(
+				enabledModifier = new Modifier<bool>(
 					() => collider.enabled,
 					value => collider.enabled = value,
 					_ => defaultEnabled);
+				return enabledModifier;
 			}
 		}
 
@@ -34,11 +36,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (centerModifier is not null) return centerModifier;
 				var defaultCenter = collider.center;
-				return centerModifier ??= new Modifier<Vector3>(
+				centerModifier = new Modifier<Vector3>(
 					() => collider.center,
 					value => collider.center = value,
 					_ => defaultCenter);
+				return centerModifier;
 			}
 		}
 
@@ -46,11 +50,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (sizeModifier is not null) return sizeModifier;
 				var defaultSize = collider.size;
-				return sizeModifier ??= new Modifier<Vector3>(
+				sizeModifier = new Modifier<Vector3>(
 					() => collider.size,
 					value => collider.size = value,
 					_ => defaultSize);
+				return sizeModifier;
 			}
 		}
 

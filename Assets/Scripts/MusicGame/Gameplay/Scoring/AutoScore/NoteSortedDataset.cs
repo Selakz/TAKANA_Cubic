@@ -22,7 +22,7 @@ namespace MusicGame.Gameplay.Scoring.AutoScore
 
 		public IReadOnlyList<T3Time> Times => times;
 
-		public IReadOnlyList<IComboItem>? this[ChartComponent component] => dataset.GetValueOrDefault(component);
+		public List<IComboItem>? this[ChartComponent component] => dataset.GetValueOrDefault(component);
 
 		public event Action<ChartComponent>? OnDataAdded;
 		public event Action<ChartComponent>? OnDataAddedInherit;

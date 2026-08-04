@@ -34,8 +34,7 @@ namespace MusicGame.Gameplay.Basic.Falling
 				["startLine"] = StartLineModifier
 			};
 
-		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => colorModifiers ??=
-			new[] { mainModifier.ColorModifier };
+		public Modifier<Color>[] ColorModifiers => colorModifiers ??= new[] { mainModifier.ColorModifier };
 
 		// Private
 		private Vector2 Position
@@ -54,7 +53,7 @@ namespace MusicGame.Gameplay.Basic.Falling
 		private readonly ChunkedMeshRendererModifier leftLineModifier = new();
 		private readonly ChunkedMeshRendererModifier rightLineModifier = new();
 		private Dictionary<string, RendererModifier>? textures;
-		private IReadOnlyCollection<Modifier<Color>>? colorModifiers;
+		private Modifier<Color>[]? colorModifiers;
 
 		// Defined Functions
 		public void AddChunk(int index, Action<int, TrackChunk> initializeChunk)

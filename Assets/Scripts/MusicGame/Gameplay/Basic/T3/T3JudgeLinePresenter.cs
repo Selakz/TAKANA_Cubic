@@ -16,7 +16,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private SpriteRenderer mainTexture = default!;
 		[SerializeField] private InspectorDictionary<string, SpriteRendererModifier> textures = new();
 
-		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => throw new NotImplementedException();
+		public Modifier<Color>[] ColorModifiers => throw new NotImplementedException();
 
 		public SpriteRendererModifier MainTexture => mainModifier ??= new(mainTexture);
 

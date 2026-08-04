@@ -23,9 +23,11 @@ namespace T3Framework.Runtime.Modifier
 		{
 			var value = Value;
 			value = resetFunction.Invoke(value);
-			foreach (var function in functions.Values)
+			var funcList = functions.Values;
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < funcList.Count; i++)
 			{
-				value = function.Invoke(value);
+				value = funcList[i].Invoke(value);
 			}
 
 			setter.Invoke(value);

@@ -17,11 +17,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (spriteModifier is not null) return spriteModifier;
 				var defaultSprite = spriteRenderer.sprite;
-				return spriteModifier ??= new Modifier<Sprite>(
+				spriteModifier = new Modifier<Sprite>(
 					() => spriteRenderer.sprite,
 					value => spriteRenderer.sprite = value,
-					_ => defaultSprite);
+					defaultSprite);
+				return spriteModifier;
 			}
 		}
 
@@ -29,11 +31,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (sortingOrderModifier is not null) return sortingOrderModifier;
 				var defaultSortingOrder = spriteRenderer.sortingOrder;
-				return sortingOrderModifier ??= new Modifier<int>(
+				sortingOrderModifier = new Modifier<int>(
 					() => spriteRenderer.sortingOrder,
 					value => spriteRenderer.sortingOrder = value,
-					_ => defaultSortingOrder);
+					defaultSortingOrder);
+				return sortingOrderModifier;
 			}
 		}
 
@@ -41,11 +45,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (sizeModifier is not null) return sizeModifier;
 				var defaultSize = spriteRenderer.size;
-				return sizeModifier ??= new Modifier<Vector2>(
+				sizeModifier = new Modifier<Vector2>(
 					() => spriteRenderer.size,
 					value => spriteRenderer.size = value,
-					_ => defaultSize);
+					defaultSize);
+				return sizeModifier;
 			}
 		}
 
@@ -53,11 +59,13 @@ namespace T3Framework.Preset.Wrapper
 		{
 			get
 			{
+				if (colorModifier is not null) return colorModifier;
 				var defaultColor = spriteRenderer.color;
-				return colorModifier ??= new Modifier<Color>(
+				colorModifier = new Modifier<Color>(
 					() => spriteRenderer.color,
 					value => spriteRenderer.color = value,
-					_ => defaultColor);
+					defaultColor);
+				return colorModifier;
 			}
 		}
 

@@ -24,7 +24,7 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		public SpriteRendererModifier MainTexture => textures.Value["main"];
 
-		public IReadOnlyDictionary<string, SpriteRendererModifier> Textures => textures.Value;
+		public Dictionary<string, SpriteRendererModifier> Textures => textures.Value;
 
 		public IReadOnlyCollection<Modifier<Vector2>> WidthModifiers => widthModifiers ??=
 			widthTextures.Select(name => textures.Value[name].SizeModifier).ToArray();
@@ -51,8 +51,8 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		public Modifier<Vector2> PositionModifier { get; private set; } = default!;
 
-		public IReadOnlyCollection<Modifier<Color>> ColorModifiers => colorModifiers ??=
-			textures.Value.Values.Select(t => t.ColorModifier).ToArray();
+		public Modifier<Color>[] ColorModifiers =>
+			colorModifiers ??= textures.Value.Values.Select(t => t.ColorModifier).ToArray();
 
 		// IT3ModelViewPresenter Explicit Implementation
 		RendererModifier IT3ModelViewPresenter.MainTexture => MainTexture;

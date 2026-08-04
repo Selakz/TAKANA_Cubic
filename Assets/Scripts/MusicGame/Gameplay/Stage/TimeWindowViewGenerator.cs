@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using T3Framework.Runtime;
 using T3Framework.Static.Collections.Generic;
 
@@ -69,17 +68,14 @@ namespace MusicGame.Gameplay.Stage
 		public IEnumerable<T> GetItemsInRange(T3Time start, T3Time end)
 		{
 			var keys = componentMap.Keys;
-			if (keys.Count == 0) return Enumerable.Empty<T>();
+			if (keys.Count == 0) yield break;
 			int left = BinarySearchLeft(keys, start);
 			int right = BinarySearchRight(keys, end);
-			if (left > right) return Enumerable.Empty<T>();
-			var result = new HashSet<T>();
+			if (left > right) yield break;
 			for (int i = left; i <= right; i++)
 			{
-				foreach (var item in componentMap[keys[i]]) result.Add(item);
+				foreach (var item in componentMap[keys[i]]) yield return item;
 			}
-
-			return result;
 		}
 
 		private static int BinarySearchLeft(IList<T3Time> keys, T3Time target)
@@ -155,6 +151,9 @@ namespace MusicGame.Gameplay.Stage
 		private readonly HashSet<T> activeItems = new();
 		private T3Time lastTime = T3Time.MinValue;
 
+		private readonly HashSet<T> toInstantiateBuffer = new();
+		private readonly HashSet<T> toDestroyBuffer = new();
+
 		public TimeWindowViewGenerator(ITimeCalculator<T> timeCalculator)
 		{
 			instantiateContainer = new TimeContainer<T>(timeCalculator, true);
@@ -186,14 +185,14 @@ namespace MusicGame.Gameplay.Stage
 
 		public void RefreshTime(T3Time time, out IEnumerable<T> toInstantiate, out IEnumerable<T> toDestroy)
 		{
-			var toInstantiateSet = new HashSet<T>();
-			var toDestroySet = new HashSet<T>();
+			toInstantiateBuffer.Clear();
+			toDestroyBuffer.Clear();
 
 			foreach (var item in pendingRemove)
 			{
 				if (activeItems.Contains(item))
 				{
-					toDestroySet.Add(item);
+					toDestroyBuffer.Add(item);
 					activeItems.Remove(item);
 				}
 			}
@@ -210,13 +209,13 @@ namespace MusicGame.Gameplay.Stage
 				{
 					if (!shouldInstantiate || shouldDestroy)
 					{
-						toDestroySet.Add(item);
+						toDestroyBuffer.Add(item);
 						activeItems.Remove(item);
 					}
 				}
 				else if (shouldInstantiate && !shouldDestroy)
 				{
-					toInstantiateSet.Add(item);
+					toInstantiateBuffer.Add(item);
 					activeItems.Add(item);
 				}
 			}
@@ -233,14 +232,14 @@ namespace MusicGame.Gameplay.Stage
 				{
 					foreach (var item in instantiateItems)
 					{
-						if (!activeItems.Contains(item)) toInstantiateSet.Add(item);
+						if (!activeItems.Contains(item)) toInstantiateBuffer.Add(item);
 						activeItems.Add(item);
 					}
 
 					foreach (var item in destroyItems)
 					{
-						if (toInstantiateSet.Contains(item)) toInstantiateSet.Remove(item);
-						else if (activeItems.Contains(item)) toDestroySet.Add(item);
+						if (toInstantiateBuffer.Contains(item)) toInstantiateBuffer.Remove(item);
+						else if (activeItems.Contains(item)) toDestroyBuffer.Add(item);
 						activeItems.Remove(item);
 					}
 				}
@@ -248,22 +247,22 @@ namespace MusicGame.Gameplay.Stage
 				{
 					foreach (var item in destroyItems)
 					{
-						if (!activeItems.Contains(item)) toInstantiateSet.Add(item);
+						if (!activeItems.Contains(item)) toInstantiateBuffer.Add(item);
 						activeItems.Add(item);
 					}
 
 					foreach (var item in instantiateItems)
 					{
-						if (toInstantiateSet.Contains(item)) toInstantiateSet.Remove(item);
-						else if (activeItems.Contains(item)) toDestroySet.Add(item);
+						if (toInstantiateBuffer.Contains(item)) toInstantiateBuffer.Remove(item);
+						else if (activeItems.Contains(item)) toDestroyBuffer.Add(item);
 						activeItems.Remove(item);
 					}
 				}
 			}
 
 			lastTime = time;
-			toInstantiate = toInstantiateSet;
-			toDestroy = toDestroySet;
+			toInstantiate = toInstantiateBuffer;
+			toDestroy = toDestroyBuffer;
 		}
 
 		public void Clear()
