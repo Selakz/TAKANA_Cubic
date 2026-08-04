@@ -13,8 +13,8 @@ namespace MusicGame.ChartEditor.Level
 	public class EditorSetting : ISingletonSetting<EditorSetting>
 	{
 		[Description("ScrollSensitivity")]
-		[MinValue(10)]
-		[MaxValue(-10)]
+		[MinValue(-10)]
+		[MaxValue(10)]
 		public NotifiableProperty<int> ScrollSensitivity { get; set; } = new(1);
 
 		[Description("ShouldForcePause")]
