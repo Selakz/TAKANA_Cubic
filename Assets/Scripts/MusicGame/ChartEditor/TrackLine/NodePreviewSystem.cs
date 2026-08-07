@@ -20,7 +20,7 @@ using T3Framework.Static.Movement;
 using UnityEngine;
 using VContainer;
 
-namespace MusicGame.ChartEditor.TrackLine.Preview
+namespace MusicGame.ChartEditor.TrackLine
 {
 	// The code is not very clean but this is not a core system so fine.
 	public class NodePreviewSystem : HierarchySystem<NodePreviewSystem>
@@ -112,7 +112,7 @@ namespace MusicGame.ChartEditor.TrackLine.Preview
 		}
 
 		// Defined Functions
-		private static string GetNodeName(NodeRawInfo info) => $"PreviewNode{info.Time.Value}-{info.Type.Value}";
+		private static string GetNodeName(NodeRawInfo info) => $"PreviewNode{info.GetHashCode()}";
 
 		private void AddToMap(NodeRawInfo info)
 		{
