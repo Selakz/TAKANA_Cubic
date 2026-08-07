@@ -37,7 +37,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		private T3Time lastTime = 0;
 
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 
 		public virtual T3Time TimeDragThreshold => ISingleton<InScreenEditSetting>.Instance.TimeDragThreshold.Value;
 

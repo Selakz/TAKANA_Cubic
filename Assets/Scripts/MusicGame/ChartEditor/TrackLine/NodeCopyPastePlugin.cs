@@ -17,6 +17,7 @@ using T3Framework.Runtime.Log;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VContainer;
 using VContainer.Unity;
 
@@ -155,7 +156,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		public bool Paste()
 		{
 			// TODO: ModuleInfo
-			var mousePoint = Input.mousePosition;
+			var mousePoint = Mouse.current.position.ReadValue();
 			if (!levelCamera.ContainsScreenPoint(mousePoint) ||
 			    !levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{
@@ -202,7 +203,7 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		public bool ExactPaste()
 		{
-			var mousePoint = Input.mousePosition;
+			var mousePoint = Mouse.current.position.ReadValue();
 			if (!levelCamera.ContainsScreenPoint(mousePoint) ||
 			    !levelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out var gamePoint))
 			{

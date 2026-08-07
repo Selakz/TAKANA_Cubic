@@ -48,7 +48,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			// Manually judge
 			if (!ISingleton<InputManager>.Instance.GlobalInputEnabled || music.Clip == null) return;
 
-			if (levelCamera.ContainsScreenPoint(Input.mousePosition) &&
+			if (levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue()) &&
 			    timeRetriever.Value is GridTimeRetriever gridTimeRetriever)
 			{
 				var current = music.ChartTime;

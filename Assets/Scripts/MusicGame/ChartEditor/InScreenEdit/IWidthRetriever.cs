@@ -1,6 +1,7 @@
 using T3Framework.Runtime.Extensions;
 using T3Framework.Static.Event;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VContainer;
 
 namespace MusicGame.ChartEditor.InScreenEdit
@@ -32,7 +33,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 
 		public bool GetMouseGamePoint(out Vector3 gamePoint)
 		{
-			var mousePoint = Input.mousePosition;
+			var mousePoint = Mouse.current.position.ReadValue();
 			if (!LevelCamera.ContainsScreenPoint(mousePoint) ||
 			    !LevelCamera.ScreenToWorldPoint(gamePlane, mousePoint, out gamePoint))
 			{

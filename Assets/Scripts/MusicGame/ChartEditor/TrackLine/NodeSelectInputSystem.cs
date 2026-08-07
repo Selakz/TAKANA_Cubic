@@ -10,6 +10,7 @@ using T3Framework.Runtime.Input;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VContainer;
 using VContainer.Unity;
 
@@ -29,7 +30,7 @@ namespace MusicGame.ChartEditor.TrackLine
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", raycastPriority.Value,
 				() =>
 				{
-					if (!levelCamera.ContainsScreenPoint(Input.mousePosition)) return true;
+					if (!levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
 					var edgeSpan = EdgeSystem.DoRaycast(edgeRaycastMode.Value);
 					var directSpan = DirectSystem.DoRaycast(directRaycastMode.Value);
 					return edgeSpan.Length == 0 && directSpan.Length == 0;

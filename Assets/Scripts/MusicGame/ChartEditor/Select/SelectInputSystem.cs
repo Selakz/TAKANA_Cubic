@@ -14,6 +14,7 @@ using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VContainer;
 
 namespace MusicGame.ChartEditor.Select
@@ -78,7 +79,7 @@ namespace MusicGame.ChartEditor.Select
 				yield return new InputRegistrar("InScreenEdit", "Raycast", "raycast", pair.Value.InputPriority.Value,
 					() =>
 					{
-						if (!mainCamera.ContainsScreenPoint(Input.mousePosition)) return true;
+						if (!mainCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
 						var span = raycastSystems[pair.Key].DoRaycast(raycastMode.Value);
 						return span.Length == 0;
 					});

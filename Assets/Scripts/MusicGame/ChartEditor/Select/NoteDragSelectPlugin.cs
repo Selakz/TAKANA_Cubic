@@ -22,7 +22,7 @@ namespace MusicGame.ChartEditor.Select
 	{
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
 
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 
 		public NoteSelectionBoxHelper(Camera camera, BoxCollider boxCollider, Plane plane)
 			: base(camera, boxCollider, plane)
@@ -88,7 +88,7 @@ namespace MusicGame.ChartEditor.Select
 		private bool OnBeginDragInput()
 		{
 			if (dragHelper.IsDragging.Value) return true;
-			if (!levelCamera.ContainsScreenPoint(Input.mousePosition)) return true;
+			if (!levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
 			if (!inputSystem.RaycastSystems.TryGetValue(T3Flag.Note, out _)) return true;
 
 			listener.CollisionEnter += OnCollisionChange;

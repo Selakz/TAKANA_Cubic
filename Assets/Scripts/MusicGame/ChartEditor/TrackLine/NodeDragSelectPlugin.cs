@@ -22,7 +22,7 @@ namespace MusicGame.ChartEditor.TrackLine
 	{
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
 
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 
 		public NodeSelectionBoxHelper(Camera camera, BoxCollider boxCollider, Plane plane)
 			: base(camera, boxCollider, plane)
@@ -94,7 +94,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		{
 			if (moduleInfo.CurrentModule != nodePreviewModuleId) return true;
 			if (dragHelper.IsDragging.Value) return true;
-			if (!levelCamera.ContainsScreenPoint(Input.mousePosition)) return true;
+			if (!levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
 
 			listener.CollisionEnter += OnCollisionChange;
 			listener.CollisionExit += OnCollisionChange;

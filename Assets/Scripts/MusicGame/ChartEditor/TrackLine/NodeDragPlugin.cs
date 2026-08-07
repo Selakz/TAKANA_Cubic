@@ -34,7 +34,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		private readonly List<EdgeNodeComponent> draggingNodes = new();
 
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 		public T3Time BeginTime { get; private set; }
 		public float BeginPos { get; private set; }
 		public bool IsBeginLeft { get; private set; }
@@ -122,7 +122,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		private readonly List<DirectNodeComponent> draggingNodes = new();
 
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 		public T3Time BeginTime { get; private set; }
 		public float BeginPos { get; private set; }
 		public DragType DraggingType { get; private set; }

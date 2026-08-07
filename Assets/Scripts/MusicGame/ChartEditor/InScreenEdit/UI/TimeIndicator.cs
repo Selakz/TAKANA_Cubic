@@ -13,6 +13,7 @@ using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VContainer;
 using VContainer.Unity;
 
@@ -96,7 +97,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.UI
 		{
 			if (!indicator.activeSelf) return;
 
-			var mousePosition = Input.mousePosition;
+			var mousePosition = Mouse.current.position.ReadValue();
 			if (!levelCamera.ContainsScreenPoint(mousePosition))
 			{
 				indicator.transform.localPosition = new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold);

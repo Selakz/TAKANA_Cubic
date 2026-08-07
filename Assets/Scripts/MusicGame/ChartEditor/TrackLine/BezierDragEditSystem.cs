@@ -37,7 +37,7 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		public override int DragThreshold => ISingleton<EditorSetting>.Instance.MouseDragThreshold;
 
-		public override Vector3 CurrentScreenPoint => Input.mousePosition;
+		public override Vector3 CurrentScreenPoint => Mouse.current.position.ReadValue();
 
 		public BezierEditPlugin? Plugin { get; private set; }
 		public int Index { get; private set; }
