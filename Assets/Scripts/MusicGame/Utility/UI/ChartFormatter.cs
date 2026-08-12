@@ -115,7 +115,8 @@ namespace MusicGame.Utility.UI
 
 			foreach (var component in chart)
 			{
-				if (component.Model is not INote note) continue;
+				// Dummy zero width notes are usually intended
+				if (component.Model is not INote note || note.IsDummy()) continue;
 				if (component.Parent?.Model is not ITrack track) continue;
 				if (Mathf.Approximately(track.Movement.GetWidth(note.TimeMin), 0)) toRemove.Add(component);
 			}
