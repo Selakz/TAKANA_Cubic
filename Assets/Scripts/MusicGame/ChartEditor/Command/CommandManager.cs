@@ -46,6 +46,8 @@ namespace MusicGame.ChartEditor.Command
 		// Private
 		private readonly LinkedList<ICommand> undoList = new();
 		private readonly LinkedList<ICommand> redoList = new();
+		private readonly Queue<Action> pendingOperations = new();
+		private bool isExecuting;
 		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 
 		// Defined Functions
@@ -54,53 +56,11 @@ namespace MusicGame.ChartEditor.Command
 
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
-		public void Add(ICommand command)
-		{
-			if (command.IsSkippable)
-			{
-				command.Do();
-				OnAdd?.Invoke(command);
-				OnRedo?.Invoke(command);
-				return;
-			}
+		public void Add(ICommand command) => Dispatch(() => ExecuteAdd(command));
 
-			Debug.Log($"Do Command: {command.Name}");
-			command.Do();
-			undoList.AddLast(command);
-			if (undoList.Count > bufferSize)
-			{
-				undoList.RemoveFirst();
-			}
+		public void Undo() => Dispatch(ExecuteUndo);
 
-			redoList.Clear();
-			OnAdd?.Invoke(command);
-			OnRedo?.Invoke(command);
-			UpdateState();
-		}
-
-		public void Undo()
-		{
-			if (undoList.Count == 0) return;
-			ICommand cmd = undoList.Last.Value;
-			undoList.RemoveLast();
-			Debug.Log($"Undo Command: {cmd.Name}");
-			cmd.Undo();
-			redoList.AddLast(cmd);
-			OnUndo?.Invoke(cmd);
-			UpdateState();
-		}
-
-		public void Redo()
-		{
-			if (redoList.Count == 0) return;
-			ICommand cmd = redoList.Last.Value;
-			redoList.RemoveLast();
-			Debug.Log($"Redo Command: {cmd.Name}");
-			cmd.Do();
-			undoList.AddLast(cmd);
-			OnRedo?.Invoke(cmd);
-			UpdateState();
-		}
+		public void Redo() => Dispatch(ExecuteRedo);
 
 		public void Clear()
 		{
@@ -124,6 +84,77 @@ namespace MusicGame.ChartEditor.Command
 				}
 			}
 
+			UpdateState();
+		}
+
+		private void Dispatch(Action operation)
+		{
+			if (isExecuting)
+			{
+				pendingOperations.Enqueue(operation);
+				return;
+			}
+
+			isExecuting = true;
+			try
+			{
+				operation.Invoke();
+				while (pendingOperations.Count > 0)
+				{
+					pendingOperations.Dequeue().Invoke();
+				}
+			}
+			finally
+			{
+				isExecuting = false;
+			}
+		}
+
+		private void ExecuteAdd(ICommand command)
+		{
+			if (command.IsSkippable)
+			{
+				command.Do();
+				OnAdd?.Invoke(command);
+				OnRedo?.Invoke(command);
+				return;
+			}
+
+			Debug.Log($"Do Command: {command.Name}");
+			command.Do();
+			undoList.AddLast(command);
+			if (undoList.Count > bufferSize)
+			{
+				undoList.RemoveFirst();
+			}
+
+			redoList.Clear();
+			OnAdd?.Invoke(command);
+			OnRedo?.Invoke(command);
+			UpdateState();
+		}
+
+		private void ExecuteUndo()
+		{
+			if (undoList.Count == 0) return;
+			ICommand cmd = undoList.Last.Value;
+			undoList.RemoveLast();
+			Debug.Log($"Undo Command: {cmd.Name}");
+			cmd.Undo();
+			redoList.AddLast(cmd);
+			OnUndo?.Invoke(cmd);
+			UpdateState();
+		}
+
+		private void ExecuteRedo()
+		{
+			if (redoList.Count == 0) return;
+			ICommand cmd = redoList.Last.Value;
+			redoList.RemoveLast();
+			Debug.Log($"Redo Command: {cmd.Name}");
+			cmd.Do();
+			undoList.AddLast(cmd);
+			OnRedo?.Invoke(cmd);
 			UpdateState();
 		}
 
