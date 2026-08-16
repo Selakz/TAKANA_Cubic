@@ -118,7 +118,7 @@ namespace MusicGame.ChartEditor.TrackLayer
 						float alphaRate = layerInfo.Color.a * LayerAlphaRate();
 						return new Color(layerInfo.Color.r, layerInfo.Color.g, layerInfo.Color.b, color.a * alphaRate);
 					},
-					layerColorPriority, true);
+					layerColorPriority);
 			// TODO: Rearrange it and select sorting order after fix IT3ModelViewPresenter
 			presenter.Textures["main"].SortingOrderModifier.Register(value =>
 			{
