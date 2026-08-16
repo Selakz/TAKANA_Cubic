@@ -120,16 +120,11 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			}
 
 			var distance = timeStart - baseInfo!.Track.Model.TimeMin;
+			var offset = leftAnchor - GetLeftPos(baseInfo);
 			foreach (var info in dataset)
 			{
 				info.Track.Nudge(distance);
-				var offset = 0f;
-				if (pasteMode.Value is PasteMode.NormalPaste)
-				{
-					offset = leftAnchor - GetLeftPos(baseInfo);
-					(info.Track.Model as ITrack)?.Shift(offset);
-				}
-
+				if (pasteMode.Value is PasteMode.NormalPaste) (info.Track.Model as ITrack)?.Shift(offset);
 				if (distance != 0 || offset is not 0) info.UpdateNotify();
 			}
 		}

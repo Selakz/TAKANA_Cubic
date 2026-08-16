@@ -21,7 +21,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 				() =>
 				{
 					commandManager.Add(new BatchCommand(rawDataset.Select(
-							info => new CloneComponentCommand(info.Track, info.Parent.Value!.BelongingChart,
+							info => new CloneComponentCommand(info.Track, info.Parent.Value?.BelongingChart,
 								track => track.Parent = info.Parent)),
 						"CreateTrack"));
 				}),
