@@ -2,6 +2,7 @@
 
 using System.Linq;
 using MusicGame.ChartEditor.InScreenEdit;
+using MusicGame.ChartEditor.InScreenEdit.Grid;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
@@ -46,7 +47,10 @@ namespace MusicGame.ChartEditor.Draft
 			new InputRegistrar("InScreenEdit", "ToLeft", Narrow),
 			new InputRegistrar("InScreenEdit", "ToRight", Widen),
 			new InputRegistrar("InScreenEdit", "ToLeftGrid", NarrowToGrid),
-			new InputRegistrar("InScreenEdit", "ToRightGrid", WidenToGrid)
+			new InputRegistrar("InScreenEdit", "ToRightGrid", WidenToGrid),
+
+			new PropertyRegistrar<IWidthRetriever>(widthRetriever, ResetWidth),
+			new PropertyRegistrar<float>(gridWidthRetriever.GridInterval, ResetWidth)
 		};
 
 		// Private
@@ -59,37 +63,63 @@ namespace MusicGame.ChartEditor.Draft
 		[Inject] private StageMouseTimeRetriever timeRetriever = default!;
 		[Inject] private IDraftNoteService draftNoteService = default!;
 
+		[Inject] private NotifiableProperty<IWidthRetriever> widthRetriever = default!;
+		[Inject] private GridWidthRetriever gridWidthRetriever = default!;
+
+		private float? draftWidth = null;
+
 		// Event Handlers
 		private void Widen()
 		{
-			if (selectDataset.Count > 0) return;
+			if (selectDataset.Count > 0 || dataset.Count == 0) return;
 			var note = dataset.First();
 			if (note is DraftNoteRawInfo draft)
+			{
 				draft.Width.Value += ISingleton<DraftSetting>.Instance.DraftNoteWidthIncrement;
+				draftWidth = draft.Width;
+			}
 		}
 
 		private void WidenToGrid()
 		{
-			if (selectDataset.Count > 0) return;
+			if (selectDataset.Count > 0 || dataset.Count == 0) return;
 			var note = dataset.First();
 			if (note is DraftNoteRawInfo draft)
+			{
 				draft.Width.Value = draftNoteService.GetWidenedGridWidth(draft.Position.Value, draft.Width.Value);
+				draftWidth = draft.Width;
+			}
 		}
 
 		private void Narrow()
 		{
-			if (selectDataset.Count > 0) return;
+			if (selectDataset.Count > 0 || dataset.Count == 0) return;
 			var note = dataset.First();
 			if (note is DraftNoteRawInfo draft)
+			{
 				draft.Width.Value -= ISingleton<DraftSetting>.Instance.DraftNoteWidthIncrement;
+				draftWidth = draft.Width;
+			}
 		}
 
 		private void NarrowToGrid()
 		{
-			if (selectDataset.Count > 0) return;
+			if (selectDataset.Count > 0 || dataset.Count == 0) return;
 			var note = dataset.First();
 			if (note is DraftNoteRawInfo draft)
+			{
 				draft.Width.Value = draftNoteService.GetNarrowedGridWidth(draft.Position.Value, draft.Width.Value);
+				draftWidth = draft.Width;
+			}
+		}
+
+		private void ResetWidth()
+		{
+			float pos = draftNoteService.GetMouseAttachedPosition();
+			draftWidth = draftNoteService.GetRightAttachedPosition(pos) - draftNoteService.GetLeftAttachedPosition(pos);
+			draftWidth = Mathf.Approximately(draftWidth.Value, 0)
+				? ISingleton<DraftSetting>.Instance.DefaultDraftNoteWidth
+				: draftWidth;
 		}
 
 		// System Functions
@@ -103,6 +133,7 @@ namespace MusicGame.ChartEditor.Draft
 		{
 			base.OnDisable();
 			dataset.Clear();
+			draftWidth = null;
 		}
 
 		void Update()
@@ -114,11 +145,9 @@ namespace MusicGame.ChartEditor.Draft
 
 			if (dataset.Count == 0)
 			{
-				var width =
-					draftNoteService.GetRightAttachedPosition(pos) - draftNoteService.GetLeftAttachedPosition(pos);
-				width = Mathf.Approximately(width, 0) ? ISingleton<DraftSetting>.Instance.DefaultDraftNoteWidth : width;
+				if (draftWidth is null) ResetWidth();
 				dataset.Add(new DraftNoteRawInfo(timeJudge, timeEnd, noteType.Value,
-					levelInfo.Value?.Chart.DefaultJudgeLine(), pos, width));
+					levelInfo.Value?.Chart.DefaultJudgeLine(), pos, draftWidth!.Value));
 			}
 
 			var info = dataset.First();
