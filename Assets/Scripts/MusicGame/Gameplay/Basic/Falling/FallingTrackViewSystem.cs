@@ -207,12 +207,15 @@ namespace MusicGame.Gameplay.Basic.Falling
 				var time = timeStart + step * i;
 				float t = (time - timeStart).Second / (timeEnd - timeStart).Second;
 
-				float lPos = Mathf.Approximately(leftEnd, leftStart)
-					? 0
-					: (track.Movement.GetLeftPos(time) - leftStart) / (leftEnd - leftStart);
-				float rPos = Mathf.Approximately(rightEnd, rightStart)
-					? 0
-					: (track.Movement.GetRightPos(time) - rightStart) / (rightEnd - rightStart);
+				// float lPos = Mathf.Approximately(leftEnd, leftStart)
+				// 	? 0
+				// 	: (track.Movement.GetLeftPos(time) - leftStart) / (leftEnd - leftStart);
+				// float rPos = Mathf.Approximately(rightEnd, rightStart)
+				// 	? 0
+				// 	: (track.Movement.GetRightPos(time) - rightStart) / (rightEnd - rightStart);
+
+				float lPos = track.Movement.GetLeftPos(time) - leftStart;
+				float rPos = track.Movement.GetRightPos(time) - rightStart;
 
 				leftSegments[i] = new Vector2(t, lPos);
 				rightSegments[i] = new Vector2(t, rPos);
@@ -234,12 +237,12 @@ namespace MusicGame.Gameplay.Basic.Falling
 			float y = (timeEnd - timeStart).Second * speedRate;
 
 			chunk.LeftLine.Init(data.LeftSegments.AsVector4Array(),
-				new(leftStart, 0), new(leftEnd, y));
+				new(leftStart, 0), new(leftEnd, y), 1);
 			chunk.RightLine.Init(data.RightSegments.AsVector4Array(),
-				new(rightStart, 0), new(rightEnd, y));
+				new(rightStart, 0), new(rightEnd, y), 1);
 			chunk.Plane.Init(data.LeftSegments.AsVector4Array(), data.RightSegments.AsVector4Array(),
-				y, leftEnd - leftStart, leftStart,
-				y, rightEnd - rightStart, rightStart);
+				y, 1, leftStart,
+				y, 1, rightStart);
 			chunk.transform.localPosition = new Vector3(0, indexHeight * data.Index, 0);
 		}
 

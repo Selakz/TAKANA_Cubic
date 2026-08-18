@@ -116,7 +116,6 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 				}
 
 				xB = Mathf.Max(xB, xA + 0.05f);
-				print($"{xA}, {yA}, {xB}, {yB}");
 
 				vertices[i * 2] = new Vector3(xA, yA, 0);
 				vertices[i * 2 + 1] = new Vector3(xB, yB, 0);

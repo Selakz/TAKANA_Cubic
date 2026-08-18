@@ -21,13 +21,13 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 		private Mesh? logicMesh;
 
 		// Static
-		private static readonly int samplePointArray = Shader.PropertyToID("_SamplePointArray");
-		private static readonly int samplePointCount = Shader.PropertyToID("_SamplePointCount");
-		private static readonly int amplitude = Shader.PropertyToID("_Amplitude");
-		private static readonly int period = Shader.PropertyToID("_Period");
+		private static readonly int samplePointArrayId = Shader.PropertyToID("_SamplePointArray");
+		private static readonly int samplePointCountId = Shader.PropertyToID("_SamplePointCount");
+		private static readonly int amplitudeId = Shader.PropertyToID("_Amplitude");
+		private static readonly int periodId = Shader.PropertyToID("_Period");
 
 		// Defined Functions
-		public void Init(Vector4[] samplePoints, Vector2 current, Vector2 next)
+		public void Init(Vector4[] samplePoints, Vector2 current, Vector2 next, float? period = null)
 		{
 			if (LineRenderer.material.shader != AnyMaterial.shader)
 			{
@@ -37,8 +37,10 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 			}
 
 			transform.localPosition = new(current.x, current.y, -0.01f);
-			if (next.x < current.x)
+			period ??= next.x - current.x;
+			if (period < 0)
 			{
+				period = -period;
 				next.x = 2 * current.x - next.x;
 				var scale = LineRenderer.transform.localScale;
 				LineRenderer.transform.localScale = scale with { x = -Mathf.Abs(scale.x) };
@@ -49,20 +51,21 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 				LineRenderer.transform.localScale = scale with { x = Mathf.Abs(scale.x) };
 			}
 
-			DrawViewMesh(samplePoints, current, next);
-			DrawLogicMesh(samplePoints, current, next);
+			DrawViewMesh(samplePoints, current, next, period);
+			DrawLogicMesh(samplePoints, current, next, period);
 		}
 
-		private void DrawViewMesh(Vector4[] samplePoints, Vector2 current, Vector2 next)
+		private void DrawViewMesh(Vector4[] samplePoints, Vector2 current, Vector2 next, float? period = null)
 		{
-			LineRenderer.material.SetInteger(samplePointCount, samplePoints.Length * 2);
-			LineRenderer.material.SetVectorArray(samplePointArray, samplePoints);
-			LineRenderer.material.SetFloat(amplitude, next.y - current.y);
-			LineRenderer.material.SetFloat(period, next.x - current.x);
+			period ??= next.x - current.x;
+			LineRenderer.material.SetInteger(samplePointCountId, samplePoints.Length * 2);
+			LineRenderer.material.SetVectorArray(samplePointArrayId, samplePoints);
+			LineRenderer.material.SetFloat(amplitudeId, next.y - current.y);
+			LineRenderer.material.SetFloat(periodId, period.Value);
 			LineRenderer.localBounds = new Bounds((next - current) / 2, next - current);
 		}
 
-		private void DrawLogicMesh(Vector4[] samplePoints, Vector2 current, Vector2 next)
+		private void DrawLogicMesh(Vector4[] samplePoints, Vector2 current, Vector2 next, float? period = null)
 		{
 			if (LineCollider == null) return;
 			if (current == next)
@@ -71,6 +74,7 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 				return;
 			}
 
+			period ??= next.x - current.x;
 			LineCollider.enabled = true;
 			logicMesh ??= new();
 			var setting = ISingletonSetting<TrackLineSetting>.Instance;
@@ -80,9 +84,9 @@ namespace MusicGame.ChartEditor.TrackLine.Render
 			var converter = new VectorArrayConverter(samplePoints);
 			LineDrawer.DrawMesh(
 				logicMesh,
-				y => converter.Interpolate(y / (next.y - current.y)) * (next.x - current.x),
+				y => converter.Interpolate(y / (next.y - current.y)) * period.Value,
 				logicLineWidth,
-				next.x - current.x, next.y - current.y,
+				period.Value, next.y - current.y,
 				logicLinePrecision, maxSegment);
 			LineCollider.sharedMesh = logicMesh;
 		}
