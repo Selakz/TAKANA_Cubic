@@ -5,141 +5,74 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime;
-using T3Framework.Static.Movement;
+using UnityEngine;
 
 namespace MusicGame.ChartEditor.EditPanel.Commands
 {
-	public class UpdateTrackTimeStartCommand : ISetInitCommand
+	public class UpdateTrackTimeCommand : ICommand
 	{
-		public string Name => $"Update Track {track.Id}'s Time Start";
+		public string Name => $"Update Track {track.Id}'s Time {(isStart ? "Start" : "End")}";
 
 		private readonly ChartComponent track;
-		private ITrack? model;
-		private T3Time oldTimeStart;
-		private readonly T3Time newTimeStart;
+		private readonly bool isStart;
+		private readonly T3Time newTime;
+		private T3Time oldTime;
+		private bool hasDone;
 
-		public UpdateTrackTimeStartCommand(ChartComponent track, T3Time newTimeStart)
+		public UpdateTrackTimeCommand(ChartComponent track, bool isStart, T3Time newTime)
 		{
 			this.track = track;
-			this.newTimeStart = newTimeStart;
-		}
-
-		public bool SetInit()
-		{
-			if (track.Model is not ITrack trackModel) return false;
-			if (!track.IsNewTimeMinValid(newTimeStart)) return false;
-			model = trackModel;
-			oldTimeStart = model.TimeStart;
-			return true;
+			this.isStart = isStart;
+			this.newTime = newTime;
 		}
 
 		public void Do()
 		{
-			track.UpdateModel(_ =>
+			var model = (ITrack)track.Model;
+			oldTime = isStart ? model.TimeStart : model.TimeEnd;
+			track.UpdateModel(m =>
 			{
-				model!.TimeStart = newTimeStart;
-				if (model.Movement.Movement1 is ChartPosMoveList leftMoveList &&
-				    leftMoveList.TryGet(oldTimeStart, out var leftItem))
-				{
-					leftMoveList.Remove(oldTimeStart);
-					leftMoveList.Insert(newTimeStart, leftItem);
-				}
-
-				if (model.Movement.Movement2 is ChartPosMoveList rightMoveList &&
-				    rightMoveList.TryGet(oldTimeStart, out var rightItem))
-				{
-					rightMoveList.Remove(oldTimeStart);
-					rightMoveList.Insert(newTimeStart, rightItem);
-				}
+				var trackModel = (ITrack)m;
+				if (isStart) trackModel.TimeStart = newTime;
+				else trackModel.TimeEnd = newTime;
+				MoveItem(trackModel, oldTime, newTime);
 			});
+			hasDone = true;
 		}
 
 		public void Undo()
 		{
-			track.UpdateModel(_ =>
+			if (!hasDone)
 			{
-				model!.TimeStart = oldTimeStart;
-				if (model.Movement.Movement1 is ChartPosMoveList leftMoveList &&
-				    leftMoveList.TryGet(newTimeStart, out var leftItem))
-				{
-					leftMoveList.Remove(newTimeStart);
-					leftMoveList.Insert(oldTimeStart, leftItem);
-				}
+				Debug.LogError("UpdateTrackTimeCommand.Undo: command has not been done yet.");
+				return;
+			}
 
-				if (model.Movement.Movement2 is ChartPosMoveList rightMoveList &&
-				    rightMoveList.TryGet(newTimeStart, out var rightItem))
-				{
-					rightMoveList.Remove(newTimeStart);
-					rightMoveList.Insert(oldTimeStart, rightItem);
-				}
-			});
-		}
-	}
-
-	public class UpdateTrackTimeEndCommand : ISetInitCommand
-	{
-		public string Name => $"Update Track {track.Id}'s Time End";
-
-		private readonly ChartComponent track;
-		private ITrack? model;
-		private T3Time oldTimeEnd;
-		private readonly T3Time newTimeEnd;
-
-		public UpdateTrackTimeEndCommand(ChartComponent track, T3Time newTimeEnd)
-		{
-			this.track = track;
-			this.newTimeEnd = newTimeEnd;
-		}
-
-		public bool SetInit()
-		{
-			if (track.Model is not ITrack trackModel) return false;
-			if (!track.IsNewTimeMaxValid(newTimeEnd)) return false;
-			model = trackModel;
-			oldTimeEnd = model.TimeEnd;
-			return true;
-		}
-
-		public void Do()
-		{
-			track.UpdateModel(_ =>
+			track.UpdateModel(m =>
 			{
-				model!.TimeEnd = newTimeEnd;
-				if (model.Movement.Movement1 is ChartPosMoveList leftMoveList &&
-				    leftMoveList.TryGet(oldTimeEnd, out var leftItem))
-				{
-					leftMoveList.Remove(oldTimeEnd);
-					leftMoveList.Insert(newTimeEnd, leftItem);
-				}
-
-				if (model.Movement.Movement2 is ChartPosMoveList rightMoveList &&
-				    rightMoveList.TryGet(oldTimeEnd, out var rightItem))
-				{
-					rightMoveList.Remove(oldTimeEnd);
-					rightMoveList.Insert(newTimeEnd, rightItem);
-				}
+				var trackModel = (ITrack)m;
+				if (isStart) trackModel.TimeStart = oldTime;
+				else trackModel.TimeEnd = oldTime;
+				MoveItem(trackModel, newTime, oldTime);
 			});
+			hasDone = false;
 		}
 
-		public void Undo()
+		private static void MoveItem(ITrack model, T3Time from, T3Time to)
 		{
-			track.UpdateModel(_ =>
+			if (model.Movement.Movement1 is ChartPosMoveList leftMoveList &&
+			    leftMoveList.TryGet(from, out var leftItem))
 			{
-				model!.TimeEnd = oldTimeEnd;
-				if (model.Movement.Movement1 is ChartPosMoveList leftMoveList &&
-				    leftMoveList.TryGet(newTimeEnd, out var leftItem))
-				{
-					leftMoveList.Remove(newTimeEnd);
-					leftMoveList.Insert(oldTimeEnd, leftItem);
-				}
+				leftMoveList.Remove(from);
+				leftMoveList.Insert(to, leftItem);
+			}
 
-				if (model.Movement.Movement2 is ChartPosMoveList rightMoveList &&
-				    rightMoveList.TryGet(newTimeEnd, out var rightItem))
-				{
-					rightMoveList.Remove(newTimeEnd);
-					rightMoveList.Insert(oldTimeEnd, rightItem);
-				}
-			});
+			if (model.Movement.Movement2 is ChartPosMoveList rightMoveList &&
+			    rightMoveList.TryGet(from, out var rightItem))
+			{
+				rightMoveList.Remove(from);
+				rightMoveList.Insert(to, rightItem);
+			}
 		}
 	}
 }

@@ -110,8 +110,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 						if (int.TryParse(content, out int newStart) && component.IsNewTimeMinValid(newStart))
 						{
 							if (newStart == track.TimeStart) return;
-							var command = new UpdateTrackTimeStartCommand(component, newStart);
-							if (!command.SetInit()) return;
+							var command = new UpdateTrackTimeCommand(component, true, newStart);
 							CommandManager.Instance.Add(command);
 						}
 						else
@@ -128,8 +127,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 						if (int.TryParse(content, out int newEnd) && component.IsNewTimeMaxValid(newEnd))
 						{
 							if (newEnd == track.TimeEnd) return;
-							var command = new UpdateTrackTimeEndCommand(component, newEnd);
-							if (!command.SetInit()) return;
+							var command = new UpdateTrackTimeCommand(component, false, newEnd);
 							CommandManager.Instance.Add(command);
 						}
 						else
