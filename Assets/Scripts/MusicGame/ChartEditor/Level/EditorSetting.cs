@@ -2,10 +2,12 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
 using T3Framework.Static.Setting;
+using UnityEngine;
 
 namespace MusicGame.ChartEditor.Level
 {
@@ -23,6 +25,10 @@ namespace MusicGame.ChartEditor.Level
 		[Description("AutoSaveInterval")]
 		[MinValue(30000)]
 		public NotifiableProperty<T3Time> AutoSaveInterval { get; set; } = new(180000);
+
+		[Description("PluginPath")]
+		public NotifiableProperty<string> PluginPath { get; set; } =
+			new(Path.Combine(Application.persistentDataPath, "Plugins"));
 
 		[Description("SaveIndented")]
 		public NotifiableProperty<bool> SaveIndented { get; set; } = new(true);
