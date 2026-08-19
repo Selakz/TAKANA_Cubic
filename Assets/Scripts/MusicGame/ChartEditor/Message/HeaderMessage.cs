@@ -35,6 +35,14 @@ namespace MusicGame.ChartEditor.Message
 			Debug.Log($"HeaderMessage Show: {Instance.messageText.Text.text}");
 		}
 
+		public static void ShowRaw(MessageType type, string text)
+		{
+			Instance.panelImage.color = type.GetColor();
+			Instance.messageText.Text.text = text;
+			Instance.animator.Play(0);
+			Debug.Log($"HeaderMessage ShowRaw: {text}");
+		}
+
 		// Event Handlers
 		private void ShowException(string condition, string stackTrace, LogType logType)
 		{
@@ -49,6 +57,12 @@ namespace MusicGame.ChartEditor.Message
 			Show(msgType, split[0], split[1..]);
 		}
 
+		private static void OnLogNoticeRaw(string message, Enum type)
+		{
+			MessageType msgType = type is T3LogType t ? t.ToType() : MessageType.Info;
+			ShowRaw(msgType, message);
+		}
+
 		// System Functions
 		void Start()
 		{
@@ -60,12 +74,14 @@ namespace MusicGame.ChartEditor.Message
 			Instance = this;
 			Application.logMessageReceived += ShowException;
 			T3Logger.AddListener("Notice", OnLogNotice);
+			T3Logger.AddListener("NoticeRaw", OnLogNoticeRaw);
 		}
 
 		void OnDisable()
 		{
 			Application.logMessageReceived -= ShowException;
 			T3Logger.RemoveListener("Notice", OnLogNotice);
+			T3Logger.RemoveListener("NoticeRaw", OnLogNoticeRaw);
 		}
 	}
 

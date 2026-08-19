@@ -35,9 +35,9 @@ namespace T3Framework.Static.Movement
 		public T3Time? this[IPositionMoveItem<TPosition> item]
 			=> list.Keys.FirstOrDefault(time => Equals(list[time], item));
 
-		public PositionMoveList() => list = new();
+		protected PositionMoveList() => list = new();
 
-		public PositionMoveList(IDictionary<T3Time, IPositionMoveItem<TPosition>> items)
+		protected PositionMoveList(IDictionary<T3Time, IPositionMoveItem<TPosition>> items)
 		{
 			list = new();
 			foreach (var pair in items) Insert(pair.Key, pair.Value);

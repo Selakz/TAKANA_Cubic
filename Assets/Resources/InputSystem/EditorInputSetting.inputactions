@@ -3775,6 +3775,654 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "EditorPlugin",
+            "id": "7cdd270e-8601-4450-b920-e098cdbd4d2a",
+            "actions": [
+                {
+                    "name": "HotKey1",
+                    "type": "Value",
+                    "id": "a493ac10-b747-41a6-9691-b52242ef1bff",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey2",
+                    "type": "Value",
+                    "id": "edc2c431-b2d0-4de6-972d-5a14861d48e7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey3",
+                    "type": "Value",
+                    "id": "5fd5ec78-0b4b-46e4-a04d-7f19b391d116",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey4",
+                    "type": "Value",
+                    "id": "40fbde28-a2cd-45e5-8ab9-22010fe2a4a0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey5",
+                    "type": "Value",
+                    "id": "bf3f8660-6a34-466c-b9e2-6c0f331aa2e6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey6",
+                    "type": "Value",
+                    "id": "0e233a98-579c-48f7-a010-a1c4fb0f3716",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey7",
+                    "type": "Value",
+                    "id": "69fc29de-f7b3-475e-be9b-0bbb792bd520",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey8",
+                    "type": "Value",
+                    "id": "8292c301-a36e-4688-89e2-e24164549cf3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey9",
+                    "type": "Value",
+                    "id": "9337e1dd-79bd-44cb-82c5-c3d8243fed5b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "HotKey10",
+                    "type": "Value",
+                    "id": "5a55a284-831f-49df-a3b7-3464a7f7d5d0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "Key With Modifiers",
+                    "id": "623ca1ff-a478-417c-84df-257c1149bcbc",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "b5ffaac8-270d-45ba-87f4-dff3ccdc4b60",
+                    "path": "<Keyboard>/numpad1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "48507fea-f3ec-492a-bd99-2e7b07bc4462",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "112fb66c-44d1-4fc6-9cc3-c5fd35a69704",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "d42262e0-9469-468e-8010-74196703ce05",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey1",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "e31faa39-c878-4e7f-8746-53540efbbf55",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "d4785a6f-ede6-4e60-b52c-0f7831adadad",
+                    "path": "<Keyboard>/numpad2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "9ea29269-efe1-44ed-9405-323ccea02005",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "4b0835f1-94f6-4bb3-9620-dd192c399b01",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "9a7d78c3-a67b-4cd1-ac85-58ddbdc30a5b",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey2",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "f7e3bcd1-0aa5-4789-983b-50258bbae33d",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "2d6fcf2d-4700-4961-bd10-40a7aa496ab8",
+                    "path": "<Keyboard>/numpad3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "9ee6f39a-29e9-493c-8e5f-2cd3ee62cb7c",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "4dd4caa9-3881-43b6-9c7a-084188b48043",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "aab865c8-1231-48c2-b809-dbaef4078405",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey3",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "c11ce677-04c6-41de-b03a-30b2d06a3e2e",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "1ee305e7-8f84-41b7-b511-8d598fc00059",
+                    "path": "<Keyboard>/numpad4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "866998e0-2c19-42fa-8795-d49dfd20955e",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "1b0c2b0a-4310-48f5-b833-d56e1f0b80e4",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "e611b4bf-9240-4978-9739-43d69d9c264c",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey4",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "cee4b199-eba9-4955-91d2-a0a4e83bdcd9",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey5",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "e9388dfe-480e-4968-9139-9d435cfa3f0b",
+                    "path": "<Keyboard>/numpad5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey5",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "39c79409-13bc-47d4-8423-79ee7f7aaa2e",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey5",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "09255eb6-da0a-4255-81b8-0c6651faf0c7",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey5",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "d3e58320-1c9e-4188-8f2f-7d0665aa8fbb",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey5",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "3539ea25-abf7-48c7-b81b-a8b1d2db3cf9",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey6",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "8273f2a0-0ef9-465c-b3aa-9c480ec75b2a",
+                    "path": "<Keyboard>/numpad6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey6",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "f0e1d6c0-c02a-4791-90d0-f8edf9325bb6",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey6",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "6d3a48d4-eccd-4a2d-a804-72b5a47e57a2",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey6",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "8f8622e3-6eb2-4acf-bcb6-226b0fa6a983",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey6",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "3b1b3a4b-7b7c-4bb4-8019-8f6f5d31809f",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey7",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "756406ab-b59d-48a7-9859-6b2bfa73bacf",
+                    "path": "<Keyboard>/numpad7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey7",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "8a4d78cd-9f95-4ea0-9a00-30bd069cf391",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey7",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "b34a5d3b-c4a5-4c5e-b863-4f6b76404556",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey7",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "1e6f85da-3888-4ceb-81ed-5fadcfb043e3",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey7",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "988d1894-7eaf-4ce9-b1ac-1894904c70b8",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey8",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "9e84d3ab-e649-452a-a4b4-e69515186cb2",
+                    "path": "<Keyboard>/numpad8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey8",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "49eed234-b7fc-407b-a289-f693200f5437",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey8",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "ed61ca87-98d3-45ea-9895-1825be11c894",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey8",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "1383707d-3bae-4ff3-a5e3-50787f06e02e",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey8",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "a6981c7f-d6db-4e51-a521-cbf718afeda9",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey9",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "9856e4bb-8e94-414a-a542-75c2591ee7ed",
+                    "path": "<Keyboard>/numpad9",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey9",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "eb0602dc-be7c-4cd2-ae15-c9b0245263a0",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey9",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "933615bd-d1ed-4e72-84db-1f44bcd953ef",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey9",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "c5424369-af74-4e90-ae28-8a5b9754efd2",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey9",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Key With Modifiers",
+                    "id": "bca01779-7b84-4ecf-8aa9-bfa070955550",
+                    "path": "KeyWithModifiers",
+                    "interactions": "HotKey",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey10",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "key",
+                    "id": "5effa2ed-bcfa-4264-9290-89efad30e7fe",
+                    "path": "<Keyboard>/numpad0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey10",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier1",
+                    "id": "83c4efce-5849-48cd-9e07-c6e75c5d4cb2",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey10",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "2b8f0f1a-a09a-41e4-b966-eea1c3edc4bd",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey10",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier3",
+                    "id": "e59ef130-23d1-4f12-84a0-f08149faeb7a",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotKey10",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         }
     ],
     "controlSchemes": []

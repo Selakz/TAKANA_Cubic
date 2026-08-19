@@ -55,5 +55,23 @@ namespace MusicGame.Gameplay.Chart
 			if (jObject["version"] is { } token && token.Value<int>() >= 2) return ChartInfo.Deserialize(jObject);
 			else return V1ToV2Converter.DeserializeFromV1(jObject);
 		}
+
+		public static ChartInfo? LoadFromFileSync(string path)
+		{
+			JObject? jObject;
+			try
+			{
+				jObject = JObject.Parse(File.ReadAllText(path));
+			}
+			catch (JsonReaderException)
+			{
+				T3Logger.Log("Notice", "App_InvalidChart", T3LogType.Error);
+				return null;
+			}
+
+			// Temp chart version identifier
+			if (jObject["version"] is { } token && token.Value<int>() >= 2) return ChartInfo.Deserialize(jObject);
+			else return V1ToV2Converter.DeserializeFromV1(jObject);
+		}
 	}
 }
