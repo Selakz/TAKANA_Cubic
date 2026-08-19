@@ -1,0 +1,82 @@
+﻿title: EditorPlugin
+---
+制谱器现在除了内置的功能之外，还能够通过插件来扩展制谱器的功能，实现更加灵活的操作。 #line:plugin-intro
+
+而插件本质上是一段用TypeScript编写、在编辑器内部运行的代码，它可以读取并修改当前正在编辑的谱面。 #line:plugin-what-is
+
+先来看看怎么载入并使用一个现成的插件吧。 #line:plugin-loading-intro
+
+打开编辑器里的[b]插件面板[/b]，在面板中点击[b]导入.zip插件[/b]按钮，选择一个插件压缩包，插件就会被安装并出现在插件列表里。如果列表没有自动刷新，可以点击[b]刷新[/b]按钮。 #line:plugin-load-from-zip
+
+插件面板下的每个插件条目里就是它的编辑界面：在[b]参数[/b]区域填写插件需要的参数，然后点击[b]执行[/b]按钮，插件就会以这些参数运行一次。点击[b]详情[/b]按钮可以查看插件作者留下的说明。 #line:plugin-params-and-execute
+
+插件还支持绑定快捷键，也就是当按下绑定的快捷键时，插件会以指定的参数执行一次，省去鼠标点击的麻烦。 #line:plugin-hotkey-intro
+
+要绑定快捷键，点击[b]创建新快捷键[/b]按钮，会生成一条快捷键预设。在预设里把快捷键编号从“无”改为[b]快捷键1~10[/b]中的任意一个，并填入希望生效的参数。 #line:plugin-hotkey-bind
+
+快捷键的键位默认是NumPad 1~10，但可以在键位设置里修改。 #line:plugin-hotkey-keys
+
+[b]重要提醒[/b]：插件系统目前并没有做任何安全性检查，所以请务必只加载你信任来源的插件，不要随便运行来路不明的插件。 #line:plugin-security-warning
+
+那么怎么样，想不想自己动手写一个插件试试看？现在AI Agent已经很成熟了，门槛其实并不高。 #line:plugin-write-own
+
+-> 想自己写插件 #line:write-own-option-yes
+	<<jump WriteYourOwn>>
+-> 暂时用现成的就够了 #line:write-own-option-no
+	<<jump Ending>>
+===
+
+title: WriteYourOwn
+---
+好的！那么这里主要介绍如何使用AI Agent来制作插件。 #line:agent-start
+
+你有使用AI Agent（比如Claude Code、OpenCode之类的工具）的经验吗？ #line:agent-experience-question
+
+-> 用过 #line:agent-experience-yes
+	<<jump AgentSetup>>
+-> 还没有 #line:agent-experience-no
+	<<jump AgentIntro>>
+===
+
+title: AgentIntro
+---
+AI Agent是一种能够帮你完成编程任务的AI工具，你只要用自然语言描述想要实现的功能，它就能帮你把代码写出来。 #line:agent-what-is
+
+这里以OpenCode为例：前往OpenCode的官网opencode.ai/docs/zh-cn/，用你最方便的方式安装，然后在插件目录里命令行启动，就可以开始对话了。 #line:agent-opencode-install
+
+更详细的教程网上有很多，这里就不赘述了。 #line:agent-opencode-docs
+
+当然，其他类似的Agent工具也都完全可以，选一个顺手的就好。 #line:agent-other-tools
+
+那么，接下来进入正式的插件开发环境搭建环节。 #line:agent-setup-lead-in
+<<jump AgentSetup>>
+===
+
+title: AgentSetup
+---
+第一步，新建一个目录，作为存放插件源代码的地方。 #line:dev-create-directory
+
+第二步，把位于github.com/Selakz/takana-cubic-plugin-skill的Skill安装到这个目录下。这个Skill里包含了编写本编辑器插件所需的环境配置和使用指引，AI读取之后就知道该怎么帮你写插件了。 #line:dev-install-skill
+
+Skill毕竟是自然语言，如果你想要古法写插件的话也可以把这个Skill的上下文注入到自己的大脑里（？ #line:dev-manual-mode
+
+第三步，在这个目录打开Agent，让AI用Skill先创建插件所需的环境。之后你想实现什么功能，直接告诉AI就行，AI会帮你生成插件代码，并可以在编辑器里直接测试运行。 #line:dev-ai-create-env
+
+写好的插件，有三种方式可以载入到编辑器里： #line:dev-load-methods
+
+第一种，把插件文件夹打包成zip压缩包，然后在编辑器的插件面板里点击[b]导入.zip插件[/b]按钮导入。 #line:dev-load-method-zip
+
+第二种，直接把插件文件夹手动移动到编辑器的插件目录里。默认的插件目录是[b]persistentDataPath/Plugins[/b]，可以在编辑器设置里查看具体路径。 #line:dev-load-method-manual
+
+第三种，在编辑器设置里把[b]插件路径[/b]直接修改为刚才新建的目录下的src目录，让编辑器与你的插件源代码共用同一个目录。这样每次改完代码，刷新一下插件列表就能立刻看到效果。 #line:dev-load-method-path
+
+<<jump EditorPluginEnding>>
+===
+
+title: EditorPluginEnding
+---
+插件系统的介绍到这里就结束了。 #line:ending-summary
+
+希望插件能成为你写谱路上的好帮手，也希望能出现一个良好的插件生态~ #line:ending-wishes
+<<complete EditorPlugin>>
+===

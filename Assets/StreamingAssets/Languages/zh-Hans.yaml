@@ -8,8 +8,9 @@ App:
   Create: 创建
   SelectFolder: 选择文件夹
   Back: 返回
+  Execute: 执行
   ChangeLanguage: 切换语言
-  
+
   TapToStart: 点击以开始
   EditorStartup: 点击“选择文件夹”按钮以加载谱面工程
   LoadError: 读取工程时发生错误，请检查路径和工程格式
@@ -21,6 +22,8 @@ App:
   Exception: 出现未处理异常，请将日志汇报给作者
   ChooseProject: 选择工程文件夹
   RecordModeHint: 鼠标滑至下方以呼出全屏模式UI
+
+  MessageBoxTitle: 新消息
 
 EditorEntry:
   Projects: 所有项目
@@ -43,19 +46,20 @@ EditorEntry:
   ToConvertType: "要转换的谱面格式："
   SearchProjects: 搜索项目（并不能搜索）
   Open: 打开
-  
+
   OpenEntryConfirm: 项目已保存，再次点击回到主界面
   TargetDirectory: 项目将在 {0} 中创建
   InvalidProjectName: 项目名称必须不为空
-  InvalidFile: '{0} 不是一个有效的文件'
-  InvalidDirectory: '{0} 不是一个有效的路径'
+  InvalidFile: "{0} 不是一个有效的文件"
+  InvalidDirectory: "{0} 不是一个有效的路径"
   SuggestId: 各Id均建议为大小写字母混合的无空格单词，如“RedRose”
   InvalidCurrentProject: 当前无打开的工程，不可导出
-  TargetT3pkg: '谱面包将导出为 {0}'
-  TargetTakana: 'TAKANA³谱面将导出为 {0}'
+  TargetT3pkg: "谱面包将导出为 {0}"
+  TargetTakana: "TAKANA³谱面将导出为 {0}"
   Intro: Shift + 右键以创建第一个轨道
 
 Editor:
+  TrackLayer: 轨道图层
   BpmList: BPM列表
   HitSound: 音效音量
   Offset: 偏移
@@ -68,7 +72,8 @@ Editor:
   SavePure: 导出纯谱面
   MusicSound: 音乐音量
   RaycastMode: 点选模式
-  
+  Skin: 皮肤
+
   Camera:
     Perspective: 相机视角
     LeftRight: 左右
@@ -105,7 +110,7 @@ Editor:
     TimeGrid: 横向格线
     Deviation: 偏移
     KeyCount: Key
-    KeyPercent: '%'
+    KeyPercent: "%"
   Layer:
     InputLayerName: 请输入图层名称...
     SelectOpacity: 选中不透明度
@@ -116,7 +121,25 @@ Editor:
     CurveInstruction: |-
       数字键切换曲线族，Tab键切换曲线运动方式
       1 Sine | 2 Quad | 3 Cubic | 4 Quart | 5 Quint | 6 Expo | 7 Circ | 8 Back | 9 Elastic | 0 Bounce
+
+EditorPlugin:
+  Title: "{0}个插件已加载；Api {1}"
+  HotKey: "快捷键："
+  CreateNewHotKey: 创建新快捷键
+  CreateNewPlugin: 创建新插件
+  CreateNewPluginPlaceholder: 请输入插件id
+  ImportPlugin: 从磁盘导入.zip插件
   
+  PluginPathNotExist: "插件路径 {0} 不存在"
+  PluginNotCompatible: "插件 {0} api版本 {1} 不兼容"
+  TscNotAvailable: "tsc 不可用，请安装 TypeScript"
+  CompileFailed: "插件 {0} 编译失败"
+  LoadPluginSuccess: "插件 {0} 加载成功！"
+  LoadPluginFailed: "加载插件 {0} 失败"
+  DeletePluginSuccess: "插件 {0} 删除成功！"
+  DeletePluginFailed: "删除插件 {0} 失败"
+  ParamFormatError: "参数格式错误"
+  PluginInternalError: "插件执行过程中发生错误：{0}"
 
 AutoUpdate:
   Newest: 当前版本已为最新！
@@ -130,7 +153,7 @@ AutoUpdate:
     ExecutionError: 更新过程中发生错误
     InvalidVersion: 待安装的版本{0}无效
     InvalidPackage: 待安装的制谱器文件损坏，请重新下载
-    
+
   UI:
     DetectNewVersion: "检测到新版本："
     InstallLater: 稍后安装
@@ -160,7 +183,7 @@ Edit:
   CreateFailForDecoration: 无法在装饰层轨道上放置Note
   ConnectTrackOverlapping: 轨道时间范围重叠，无法连接
   ConnectTrackTypeNotSame: 轨道运动类型不同，无法连接
-  
+
   Format:
     Title: 谱面格式化
     RemoveOutOfRange: 移除所有超出轨道时间范围的Note
@@ -169,7 +192,7 @@ Edit:
     RemoveDraft: 移除所有草稿Note
     FormattingSuccess: 成功删除 {0} 个符合条件的元件
     NoNeedToFormat: 没有符合条件的元件需要删除
-  
+
   CopyPaste:
     CopySuccess: 复制成功！
     PasteSuccess: 粘贴成功！
@@ -181,7 +204,7 @@ Edit:
     TrackClipboard: 已复制{0}个轨道
     Pasting: 正在普通粘贴
     ExactPasting: 正在原位粘贴
-    
+
   Draft:
     EnterDraftMode: 草稿模式
     TrackAnchorInvalid: 选中一个轨道及若干草稿Note以创建结点
@@ -196,7 +219,7 @@ TrackLayer:
     SetTrueSuccess: 设置成功，该图层将无法放置Note
     SetFalseSuccess: 取消装饰，该图层将可以放置Note
     SetDecorationFail: 无法移动至装饰图层，该轨道存在Note
-    
+
 TrackLine:
   MirrorFail: 镜像失败
   NodeDragging: 正在拖拽结点
@@ -207,10 +230,10 @@ TrackLine:
   NodeClipboard: 已复制{0}个结点
   Pasting: 正在普通粘贴结点
   ExactPasting: 正在原位粘贴结点
-  
+
   ChangeEase: 切换至{0}曲线族
   CheckEase: 当前选中曲线族：{0}
-  
+
 LevelSelect:
   Speed: 谱面流速
   Pitch: 音乐流速
@@ -222,25 +245,26 @@ LevelSelect:
   Loading: 加载中
   DetailSetting: 详细设置
   Camera: 相机倾斜度（范围0-4）
-  
+
   Sort:
     ByName: 名称
     ByLevel: 等级
     ByScore: 分数
-  
+
 LevelResult:
   SetDeviation: 立即设置
-  
+
 Tutorial:
   Title: 教程
   Doc: 文档
   Interactive: 交互式教程
-  
+
   AllInOne: 一文集合版使用说明书（跳转外部链接）
   FirstMeet: 初次见面...？
   Draft: 草稿模式
   Postprocess: 工程结构和发布前检查
-  
+  Plugin: 编辑器插件系统
+
 # It's so boring chore. LLM helps me with this.
 Setting:
   SelectSetting:
@@ -312,6 +336,7 @@ Setting:
     ScrollSensitivity: 鼠标滚动灵敏度（即每次滚动移动的格线数量，负数则反向）
     ShouldForcePause: 音乐播放时左键强制暂停
     AutoSaveInterval: 自动保存的时间间隔 | 单位：毫秒
+    PluginPath: 插件目录路径
     SaveIndented: 谱面文件是否缩进，不缩进可减小文件大小
     WindowWidth: 窗口宽度，高度将在保持16：9窗口比例的前提下自动计算
     WindowWidthChoices: 在编辑器界面提供的分辨率调整选项，同样均为窗口宽度
@@ -367,7 +392,7 @@ Setting:
     WidthGridInterval: 纵向位置格线密度 | 范围 [0, ?)
     WidthGridOffset: 纵向位置格线偏移
     BpmList: BPM列表，键为时间，值为BPM值
-  
+
 InputRebinding:
   Title: 键位绑定
   Reset: 重置
@@ -376,7 +401,8 @@ InputRebinding:
   HoldAndTrack: Hold与轨道
   Draft: 草稿
   CurveSwitch: 曲线切换
-  
+  Plugin: 插件热键
+
   Undo: 撤销
   Redo: 重做
   Save: 保存
@@ -405,7 +431,7 @@ InputRebinding:
   CheckClipboard: 检查剪贴板
   ToggleDummy: 切换Note真假
   Link: 将Tap连接为Slide
-  
+
   ChangeNodeState: 切换节点缓动类型
   CheckCurve: 打开曲线族选择面板
   SwitchToSine: 切换至正弦族 (Sine)
@@ -418,13 +444,13 @@ InputRebinding:
   SwitchToCirc: 切换至圆形族 (Circ)
   SwitchToElastic: 切换至弹性族 (Elastic)
   SwitchToBounce: 切换至弹跳族 (Bounce)
-  
+
   HoldEndToNext: 长条结尾时间后移
   HoldEndToNextBeat: 长条结尾时间后移至下一拍线
   HoldEndToPrevious: 长条结尾时间前移
   HoldEndToPreviousBeat: 长条结尾时间前移至上一拍线
   CreateHoldBetween: 使用两个Note创建长条
-  
+
   ConnectTrack: 连接两个同类轨道
   SplitTrack: 分割轨道
   UpSelectTrackLayer: 上移图层选择
@@ -434,3 +460,14 @@ InputRebinding:
   TrackAnchor: 将草稿Note作为轨道结点
   CreateTrack: 从草稿Note创建轨道
   AttachNote: 将草稿Note附着到最近的轨道上
+  
+  PluginHotkey1: 插件热键 1
+  PluginHotkey2: 插件热键 2
+  PluginHotkey3: 插件热键 3
+  PluginHotkey4: 插件热键 4
+  PluginHotkey5: 插件热键 5
+  PluginHotkey6: 插件热键 6
+  PluginHotkey7: 插件热键 7
+  PluginHotkey8: 插件热键 8
+  PluginHotkey9: 插件热键 9
+  PluginHotkey10: 插件热键 10

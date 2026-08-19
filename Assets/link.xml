@@ -1,0 +1,14 @@
+<linker>
+    <assembly fullname="com.tencent.puerts.core" preserve="all"/>
+    <assembly fullname="Puerts" preserve="all"/>
+    <assembly fullname="com.tencent.puerts.quickjs" preserve="all"/>
+    <assembly fullname="mscorlib">
+        <type fullname="System.Type" preserve="all"/>
+    </assembly>
+    <assembly fullname="System.Runtime" ignoreIfMissing="1">
+        <type fullname="System.Type" preserve="all"/>
+    </assembly>
+    <assembly fullname="netstandard" ignoreIfMissing="1">
+        <type fullname="System.Type" preserve="all"/>
+    </assembly>
+</linker>

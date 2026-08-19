@@ -141,7 +141,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 0.4.2
+  bundleVersion: 0.5.0
   preloadedAssets:
   - {fileID: 11400000, guid: b85c40fc0cb7e5448b7274d44a02414c, type: 2}
   metroInputSource: 0
@@ -166,6 +166,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.senolytics.takana_cubic
     Standalone: com.DefaultCompany.2DProject
+    iPhone: com.Senolytics.TAKANA--
   buildNumber:
     Standalone: 0
     VisionOS: 0
