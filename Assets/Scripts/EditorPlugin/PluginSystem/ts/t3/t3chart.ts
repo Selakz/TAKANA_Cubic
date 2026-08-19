@@ -235,7 +235,12 @@ export class ChartSnapshot {
   }
 
   addTrack(model: TrackModel, notes: NoteModel[] = []): boolean {
-    this.chartApi.addTrack(model.toCSharp(), notes.map((note) => note.toCSharp()));
+    // @ts-expect-error
+    let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
+    for (let i = 0; i < notes.length; i++) {
+      arr.set_Item(i, notes[i].toCSharp());
+    }
+    this.chartApi.addTrack(model.toCSharp(), arr);
     return true;
   }
 

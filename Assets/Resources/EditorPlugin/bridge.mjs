@@ -999,7 +999,11 @@ var ChartSnapshot = class {
     return this.chartApi;
   }
   addTrack(model, notes = []) {
-    this.chartApi.addTrack(model.toCSharp(), notes.map((note) => note.toCSharp()));
+    let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
+    for (let i = 0; i < notes.length; i++) {
+      arr.set_Item(i, notes[i].toCSharp());
+    }
+    this.chartApi.addTrack(model.toCSharp(), arr);
     return true;
   }
   addNote(model, track) {
@@ -1394,8 +1398,6 @@ var T3PluginBase = class {
     this.ctx.chart._onTrackRemoved((track) => this.onTrackRemoved(track));
     this.ctx.nodes._onNodeAdded((node) => this.onNodeAdded(node));
     this.ctx.nodes._onNodeRemoved((node) => this.onNodeRemoved(node));
-  }
-  execute() {
   }
   onNoteAdded(note) {
   }
