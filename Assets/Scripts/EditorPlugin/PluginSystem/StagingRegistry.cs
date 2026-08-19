@@ -7,7 +7,7 @@ using MusicGame.ChartEditor.Command;
 
 namespace EditorPlugin.PluginSystem
 {
-	public sealed class StagingRegistry
+	public sealed class StagingRegistry : IDisposable
 	{
 		private readonly List<Func<ICommand>> commandFactories = new();
 		private readonly CommandManager commandManager;
@@ -22,6 +22,8 @@ namespace EditorPlugin.PluginSystem
 		public void Add(Func<ICommand> commandFactory) => commandFactories.Add(commandFactory);
 
 		public bool Remove(Func<ICommand> commandFactory) => commandFactories.Remove(commandFactory);
+
+		public void Dispose() => commandFactories.Clear();
 
 		public void Flush()
 		{

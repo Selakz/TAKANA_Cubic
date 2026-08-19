@@ -25,7 +25,7 @@ using UnityEngine;
 // ReSharper disable InconsistentNaming
 namespace EditorPlugin.Shared
 {
-	public class T3CSharpApi
+	public class T3CSharpApi : IDisposable
 	{
 		public ChartApi chart { get; }
 		public EditorApi editor { get; }
@@ -44,6 +44,15 @@ namespace EditorPlugin.Shared
 			nodes = nodeApi;
 			mouse = mouseApi;
 			this.pluginDirectory = pluginDirectory;
+		}
+
+		public void Dispose()
+		{
+			chart.Dispose();
+			editor.Dispose();
+			staging.Dispose();
+			nodes.Dispose();
+			mouse.Dispose();
 		}
 
 		public ChartApi? loadChart(string path)
@@ -77,7 +86,7 @@ namespace EditorPlugin.Shared
 		private string ResolvePath(string path) => Path.IsPathRooted(path) ? path : Path.Combine(pluginDirectory, path);
 	}
 
-	public class ChartApi
+	public class ChartApi : IDisposable
 	{
 		private readonly ChartInfo chart;
 		private readonly StagingRegistry? registry;
@@ -319,9 +328,21 @@ namespace EditorPlugin.Shared
 				_ => throw new InvalidOperationException($"Unsupported component model: {component.Model.GetType()}")
 			};
 		}
+
+		public void Dispose()
+		{
+			chart.OnComponentAdded -= HandleComponentAdded;
+			chart.OnComponentRemoved -= HandleComponentRemoved;
+			onNoteAddedInner = null;
+			onNoteRemovedInner = null;
+			onTrackAddedInner = null;
+			onTrackRemovedInner = null;
+			componentSnapshots.Clear();
+			rawToComponent.Clear();
+		}
 	}
 
-	public class EditorApi
+	public class EditorApi : IDisposable
 	{
 		private readonly IGameAudioPlayer music;
 		private readonly MessageBox messageBox;
@@ -331,6 +352,10 @@ namespace EditorPlugin.Shared
 			this.music = music;
 			this.messageBox = messageBox;
 			chartTime = new ValueWrapper<int>(() => music.ChartTime.Milli, value => music.ChartTime = value);
+		}
+
+		public void Dispose()
+		{
 		}
 
 		public IWrapper<int> chartTime { get; }
@@ -373,7 +398,7 @@ namespace EditorPlugin.Shared
 		}
 	}
 
-	public class StagingApi
+	public class StagingApi : IDisposable
 	{
 		private readonly StagingRegistry registry;
 
@@ -381,6 +406,8 @@ namespace EditorPlugin.Shared
 		{
 			this.registry = registry;
 		}
+
+		public void Dispose() => registry.Dispose();
 
 		public bool hasPending => registry.HasPending;
 

@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using Puerts;
 
 namespace EditorPlugin.PuerTS
@@ -14,6 +15,8 @@ namespace EditorPlugin.PuerTS
 #pragma warning disable CS0618
 		private readonly JsEnv env;
 #pragma warning restore CS0618
+
+		private readonly List<IDisposable> disposables = new();
 
 		public PluginRuntimeEnv(string rootDirectory, string? librariesDirectory = null)
 		{
@@ -35,6 +38,13 @@ namespace EditorPlugin.PuerTS
 
 		public void Tick() => env.Tick();
 
-		public void Dispose() => env.Dispose();
+		public void AddDisposable(IDisposable disposable) => disposables.Add(disposable);
+
+		public void Dispose()
+		{
+			foreach (var disposable in disposables) disposable.Dispose();
+			disposables.Clear();
+			env.Dispose();
+		}
 	}
 }

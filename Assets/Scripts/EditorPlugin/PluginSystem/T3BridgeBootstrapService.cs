@@ -52,6 +52,7 @@ namespace EditorPlugin.PluginSystem
 				edgeNodeDataset, directNodeDataset, edgeNodeSelectDataset, directNodeSelectDataset, chartApi);
 			var mouseApi = new MouseApi(timeRetriever, widthRetriever);
 			var api = new T3CSharpApi(chartApi, editorApi, stagingApi, nodeApi, mouseApi, env.RootDirectory);
+			env.AddDisposable(api);
 			env.BridgeObject.Get<Action<object>>("__t3_bridge_init")(api);
 		}
 	}

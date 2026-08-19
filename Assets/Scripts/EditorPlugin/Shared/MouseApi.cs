@@ -1,11 +1,12 @@
 #nullable enable
 
+using System;
 using MusicGame.ChartEditor.InScreenEdit;
 
 // ReSharper disable InconsistentNaming
 namespace EditorPlugin.Shared
 {
-	public class MouseApi
+	public class MouseApi : IDisposable
 	{
 		private readonly StageMouseTimeRetriever timeRetriever;
 		private readonly StageMouseWidthRetriever widthRetriever;
@@ -14,6 +15,10 @@ namespace EditorPlugin.Shared
 		{
 			this.timeRetriever = timeRetriever;
 			this.widthRetriever = widthRetriever;
+		}
+
+		public void Dispose()
+		{
 		}
 
 		public int? getTimeStart() => timeRetriever.GetMouseTimeStart(out var time) ? time.Milli : null;

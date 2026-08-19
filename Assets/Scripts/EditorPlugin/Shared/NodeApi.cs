@@ -10,8 +10,10 @@ using T3Framework.Runtime.Log;
 // ReSharper disable InconsistentNaming
 namespace EditorPlugin.Shared
 {
-	public class NodeApi
+	public class NodeApi : IDisposable
 	{
+		private readonly EdgeNodeDataset edgeDataset;
+		private readonly DirectNodeDataset directDataset;
 		private readonly EdgeNodeSelectDataset edgeSelectDataset;
 		private readonly DirectNodeSelectDataset directSelectDataset;
 		private readonly ChartApi api;
@@ -29,6 +31,8 @@ namespace EditorPlugin.Shared
 			DirectNodeSelectDataset directSelectDataset,
 			ChartApi api)
 		{
+			this.edgeDataset = edgeDataset;
+			this.directDataset = directDataset;
 			this.edgeSelectDataset = edgeSelectDataset;
 			this.directSelectDataset = directSelectDataset;
 			this.api = api;
@@ -160,6 +164,18 @@ namespace EditorPlugin.Shared
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNodeRemoved", T3LogType.Error);
 				}
 			}
+		}
+
+		public void Dispose()
+		{
+			edgeDataset.OnDataAdded -= OnNodeAdded;
+			edgeDataset.BeforeDataRemoved -= OnNodeRemoved;
+			directDataset.OnDataAdded -= OnNodeAdded;
+			directDataset.BeforeDataRemoved -= OnNodeRemoved;
+			onNodeAddedInner = null;
+			onNodeRemovedInner = null;
+			edgeNodes.Clear();
+			directNodes.Clear();
 		}
 	}
 }

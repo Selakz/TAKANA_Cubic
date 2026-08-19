@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using EditorPlugin.PuerTS;
 using Puerts;
 using T3Framework.Runtime.Log;
+using UnityEngine;
 
 namespace EditorPlugin.PluginSystem
 {
@@ -107,8 +108,9 @@ namespace EditorPlugin.PluginSystem
 				if (State != PluginState.Loaded) return;
 				entryObject!.Get<ScriptObject>("default").Get<Action>("execute")();
 			}
-			catch
+			catch (Exception e)
 			{
+				Debug.Log(e.Message + "\n" + e.StackTrace);
 				T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|Execute", T3LogType.Error);
 			}
 		}
