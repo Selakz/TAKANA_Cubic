@@ -55,6 +55,7 @@ namespace EditorPlugin.Shared.To
 			var list = isLeft ? Movement1 : Movement2;
 			if (registry is null) return list.Remove(timeMilli);
 			var result = list.TryGet(timeMilli, out _);
+			if (!result) return false;
 			registry.Add(() =>
 			{
 				var command = new UpdateMoveListCommand(new UpdateMoveListArg(isLeft, timeMilli, null));
@@ -76,10 +77,12 @@ namespace EditorPlugin.Shared.To
 			{
 				var left = position - width / 2;
 				var right = position + width / 2;
+				T3Time? leftOldTime = Movement1.TryGet(timeMilli, out _) ? timeMilli : null;
+				T3Time? rightOldTime = Movement2.TryGet(timeMilli, out _) ? timeMilli : null;
 				var command = new UpdateMoveListCommand(new UpdateMoveListArg[]
 				{
-					new(true, null, new(timeMilli, new V1EMoveItem(left, Eases.Unmove))),
-					new(false, null, new(timeMilli, new V1EMoveItem(right, Eases.Unmove)))
+					new(true, leftOldTime, new(timeMilli, new V1EMoveItem(left, Eases.Unmove))),
+					new(false, rightOldTime, new(timeMilli, new V1EMoveItem(right, Eases.Unmove)))
 				});
 				command.SetInit(track);
 				return command;

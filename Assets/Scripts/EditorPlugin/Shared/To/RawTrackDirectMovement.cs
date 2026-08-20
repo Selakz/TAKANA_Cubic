@@ -42,7 +42,9 @@ namespace EditorPlugin.Shared.To
 			if (registry is null) return list.Insert(timeMilli, item);
 			registry.Add(() =>
 			{
-				var command = new UpdateMoveListCommand(new UpdateMoveListArg(isPosition, null, new(timeMilli, item)));
+				T3Time? oldTime = list.TryGet(timeMilli, out _) ? timeMilli : null;
+				var command =
+					new UpdateMoveListCommand(new UpdateMoveListArg(isPosition, oldTime, new(timeMilli, item)));
 				command.SetInit(track);
 				return command;
 			});
@@ -54,6 +56,7 @@ namespace EditorPlugin.Shared.To
 			var list = isPosition ? Movement1 : Movement2;
 			if (registry is null) return list.Remove(timeMilli);
 			var result = list.TryGet(timeMilli, out _);
+			if (!result) return false;
 			registry.Add(() =>
 			{
 				var command = new UpdateMoveListCommand(new UpdateMoveListArg(isPosition, timeMilli, null));
@@ -73,10 +76,12 @@ namespace EditorPlugin.Shared.To
 
 			registry.Add(() =>
 			{
+				T3Time? posOldTime = Movement1.TryGet(timeMilli, out _) ? timeMilli : null;
+				T3Time? widthOldTime = Movement2.TryGet(timeMilli, out _) ? timeMilli : null;
 				var command = new UpdateMoveListCommand(new UpdateMoveListArg[]
 				{
-					new(true, null, new(timeMilli, new V1EMoveItem(position, Eases.Unmove))),
-					new(false, null, new(timeMilli, new V1EMoveItem(width, Eases.Unmove)))
+					new(true, posOldTime, new(timeMilli, new V1EMoveItem(position, Eases.Unmove))),
+					new(false, widthOldTime, new(timeMilli, new V1EMoveItem(width, Eases.Unmove)))
 				});
 				command.SetInit(track);
 				return command;
