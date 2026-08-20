@@ -116,9 +116,10 @@ namespace EditorPlugin.Shared
 			{
 				onNodeAddedInner?.Invoke(raw);
 			}
-			catch
+			catch (Exception e)
 			{
 				T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNodeAdded", T3LogType.Error);
+				T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 			}
 		}
 
@@ -130,9 +131,10 @@ namespace EditorPlugin.Shared
 				{
 					onNodeRemovedInner?.Invoke(raw);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNodeRemoved", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 		}
@@ -145,9 +147,10 @@ namespace EditorPlugin.Shared
 			{
 				onNodeAddedInner?.Invoke(raw);
 			}
-			catch
+			catch (Exception e)
 			{
 				T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNodeAdded", T3LogType.Error);
+				T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 			}
 		}
 
@@ -159,9 +162,10 @@ namespace EditorPlugin.Shared
 				{
 					onNodeRemovedInner?.Invoke(raw);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNodeRemoved", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 		}

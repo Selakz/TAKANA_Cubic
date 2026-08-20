@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using EditorPlugin.PuerTS;
 using Puerts;
 using T3Framework.Runtime.Log;
-using UnityEngine;
 
 namespace EditorPlugin.PluginSystem
 {
@@ -110,8 +109,8 @@ namespace EditorPlugin.PluginSystem
 			}
 			catch (Exception e)
 			{
-				Debug.Log(e.Message + "\n" + e.StackTrace);
 				T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|Execute", T3LogType.Error);
+				T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 			}
 		}
 
@@ -124,6 +123,7 @@ namespace EditorPlugin.PluginSystem
 			catch
 			{
 				T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|Tick", T3LogType.Error);
+				// No MessageBox to avoid blocking the editor
 			}
 		}
 

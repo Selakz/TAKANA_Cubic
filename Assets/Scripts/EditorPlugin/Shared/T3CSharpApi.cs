@@ -153,9 +153,10 @@ namespace EditorPlugin.Shared
 				{
 					onNoteAddedInner?.Invoke(componentSnapshots[component]);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNoteAdded", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 			else if (component.Model is ITrack)
@@ -165,9 +166,10 @@ namespace EditorPlugin.Shared
 				{
 					onTrackAddedInner?.Invoke(componentSnapshots[component]);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onTrackAdded", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 		}
@@ -182,9 +184,10 @@ namespace EditorPlugin.Shared
 				{
 					onNoteRemovedInner?.Invoke(snapshot);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onNoteRemoved", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 			else if (component.Model is ITrack)
@@ -193,9 +196,10 @@ namespace EditorPlugin.Shared
 				{
 					onTrackRemovedInner?.Invoke(snapshot);
 				}
-				catch
+				catch (Exception e)
 				{
 					T3Logger.Log("Notice", "EditorPlugin_PluginInternalError|onTrackRemoved", T3LogType.Error);
+					T3Logger.Log("MessageRaw", $"{e.Message}\n{e.StackTrace}");
 				}
 			}
 		}
