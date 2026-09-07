@@ -88,7 +88,7 @@ namespace MusicGame.Gameplay.Judge.T3
 						{
 							ActualTime = timeEnd,
 							EndPosition = position,
-							JudgedTouch = touch,
+							JudgedInput = touch,
 							JudgeResult = result
 						}, timeEnd);
 						return true;
@@ -100,7 +100,7 @@ namespace MusicGame.Gameplay.Judge.T3
 						{
 							ActualTime = chartTime,
 							EndPosition = position,
-							JudgedTouch = touch,
+							JudgedInput = touch,
 							JudgeResult = T3JudgeResult.EarlyMiss
 						});
 						return true;
@@ -118,7 +118,7 @@ namespace MusicGame.Gameplay.Judge.T3
 							{
 								ActualTime = chartTime,
 								EndPosition = position,
-								JudgedTouch = touch,
+								JudgedInput = touch,
 								JudgeResult = T3JudgeResult.EarlyMiss
 							});
 							return true;
@@ -165,7 +165,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					{
 						ActualTime = hitJudgeItem.ActualTime,
 						EndPosition = hitJudgeItem.TapPosition,
-						JudgedTouch = hitJudgeItem.JudgedTouch,
+						JudgedInput = hitJudgeItem.JudgedInput,
 						JudgeResult = T3JudgeResult.EarlyMiss
 					});
 				}
@@ -176,13 +176,13 @@ namespace MusicGame.Gameplay.Judge.T3
 					{
 						ActualTime = endCombo.ExpectedTime,
 						EndPosition = hitJudgeItem.TapPosition,
-						JudgedTouch = hitJudgeItem.JudgedTouch,
+						JudgedInput = hitJudgeItem.JudgedInput,
 						JudgeResult = result
 					}, endCombo.ExpectedTime);
 				}
 				else
 				{
-					if (hitJudgeItem.JudgedTouch is not { phase: TouchPhase.Began } touch)
+					if (hitJudgeItem.JudgedInput is not { phase: TouchPhase.Began } touch)
 					{
 						Debug.LogError($"Hold's start judge is not judged by a touch of phase {TouchPhase.Began}");
 						return;

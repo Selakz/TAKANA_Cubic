@@ -34,7 +34,7 @@ namespace MusicGame.Gameplay.Scoring.UI
 				e => judgeStorage.OnJudgeItemAdded -= e,
 				item =>
 				{
-					if (item is not IT3JudgeItem judgeItem) return;
+					if (item is not IHasJudgeResult<T3JudgeResult> judgeItem) return;
 					if (!judgeTextures.Value.TryGetValue(judgeItem.JudgeResult, out var texture)) return;
 					foreach (var judgeImage in judgeImages)
 					{

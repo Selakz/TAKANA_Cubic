@@ -74,7 +74,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 
 		private void UpdateScoreAndCombo(IJudgeItem judgeItem)
 		{
-			if (judgeItem is not IT3JudgeItem t3JudgeItem) return;
+			if (judgeItem is not IHasJudgeResult<T3JudgeResult> t3JudgeItem) return;
 			double scoreRate = config.Data.GetValueOrDefault(t3JudgeItem.JudgeResult).scoreRate;
 			score.Value += averageScore * scoreRate;
 			if (config.IsOffCombo(t3JudgeItem.JudgeResult)) combo.Value = 0;

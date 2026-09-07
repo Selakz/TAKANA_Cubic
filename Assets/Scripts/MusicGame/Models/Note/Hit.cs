@@ -37,7 +37,7 @@ namespace MusicGame.Models.Note
 			Movement = new BaseNoteMoveList(timeJudge);
 		}
 
-		public void Nudge(T3Time distance)
+		public virtual void Nudge(T3Time distance)
 		{
 			var newTimeJudge = TimeJudge + distance;
 			TimeJudge = newTimeJudge;

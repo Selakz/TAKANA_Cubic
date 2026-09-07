@@ -16,7 +16,9 @@ MonoBehaviour:
     pairs:
     - key: basic
       value: 0
-    - key: scoring
+    - key: dl-free
       value: 1
-    - key: speed
+    - key: scoring
       value: 2
+    - key: speed
+      value: 3

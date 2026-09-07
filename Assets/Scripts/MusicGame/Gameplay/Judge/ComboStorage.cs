@@ -3,13 +3,14 @@
 using System;
 using System.Collections.Generic;
 using MusicGame.Gameplay.Chart;
-using MusicGame.Gameplay.Judge.T3;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -26,6 +27,8 @@ namespace MusicGame.Gameplay.Judge
 		public event Action? OnComboReset;
 
 		public IReadOnlyList<IComboItem> Combos => combos;
+
+		[SerializeField] private InspectorType comboFactoryType = default!;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -57,8 +60,7 @@ namespace MusicGame.Gameplay.Judge
 
 		public void SelfInstall(IContainerBuilder builder)
 		{
-			// TODO: a way to specify implementation in hierarchy
-			builder.Register<IComboFactory, T3ComboFactory>(Lifetime.Singleton);
+			builder.Register(comboFactoryType.Type, Lifetime.Singleton).As<IComboFactory>();
 			builder.RegisterComponent(this).AsSelf();
 		}
 

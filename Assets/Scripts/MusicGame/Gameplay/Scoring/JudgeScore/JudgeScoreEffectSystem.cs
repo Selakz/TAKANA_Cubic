@@ -38,7 +38,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 				item =>
 				{
 					var component = item.ComboItem.FromComponent;
-					if (item is IT3JudgeItem judgeItem &&
+					if (item is IHasJudgeResult<T3JudgeResult> judgeItem &&
 					    judgeItem.JudgeResult is not (T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss))
 					{
 						PlayHitEffect(judgeItem);
@@ -77,7 +77,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Defined Functions
-		private void PlayHitEffect(IT3JudgeItem judgeItem)
+		private void PlayHitEffect(IJudgeItem judgeItem)
 		{
 			const float invalid = 10000;
 			var x = judgeItem switch
@@ -116,7 +116,7 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 			lastHitTime = currentTime;
 		}
 
-		private void PlayLaneBeam(IT3JudgeItem judgeItem)
+		private void PlayLaneBeam(IHasJudgeResult<T3JudgeResult> judgeItem)
 		{
 			var component = judgeItem.ComboItem.FromComponent;
 			if (config.Data.TryGetValue(judgeItem.JudgeResult, out var data) &&

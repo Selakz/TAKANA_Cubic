@@ -29,7 +29,7 @@ namespace MusicGame.Models.Track
 			Movement = TrackFallbackMovement.Instance;
 		}
 
-		public void Nudge(T3Time distance)
+		public virtual void Nudge(T3Time distance)
 		{
 			TimeStart += distance;
 			TimeEnd += distance;
@@ -41,7 +41,7 @@ namespace MusicGame.Models.Track
 			Movement.Shift(offset);
 		}
 
-		public JObject GetSerializationToken()
+		public virtual JObject GetSerializationToken()
 		{
 			var token = new JObject();
 			token.Add("timeStart", TimeStart.Milli);

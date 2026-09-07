@@ -14,17 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priorities:
     pairs:
-    - key: track-layer
+    - key: dl-color
       value: 1
-    - key: select-track
+    - key: track-layer
       value: 2
-    - key: auto-score-note-base
+    - key: select-track
       value: 3
-    - key: auto-score-note-start
+    - key: auto-score-note-base
       value: 4
-    - key: judge-score-miss-hold
+    - key: auto-score-note-start
       value: 5
-    - key: judge-score-note-start
+    - key: judge-score-miss-hold
       value: 6
-    - key: draft
+    - key: judge-score-note-start
       value: 7
+    - key: draft
+      value: 8

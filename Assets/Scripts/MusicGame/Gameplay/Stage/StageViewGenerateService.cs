@@ -2,6 +2,7 @@
 
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Models;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
@@ -39,7 +40,7 @@ namespace MusicGame.Gameplay.Stage
 		};
 
 		// Private
-		[Inject, Key("stage")] private StageViewPool viewPool = default!;
+		[Inject, Key("stage")] private StageViewPool<T3Flag> viewPool = default!;
 		[Inject] private NotifiableProperty<GameplayStageSkinConfig> stageSkinConfig = default!;
 
 		private NotifiableProperty<GameplayStageSkinConfig>? onStageReset;

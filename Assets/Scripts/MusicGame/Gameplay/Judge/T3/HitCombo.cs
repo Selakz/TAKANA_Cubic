@@ -35,7 +35,7 @@ namespace MusicGame.Gameplay.Judge.T3
 
 		public float TapPosition { get; set; }
 
-		public Touch? JudgedTouch { get; set; }
+		public Touch? JudgedInput { get; set; }
 
 		public T3JudgeResult JudgeResult { get; set; }
 

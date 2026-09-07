@@ -87,7 +87,8 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 					pos => music.ChartTime < hold.TimeJudge ? pos : new(pos.x, 0),
 					positionPriority, true);
 
-				var a = judgeItem is IT3JudgeItem { JudgeResult: T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss }
+				var a = judgeItem is
+					IHasJudgeResult<T3JudgeResult> { JudgeResult: T3JudgeResult.EarlyMiss or T3JudgeResult.LateMiss }
 					? ISingleton<PlayfieldSetting>.Instance.MissHoldOpacity
 					: 1f;
 				foreach (var cm in presenter.ColorModifiers)

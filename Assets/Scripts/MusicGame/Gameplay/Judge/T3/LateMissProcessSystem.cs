@@ -62,7 +62,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					if (judgeItem is IT3JudgeItem t3JudgeItem)
 					{
 						t3JudgeItem.ActualTime = combo.ExpectedTime + lateMissTime;
-						t3JudgeItem.JudgedTouch = null;
+						t3JudgeItem.JudgedInput = null;
 						t3JudgeItem.JudgeResult = T3JudgeResult.LateMiss;
 					}
 

@@ -137,7 +137,7 @@ namespace MusicGame.Gameplay.Judge.T3
 						{
 							ActualTime = chartTime,
 							TapPosition = position,
-							JudgedTouch = touch,
+							JudgedInput = touch,
 							JudgeResult = result
 						});
 						if (nearestCount > 1) pendingCombos.Add(combo);

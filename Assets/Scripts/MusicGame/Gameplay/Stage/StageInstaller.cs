@@ -27,7 +27,7 @@ namespace MusicGame.Gameplay.Stage
 				.Keyed("stage");
 			builder.RegisterInstance(stageTransform)
 				.Keyed("stage");
-			builder.Register<IViewPool<ChartComponent>, StageViewPool>(Lifetime.Singleton)
+			builder.Register<IViewPool<ChartComponent>, StageViewPool<T3Flag>>(Lifetime.Singleton)
 				.Keyed("stage")
 				.AsSelf();
 

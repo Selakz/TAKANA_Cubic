@@ -39,7 +39,7 @@ namespace MusicGame.Models.Note
 			TailMovement = new BaseNoteMoveList(timeEnd);
 		}
 
-		public void Nudge(T3Time distance)
+		public virtual void Nudge(T3Time distance)
 		{
 			TimeJudge += distance;
 			Movement.Nudge(distance);

@@ -10,4 +10,9 @@ namespace MusicGame.Gameplay.Judge
 		/// <param name="touches"> It's sorted as Began -> Moved/Stationary -> Ended/Canceled </param>
 		public void ProcessInput(IReadOnlyList<Touch> touches);
 	}
+
+	public interface IInputProcessSystem<in T>
+	{
+		public void ProcessInput(IReadOnlyList<T> inputs);
+	}
 }

@@ -75,7 +75,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					{
 						ActualTime = touch.phase == TouchPhase.Began ? chartTime : hitCombo.ExpectedTime,
 						TapPosition = position,
-						JudgedTouch = touch,
+						JudgedInput = touch,
 						JudgeResult = T3JudgeResult.CriticalJust
 					}, hitCombo.ExpectedTime);
 				}

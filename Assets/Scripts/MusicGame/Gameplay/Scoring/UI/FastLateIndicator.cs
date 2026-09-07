@@ -43,7 +43,7 @@ namespace MusicGame.Gameplay.Scoring.UI
 				e => judgeStorage.OnJudgeItemAdded -= e,
 				item =>
 				{
-					if (item is not IT3JudgeItem judgeItem) return;
+					if (item is not IHasJudgeResult<T3JudgeResult> judgeItem) return;
 					switch (config.Data[judgeItem.JudgeResult].fastLateStatus)
 					{
 						case 0:

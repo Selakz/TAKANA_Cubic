@@ -36,7 +36,7 @@ namespace MusicGame.Gameplay.Scoring.UI
 				e => judgeStorage.OnJudgeItemAdded -= e,
 				item =>
 				{
-					if (item is not IT3JudgeItem judgeItem ||
+					if (item is not IHasJudgeResult<T3JudgeResult> judgeItem ||
 					    config.Data[judgeItem.JudgeResult].worsePriority <= config.Data[worstResult].worsePriority)
 						return;
 					worstResult = judgeItem.JudgeResult;
