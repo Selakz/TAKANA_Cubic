@@ -357,6 +357,14 @@ Setting:
     DefaultColor: Default color used for new layers
     SelectLayerOpacityRatio: Opacity multiplier for selected layers | Range [0, 1]
     UnselectLayerOpacityRatio: Opacity multiplier for unselected layers | Range [0, 1]
+  LevelSelectSetting:
+    Header: Level Select Memories
+    LastSongId: Last song id
+    LastLevelPath: Last level path
+    LastDifficulty: Last difficulty
+    LastPackId: Last pack id
+    LastSortId: Last sort id
+    LastSortAscend: Last sort ascend
   T3ProjSetting:
     MusicFileName: Music file name | Include file extension for the following setting items
     CoverFileName: Cover file name

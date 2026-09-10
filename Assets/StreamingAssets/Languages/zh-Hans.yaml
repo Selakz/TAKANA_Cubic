@@ -358,6 +358,14 @@ Setting:
     DefaultColor: 新建的图层默认使用的图层颜色
     SelectLayerOpacityRatio: 选中的图层的透明度倍率，范围为[0, 1]
     UnselectLayerOpacityRatio: 未选中的图层的透明度倍率，范围为[0, 1]
+  LevelSelectSetting:
+    Header: 选关记忆
+    LastSongId: 选中的歌曲id
+    LastLevelPath: 选中的关卡路径
+    LastDifficulty: 选中的难度
+    LastPackId: 选中的包id
+    LastSortId: 选中的排序id
+    LastSortAscend: 选中的是否升序
   T3ProjSetting:
     MusicFileName: 音源文件名称 | 以下配置项需要附带文件后缀名
     CoverFileName: 封面文件名称

@@ -10,6 +10,7 @@ using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Setting;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
+using T3Framework.Static.Event;
 using UnityEngine;
 using VContainer;
 
@@ -19,6 +20,7 @@ namespace MusicGame.LevelSelect
 	{
 		[Inject] private IDataset<LevelComponent<GameplayPreference>> levelDataset = default!;
 		[Inject] private IDataset<PackInfo> packDataset = default!;
+		[Inject] private NotifiableProperty<bool> levelsLoaded = default!;
 
 		public static async UniTask<List<RawLevelInfo<GameplayPreference>>> LoadLevels(string storagePath)
 		{
@@ -170,6 +172,7 @@ namespace MusicGame.LevelSelect
 			packDataset.Add(PackInfo.All);
 			packDataset.Add(PackInfo.Single);
 			foreach (var pack in packs) packDataset.Add(pack);
+			levelsLoaded.Value = true;
 		}
 	}
 }
