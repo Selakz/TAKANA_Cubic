@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.ComponentModel;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
@@ -10,6 +12,9 @@ namespace MusicGame.Gameplay.Level
 	[Description("Header")]
 	public class PlayfieldSetting : ISingletonSetting<PlayfieldSetting>
 	{
+		[Description("PlayerId")]
+		public NotifiableProperty<string> PlayerId { get; set; } = new(string.Empty);
+
 		[Description("HitSoundVolumePercent")]
 		[MinValue(0)]
 		[MaxValue(100)]

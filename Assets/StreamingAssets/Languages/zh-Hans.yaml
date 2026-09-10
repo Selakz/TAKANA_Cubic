@@ -272,6 +272,7 @@ Setting:
     TrackSelectedColor: 轨道被选中时的颜色
   PlayfieldSetting:
     Header: 游戏设置
+    PlayerId: 展示的玩家ID
     HitSoundVolumePercent: 打击音音量大小百分比（整数） | 范围 [0, 100]
     TrackFaceDefaultColor: 轨道默认颜色，该项也用来设置轨道的默认透明度
     MissHoldOpacity: Hold miss后的不透明度 | 范围 [0, 1]

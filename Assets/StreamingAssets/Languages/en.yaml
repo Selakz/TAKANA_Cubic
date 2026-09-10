@@ -271,6 +271,7 @@ Setting:
     TrackSelectedColor: Color when track is selected
   PlayfieldSetting:
     Header: Gameplay Settings
+    PlayerId: Displayed Player ID
     HitSoundVolumePercent: Hit sound volume percentage (Integer) | Range [0, 100]
     TrackFaceDefaultColor: Default track color; also used to set default track opacity
     MissHoldOpacity: Opacity after missing a Hold | Range [0, 1]
