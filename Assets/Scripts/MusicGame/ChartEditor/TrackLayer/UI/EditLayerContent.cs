@@ -2,7 +2,7 @@
 
 using System.ComponentModel;
 using T3Framework.Preset.UICollection;
-using T3Framework.Runtime.ListRender;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Event;
 using TMPro;
@@ -34,13 +34,17 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 
 		public NotifiableProperty<Color> PaletteColor { get; } = new(Color.black);
 
-		[SerializeField] private ListRendererInt paletteRenderer = default!;
+		[SerializeField] private PrefabObject paletteButtonPrefab = default!;
+		[SerializeField] private RectTransform paletteContent = default!;
 		[SerializeField] private Toggle colorPicker = default!;
 		[SerializeField] private GameObject colorPalette = default!;
 		[SerializeField] private Image colorSample = default!;
 
 		// Static
 		public const int MaximumPaletteCount = 16;
+
+		// Private
+		private ViewPool<BaseComponent<Color>> paletteViewPool = default!;
 
 		// Event Handlers
 		private void OnColorPickerValueChanged(bool isOn) => colorPalette.SetActive(isOn);
@@ -56,23 +60,24 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 		// System Functions
 		void Awake()
 		{
-			paletteRenderer.Init(new()
-			{
-				[typeof(PaletteButton)] = new("Prefabs/EditorUI/TrackLayer/PaletteButton", "PaletteButtonPrefab_OnLoad")
-			});
+			paletteViewPool = new(null, paletteButtonPrefab, paletteContent);
 		}
 
 		void OnEnable()
 		{
-			var paletteCount = Mathf.Min(
-				ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value.Count, MaximumPaletteCount);
+			var colorDefinitions = ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value;
+			var paletteCount = Mathf.Min(colorDefinitions.Count, MaximumPaletteCount);
 			for (var i = 0; i < paletteCount; i++)
 			{
-				var colorDefinition = ISingletonSetting<TrackLayerSetting>.Instance.ColorDefinitions.Value[i];
-				var button = paletteRenderer.Add<PaletteButton>(i);
-				button.PaletteColor = colorDefinition!.Value;
+				var component = new BaseComponent<Color>(colorDefinitions[i]!.Value);
+				if (!paletteViewPool.Add(component)) continue;
+				var button = paletteViewPool[component]!.Script<PaletteButton>();
+				button.transform.SetSiblingIndex(i);
+				button.PaletteColor = component.Model;
 				button.OnColorClicked += OnPaletteButtonClicked;
 			}
+
+			LayoutRebuilder.ForceRebuildLayoutImmediate(paletteContent);
 
 			colorPicker.onValueChanged.AddListener(OnColorPickerValueChanged);
 			colorPicker.isOn = false;
@@ -82,15 +87,13 @@ namespace MusicGame.ChartEditor.TrackLayer.UI
 
 		void OnDisable()
 		{
-			foreach (var go in paletteRenderer.Values)
+			foreach (var component in paletteViewPool)
 			{
-				if (go.TryGetComponent<PaletteButton>(out var paletteButton))
-				{
-					paletteButton.OnColorClicked -= OnPaletteButtonClicked;
-				}
+				paletteViewPool[component]!.Script<PaletteButton>().OnColorClicked -= OnPaletteButtonClicked;
 			}
 
-			paletteRenderer.Clear();
+			paletteViewPool.Clear();
+			LayoutRebuilder.ForceRebuildLayoutImmediate(paletteContent);
 		}
 	}
 }

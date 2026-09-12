@@ -1,58 +1,23 @@
 #nullable enable
 
-using System;
-using System.ComponentModel;
-using System.Reflection;
-using T3Framework.Runtime.Event;
 using T3Framework.Runtime.I18N;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MusicGame.Utility.Setting
 {
-	// TODO: Refactor it into T3Framework to be more common to use.
 	public class SettingTabToggle : MonoBehaviour
 	{
 		// Serializable and Public
 		[SerializeField] private Toggle settingTabToggle = default!;
 		[SerializeField] private I18NTextBlock labelTextBlock = default!;
 		[SerializeField] private Transform movableArea = default!;
-		[SerializeField] private Transform panelParent = default!;
 
-		public Transform PanelParent
-		{
-			get => panelParent;
-			set => panelParent = value;
-		}
+		public Toggle Toggle => settingTabToggle;
 
-		public string SettingClassName
-		{
-			get => settingClassName;
-			set
-			{
-				settingClassName = value;
-				if (!string.IsNullOrEmpty(settingClassName))
-				{
-					var settingType = Type.GetType(settingClassName);
-					if (settingType is null) return;
-					var description = settingType.GetCustomAttribute<DescriptionAttribute>();
-
-					labelTextBlock.SetText(description is null
-						? settingClassName
-						: $"Setting_{settingType.Name}_{description.Description}");
-					if (settingItemGenerator != null)
-					{
-						settingItemGenerator.SettingClassName = settingClassName;
-						settingItemGenerator.Generate();
-					}
-				}
-			}
-		}
+		public I18NTextBlock LabelTextBlock => labelTextBlock;
 
 		// Private
-		private static LazyPrefab settingPanelPrefab = default!;
-		private string settingClassName = string.Empty;
-		private SettingItemGenerator? settingItemGenerator;
 		private bool lastIsOn = false;
 
 		// Event Handlers
@@ -64,27 +29,9 @@ namespace MusicGame.Utility.Setting
 			var slideLength = 50 * (value ? -1 : 1);
 			movableArea.localPosition = new(
 				movableArea.localPosition.x + slideLength, movableArea.localPosition.y, movableArea.localPosition.z);
-
-			if (settingItemGenerator is null)
-			{
-				var go = settingPanelPrefab.Instantiate(panelParent);
-				settingItemGenerator = go.GetComponent<SettingItemGenerator>();
-				settingItemGenerator.SettingClassName = SettingClassName;
-			}
-			else
-			{
-				settingItemGenerator.gameObject.SetActive(value);
-			}
 		}
 
 		// System Functions
-		void Awake()
-		{
-			// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-			settingPanelPrefab ??=
-				new LazyPrefab("Prefabs/EditorUI/Setting/SettingPanelContent", "SettingPanelContentPrefab_OnLoad");
-		}
-
 		void OnEnable()
 		{
 			settingTabToggle.onValueChanged.AddListener(OnSettingTabToggleValueChanged);
