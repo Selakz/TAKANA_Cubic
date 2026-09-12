@@ -31,6 +31,7 @@ namespace MusicGame.LevelSelect.UI
 		[SerializeField] private FloatValueAdjuster speedAdjuster = default!;
 		[SerializeField] private FloatValueAdjuster pitchAdjuster = default!;
 		[SerializeField] private Toggle autoPlayToggle = default!;
+		[SerializeField] private Toggle mirrorToggle = default!;
 		[SerializeField] private Button startButton = default!;
 		[SerializeField] private Button closeButton = default!;
 		[SerializeField] private int playfieldSceneIndex;
@@ -60,6 +61,11 @@ namespace MusicGame.LevelSelect.UI
 					{
 						if (rawLevelInfo.Value?.Preference.Value is { } preference)
 							preference.IsAuto = isOn;
+					}),
+					new ToggleRegistrar(mirrorToggle, isOn =>
+					{
+						if (rawLevelInfo.Value?.Preference.Value is { } preference)
+							preference.IsMirror = isOn;
 					}),
 					new ButtonRegistrar(startButton, () => OnStartGame().Forget()),
 					new ButtonRegistrar(closeButton, Hide)
@@ -102,6 +108,7 @@ namespace MusicGame.LevelSelect.UI
 				speedAdjuster.Property.Value = ISingletonSetting<PlayfieldSetting>.Instance.Speed;
 				pitchAdjuster.Property.Value = preference.Pitch;
 				autoPlayToggle.SetIsOnWithoutNotify(preference.IsAuto);
+				mirrorToggle.SetIsOnWithoutNotify(preference.IsMirror);
 
 				foreach (var pair in skinToggles.Value)
 				{

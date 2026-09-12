@@ -13,6 +13,8 @@ namespace MusicGame.Gameplay.Level
 
 		public bool IsAuto { get; set; } = false;
 
+		public bool IsMirror { get; set; } = false;
+
 		public float Pitch { get; set; } = 1f;
 
 		public string SkinNameLocalized { get; set; } = string.Empty;
