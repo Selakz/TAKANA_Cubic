@@ -109,5 +109,11 @@ namespace MusicGame.Gameplay.Scoring.JudgeScore
 				UniTask.Delay(delayTimeMilli, cancellationToken: rcts.Token).ContinueWith(JumpToResultScene);
 			}
 		}
+
+		protected override void OnDisable()
+		{
+			base.OnDisable();
+			rcts.Cancel();
+		}
 	}
 }
