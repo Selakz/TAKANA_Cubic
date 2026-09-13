@@ -279,6 +279,7 @@ Setting:
     AudioDeviation: "Audio offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
     InputDeviation: "Visual offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
     TrackGap: Gap between Tap/Hold and track boundaries
+    NoteThicknessRatio: Note thickness ratio
     CameraPosition: Main camera position
     CameraRotation: Main camera rotation
     TimeAfterEnd: "Delay before a missed Note's view is destroyed (Do not modify unless necessary)"

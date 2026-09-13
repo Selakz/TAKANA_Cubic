@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: widthTextures.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8100664268540817875, guid: 3059ed6867c3c27428ef058863462319, type: 3}
+      propertyPath: thicknessTextures.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2388898775805373254, guid: 3059ed6867c3c27428ef058863462319, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

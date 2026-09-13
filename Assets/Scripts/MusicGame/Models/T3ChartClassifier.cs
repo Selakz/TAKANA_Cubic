@@ -44,13 +44,14 @@ namespace MusicGame.Models
 			};
 		}
 
-		public bool IsOfType(IComponent component, T3Flag type) => Classify(component).HasFlag(type);
+		// Enum.HasFlag boxes!! I really don't expect this...
+		public bool IsOfType(IComponent component, T3Flag type) => (Classify(component) & type) == type;
 
 		/// <summary>
 		/// subType: more general, i.e. T3Flag.Note<br/>
 		/// type: more specific, i.e. T3Flag.Live | T3Flag.Note | T3Flag.Tap<br/>
 		/// The "sub" here means that subType is a subset of type. It may be a little weird...
 		/// </summary>
-		public bool IsSubType(T3Flag subType, T3Flag type) => type.HasFlag(subType);
+		public bool IsSubType(T3Flag subType, T3Flag type) => (type & subType) == subType;
 	}
 }

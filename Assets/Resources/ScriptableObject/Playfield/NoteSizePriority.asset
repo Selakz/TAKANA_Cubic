@@ -18,7 +18,9 @@ MonoBehaviour:
       value: 0
     - key: basic-height
       value: 1
-    - key: scoring-height
+    - key: basic-thickness
       value: 2
-    - key: speed-height
+    - key: scoring-height
       value: 3
+    - key: speed-height
+      value: 4

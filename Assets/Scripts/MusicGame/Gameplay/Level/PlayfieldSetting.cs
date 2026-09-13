@@ -40,6 +40,11 @@ namespace MusicGame.Gameplay.Level
 		[Description("TrackGap")]
 		public NotifiableProperty<float> TrackGap { get; set; } = new(0.15f);
 
+		[Description("NoteThicknessRatio")]
+		[MinValue(0.1f)]
+		[MaxValue(5f)]
+		public NotifiableProperty<float> NoteThicknessRatio { get; set; } = new(1f);
+
 		[Description("CameraPosition")]
 		public NotifiableProperty<Vector3> CameraPosition { get; set; } = new(Vector3.zero);
 
