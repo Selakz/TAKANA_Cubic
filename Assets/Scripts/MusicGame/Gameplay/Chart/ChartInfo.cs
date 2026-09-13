@@ -11,13 +11,14 @@ using T3Framework.Runtime.Extensions;
 
 namespace MusicGame.Gameplay.Chart
 {
-	// TODO: Make it IDataset or even more generic: ITreeDataset
 	[ChartTypeMark("chart")]
 	public class ChartInfo : IEnumerable<ChartComponent>, IChartSerializable, IDisposable
 	{
 		public ModelProperty Properties { get; set; } = new();
 
 		public ModelProperty EditorConfig { get; set; } = new();
+
+		public string Mode { get; set; } = "t3";
 
 		public IReadOnlyCollection<ChartComponent> Components => components;
 
@@ -108,6 +109,7 @@ namespace MusicGame.Gameplay.Chart
 			}
 
 			dict.Add("version", VersionIdentifier);
+			dict.Add("mode", Mode);
 			dict.AddIf("properties", Properties.GetSerializationToken(), Properties.Count > 0);
 			dict.AddIf("editorconfig", EditorConfig.GetSerializationToken(), EditorConfig.Count > 0);
 			dict.Add("components", componentArray);
@@ -118,6 +120,7 @@ namespace MusicGame.Gameplay.Chart
 		{
 			ChartInfo chartInfo = new();
 			if (token is not JObject dict) return chartInfo;
+			chartInfo.Mode = dict.Get("mode", "t3");
 			chartInfo.Properties = ModelProperty.Deserialize(dict["properties"] as JObject ?? new JObject());
 			chartInfo.EditorConfig = ModelProperty.Deserialize(dict["editorconfig"] as JObject ?? new JObject());
 			if (dict["components"] is JArray componentArray)

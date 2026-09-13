@@ -59,30 +59,11 @@ namespace MusicGame.ChartEditor.Level
 		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this).AsSelf();
 
 		// Defined Functions
-		public static ChartInfo GetPlayableChart(ChartInfo editingChart)
-		{
-			ChartInfo chart = IChartSerializable.Clone(editingChart);
-			chart.EditorConfig.Clear();
-			List<ChartComponent> toRemove = new();
-			foreach (var component in chart)
-			{
-				if (component.Model.IsEditorOnly() || T3ChartClassifier.Instance.IsOfType(component, T3Flag.Draft))
-				{
-					toRemove.Add(component);
-					continue;
-				}
-
-				component.Model.EditorConfig.Clear();
-			}
-
-			foreach (var component in toRemove) chart.RemoveComponent(component);
-			return chart;
-		}
-
 		public void SavePlayableChart(string? filePath = null)
 		{
 			if (levelInfo.Value is not { } info) return;
-			ChartInfo chart = GetPlayableChart(info.Chart);
+			ChartInfo chart = IChartSerializable.Clone(info.Chart);
+			ChartModePreprocessor.Process(chart, false);
 			ReassignIds(chart);
 			T3ProjSetting projectSetting = ISetting<T3ProjSetting>.Load(info.LevelPath);
 			var chartName = projectSetting.GetChartFileName(info.Difficulty);
