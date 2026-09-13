@@ -7,13 +7,12 @@ using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using TouchPhase = UnityEngine.InputSystem.TouchPhase;
 
 namespace MusicGame.Gameplay.Judge.T3
 {
-	public class HitProcessSystem : T3MonoBehaviour, IInputProcessSystem, ISelfInstaller
+	public class HitProcessSystem : HierarchySystem<HitProcessSystem>, IInputProcessSystem
 	{
 		// Serializable and Public
 		[Tooltip($"Should contain all enums except {nameof(T3JudgeResult.LateMiss)}")] [SerializeField]
@@ -31,32 +30,16 @@ namespace MusicGame.Gameplay.Judge.T3
 		};
 
 		// Private
-		private TimeAligner aligner = default!;
-		private ComboStorage comboStorage = default!;
-		private JudgeStorage judgeStorage = default!;
-		private StagePositionRetriever retriever = default!;
+		[Inject] private TimeAligner aligner = default!;
+		[Inject] private ComboStorage comboStorage = default!;
+		[Inject] private JudgeStorage judgeStorage = default!;
+		[Inject] private StagePositionRetriever retriever = default!;
 
 		private readonly HashSet<HitCombo> pendingCombos = new(); // overlap combos can counteract a touch
-		private HitCombo[] NearestCombos => nearestCombos ??= new HitCombo[overlapBufferCount];
-		private HitCombo[]? nearestCombos;
+		private HitCombo[] EarliestCombos => earliestCombos ??= new HitCombo[overlapBufferCount];
+		private HitCombo[]? earliestCombos;
 		private T3Time startDistance = 0;
 		private T3Time endDistance = 0;
-
-		// Constructor
-		[Inject]
-		private void Construct(
-			TimeAligner aligner,
-			ComboStorage comboStorage,
-			JudgeStorage judgeStorage,
-			StagePositionRetriever retriever)
-		{
-			this.aligner = aligner;
-			this.comboStorage = comboStorage;
-			this.judgeStorage = judgeStorage;
-			this.retriever = retriever;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Defined Functions
 		public void ProcessInput(IReadOnlyList<Touch> touches)
@@ -68,14 +51,14 @@ namespace MusicGame.Gameplay.Judge.T3
 				var position = retriever.GetPosition(touch.startScreenPosition);
 
 				var startIndex = comboStorage.GetLowerBoundIndex(chartTime - endDistance);
-				int nearestCount = 0;
-				bool isNearestPending = false;
+				int earliestNoteCount = 0;
+				bool isEarliestNotePending = false;
 				T3JudgeResult result = T3JudgeResult.LateMiss;
 				for (int i = startIndex;
 				     i < comboStorage.Combos.Count && comboStorage.Combos[i].ExpectedTime < chartTime - startDistance;
 				     i++)
 				{
-					bool isPending = false;
+					bool isCurrentNotePending = false;
 					var combo = comboStorage.Combos[i];
 					if (combo is not HitCombo { NeedTap: true } hitCombo) continue;
 					// 1. If not in range, skip
@@ -84,37 +67,39 @@ namespace MusicGame.Gameplay.Judge.T3
 					// 2. If judged and not in pending state, skip
 					if (judgeStorage.ContainsOrToContain(hitCombo))
 					{
-						if (pendingCombos.Contains(hitCombo)) isPending = true;
+						if (pendingCombos.Contains(hitCombo)) isCurrentNotePending = true;
 						else continue;
 					}
 
-					// 3. Find the nearest tap and judge it
-					if (nearestCount == 0)
+					// 3. Find the first tap which can be judged and judge it. Combos are scanned in ascending time order.
+					if (earliestNoteCount == 0)
 					{
 						if (!tapConfig.IsInJudgeRange(combo.ExpectedTime, chartTime, out result)) continue;
-						NearestCombos[0] = hitCombo;
-						nearestCount++;
-						isNearestPending = isPending;
+						EarliestCombos[0] = hitCombo;
+						earliestNoteCount++;
+						isEarliestNotePending = isCurrentNotePending;
 					}
-					else if (nearestCount < overlapBufferCount)
+					// 4. Find taps which are at the "same" time with the earliest tap
+					else if (earliestNoteCount < overlapBufferCount)
 					{
-						var nearestDistance = Mathf.Abs(NearestCombos[0].ExpectedTime - chartTime);
-						var currentDistance = Mathf.Abs(hitCombo.ExpectedTime - chartTime);
+						var baseTime = EarliestCombos[0].ExpectedTime;
 						const int tolerance = 2;
-						const int pendingDebuff = 3; // Weird naming. Anyway it narrows pending notes' judge range
-						if (!isPending && isNearestPending) nearestDistance *= pendingDebuff;
-						if (currentDistance < nearestDistance - tolerance)
+						const int pendingDebuff = 3; // A fresh combo can take over a pending one even if it is a bit later
+						if (!isCurrentNotePending && isEarliestNotePending)
 						{
-							if (!tapConfig.IsInJudgeRange(combo.ExpectedTime, chartTime, out result)) continue;
-							NearestCombos[0] = hitCombo;
-							nearestCount = 1;
-							isNearestPending = isPending;
+							if (hitCombo.ExpectedTime - baseTime <= tolerance * pendingDebuff)
+							{
+								if (!tapConfig.IsInJudgeRange(combo.ExpectedTime, chartTime, out result)) continue;
+								EarliestCombos[0] = hitCombo;
+								earliestNoteCount = 1;
+								isEarliestNotePending = false;
+							}
 						}
-						else if (Mathf.Abs(currentDistance - nearestDistance) <= tolerance)
+						else if (hitCombo.ExpectedTime - baseTime <= tolerance)
 						{
-							NearestCombos[nearestCount] = hitCombo;
-							nearestCount++;
-							if (isNearestPending) isNearestPending = isPending;
+							EarliestCombos[earliestNoteCount] = hitCombo;
+							earliestNoteCount++;
+							if (isEarliestNotePending) isEarliestNotePending = isCurrentNotePending;
 						}
 					}
 					else
@@ -124,9 +109,9 @@ namespace MusicGame.Gameplay.Judge.T3
 				}
 
 				// If there is any combo, it must have a judge result.
-				for (var i = 0; i < nearestCount; i++)
+				for (var i = 0; i < earliestNoteCount; i++)
 				{
-					var combo = NearestCombos[i];
+					var combo = EarliestCombos[i];
 					if (pendingCombos.Contains(combo))
 					{
 						pendingCombos.Remove(combo);
@@ -140,7 +125,7 @@ namespace MusicGame.Gameplay.Judge.T3
 							JudgedTouch = touch,
 							JudgeResult = result
 						});
-						if (nearestCount > 1) pendingCombos.Add(combo);
+						if (earliestNoteCount > 1) pendingCombos.Add(combo);
 					}
 				}
 			}

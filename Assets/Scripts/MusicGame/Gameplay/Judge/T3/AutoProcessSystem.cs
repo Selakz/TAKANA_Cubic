@@ -3,16 +3,14 @@
 using System;
 using System.Collections.Generic;
 using MusicGame.Gameplay.Audio;
-using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using UnityEngine.InputSystem.EnhancedTouch;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Judge.T3
 {
-	public class AutoProcessSystem : T3MonoBehaviour, IInputProcessSystem, ISelfInstaller
+	public class AutoProcessSystem : HierarchySystem<AutoProcessSystem>, IInputProcessSystem
 	{
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -24,25 +22,11 @@ namespace MusicGame.Gameplay.Judge.T3
 		};
 
 		// Private
-		private IGameAudioPlayer music = default!;
-		private ComboStorage comboStorage = default!;
-		private JudgeStorage judgeStorage = default!;
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private ComboStorage comboStorage = default!;
+		[Inject] private JudgeStorage judgeStorage = default!;
 
 		private int nextIndex = 0;
-
-		// Constructor
-		[Inject]
-		private void Construct(
-			IGameAudioPlayer music,
-			ComboStorage comboStorage,
-			JudgeStorage judgeStorage)
-		{
-			this.music = music;
-			this.comboStorage = comboStorage;
-			this.judgeStorage = judgeStorage;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 
 		// Defined Functions
 		public void ProcessInput(IReadOnlyList<Touch> touches)
@@ -66,7 +50,7 @@ namespace MusicGame.Gameplay.Judge.T3
 				}
 
 				nextIndex++;
-				if (nextIndex >= touches.Count) break;
+				if (nextIndex >= comboStorage.Combos.Count) break;
 				combo = comboStorage.Combos[nextIndex];
 			}
 		}
