@@ -45,6 +45,9 @@ namespace MusicGame.Gameplay.Level
 		[MaxValue(5f)]
 		public NotifiableProperty<float> NoteThicknessRatio { get; set; } = new(1f);
 
+		[Description("DetailedFastLateIndicator")]
+		public NotifiableProperty<bool> DetailedFastLateIndicator { get; set; } = new(false);
+
 		[Description("CameraPosition")]
 		public NotifiableProperty<Vector3> CameraPosition { get; set; } = new(Vector3.zero);
 

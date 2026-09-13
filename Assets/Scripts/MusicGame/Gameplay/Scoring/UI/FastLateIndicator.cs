@@ -3,11 +3,13 @@
 using System;
 using MusicGame.Gameplay.Judge;
 using MusicGame.Gameplay.Judge.T3;
+using MusicGame.Gameplay.Level;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Movement;
 using T3Framework.Runtime.Threading;
 using T3Framework.Runtime.VContainer;
+using T3Framework.Static;
 using TMPro;
 using UnityEngine;
 using VContainer;
@@ -15,21 +17,15 @@ using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Scoring.UI
 {
-	[Serializable]
-	public struct FastLateData
-	{
-		public string description;
-		public Color color;
-	}
-
 	public class FastLateIndicator : T3MonoBehaviour, ISelfInstaller
 	{
 		// Serializable and Public
 		[SerializeField] private T3JudgeResultConfig config = default!;
-		[SerializeField] private FastLateData fastData;
-		[SerializeField] private FastLateData lateData;
 		[SerializeField] private TextMeshProUGUI text = default!;
+		[SerializeField] private TextMeshProUGUI offsetText = default!;
 		[SerializeField] private FloatMovementContainer movement = default!;
+		[SerializeField] private int lightThresholdAbsMilli = 20;
+		[SerializeField] private float lightAlpha = 0.25f;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -44,25 +40,38 @@ namespace MusicGame.Gameplay.Scoring.UI
 				item =>
 				{
 					if (item is not IT3JudgeItem judgeItem) return;
-					switch (config.Data[judgeItem.JudgeResult].fastLateStatus)
+					bool isDetailed = ISingleton<PlayfieldSetting>.Instance.DetailedFastLateIndicator &&
+					                  !config.IsOffCombo(judgeItem.JudgeResult);
+					if (!isDetailed && config.Data[judgeItem.JudgeResult].fastLateStatus == 0) return;
+					var fastLateData = config.GetFastLateData(judgeItem);
+					if (fastLateData.offsetMilli == 0) return;
+
+					text.text = fastLateData.description;
+					var color = Mathf.Abs(fastLateData.offsetMilli) < lightThresholdAbsMilli
+						? fastLateData.color with { a = lightAlpha }
+						: fastLateData.color;
+					text.color = color;
+					if (isDetailed)
 					{
-						case 0:
-							return;
-						case < 0:
-							text.text = fastData.description;
-							text.color = fastData.color;
-							break;
-						case > 0:
-							text.text = lateData.description;
-							text.color = lateData.color;
-							break;
+						offsetText.text = $"{fastLateData.offsetMilli:+0;-0;0}ms";
+						offsetText.color = color;
 					}
 
 					text.gameObject.SetActive(true);
+					if (isDetailed) offsetText.gameObject.SetActive(true);
+
 					movement.Move(
 						() => text.transform.localScale.x,
-						value => text.transform.localScale = new(value, value, 1));
-					hideAction.Invoke(() => text.gameObject.SetActive(false), movement.Length);
+						value =>
+						{
+							text.transform.localScale = new(value, value, 1);
+							if (isDetailed) offsetText.transform.localScale = new(value, value, 1);
+						});
+					hideAction.Invoke(() =>
+					{
+						text.gameObject.SetActive(false);
+						if (isDetailed) offsetText.gameObject.SetActive(false);
+					}, movement.Length);
 				})
 		};
 
