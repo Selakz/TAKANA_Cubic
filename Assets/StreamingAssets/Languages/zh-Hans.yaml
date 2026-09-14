@@ -267,6 +267,9 @@ Tutorial:
 
 # It's so boring chore. LLM helps me with this.
 Setting:
+  ExperimentalSetting:
+    Header: 实验性设置
+    UseExperimentalAudioPlayer: 实验性播放器 (如果旧播放器存在延迟问题)
   SelectSetting:
     Header: 点选设置
     TrackSelectedColor: 轨道被选中时的颜色

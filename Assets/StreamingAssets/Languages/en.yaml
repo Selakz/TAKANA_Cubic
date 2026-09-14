@@ -266,6 +266,9 @@ Tutorial:
   Plugin: Editor plugin system
 
 Setting:
+  ExperimentalSetting:
+    Header: Experimental Settings
+    UseExperimentalAudioPlayer: Use experimental audio player (if old one has lag)
   SelectSetting:
     Header: Selection Settings
     TrackSelectedColor: Color when track is selected

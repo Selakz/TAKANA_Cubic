@@ -2068,6 +2068,8 @@ MonoBehaviour:
   text: {fileID: 1746824111}
   offsetText: {fileID: 1797027565}
   movement: {fileID: 460439450}
+  lightThresholdAbsMilli: 20
+  lightAlpha: 0.25
 --- !u!1 &586666240
 GameObject:
   m_ObjectHideFlags: 0
@@ -5749,6 +5751,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameAudioPlayer: {fileID: 130195030}
+  isExperimental: 1
+  minUpdatePace: 0.9
+  maxUpdatePace: 1.1
+  reAlignThreshold: 0.1
+  reAlignCooldown: 0.5
 --- !u!4 &2081169457
 Transform:
   m_ObjectHideFlags: 0

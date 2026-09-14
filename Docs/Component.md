@@ -1,0 +1,3 @@
+- 通常继承[](../Assets/Scripts/T3Framework/Runtime/ECS/IComponent.cs)里的`IComponent<T>`类
+- 类里定义的每个属性都尽量使用`NotifiableProperty<T>`来定义
+- 在构造函数里订阅每个`NotifiableProperty<T>`，在它们变化时触发`IComponent.OnUpdate`。
