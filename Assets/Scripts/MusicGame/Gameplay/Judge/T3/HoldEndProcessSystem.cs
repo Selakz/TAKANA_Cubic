@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
-using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
@@ -51,15 +50,12 @@ namespace MusicGame.Gameplay.Judge.T3
 		{
 			public HoldEndCombo Combo { get; set; }
 
-			public bool IsOnTrack { get; set; }
+			public float OutTimer { get; set; }
 
-			public T3Time OffTrackTime { get; set; }
-
-			public HoldEndState(HoldEndCombo combo, bool isOnTrack, T3Time offTrackTime)
+			public HoldEndState(HoldEndCombo combo)
 			{
 				Combo = combo;
-				IsOnTrack = isOnTrack;
-				OffTrackTime = offTrackTime;
+				OutTimer = 0;
 			}
 		}
 
@@ -102,13 +98,8 @@ namespace MusicGame.Gameplay.Judge.T3
 						else
 						{
 							// 2-2. Accumulate the time off the track
-							if (state.IsOnTrack)
-							{
-								state.IsOnTrack = false;
-								state.OffTrackTime = chartTime;
-							}
-
-							if (chartTime - state.OffTrackTime >= holdOutTime) AddEarlyMiss(state);
+							state.OutTimer += Time.deltaTime;
+							if (state.OutTimer >= holdOutTime) AddEarlyMiss(state);
 							else return false;
 						}
 
@@ -116,8 +107,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					}
 
 					// 3. Holding on the track
-					state.IsOnTrack = true;
-					state.OffTrackTime = T3Time.MaxValue;
+					state.OutTimer = 0;
 					if (chartTime < timeEnd - holdGraceTime) return false;
 					Complete(state);
 					return true;
@@ -133,7 +123,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					var rightEdge = track.Movement.GetRightPos(chartTime);
 					if (leftEdge > rightEdge) (leftEdge, rightEdge) = (rightEdge, leftEdge);
 					return leftEdge - T3ComboFactory.ExtraRange <= maxPosition &&
-					       rightEdge >= minPosition + T3ComboFactory.ExtraRange;
+					       rightEdge + T3ComboFactory.ExtraRange >= minPosition;
 				}
 
 				void Complete(HoldEndState state)
@@ -205,7 +195,7 @@ namespace MusicGame.Gameplay.Judge.T3
 
 			var id = touch.touchId;
 			if (!touchMap.ContainsKey(id)) touchMap.Add(id, new List<HoldEndState>(5));
-			touchMap[id].Add(new HoldEndState(endCombo, true, 0));
+			touchMap[id].Add(new HoldEndState(endCombo));
 		}
 	}
 }
