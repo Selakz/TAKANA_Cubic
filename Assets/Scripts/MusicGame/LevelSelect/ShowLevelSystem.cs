@@ -18,6 +18,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VContainer;
+using VContainer.Unity;
 
 namespace MusicGame.LevelSelect
 {
@@ -50,14 +51,14 @@ namespace MusicGame.LevelSelect
 	public class ShowLevelSystem : HierarchySystem<ShowLevelSystem>
 	{
 		// Serializable and Public
-		[SerializeField] private ViewPoolInstaller levelPanelInstaller = default!;
 		[SerializeField] private DifficultyConfig difficultyConfig = default!;
 		[SerializeField] private SongInfoPanel songInfoPanel = default!;
-		[SerializeField] private ScrollRect scrollRect = default!;
+		[SerializeField] private LevelFancyScrollView levelScrollView = default!;
 		[SerializeField] private TMP_Dropdown packDropdown = default!;
 		[SerializeField] private TMP_Dropdown sortDropdown = default!;
 		[SerializeField] private Button ascendButton = default!;
 		[SerializeField] private Image ascendIcon = default!;
+		[SerializeField] private float scrollDuration;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -67,7 +68,7 @@ namespace MusicGame.LevelSelect
 				DatasetRegistrar<LevelComponent<GameplayPreference>>.RegisterTarget.DataAdded,
 				component =>
 				{
-					Sort(difficulty);
+					SortDataset(difficulty);
 					if (component.Model.SongInfo.Value is { } songInfo && CurrentPack.Contains(songInfo))
 					{
 						viewPool.Add(component);
@@ -76,31 +77,26 @@ namespace MusicGame.LevelSelect
 			new DatasetRegistrar<LevelComponent<GameplayPreference>>(levelDataset,
 				DatasetRegistrar<LevelComponent<GameplayPreference>>.RegisterTarget.DataRemoved,
 				component => viewPool.Remove(component)),
-			new ViewPoolRegistrar<LevelComponent<GameplayPreference>>(viewPool,
-				ViewPoolRegistrar<LevelComponent<GameplayPreference>>.RegisterTarget.Get,
-				handler =>
-				{
-					if (isRestoring) return;
-					var component = viewPool[handler]!;
-					if (viewPool.Count == 1)
-					{
-						levelInfo.Value = component.Model;
-						if (component.Model.SongInfo.Value?.Difficulties is { } difficulties)
-						{
-							difficulty.Value = difficulties.Keys.DefaultIfEmpty(3).Max();
-						}
-					}
-				}),
 			new ViewPoolLifetimeRegistrar<LevelComponent<GameplayPreference>>(viewPool,
 				handler => new LevelPanelRegistrar(handler.Script<LevelPanel>(), levelInfo, difficulty,
 					viewPool[handler]!, difficultyConfig, preEntryPanel)),
-			new ListDatasetViewSorter<LevelComponent<GameplayPreference>>(levelDataset, viewPool),
 			new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(levelInfo, info =>
 			{
 				memoryService.SyncLevelInfo(info);
 				if (info is null) return;
 				songInfoPanel.LoadCover(info.Cover.Value);
 				songInfoPanel.LoadSongInfo(info.SongInfo.Value);
+				var index = 0;
+				foreach (var c in viewPool)
+				{
+					if (ReferenceEquals(c.Model, info))
+					{
+						levelScrollView.ScrollTo(index, scrollDuration);
+						return;
+					}
+
+					index++;
+				}
 			}),
 			new PropertyRegistrar<int>(difficulty, diff =>
 			{
@@ -164,18 +160,16 @@ namespace MusicGame.LevelSelect
 		private SortMethod? CurrentSort => sortOptions is { Length: > 0 } ? sortOptions[sortDropdown.value] : null;
 
 		private bool isAscend = true;
-		private bool isRestoring = false;
 
 		// Constructor
 		public override void SelfInstall(IContainerBuilder builder)
 		{
 			base.SelfInstall(builder);
-			levelPanelInstaller.Register<ViewPool<LevelComponent<GameplayPreference>>,
-				LevelComponent<GameplayPreference>>(builder, Lifetime.Singleton);
+			builder.RegisterComponent(levelScrollView).As<IViewPool<LevelComponent<GameplayPreference>>>();
 		}
 
 		// Defined Functions
-		private void Sort(int diff)
+		private void SortDataset(int diff)
 		{
 			levelDataset.Sort((a, b) =>
 			{
@@ -207,36 +201,25 @@ namespace MusicGame.LevelSelect
 
 		private void SortAndKeepSelectedPosition(int diff)
 		{
-			var content = scrollRect.content;
-			LevelComponent<GameplayPreference>? selectedComponent = null;
+			viewPool.Clear();
+			SortDataset(diff);
+			foreach (var level in levelDataset) viewPool.Add(level);
 			if (levelInfo.Value is not null)
 			{
-				foreach (var c in levelDataset)
+				var index = 0;
+				foreach (var c in viewPool)
 				{
 					if (ReferenceEquals(c.Model, levelInfo.Value))
 					{
-						selectedComponent = c;
-						break;
+						levelScrollView.JumpTo(index);
+						return;
 					}
+
+					index++;
 				}
 			}
 
-			var selectedTransform = selectedComponent is not null ? viewPool[selectedComponent]?.transform : null;
-			float contentAnchoredYBefore = content.anchoredPosition.y;
-			float itemLocalYBefore = selectedTransform?.localPosition.y ?? 0;
-
-			Sort(diff);
-			if (selectedTransform is null)
-			{
-				scrollRect.verticalNormalizedPosition = 1;
-				return;
-			}
-
-			LayoutRebuilder.ForceRebuildLayoutImmediate(content);
-			float itemLocalYAfter = selectedTransform.localPosition.y;
-			content.anchoredPosition = new Vector2(
-				content.anchoredPosition.x,
-				contentAnchoredYBefore + itemLocalYBefore - itemLocalYAfter);
+			levelScrollView.JumpTo(0);
 		}
 
 		private void ApplyPackFilter()
@@ -251,7 +234,6 @@ namespace MusicGame.LevelSelect
 
 		private void Restore()
 		{
-			isRestoring = true;
 			var setting = ISingletonSetting<LevelSelectSetting>.Instance;
 
 			var sortIndex = string.IsNullOrEmpty(setting.LastSortId)
@@ -283,7 +265,6 @@ namespace MusicGame.LevelSelect
 			}
 
 			SortAndKeepSelectedPosition(difficulty);
-			isRestoring = false;
 			return;
 
 			LevelComponent<GameplayPreference>? FindLastSelectedComponent()
