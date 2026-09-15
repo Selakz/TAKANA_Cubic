@@ -35,7 +35,11 @@ namespace EditorPlugin.EditorIntegration.UI
 			new ButtonRegistrar(refreshButton, service.Refresh),
 			new ButtonRegistrar(loadZipButton, () =>
 			{
+#if !UNITY_ANDROID && !UNITY_IOS
 				var path = FileBrowser.OpenFileDialog("Select plugin zip", "", new ExtensionFilter("Zip Files", "zip"));
+#else
+				var path = "";
+#endif
 				if (!string.IsNullOrEmpty(path) && service.LoadZip(path!))
 					T3Logger.Log("Notice", $"EditorPlugin_LoadPluginSuccess|{path}", T3LogType.Success);
 				else
