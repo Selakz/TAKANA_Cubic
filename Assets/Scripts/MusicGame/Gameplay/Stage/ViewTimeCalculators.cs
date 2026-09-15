@@ -15,6 +15,10 @@ namespace MusicGame.Gameplay.Stage
 {
 	public class T3ViewTimeCalculator : ITimeCalculator<ChartComponent>
 	{
+		private readonly float speedRate;
+
+		public T3ViewTimeCalculator(float speedRate = 1) => this.speedRate = speedRate;
+
 		public T3Time GetTimeInstantiate(ChartComponent? item)
 		{
 			if (item is null) return T3Time.MinValue;
@@ -22,8 +26,10 @@ namespace MusicGame.Gameplay.Stage
 			{
 				INote note =>
 					// Note: At least one of them is T3Time.MinValue
-					Mathf.Max(note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.UpperThreshold, true),
-						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.LowerThreshold, false)),
+					Mathf.Max(
+						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.UpperThreshold / speedRate, true),
+						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.LowerThreshold / speedRate,
+							false)),
 				ITrack track => track.TimeStart,
 				StaticJudgeLine line => line.TimeMin,
 				_ => T3Time.MinValue
@@ -60,6 +66,10 @@ namespace MusicGame.Gameplay.Stage
 
 	public class FallingViewTimeCalculator : ITimeCalculator<ChartComponent>
 	{
+		private readonly float speedRate;
+
+		public FallingViewTimeCalculator(float speedRate = 1) => this.speedRate = speedRate;
+
 		public T3Time GetTimeInstantiate(ChartComponent? item)
 		{
 			if (item is null) return T3Time.MinValue;
@@ -67,9 +77,11 @@ namespace MusicGame.Gameplay.Stage
 			{
 				INote note =>
 					// Note: At least one of them is T3Time.MinValue
-					Mathf.Max(note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.UpperThreshold, true),
-						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.LowerThreshold, false)),
-				ITrack track => track.TimeStart - ISingleton<PlayfieldSetting>.Instance.UpperThreshold,
+					Mathf.Max(
+						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.UpperThreshold / speedRate, true),
+						note.Movement.FirstTimeWhen(ISingleton<PlayfieldSetting>.Instance.LowerThreshold / speedRate,
+							false)),
+				ITrack track => track.TimeStart - ISingleton<PlayfieldSetting>.Instance.UpperThreshold / speedRate,
 				StaticJudgeLine line => line.TimeMin,
 				_ => T3Time.MinValue
 			};
@@ -108,14 +120,23 @@ namespace MusicGame.Gameplay.Stage
 		private static readonly T3ViewTimeCalculator t3ViewTimeCalculator = new();
 		private static readonly FallingViewTimeCalculator fallingViewTimeCalculator = new();
 
-		public static ITimeCalculator<ChartComponent> GetViewTimeCalculator(this GameplayStageSkinConfig skinConfig)
+		public static ITimeCalculator<ChartComponent> GetViewTimeCalculator(this GameplayStageSkinConfig skinConfig,
+			float? speedRate = null)
 		{
-			return skinConfig.trackBehaviour switch
-			{
-				TrackBehaviour.Instant => t3ViewTimeCalculator,
-				TrackBehaviour.Falling => fallingViewTimeCalculator,
-				_ => throw new ArgumentOutOfRangeException()
-			};
+			if (speedRate is null)
+				return skinConfig.trackBehaviour switch
+				{
+					TrackBehaviour.Instant => t3ViewTimeCalculator,
+					TrackBehaviour.Falling => fallingViewTimeCalculator,
+					_ => throw new ArgumentOutOfRangeException()
+				};
+			else
+				return skinConfig.trackBehaviour switch
+				{
+					TrackBehaviour.Instant => new T3ViewTimeCalculator(speedRate.Value),
+					TrackBehaviour.Falling => new FallingViewTimeCalculator(speedRate.Value),
+					_ => throw new ArgumentOutOfRangeException()
+				};
 		}
 	}
 }

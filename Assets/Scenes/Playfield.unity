@@ -1816,6 +1816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d8a31d6833348a1a24b880d18a75fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useSpeed: 1
 --- !u!1 &514896165
 GameObject:
   m_ObjectHideFlags: 0
@@ -2068,6 +2069,8 @@ MonoBehaviour:
   text: {fileID: 1746824111}
   offsetText: {fileID: 1797027565}
   movement: {fileID: 460439450}
+  lightThresholdAbsMilli: 20
+  lightAlpha: 0.25
 --- !u!1 &586666240
 GameObject:
   m_ObjectHideFlags: 0
@@ -5749,6 +5752,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameAudioPlayer: {fileID: 130195030}
+  minUpdatePace: 0.9
+  maxUpdatePace: 1.1
+  reAlignThreshold: 0.1
+  reAlignCooldown: 0.5
 --- !u!4 &2081169457
 Transform:
   m_ObjectHideFlags: 0
