@@ -52,7 +52,7 @@ namespace MusicGame.Gameplay.Judge.T3
 					// 3. Judge it scheduled
 					judgeStorage.AddJudgeItemScheduled(new HitJudgeItem(hitCombo)
 					{
-						ActualTime = touch.phase == TouchPhase.Began ? chartTime : hitCombo.ExpectedTime,
+						ActualTime = hitCombo.ExpectedTime,
 						TapPosition = position,
 						JudgedTouch = touch,
 						JudgeResult = T3JudgeResult.CriticalJust

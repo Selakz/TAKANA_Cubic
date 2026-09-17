@@ -12,6 +12,7 @@ namespace App
 	// and on every focus gain.
 	public sealed class AndroidSystemBarsHider : MonoBehaviour
 	{
+#if UNITY_ANDROID
 		private const int BehaviorShowTransientBarsBySwipe = 2;
 
 		private const int LegacyImmersiveStickyFlags =
@@ -104,5 +105,6 @@ namespace App
 				return version.GetStatic<int>("SDK_INT");
 			}
 		}
+#endif
 	}
 }

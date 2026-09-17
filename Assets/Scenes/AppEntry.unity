@@ -518,7 +518,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb640971abb042e0a7fd04ecb04e31c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: App::App.AndroidSystemBarsHider
-  retryInterval: 0.5
 --- !u!4 &666352851
 Transform:
   m_ObjectHideFlags: 0

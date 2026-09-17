@@ -84,10 +84,11 @@ namespace MusicGame.Gameplay.Judge.T3
 					{
 						var baseTime = EarliestCombos[0].ExpectedTime;
 						const int tolerance = 2;
-						const int pendingDebuff = 3; // A fresh combo can take over a pending one even if it is a bit later
+						const int pendingDebuff = 3; // A fresh combo can take over a pending one if it's nearer to the input
 						if (!isCurrentNotePending && isEarliestNotePending)
 						{
-							if (hitCombo.ExpectedTime - baseTime <= tolerance * pendingDebuff)
+							if (Mathf.Abs(hitCombo.ExpectedTime - chartTime) <=
+							    Mathf.Abs(baseTime - chartTime) * pendingDebuff)
 							{
 								if (!tapConfig.IsInJudgeRange(combo.ExpectedTime, chartTime, out result)) continue;
 								EarliestCombos[0] = hitCombo;
