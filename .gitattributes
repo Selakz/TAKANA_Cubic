@@ -1,2 +1,31 @@
-yourfile filter=lfs diff=lfs merge=lfs -text
-. filter=lfs diff=lfs merge=lfs -text
+# Normalize all text files to LF in the repository and in the working tree
+# (keeps Git from reporting line-ending-only changes on Windows).
+* text=auto eol=lf
+
+# Unity binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.psd binary
+*.tga binary
+*.gif binary
+*.bmp binary
+*.exr binary
+*.hdr binary
+*.dds binary
+*.tif binary
+*.tiff binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.aac binary
+*.m4a binary
+*.flac binary
+*.fbx binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.exe binary
+*.pdb binary
+*.pdf binary
+*.zip binary

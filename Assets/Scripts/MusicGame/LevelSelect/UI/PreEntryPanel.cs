@@ -31,6 +31,8 @@ namespace MusicGame.LevelSelect.UI
 		[SerializeField] private FloatValueAdjuster speedAdjuster = default!;
 		[SerializeField] private FloatValueAdjuster pitchAdjuster = default!;
 		[SerializeField] private Toggle autoPlayToggle = default!;
+		[SerializeField] private Toggle mirrorToggle = default!;
+		[SerializeField] private Toggle detailToggle = default!;
 		[SerializeField] private Button startButton = default!;
 		[SerializeField] private Button closeButton = default!;
 		[SerializeField] private int playfieldSceneIndex;
@@ -45,6 +47,8 @@ namespace MusicGame.LevelSelect.UI
 				{
 					new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(rawLevelInfo, OnLevelSelectionChanged),
 					new PropertyRegistrar<int>(difficulty, diff => songInfoPanel.LoadDifficulty(diff)),
+					new PropertyRegistrar<bool>(ISingletonSetting<PlayfieldSetting>.Instance.DetailedFastLateIndicator,
+						b => { detailToggle.SetIsOnWithoutNotify(b); }),
 
 					new PropertyRegistrar<float>(speedAdjuster.Property, speed =>
 					{
@@ -60,6 +64,16 @@ namespace MusicGame.LevelSelect.UI
 					{
 						if (rawLevelInfo.Value?.Preference.Value is { } preference)
 							preference.IsAuto = isOn;
+					}),
+					new ToggleRegistrar(mirrorToggle, isOn =>
+					{
+						if (rawLevelInfo.Value?.Preference.Value is { } preference)
+							preference.IsMirror = isOn;
+					}),
+					new ToggleRegistrar(detailToggle, isOn =>
+					{
+						ISingletonSetting<PlayfieldSetting>.Instance.DetailedFastLateIndicator.Value = isOn;
+						ISingletonSetting<PlayfieldSetting>.SaveInstance();
 					}),
 					new ButtonRegistrar(startButton, () => OnStartGame().Forget()),
 					new ButtonRegistrar(closeButton, Hide)
@@ -102,6 +116,7 @@ namespace MusicGame.LevelSelect.UI
 				speedAdjuster.Property.Value = ISingletonSetting<PlayfieldSetting>.Instance.Speed;
 				pitchAdjuster.Property.Value = preference.Pitch;
 				autoPlayToggle.SetIsOnWithoutNotify(preference.IsAuto);
+				mirrorToggle.SetIsOnWithoutNotify(preference.IsMirror);
 
 				foreach (var pair in skinToggles.Value)
 				{

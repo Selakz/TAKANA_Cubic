@@ -32,11 +32,13 @@ namespace MusicGame.Gameplay.Level
 
 		public static PackInfo All { get; } = new()
 		{
+			Id = "All",
 			Title = I18NString.FromLocalized("Setting_PackInfo_All"),
 		};
 
 		public static PackInfo Single { get; } = new()
 		{
+			Id = "Single",
 			Title = I18NString.FromLocalized("Setting_PackInfo_Single"),
 		};
 	}

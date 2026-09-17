@@ -9,7 +9,6 @@ using T3Framework.Runtime.Modifier;
 using T3Framework.Runtime.Serialization.Inspector;
 using T3Framework.Runtime.Setting;
 using UnityEngine;
-using VContainer;
 
 namespace MusicGame.Gameplay.Basic.T3
 {
@@ -20,6 +19,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		[SerializeField] private InspectorDictionary<string, SpriteRendererModifier> textures = new();
 		[SerializeField] private string[] widthTextures = default!;
 		[SerializeField] private string[] heightTextures = default!;
+		[SerializeField] private string[] thicknessTextures = default!;
 		[SerializeField] private string endTexture = default!;
 
 		public SpriteRendererModifier MainTexture => textures.Value["main"];
@@ -37,11 +37,11 @@ namespace MusicGame.Gameplay.Basic.T3
 				var modifiers = heightTextures.Select(name => textures.Value[name].SizeModifier);
 				if (!string.IsNullOrEmpty(endTexture) && textures.Value.TryGetValue(endTexture, out var endModifier))
 				{
-					endPosModifier = new Modifier<Vector2>(
+					EndPosModifier = new Modifier<Vector2>(
 						() => endModifier.Value.transform.localPosition,
 						size => endModifier.Value.transform.localPosition = size,
 						_ => endModifier.Value.transform.localPosition);
-					modifiers = modifiers.Append(endPosModifier);
+					modifiers = modifiers.Append(EndPosModifier);
 				}
 
 				heightModifiers = modifiers.ToArray();
@@ -49,7 +49,16 @@ namespace MusicGame.Gameplay.Basic.T3
 			}
 		}
 
-		public Modifier<Vector2> PositionModifier { get; private set; } = default!;
+		public IReadOnlyCollection<Modifier<Vector2>> ThicknessModifiers => thicknessModifiers ??=
+			thicknessTextures.Select(name => textures.Value[name].SizeModifier).ToArray();
+
+		public Modifier<Vector2>? EndPosModifier { get; private set; }
+
+		public Modifier<Vector2> PositionModifier =>
+			positionModifier ??= new Modifier<Vector2>(
+				() => Position,
+				position => Position = position,
+				_ => new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold + 1));
 
 		public Modifier<Color>[] ColorModifiers =>
 			colorModifiers ??= textures.Value.Values.Select(t => t.ColorModifier).ToArray();
@@ -72,32 +81,11 @@ namespace MusicGame.Gameplay.Basic.T3
 			}
 		}
 
+		private Modifier<Vector2>? positionModifier;
 		private Modifier<Color>[]? colorModifiers;
 		private Modifier<Vector2>[]? widthModifiers;
 		private Modifier<Vector2>[]? heightModifiers;
-		private Modifier<Vector2>? endPosModifier;
+		private Modifier<Vector2>[]? thicknessModifiers;
 		private Dictionary<string, RendererModifier>? texturesAsBase;
-
-		// System Functions
-		[Inject]
-		public void BeforeAwake()
-		{
-			PositionModifier = new Modifier<Vector2>(
-				() => Position,
-				position => Position = position,
-				_ => new(0, ISingletonSetting<PlayfieldSetting>.Instance.UpperThreshold + 1));
-		}
-
-		private void Update()
-		{
-			PositionModifier.Update();
-			foreach (var modifier in Textures.Values)
-			{
-				modifier.SizeModifier.Update();
-				modifier.ColorModifier.Update();
-			}
-
-			endPosModifier?.Update();
-		}
 	}
 }

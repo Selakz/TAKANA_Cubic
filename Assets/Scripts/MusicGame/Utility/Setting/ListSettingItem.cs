@@ -3,13 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using T3Framework.Runtime.Event;
-using T3Framework.Runtime.ListRender;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Setting;
 using T3Framework.Static.Setting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MusicGame.Utility.Setting
 {
@@ -24,10 +23,8 @@ namespace MusicGame.Utility.Setting
 		: SingleValueSettingItem<List<TData>> where TItem : MonoBehaviour, IListItemSettingItem<TData>
 	{
 		// Serializable and Public
-		[SerializeField] private ListRendererInt listRenderer = default!;
-
-		/// <summary> Will only be called once to initialize list renderer. </summary>
-		protected abstract LazyPrefab ListItemPrefab { get; }
+		[SerializeField] private PrefabObject listItemPrefab = default!;
+		[SerializeField] private RectTransform listContent = default!;
 
 		protected override void InitializeSucceed()
 		{
@@ -35,39 +32,44 @@ namespace MusicGame.Utility.Setting
 			var maxLengthAttribute = TargetPropertyInfo!.GetCustomAttribute<MaxLengthAttribute>();
 			if (maxLengthAttribute is not null) maxLength = maxLengthAttribute.MaxLength;
 
-			for (var i = 0; i < Math.Min(DisplayValue!.Count, maxLength); i++)
-			{
-				var data = DisplayValue![i];
-				var item = listRenderer.Add<TItem>(i);
-				item.Data = data;
-				item.OnListContentChanged += ItemOnOnListContentChanged;
-			}
+			RefreshItems();
 		}
 
 		protected override void OnPropertyValueChanged(object sender, PropertyChangedEventArgs e)
 		{
-			foreach (var item in listRenderer.Values.Select(go => go.GetComponent<TItem>()))
-			{
-				item.OnListContentChanged -= ItemOnOnListContentChanged;
-			}
-
-			listRenderer.Clear();
-			for (var i = 0; i < Math.Min(DisplayValue!.Count, maxLength); i++)
-			{
-				var data = DisplayValue![i];
-				var item = listRenderer.Add<TItem>(i);
-				item.Data = data;
-				item.OnListContentChanged += ItemOnOnListContentChanged;
-			}
-
+			RefreshItems();
 			Save();
 		}
 
 		// Private
 		private int maxLength = int.MaxValue;
+		private ViewPool<BaseComponent<TData>>? listViewPool;
+		private ViewPool<BaseComponent<TData>> ListViewPool => listViewPool ??= new(null, listItemPrefab, listContent);
+
+		// Defined Functions
+		private void RefreshItems()
+		{
+			foreach (var component in ListViewPool)
+			{
+				ListViewPool[component]!.Script<TItem>().OnListContentChanged -= ItemOnListContentChanged;
+			}
+
+			ListViewPool.Clear();
+			for (var i = 0; i < Math.Min(DisplayValue!.Count, maxLength); i++)
+			{
+				var component = new BaseComponent<TData>(DisplayValue![i]);
+				if (!ListViewPool.Add(component)) continue;
+				var item = ListViewPool[component]!.Script<TItem>();
+				item.transform.SetSiblingIndex(i);
+				item.Data = component.Model;
+				item.OnListContentChanged += ItemOnListContentChanged;
+			}
+
+			LayoutRebuilder.ForceRebuildLayoutImmediate(listContent);
+		}
 
 		// Event Handlers
-		private void ItemOnOnListContentChanged(TData? previous, TData? current)
+		private void ItemOnListContentChanged(TData? previous, TData? current)
 		{
 			bool shouldNotify = false;
 			if (previous is not null)
@@ -95,10 +97,10 @@ namespace MusicGame.Utility.Setting
 		}
 
 		// System Functions
-		protected override void Awake()
+		protected override void OnDestroy()
 		{
-			base.Awake();
-			listRenderer.Init(new() { [typeof(TItem)] = ListItemPrefab });
+			base.OnDestroy();
+			listViewPool?.Dispose();
 		}
 	}
 }

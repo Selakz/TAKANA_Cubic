@@ -6,7 +6,6 @@ using System.Reflection;
 using T3Framework.Runtime.I18N;
 using T3Framework.Static.Event;
 using T3Framework.Static.Setting;
-using TMPro;
 using UnityEngine;
 
 namespace T3Framework.Runtime.Setting
@@ -14,7 +13,7 @@ namespace T3Framework.Runtime.Setting
 	public abstract class SingleValueSettingItem<T> : T3MonoBehaviour, ISettingItem
 	{
 		// Serializable and Public
-		[SerializeField] private TMP_Text descriptionText = default!;
+		[SerializeField] private I18NTextBlock descriptionText = default!;
 
 		public T? DisplayValue
 		{
@@ -205,9 +204,10 @@ namespace T3Framework.Runtime.Setting
 		protected virtual void InitializeSucceed()
 		{
 			var descriptionAttribute = TargetPropertyInfo!.GetCustomAttribute<DescriptionAttribute>();
-			descriptionText.text = descriptionAttribute is null
+			descriptionText.SetText(descriptionAttribute is null
 				? string.Empty
-				: I18NSystem.GetText($"Setting_{ConcreteType!.Name}_{descriptionAttribute.Description}");
+				: $"Setting_{ConcreteType!.Name}_{descriptionAttribute.Description}");
+			if (descriptionAttribute is null) Debug.Log($"{TargetPropertyInfo!.Name} has not description");
 		}
 
 		/// <summary>
@@ -215,7 +215,7 @@ namespace T3Framework.Runtime.Setting
 		/// </summary>
 		protected virtual void InitializeFail()
 		{
-			descriptionText.text = $"Error fetching setting {FullClassName}.{PropertyName}";
+			descriptionText.Text.text = $"Error fetching setting {FullClassName}.{PropertyName}";
 		}
 
 		/// <summary>

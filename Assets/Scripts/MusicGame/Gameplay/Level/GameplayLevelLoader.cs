@@ -2,7 +2,10 @@
 
 using System.Linq;
 using MusicGame.Gameplay.Audio;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Stage;
+using MusicGame.Models.Track;
+using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Event;
@@ -36,6 +39,18 @@ namespace MusicGame.Gameplay.Level
 		// Defined Functions
 		public static void SetLevelInfo(LevelInfo levelInfo) => toLoadLevelInfo = levelInfo;
 
+		private static void ProcessT3Mirror(ChartInfo chart)
+		{
+			foreach (var component in chart)
+			{
+				if (component.Model is ITrack { Movement: { Movement1: ChartPosMoveList a, Movement2: ChartPosMoveList b } })
+				{
+					foreach (var item in a) item.Value.Position *= -1;
+					foreach (var item in b) item.Value.Position *= -1;
+				}
+			}
+		}
+
 		// System Functions
 		void Start()
 		{
@@ -63,6 +78,8 @@ namespace MusicGame.Gameplay.Level
 
 				judgeScoreModule.SetActive(!preference.IsAuto);
 				autoScoreModule.SetActive(preference.IsAuto);
+
+				if (preference.IsMirror) ProcessT3Mirror(toLoadLevelInfo.Chart);
 
 				music.Pitch = preference.Pitch;
 			}

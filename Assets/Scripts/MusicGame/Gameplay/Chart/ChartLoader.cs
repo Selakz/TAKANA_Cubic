@@ -52,8 +52,11 @@ namespace MusicGame.Gameplay.Chart
 			}
 
 			// Temp chart version identifier
-			if (jObject["version"] is { } token && token.Value<int>() >= 2) return ChartInfo.Deserialize(jObject);
-			else return V1ToV2Converter.DeserializeFromV1(jObject);
+			ChartInfo? chart;
+			if (jObject["version"] is { } token && token.Value<int>() >= 2) chart = ChartInfo.Deserialize(jObject);
+			else chart = V1ToV2Converter.DeserializeFromV1(jObject);
+			ChartModePreprocessor.Process(chart, true);
+			return chart;
 		}
 
 		public static ChartInfo? LoadFromFileSync(string path)
@@ -70,8 +73,11 @@ namespace MusicGame.Gameplay.Chart
 			}
 
 			// Temp chart version identifier
-			if (jObject["version"] is { } token && token.Value<int>() >= 2) return ChartInfo.Deserialize(jObject);
-			else return V1ToV2Converter.DeserializeFromV1(jObject);
+			ChartInfo? chart;
+			if (jObject["version"] is { } token && token.Value<int>() >= 2) chart = ChartInfo.Deserialize(jObject);
+			else chart = V1ToV2Converter.DeserializeFromV1(jObject);
+			ChartModePreprocessor.Process(chart, true);
+			return chart;
 		}
 	}
 }

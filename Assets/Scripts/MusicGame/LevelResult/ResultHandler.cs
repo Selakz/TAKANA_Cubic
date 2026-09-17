@@ -25,8 +25,11 @@ namespace MusicGame.LevelResult
 		[SerializeField] private RawImage coverImage = default!;
 		[SerializeField] private InfoHeaderView infoHeaderView = default!;
 		[SerializeField] private TextMeshProUGUI scoreText = default!;
+		[SerializeField] private TextMeshProUGUI highScoreText = default!;
+		[SerializeField] private TextMeshProUGUI deltaScoreText = default!;
 		[SerializeField] private List<JudgeDetailsView> judgeDetailsViews = default!;
 		[SerializeField] private string scoreFormat = string.Empty;
+		[SerializeField] private string deltaFormat = "+0;-0;0";
 		[SerializeField] private DifficultyConfig difficultyConfig = default!;
 
 		// Event Registrars
@@ -40,12 +43,18 @@ namespace MusicGame.LevelResult
 				{
 					UpdateSongInfo(levelInfo);
 					coverImage.LoadTextureCover(levelInfo.Cover ?? defaultTexture);
-					if (!preference.IsAuto && Mathf.Approximately(preference.Pitch, 1))
+					var songId = info.LevelInfo.SongInfo.Id;
+					var difficulty = info.LevelInfo.Difficulty;
+					var thisScore = Mathf.RoundToInt((float)info.Score);
+					var oldScore = ISingletonSetting<PlayInfo>.Instance.GetPlayData(songId, difficulty)?.Score;
+					var isRecorded = !preference.IsAuto && Mathf.Approximately(preference.Pitch, 1);
+					if (isRecorded)
 					{
-						ISingletonSetting<PlayInfo>.Instance.SetHighScore(
-							info.LevelInfo.SongInfo.Id, info.LevelInfo.Difficulty, Mathf.RoundToInt((float)info.Score));
+						ISingletonSetting<PlayInfo>.Instance.SetHighScore(songId, difficulty, thisScore);
 						ISingletonSetting<PlayInfo>.SaveInstance(); // TODO: Async
 					}
+
+					UpdateHighScore(thisScore, oldScore, isRecorded);
 				}
 
 				UpdateScore(info);
@@ -96,6 +105,12 @@ namespace MusicGame.LevelResult
 		private void UpdateScore(ResultInfo resultInfo)
 		{
 			scoreText.text = resultInfo.Score.ToString(scoreFormat);
+		}
+
+		private void UpdateHighScore(int thisScore, int? oldScore, bool isRecorded)
+		{
+			highScoreText.text = (oldScore ?? 0).ToString(scoreFormat);
+			deltaScoreText.text = isRecorded ? (thisScore - (oldScore ?? 0)).ToString(deltaFormat) : string.Empty;
 		}
 
 		private void UpdateJudgeDetails(ResultInfo resultInfo)

@@ -22,6 +22,8 @@ namespace MusicGame.LevelSelect
 				.WithParameter("initialValue", default(RawLevelInfo<GameplayPreference>?));
 			builder.Register<NotifiableProperty<int>>(Lifetime.Singleton) // selected difficulty
 				.WithParameter("initialValue", 3); // default to MASTER
+			builder.Register<NotifiableProperty<bool>>(Lifetime.Singleton) // all levels loaded
+				.WithParameter("initialValue", false);
 		}
 	}
 }

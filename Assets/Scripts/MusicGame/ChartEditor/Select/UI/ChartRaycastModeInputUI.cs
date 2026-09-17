@@ -45,7 +45,7 @@ namespace MusicGame.ChartEditor.Select.UI
 						presenter1.MainTexture.SortingOrderModifier.Value);
 				}
 
-				return x.Key.colliderInstanceID.CompareTo(y.Key.colliderInstanceID);
+				return x.Key.colliderEntityId.CompareTo(y.Key.colliderEntityId);
 			});
 
 		protected override NotifiableProperty<ISelectRaycastMode<ChartComponent>> RaycastMode => raycastMode;

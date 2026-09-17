@@ -2,8 +2,10 @@
 
 using System;
 using MusicGame.Gameplay.Audio;
+using MusicGame.Utility;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Static;
 using UnityEngine;
 
 namespace MusicGame.Gameplay.Judge
@@ -12,6 +14,12 @@ namespace MusicGame.Gameplay.Judge
 	{
 		// Serializable and Public
 		[SerializeField] private GameAudioPlayer gameAudioPlayer = default!;
+
+		// Experimental
+		[SerializeField] private float minUpdatePace = 0.9f;
+		[SerializeField] private float maxUpdatePace = 1.1f;
+		[SerializeField] private float reAlignThreshold = 0.1f;
+		[SerializeField] private float reAlignCooldown = 0.5f;
 
 		public event Action? OnPlay;
 
@@ -94,6 +102,12 @@ namespace MusicGame.Gameplay.Judge
 		private double startUnityTime;
 		private double pacedStartUnityTime;
 
+		// Experimental
+		private bool isExperimental;
+		private double pacedElapsed;
+		private double lastUnityTime;
+		private double lastAlignTime;
+
 		// Defined Functions
 		public void Align(T3Time chartTime, double dspTime, double unityTime)
 		{
@@ -102,6 +116,9 @@ namespace MusicGame.Gameplay.Judge
 			startUnityTime = unityTime;
 			pacedStartUnityTime = unityTime;
 			updatePace = 1;
+			pacedElapsed = 0;
+			lastUnityTime = unityTime;
+			lastAlignTime = unityTime;
 		}
 
 		public T3Time GetChartTime(double inputTime)
@@ -126,16 +143,53 @@ namespace MusicGame.Gameplay.Judge
 		}
 
 		// System Functions
+		void Start()
+		{
+			isExperimental = ISingleton<ExperimentalSetting>.Instance.UseExperimentalAudioPlayer;
+		}
+
 		void Update()
 		{
-			// Trick from https://github.com/Arcthesia/ArcCreate
-			var dspElapsed = AudioSettings.dspTime - startDspTime;
-			var unityElapsed = Time.realtimeSinceStartupAsDouble - startUnityTime;
-			updatePace = unityElapsed < 0 + Mathf.Epsilon
-				? 1
-				: Mathf.Lerp(updatePace, (float)(dspElapsed / unityElapsed), 0.1f);
-			unityElapsed *= updatePace;
-			pacedStartUnityTime = Time.realtimeSinceStartupAsDouble - unityElapsed;
+			var now = Time.realtimeSinceStartupAsDouble;
+			if (isExperimental)
+			{
+				UpdatePacing();
+			}
+			else
+			{
+				// Trick from https://github.com/Arcthesia/ArcCreate
+				var dspElapsed = AudioSettings.dspTime - startDspTime;
+				var unityElapsed = now - startUnityTime;
+				updatePace = unityElapsed < 0 + Mathf.Epsilon
+					? 1
+					: Mathf.Lerp(updatePace, (float)(dspElapsed / unityElapsed), 0.1f);
+				unityElapsed *= updatePace;
+				pacedStartUnityTime = now - unityElapsed;
+			}
+
+			return;
+
+			void UpdatePacing()
+			{
+				var dspElapsed = AudioSettings.dspTime - startDspTime;
+				var unityElapsed = now - startUnityTime;
+				var targetPace = unityElapsed < 0 + Mathf.Epsilon
+					? 1
+					: (float)(dspElapsed / unityElapsed);
+				updatePace = Mathf.Clamp(Mathf.Lerp(updatePace, targetPace, 0.1f), minUpdatePace, maxUpdatePace);
+				pacedElapsed += (now - lastUnityTime) * updatePace;
+				lastUnityTime = now;
+				pacedStartUnityTime = now - pacedElapsed;
+
+				if (chartTime is not null &&
+				    IsPlaying &&
+				    Mathf.Abs((float)(chartTime.Value.Second + pacedElapsed * Pitch - gameAudioPlayer.ChartTime.Second)) >
+				    reAlignThreshold &&
+				    now - lastAlignTime > reAlignCooldown)
+				{
+					Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, now);
+				}
+			}
 		}
 	}
 }

@@ -68,4 +68,12 @@ MonoBehaviour:
         color: {r: 1, g: 1, b: 1, a: 1}
         fastLateStatus: 0
         worsePriority: 5
-  offComboResults: 0000000008000000
+  offComboResults: 0000000008000000i
+  fastSampleData:
+    description: FAST
+    color: {r: 0.261, g: 0.731, b: 1, a: 1}
+    offsetMilli: 0
+  lateSampleData:
+    description: LATE
+    color: {r: 0.948, g: 0.349, b: 1, a: 1}
+    offsetMilli: 0

@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using Cysharp.Threading.Tasks;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
+using MusicGame.Models;
 using MusicGame.Models.JudgeLine;
 using T3Framework.Preset.Event;
 using T3Framework.Preset.UICollection;
@@ -90,7 +92,7 @@ namespace MusicGame.EditorEntry
 			ZipArchiveEntry projZipEntry = archive.CreateEntry(Path.GetFileName(info.LevelPath));
 			await using (Stream entryStream = projZipEntry.Open())
 			{
-				byte[] fileData = System.Text.Encoding.UTF8.GetBytes(ISetting<T3ProjSetting>.ToString(projectSetting));
+				byte[] fileData = Encoding.UTF8.GetBytes(ISetting<T3ProjSetting>.ToString(projectSetting));
 				await entryStream.WriteAsync(fileData, 0, fileData.Length);
 			}
 
@@ -106,12 +108,13 @@ namespace MusicGame.EditorEntry
 				}
 				else
 				{
-					var chart = EditorLevelSaver.GetPlayableChart(editingChart);
+					ChartInfo chart = IChartSerializable.Clone(editingChart);
+					ChartModePreprocessor.Process(chart, false);
 					var json = chart.GetSerializationToken().ToString();
 					var chartEntryName = $"{projectSetting.GetChartFileName(difficulty)}.json";
 					ZipArchiveEntry chartZipEntry = archive.CreateEntry(chartEntryName);
 					await using Stream entryStream = chartZipEntry.Open();
-					byte[] fileData = System.Text.Encoding.UTF8.GetBytes(json);
+					byte[] fileData = Encoding.UTF8.GetBytes(json);
 					await entryStream.WriteAsync(fileData, 0, fileData.Length);
 				}
 			}
@@ -120,7 +123,7 @@ namespace MusicGame.EditorEntry
 			ZipArchiveEntry infoZipEntry = archive.CreateEntry(projectSetting.SongInfoFileName);
 			await using (Stream entryStream = infoZipEntry.Open())
 			{
-				byte[] fileData = System.Text.Encoding.UTF8.GetBytes(ISetting<SongInfo>.ToString(info.SongInfo));
+				byte[] fileData = Encoding.UTF8.GetBytes(ISetting<SongInfo>.ToString(info.SongInfo));
 				await entryStream.WriteAsync(fileData, 0, fileData.Length);
 			}
 

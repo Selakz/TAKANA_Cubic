@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.ComponentModel;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Setting;
@@ -10,6 +12,9 @@ namespace MusicGame.Gameplay.Level
 	[Description("Header")]
 	public class PlayfieldSetting : ISingletonSetting<PlayfieldSetting>
 	{
+		[Description("PlayerId")]
+		public NotifiableProperty<string> PlayerId { get; set; } = new(string.Empty);
+
 		[Description("HitSoundVolumePercent")]
 		[MinValue(0)]
 		[MaxValue(100)]
@@ -34,6 +39,14 @@ namespace MusicGame.Gameplay.Level
 
 		[Description("TrackGap")]
 		public NotifiableProperty<float> TrackGap { get; set; } = new(0.15f);
+
+		[Description("NoteThicknessRatio")]
+		[MinValue(0.1f)]
+		[MaxValue(5f)]
+		public NotifiableProperty<float> NoteThicknessRatio { get; set; } = new(1f);
+
+		[Description("DetailedFastLateIndicator")]
+		public NotifiableProperty<bool> DetailedFastLateIndicator { get; set; } = new(false);
 
 		[Description("CameraPosition")]
 		public NotifiableProperty<Vector3> CameraPosition { get; set; } = new(Vector3.zero);

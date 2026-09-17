@@ -24,6 +24,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		// Serializable and Public
 		[SerializeField] private SequencePriority positionPriority = default!;
 		[SerializeField] private SequencePriority widthPriority = default!;
+		[SerializeField] private SequencePriority thicknessPriority = default!;
 
 		// Event Registrars
 		protected override IEventRegistrar[] AwakeRegistrars => new IEventRegistrar[]
@@ -40,10 +41,13 @@ namespace MusicGame.Gameplay.Basic.T3
 					var note = viewPool[handler]!;
 					if (!T3ChartClassifier.Instance.IsOfType(note, T3Flag.Live | T3Flag.Note)) return;
 					var presenter = handler.Script<T3NoteViewPresenter>();
+					// Position
 					presenter.PositionModifier.Register(
 						value => new(value.x, (note.Model as INote)!.Movement.GetPos(music.ChartTime)),
 						positionPriority);
-					Func<Vector2, Vector2> function = value =>
+
+					// Width
+					Func<Vector2, Vector2> widthFunction = value =>
 					{
 						if (note.Parent?.Model is not ITrack track) return new(1, value.y);
 						var width = track.Movement.GetWidth(music.ChartTime);
@@ -57,7 +61,15 @@ namespace MusicGame.Gameplay.Basic.T3
 					};
 					foreach (var modifier in presenter.WidthModifiers)
 					{
-						modifier.Register(function, widthPriority);
+						modifier.Register(widthFunction, widthPriority);
+					}
+
+					// Thickness
+					Func<Vector2, Vector2> thicknessFunction =
+						value => value with { y = value.y * ISingleton<PlayfieldSetting>.Instance.NoteThicknessRatio };
+					foreach (var modifier in presenter.ThicknessModifiers)
+					{
+						modifier.Register(thicknessFunction, thicknessPriority);
 					}
 				},
 				() =>
@@ -70,6 +82,11 @@ namespace MusicGame.Gameplay.Basic.T3
 					{
 						modifier.Unregister(widthPriority, true);
 					}
+
+					foreach (var modifier in presenter.ThicknessModifiers)
+					{
+						modifier.Unregister(thicknessPriority, true);
+					}
 				}))
 		};
 
@@ -80,5 +97,23 @@ namespace MusicGame.Gameplay.Basic.T3
 
 		// Static
 		private const float StageWidth = 9f;
+
+		// System Functions
+		void Update()
+		{
+			foreach (var note in viewPool)
+			{
+				if (!T3ChartClassifier.Instance.IsOfType(note, T3Flag.Live | T3Flag.Note)) continue;
+				var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
+				presenter.PositionModifier.Update();
+				foreach (var modifier in presenter.Textures.Values)
+				{
+					modifier.SizeModifier.Update();
+					modifier.ColorModifier.Update();
+				}
+
+				presenter.EndPosModifier?.Update();
+			}
+		}
 	}
 }

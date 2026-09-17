@@ -266,11 +266,15 @@ Tutorial:
   Plugin: Editor plugin system
 
 Setting:
+  ExperimentalSetting:
+    Header: Experimental Settings
+    UseExperimentalAudioPlayer: Use experimental audio player (if old one has lag)
   SelectSetting:
     Header: Selection Settings
     TrackSelectedColor: Color when track is selected
   PlayfieldSetting:
     Header: Gameplay Settings
+    PlayerId: Displayed Player ID
     HitSoundVolumePercent: Hit sound volume percentage (Integer) | Range [0, 100]
     TrackFaceDefaultColor: Default track color; also used to set default track opacity
     MissHoldOpacity: Opacity after missing a Hold | Range [0, 1]
@@ -278,6 +282,8 @@ Setting:
     AudioDeviation: "Audio offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
     InputDeviation: "Visual offset for gameplay (Add if Fast, subtract if Late) | Unit: ms"
     TrackGap: Gap between Tap/Hold and track boundaries
+    NoteThicknessRatio: Note thickness ratio
+    DetailedFastLateIndicator: Detailed fast late indicator
     CameraPosition: Main camera position
     CameraRotation: Main camera rotation
     TimeAfterEnd: "Delay before a missed Note's view is destroyed (Do not modify unless necessary)"
@@ -357,6 +363,14 @@ Setting:
     DefaultColor: Default color used for new layers
     SelectLayerOpacityRatio: Opacity multiplier for selected layers | Range [0, 1]
     UnselectLayerOpacityRatio: Opacity multiplier for unselected layers | Range [0, 1]
+  LevelSelectSetting:
+    Header: Level Select Memories
+    LastSongId: Last song id
+    LastLevelPath: Last level path
+    LastDifficulty: Last difficulty
+    LastPackId: Last pack id
+    LastSortId: Last sort id
+    LastSortAscend: Last sort ascend
   T3ProjSetting:
     MusicFileName: Music file name | Include file extension for the following setting items
     CoverFileName: Cover file name

@@ -103,7 +103,7 @@ namespace T3Framework.Runtime.ECS
 		private readonly Dictionary<VersionHandler, T> dataMap = new();
 
 		// Defined Functions
-		public ViewPool(IObjectResolver resolver, PrefabObject prefab, Transform defaultTransform)
+		public ViewPool(IObjectResolver? resolver, PrefabObject prefab, Transform defaultTransform)
 		{
 			DefaultTransform = defaultTransform;
 			pool = new ViewObjectPool(resolver, prefab, defaultTransform);
@@ -209,7 +209,7 @@ namespace T3Framework.Runtime.ECS
 		public event EventHandler<PrefabHandler>? OnDestroy;
 
 		// Private
-		private readonly IObjectResolver resolver;
+		private readonly IObjectResolver? resolver;
 		private readonly IClassifier<TClass> classifier;
 		private readonly Dictionary<TClass, ViewObjectPool> pools = new();
 		private readonly Dictionary<T, TClass> classMap = new();
@@ -221,7 +221,7 @@ namespace T3Framework.Runtime.ECS
 		private int Version => pools.Values.Select(pool => pool.Version).FirstOrDefault();
 
 		// Defined Functions
-		public ViewPool(IObjectResolver resolver, IClassifier<TClass> classifier,
+		public ViewPool(IObjectResolver? resolver, IClassifier<TClass> classifier,
 			IReadOnlyDictionary<TClass, PrefabObject> prefabs, Transform defaultTransform)
 		{
 			this.resolver = resolver;
@@ -325,7 +325,7 @@ namespace T3Framework.Runtime.ECS
 
 	internal class ViewObjectPool : IDisposable
 	{
-		private readonly IObjectResolver resolver;
+		private readonly IObjectResolver? resolver;
 		private readonly Stack<VersionHandler> stack = new();
 		private readonly Transform defaultTransform;
 
@@ -337,7 +337,7 @@ namespace T3Framework.Runtime.ECS
 		public event EventHandler<VersionHandler>? OnDestroy;
 
 		public ViewObjectPool(
-			IObjectResolver resolver, PrefabObject prefab, Transform defaultTransform, int initialVersion = 0)
+			IObjectResolver? resolver, PrefabObject prefab, Transform defaultTransform, int initialVersion = 0)
 		{
 			this.resolver = resolver;
 			this.defaultTransform = defaultTransform;
@@ -361,9 +361,16 @@ namespace T3Framework.Runtime.ECS
 				else Object.Destroy(handler.Value.gameObject);
 			}
 
-			var newHandler = new VersionHandler(Prefab.Instantiate(resolver, defaultTransform, false), Version);
+			var newHandler = new VersionHandler(CreateHandler(), Version);
 			OnCreate?.Invoke(this, newHandler);
 			return newHandler;
+
+			PrefabHandler CreateHandler()
+			{
+				if (resolver is not null) return Prefab.Instantiate(resolver, defaultTransform, false);
+				var go = Prefab.SimpleInstantiate(defaultTransform, false);
+				return go.TryGetComponent<PrefabHandler>(out var handler) ? handler : go.AddComponent<PrefabHandler>();
+			}
 		}
 
 		public void Release(VersionHandler handler)

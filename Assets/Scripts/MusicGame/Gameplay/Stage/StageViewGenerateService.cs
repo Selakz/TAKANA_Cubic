@@ -2,11 +2,13 @@
 
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Speed;
 using MusicGame.Models;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
+using UnityEngine;
 using VContainer;
 
 namespace MusicGame.Gameplay.Stage
@@ -24,6 +26,8 @@ namespace MusicGame.Gameplay.Stage
 	public class StageViewGenerateService : HierarchySystem<StageViewGenerateService>, IStageViewGenerateService
 	{
 		// Serializable and Public
+		[SerializeField] private bool useSpeed = false;
+
 		public override bool AsImplementedInterfaces => true;
 
 		public NotifiableProperty<GameplayStageSkinConfig> OnStageReset => onStageReset ??= new(stageSkinConfig);
@@ -41,6 +45,7 @@ namespace MusicGame.Gameplay.Stage
 
 		// Private
 		[Inject, Key("stage")] private StageViewPool<T3Flag> viewPool = default!;
+		[Inject] private NotifiableProperty<ISpeed> speed = default!;
 		[Inject] private NotifiableProperty<GameplayStageSkinConfig> stageSkinConfig = default!;
 
 		private NotifiableProperty<GameplayStageSkinConfig>? onStageReset;
@@ -59,7 +64,7 @@ namespace MusicGame.Gameplay.Stage
 			chart.OnComponentModelUpdated += OnComponentModelUpdated;
 			chart.BeforeComponentParentChanged += BeforeParentChanged;
 			chart.AfterComponentParentChanged += AfterParentChanged;
-			viewGenerator = new(stageSkinConfig.Value.GetViewTimeCalculator());
+			viewGenerator = new(stageSkinConfig.Value.GetViewTimeCalculator(useSpeed ? speed.Value.SpeedRate : null));
 			foreach (var component in chart) OnComponentAdded(component);
 		}
 

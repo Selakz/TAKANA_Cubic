@@ -21,7 +21,7 @@ namespace T3Framework.Preset.Select
 		public PollingRaycastMode(IComparer<KeyValuePair<RaycastHit, T>>? comparer = null, bool isCtrl = false)
 		{
 			this.comparer = comparer ?? Comparer<KeyValuePair<RaycastHit, T>>.Create(
-				(x, y) => x.Key.colliderInstanceID.CompareTo(y.Key.colliderInstanceID));
+				(x, y) => x.Key.colliderEntityId.CompareTo(y.Key.colliderEntityId));
 			this.isCtrl = isCtrl;
 		}
 

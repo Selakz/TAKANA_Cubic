@@ -34,7 +34,7 @@ namespace MusicGame.LevelSelect.UI
 		public Button StartGameButton { get; set; } = default!;
 
 		[field: SerializeField]
-		public TextMeshProUGUI DifficultyNameText { get; set; } = default!;
+		public Image DifficultyImage { get; set; } = default!;
 
 		[field: SerializeField]
 		public TextMeshProUGUI DifficultyValueText { get; set; } = default!;
@@ -54,6 +54,7 @@ namespace MusicGame.LevelSelect.UI
 		private readonly Texture defaultCoverTexture;
 
 		private int currentDifficulty;
+		private bool isRegistered;
 
 		public LevelPanelRegistrar(
 			LevelPanel levelPanel,
@@ -89,9 +90,11 @@ namespace MusicGame.LevelSelect.UI
 				}),
 			new PropertyRegistrar<RawLevelInfo<GameplayPreference>?>(rawLevelInfo, info =>
 			{
-				levelPanel.BgImage.color = ReferenceEquals(info, component.Model)
+				bool isThis = ReferenceEquals(info, component.Model);
+				levelPanel.BgImage.color = isThis
 					? new(0.75f, 1, 1, 1)
 					: Color.white;
+				levelPanel.StartGameButton.gameObject.SetActive(isThis);
 			}),
 			new PropertyRegistrar<int>(difficulty, LoadDifficultyWithFallback),
 			new ButtonRegistrar(levelPanel.StartGameButton, () =>
@@ -107,20 +110,17 @@ namespace MusicGame.LevelSelect.UI
 			if (component.Model.SongInfo.Value?.Difficulties is not { } difficulties ||
 			    !difficulties.TryGetValue(diff, out var difficultyInfo))
 			{
-				levelPanel.DifficultyNameText.text = string.Empty;
 				levelPanel.DifficultyValueText.text = string.Empty;
 				return;
 			}
 
 			if (difficultyConfig.Value.TryGetValue(diff, out var data))
 			{
-				levelPanel.DifficultyNameText.text = data.name;
-				levelPanel.DifficultyNameText.color = data.color;
+				levelPanel.DifficultyImage.color = data.color;
 				levelPanel.StartGameButton.interactable = true;
 			}
 			else
 			{
-				levelPanel.DifficultyNameText.text = string.Empty;
 				levelPanel.StartGameButton.interactable = false;
 			}
 
@@ -135,6 +135,7 @@ namespace MusicGame.LevelSelect.UI
 
 		private void LoadDifficultyWithFallback(int diff)
 		{
+			if (!isRegistered) return;
 			if (component.Model.SongInfo.Value?.Difficulties is { } difficulties)
 				LoadDifficulty(difficulties.ContainsKey(diff) ? diff : difficulties.Keys.DefaultIfEmpty(3).Max());
 			else
@@ -143,6 +144,7 @@ namespace MusicGame.LevelSelect.UI
 
 		protected override void Initialize()
 		{
+			isRegistered = true;
 			var info = component.Model;
 			levelPanel.CoverImage.LoadTextureCover(info.Cover.Value ?? defaultCoverTexture);
 			levelPanel.SongNameText.text = info.SongInfo.Value?.Title.Value;
@@ -151,6 +153,7 @@ namespace MusicGame.LevelSelect.UI
 
 		protected override void Deinitialize()
 		{
+			isRegistered = false;
 			levelPanel.CoverImage.LoadTextureCover(defaultCoverTexture);
 			levelPanel.SongNameText.text = string.Empty;
 		}

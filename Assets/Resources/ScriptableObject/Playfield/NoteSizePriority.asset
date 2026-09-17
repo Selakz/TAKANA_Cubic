@@ -18,9 +18,11 @@ MonoBehaviour:
       value: 0
     - key: basic-height
       value: 1
-    - key: dl-free-width
+    - key: basic-thickness
       value: 2
-    - key: scoring-height
+    - key: dl-free-width
       value: 3
-    - key: speed-height
+    - key: scoring-height
       value: 4
+    - key: speed-height
+      value: 5

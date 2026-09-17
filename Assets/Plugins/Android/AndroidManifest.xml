@@ -12,6 +12,9 @@
             </intent-filter>
             <meta-data android:name="unityplayer.UnityActivity" android:value="true"/>
         </activity>
+        <meta-data
+                android:name="android.window.opt_out_of_edge_to_edge"
+                android:value="true"/>
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>

@@ -45,5 +45,13 @@ namespace MusicGame.Utility.Setting
 		// Private
 		private Color? previousColor;
 		private Color? currentColor;
+
+		// System Functions
+		protected override void OnEnable()
+		{
+			base.OnEnable();
+			currentColor = colorDataContainer.Property.Value;
+			previousColor = currentColor;
+		}
 	}
 }
