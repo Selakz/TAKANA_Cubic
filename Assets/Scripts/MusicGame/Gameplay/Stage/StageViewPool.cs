@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
 using MusicGame.Gameplay.Chart;
 using T3Framework.Runtime.ECS;
@@ -9,7 +8,7 @@ using VContainer;
 
 namespace MusicGame.Gameplay.Stage
 {
-	public class StageViewPool<TClass> : ViewPool<ChartComponent, TClass> where TClass : Enum
+	public class StageViewPool<TClass> : ViewPool<ChartComponent, TClass> where TClass : struct
 	{
 		public StageViewPool(
 			IObjectResolver resolver,

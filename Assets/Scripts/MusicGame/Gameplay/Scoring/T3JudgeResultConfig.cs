@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using MusicGame.Gameplay.Judge;
 using MusicGame.Gameplay.Judge.T3;
 using T3Framework.Runtime.Serialization.Inspector;
 using UnityEngine;
@@ -42,7 +43,7 @@ namespace MusicGame.Gameplay.Scoring
 
 		public bool IsOffCombo(T3JudgeResult result) => offComboResults.Contains(result);
 
-		public FastLateData GetFastLateData(IT3JudgeItem judgeItem)
+		public FastLateData GetFastLateData(IJudgeItem judgeItem)
 		{
 			return judgeItem.ActualTime < judgeItem.ComboItem.ExpectedTime
 				? fastSampleData with { offsetMilli = judgeItem.ActualTime - judgeItem.ComboItem.ExpectedTime }

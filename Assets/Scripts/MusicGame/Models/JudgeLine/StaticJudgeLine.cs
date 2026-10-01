@@ -2,12 +2,16 @@
 
 using Newtonsoft.Json.Linq;
 using T3Framework.Runtime;
+using T3Framework.Runtime.Extensions;
+using UnityEngine;
 
 namespace MusicGame.Models.JudgeLine
 {
 	[ChartTypeMark("line")]
 	public class StaticJudgeLine : IJudgeLine
 	{
+		public float Opacity { get; set; } = 1f;
+
 		public ModelProperty Properties { get; set; } = new();
 
 		public ModelProperty EditorConfig { get; set; } = new();
@@ -22,6 +26,7 @@ namespace MusicGame.Models.JudgeLine
 		public JObject GetSerializationToken()
 		{
 			var dict = new JObject();
+			dict.AddIf("opacity", Opacity, !Mathf.Approximately(Opacity, 1f));
 			dict.AddProperties(this);
 			return dict;
 		}
@@ -29,6 +34,7 @@ namespace MusicGame.Models.JudgeLine
 		public static StaticJudgeLine Deserialize(JObject dict)
 		{
 			var line = new StaticJudgeLine();
+			line.Opacity = dict.Get("opacity", 1f);
 			line.SetProperties(dict);
 			return line;
 		}
