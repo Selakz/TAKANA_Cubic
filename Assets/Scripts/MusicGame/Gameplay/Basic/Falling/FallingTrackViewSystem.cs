@@ -196,7 +196,7 @@ namespace MusicGame.Gameplay.Basic.Falling
 			VectorArrayConverter leftSegments, VectorArrayConverter rightSegments)
 		{
 			int count = leftSegments.Length;
-			var step = (timeEnd - timeStart).Second / count;
+			var step = (timeEnd - timeStart).Second / (count - 1);
 			float leftStart = track.Movement.GetLeftPos(timeStart);
 			float leftEnd = track.Movement.GetLeftPos(timeEnd);
 			float rightStart = track.Movement.GetRightPos(timeStart);
