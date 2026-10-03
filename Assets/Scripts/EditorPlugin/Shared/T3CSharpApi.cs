@@ -136,6 +136,9 @@ namespace EditorPlugin.Shared
 
 		internal object GetComponentSnapshot(ChartComponent component) => componentSnapshots[component];
 
+		/// <summary> Returns the component's snapshot, or null when it is not registered (e.g. editor-only models). </summary>
+		private object? ResolveSnapshot(ChartComponent component) => componentSnapshots.GetValueOrDefault(component);
+
 		public object[] getAllNotes() =>
 			componentSnapshots.Where(pair => pair.Key.Model is INote).Select(pair => pair.Value).ToArray();
 
@@ -237,66 +240,167 @@ namespace EditorPlugin.Shared
 
 		public void clearSelected() => chartSelectDataset?.Clear();
 
-		public void addTrack(object model, object[]? noteModels = null)
+		public bool addTrack(object model, object[]? noteModels = null, int? layerId = null,
+			Action<object?>? onTrackAdded = null, Action<object?[]>? onNotesAdded = null)
 		{
+			if (model is not ITrack track) return Fail();
+			var notes = new List<INote>();
+			if (noteModels is not null)
+			{
+				foreach (var noteModel in noteModels)
+				{
+					if (noteModel is not INote note) return Fail();
+					notes.Add(note);
+				}
+			}
+
+			if (layerId is { } requestedLayer && chart.GetsLayersInfo()[requestedLayer] is null) return Fail();
+
 			if (registry is null)
 			{
-				var component = AddComponent((IChartModel)model);
+				var component = AddComponent(track);
+				if (layerId is { } directLayer) track.SetLayer(directLayer);
 				component.SetParent(chart.DefaultJudgeLine());
-				if (noteModels is not null)
+				var noteSnapshots = new object?[notes.Count];
+				for (var i = 0; i < notes.Count; i++)
 				{
-					foreach (var noteModel in noteModels)
-					{
-						var noteComponent = AddComponent((IChartModel)noteModel);
-						noteComponent.SetParent(component);
-					}
+					var noteComponent = AddComponent(notes[i]);
+					noteComponent.SetParent(component);
+					noteSnapshots[i] = ResolveSnapshot(noteComponent);
 				}
 
-				return;
+				if (onTrackAdded is not null || onNotesAdded is not null)
+				{
+					CallbackCommand.SafeInvoke(() =>
+					{
+						onTrackAdded?.Invoke(ResolveSnapshot(component));
+						onNotesAdded?.Invoke(noteSnapshots);
+					});
+				}
+
+				return true;
 			}
 
 			registry.Add(() =>
 			{
-				var trackComponent = new ChartComponent((IChartModel)model) { Id = chart.NewId };
+				var trackComponent = new ChartComponent(track) { Id = chart.NewId };
+				if (layerId is { } stagedLayer) track.SetLayer(stagedLayer);
 				var commands = new List<ICommand>
 				{
 					new AddComponentCommand(chart, trackComponent, chart.DefaultJudgeLine())
 				};
-				if (noteModels is not null)
+				var noteComponents = new List<ChartComponent>();
+				foreach (var note in notes)
 				{
-					foreach (var noteModel in noteModels)
+					var noteComponent = new ChartComponent(note) { Id = chart.NewId };
+					noteComponents.Add(noteComponent);
+					commands.Add(new AddComponentCommand(chart, noteComponent, trackComponent));
+				}
+
+				if (onTrackAdded is not null || onNotesAdded is not null)
+				{
+					commands.Add(new CallbackCommand(() =>
 					{
-						commands.Add(new AddComponentCommand(chart, (IChartModel)noteModel, trackComponent));
-					}
+						onTrackAdded?.Invoke(ResolveSnapshot(trackComponent));
+						onNotesAdded?.Invoke(noteComponents.Select(ResolveSnapshot).ToArray());
+					}));
 				}
 
 				return new BatchCommand(commands, "Add Track with Notes");
 			});
+			return true;
+
+			bool Fail()
+			{
+				if (onTrackAdded is null && onNotesAdded is null) return false;
+				CallbackCommand.SafeInvoke(() =>
+				{
+					onTrackAdded?.Invoke(null);
+					onNotesAdded?.Invoke(new object?[noteModels?.Length ?? 0]);
+				});
+				return false;
+			}
 		}
 
-		public void addNote(object model, object rawTrack)
+		public bool addNote(object model, object rawTrack, Action<object?>? onNoteAdded = null)
 		{
+			if (model is not INote note) return Fail();
+			if (!rawToComponent.TryGetValue(rawTrack, out var parent) || parent.Model is not ITrack) return Fail();
+
 			if (registry is null)
 			{
-				var component = AddComponent((IChartModel)model);
-				if (rawToComponent.TryGetValue(rawTrack, out var track)) component.SetParent(track);
-				return;
+				var component = AddComponent(note);
+				component.SetParent(parent);
+				if (onNoteAdded is not null)
+				{
+					CallbackCommand.SafeInvoke(() => onNoteAdded(ResolveSnapshot(component)));
+				}
+
+				return true;
 			}
 
-			rawToComponent.TryGetValue(rawTrack, out var parent);
-			registry.Add(() => new AddComponentCommand(chart, (IChartModel)model, parent));
+			if (onNoteAdded is null)
+			{
+				registry.Add(() => new AddComponentCommand(chart, note, parent));
+				return true;
+			}
+
+			registry.Add(() =>
+			{
+				var component = new ChartComponent(note) { Id = chart.NewId };
+				return new BatchCommand(new ICommand[]
+				{
+					new AddComponentCommand(chart, component, parent),
+					new CallbackCommand(() => onNoteAdded(ResolveSnapshot(component)))
+				}, "Add Note");
+			});
+			return true;
+
+			bool Fail()
+			{
+				if (onNoteAdded is not null) CallbackCommand.SafeInvoke(() => onNoteAdded(null));
+				return false;
+			}
 		}
 
-		public void addDraftNote(object model)
+		public bool addDraftNote(object model, Action<object?>? onNoteAdded = null)
 		{
+			if (model is not INote note) return Fail();
+
 			if (registry is null)
 			{
-				var component = AddComponent((IChartModel)model);
+				var component = AddComponent(note);
 				component.SetParent(chart.DefaultJudgeLine());
-				return;
+				if (onNoteAdded is not null)
+				{
+					CallbackCommand.SafeInvoke(() => onNoteAdded(ResolveSnapshot(component)));
+				}
+
+				return true;
 			}
 
-			registry.Add(() => new AddComponentCommand(chart, (IChartModel)model, chart.DefaultJudgeLine()));
+			if (onNoteAdded is null)
+			{
+				registry.Add(() => new AddComponentCommand(chart, note, chart.DefaultJudgeLine()));
+				return true;
+			}
+
+			registry.Add(() =>
+			{
+				var component = new ChartComponent(note) { Id = chart.NewId };
+				return new BatchCommand(new ICommand[]
+				{
+					new AddComponentCommand(chart, component, chart.DefaultJudgeLine()),
+					new CallbackCommand(() => onNoteAdded(ResolveSnapshot(component)))
+				}, "Add Draft Note");
+			});
+			return true;
+
+			bool Fail()
+			{
+				if (onNoteAdded is not null) CallbackCommand.SafeInvoke(() => onNoteAdded(null));
+				return false;
+			}
 		}
 
 		public void removeComponent(object raw)

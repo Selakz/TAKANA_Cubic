@@ -26,16 +26,59 @@ declare class ChartSnapshot {
 
   /**
    * Adds a track (and optionally its notes) to the chart.
+   *
+   * The callbacks run right after the addition is applied: after `ctx.commit()`
+   * when this chart is `ctx.chart`, or immediately inside this call when the chart
+   * comes from `ctx.loadChart()` / `ctx.createNewChart()`.
+   * When the arguments are rejected, nothing is added, `false` is returned and the
+   * callbacks are called immediately with an empty result. Each callback is called
+   * at most once per `addTrack` call (undo/redo never calls it again).
+   *
+   * @param layerId The id of the layer the track belongs to (see `layersInfo.layers`).
+   *   `undefined` keeps the default layer. A non-existent id rejects the call.
+   * @param onTrackAdded Receives the added track's snapshot, or `undefined` when nothing
+   *   was added.
+   * @param onNotesAdded Receives the added notes' snapshots in the same order as `notes`.
+   *   The array always has the same length as `notes` and is never `undefined` itself;
+   *   an entry is `undefined` when that note was not added (all of them when the whole
+   *   addition was rejected).
+   * @returns Whether the arguments were accepted. `false` means nothing was added.
    */
-  addTrack(model: TrackModel, notes?: NoteModel[]): boolean;
+  addTrack(
+    model: TrackModel,
+    notes?: NoteModel[],
+    layerId?: number,
+    onTrackAdded?: (track: TrackSnapshot | undefined) => void,
+    onNotesAdded?: (notes: (NoteSnapshot | undefined)[]) => void,
+  ): boolean;
 
-  /** Adds a note to the given track instance. */
-  addNote(model: NoteModel, track: TrackSnapshot): boolean;
+  /**
+   * Adds a note to the given track instance.
+   *
+   * The callback runs right after the addition is applied (same timing as `addTrack`)
+   * and receives the added note's snapshot, or `undefined` when nothing was added.
+   * It is called at most once per `addNote` call.
+   *
+   * @returns Whether the arguments were accepted. `false` means `track` is not a track of
+   *   this chart, so nothing was added.
+   */
+  addNote(
+    model: NoteModel,
+    track: TrackSnapshot,
+    onNoteAdded?: (note: NoteSnapshot | undefined) => void,
+  ): boolean;
 
   /**
    * Adds a floating (draft) note that is not attached to any track.
+   *
+   * The callback runs right after the addition is applied (same timing as `addTrack`)
+   * and receives the added note's snapshot, or `undefined` when nothing was added.
+   * It is called at most once per `addDraftNote` call.
    */
-  addDraftNote(model: DraftNoteModel): boolean;
+  addDraftNote(
+    model: DraftNoteModel,
+    onNoteAdded?: (note: NoteSnapshot | undefined) => void,
+  ): boolean;
 
   /**
    * Removes the component from the chart.

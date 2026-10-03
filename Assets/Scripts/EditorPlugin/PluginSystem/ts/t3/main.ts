@@ -58,9 +58,9 @@ const emptyChartApi = {
   addSelected: () => {},
   removeSelected: () => {},
   clearSelected: () => {},
-  addTrack: () => {},
-  addNote: () => {},
-  addDraftNote: () => {},
+  addTrack: () => false,
+  addNote: () => false,
+  addDraftNote: () => false,
   removeComponent: () => {},
 };
 

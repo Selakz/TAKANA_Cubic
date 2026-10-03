@@ -70,13 +70,23 @@ namespace EditorPlugin.PluginSystem
 				Debug.Log(buildArguments);
 				using Process process = CreateProcess(buildArguments, pluginDirectory);
 				process.Start();
+				// Read both streams while the process runs, otherwise a full pipe buffer deadlocks tsc.
+				var standardOutput = process.StandardOutput.ReadToEndAsync();
+				var standardError = process.StandardError.ReadToEndAsync();
 				process.WaitForExit();
+				string output = standardOutput.Result;
+				string error = standardError.Result;
 				success = process.ExitCode == 0 && File.Exists(jsEntryPath);
+				if (!success)
+				{
+					Debug.LogError(
+						$"compilation failed (exit {process.ExitCode}): {pluginDirectory}\n{output}\n{error}");
+				}
 			}
-			catch
+			catch (Exception e)
 			{
 				success = false;
-				Debug.LogWarning($"compilation failed due to exception: {pluginDirectory}");
+				Debug.LogWarning($"compilation failed due to exception: {pluginDirectory}: {e.Message}");
 			}
 
 			if (!success) DeleteDirectory(distDirectory);
@@ -143,6 +153,7 @@ namespace EditorPlugin.PluginSystem
 				Arguments = arguments,
 				UseShellExecute = false,
 				CreateNoWindow = true,
+				RedirectStandardOutput = true,
 				RedirectStandardError = true,
 			};
 			if (workingDirectory is not null) startInfo.WorkingDirectory = workingDirectory;

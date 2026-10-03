@@ -18,7 +18,11 @@ namespace EditorPlugin.PluginSystem
 {
 	public interface IBridgeBootstrapService
 	{
-		public void Initialize(PluginRuntimeEnv env);
+		/// <summary>
+		/// Wires the JavaScript bridge to the current level's chart, datasets and command manager.
+		/// Returns null when no level is loaded, so the plugin keeps its empty context.
+		/// </summary>
+		public T3CSharpApi? Initialize(PluginRuntimeEnv env);
 	}
 
 	public class T3BridgeBootstrapService : HierarchySystem<T3BridgeBootstrapService>, IBridgeBootstrapService
@@ -40,9 +44,9 @@ namespace EditorPlugin.PluginSystem
 		[Inject] private MessageBox messageBox = default!;
 
 		// Defined Functions
-		public void Initialize(PluginRuntimeEnv env)
+		public T3CSharpApi? Initialize(PluginRuntimeEnv env)
 		{
-			if (levelInfo.Value is not { } info) return;
+			if (levelInfo.Value is not { } info) return null;
 
 			var registry = new StagingRegistry(commandManager);
 			var chartApi = new ChartApi(info.Chart, registry, chartSelectDataset);
@@ -54,6 +58,7 @@ namespace EditorPlugin.PluginSystem
 			var api = new T3CSharpApi(chartApi, editorApi, stagingApi, nodeApi, mouseApi, env.RootDirectory);
 			env.AddDisposable(api);
 			env.BridgeObject.Get<Action<object>>("__t3_bridge_init")(api);
+			return api;
 		}
 	}
 }

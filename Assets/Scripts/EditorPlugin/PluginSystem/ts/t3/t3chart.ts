@@ -234,24 +234,63 @@ export class ChartSnapshot {
     return this.chartApi;
   }
 
-  addTrack(model: TrackModel, notes: NoteModel[] = []): boolean {
+  addTrack(
+    model: TrackModel,
+    notes: NoteModel[] = [],
+    layerId?: number,
+    onTrackAdded?: (track: TrackSnapshot | undefined) => void,
+    onNotesAdded?: (notes: (NoteSnapshot | undefined)[]) => void,
+  ): boolean {
     // @ts-expect-error
     let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
     for (let i = 0; i < notes.length; i++) {
       arr.set_Item(i, notes[i].toCSharp());
     }
-    this.chartApi.addTrack(model.toCSharp(), arr);
-    return true;
+    return this.chartApi.addTrack(
+      model.toCSharp(),
+      arr,
+      layerId ?? null,
+      onTrackAdded === undefined
+        ? null
+        : (raw: any) => onTrackAdded(this.resolveTrack(raw)),
+      onNotesAdded === undefined
+        ? null
+        : (raw: any) => {
+            if (raw === null || raw === undefined) {
+              onNotesAdded(notes.map(() => undefined));
+              return;
+            }
+            onNotesAdded(
+              toArray(raw).map((rawNote: any) => this.resolveNote(rawNote)),
+            );
+          },
+    );
   }
 
-  addNote(model: NoteModel, track: TrackSnapshot): boolean {
-    this.chartApi.addNote(model.toCSharp(), track.getRaw());
-    return true;
+  addNote(
+    model: NoteModel,
+    track: TrackSnapshot,
+    onNoteAdded?: (note: NoteSnapshot | undefined) => void,
+  ): boolean {
+    return this.chartApi.addNote(
+      model.toCSharp(),
+      track.getRaw(),
+      onNoteAdded === undefined
+        ? null
+        : (raw: any) => onNoteAdded(this.resolveNote(raw)),
+    );
   }
 
-  addDraftNote(model: DraftNoteModel): boolean {
-    this.chartApi.addDraftNote(model.toCSharp());
-    return true;
+  addDraftNote(
+    model: DraftNoteModel,
+    onNoteAdded?: (note: NoteSnapshot | undefined) => void,
+  ): boolean {
+    return this.chartApi.addDraftNote(
+      model.toCSharp(),
+      onNoteAdded === undefined
+        ? null
+        : (raw: any) => onNoteAdded(this.resolveNote(raw)),
+    );
   }
 
   removeComponent(component: ComponentSnapshot): void {
@@ -316,8 +355,6 @@ export class ChartSnapshot {
   private createTrack(raw: any): TrackSnapshot {
     return new TrackSnapshot(raw, this);
   }
-
-  // TODO: addNote、addTrack
 }
 
 export class ChartSelectSet implements SelectSet<ComponentSnapshot> {

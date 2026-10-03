@@ -9,15 +9,12 @@ using EditorPlugin.PluginSystem;
 using MusicGame.ChartEditor.Level;
 using MusicGame.ChartEditor.Message;
 using MusicGame.Gameplay.Level;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Semver;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Log;
-using T3Framework.Runtime.Serialization.Json;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Event;
@@ -69,15 +66,9 @@ namespace EditorPlugin.EditorIntegration
 		[Inject] MessageBox messageBox = default!;
 
 		private readonly PluginAutoCompiler autoCompiler =
-			new(Path.Combine(Application.streamingAssetsPath, "EditorPlugin"));
+			new(PluginSystemPaths.SharedConfigDirectory);
 
 		private static string PluginsRootPath => ISingleton<EditorSetting>.Instance.PluginPath;
-
-		private JsonSerializerSettings SerializerSettings { get; } = new()
-		{
-			Converters = { new I18NStringJsonConverter(), new PluginParamTypeJsonConverter() },
-			ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-		};
 
 		// Defined Functions
 		public void Refresh()
@@ -140,10 +131,9 @@ namespace EditorPlugin.EditorIntegration
 					new I18NString { [Language.English] = string.Empty },
 					apiVersion.ToString(),
 					"main.ts");
-				File.WriteAllText(Path.Combine(dir, "manifest.json"),
-					JsonConvert.SerializeObject(manifest, SerializerSettings));
+				PluginManifestSerializer.Save(Path.Combine(dir, "manifest.json"), manifest);
 
-				string templatePath = Path.Combine(Application.streamingAssetsPath, "EditorPlugin", "template.ts");
+				string templatePath = Path.Combine(PluginSystemPaths.SharedConfigDirectory, "template.ts");
 				File.Copy(templatePath, Path.Combine(dir, "main.ts"));
 			}
 			catch (Exception e)
@@ -187,8 +177,7 @@ namespace EditorPlugin.EditorIntegration
 
 			try
 			{
-				PluginManifest? manifest = JsonConvert.DeserializeObject<PluginManifest>(
-					File.ReadAllText(manifestPath), SerializerSettings);
+				PluginManifest? manifest = PluginManifestSerializer.Load(manifestPath);
 				if (manifest?.Name is null) return false;
 
 				if (!apiVersionConfig.IsApiVersionCompatible(manifest.ApiVersion, Application.version))

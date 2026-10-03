@@ -998,21 +998,39 @@ var ChartSnapshot = class {
   getChartApi() {
     return this.chartApi;
   }
-  addTrack(model, notes = []) {
+  addTrack(model, notes = [], layerId, onTrackAdded, onNotesAdded) {
     let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
     for (let i = 0; i < notes.length; i++) {
       arr.set_Item(i, notes[i].toCSharp());
     }
-    this.chartApi.addTrack(model.toCSharp(), arr);
-    return true;
+    return this.chartApi.addTrack(
+      model.toCSharp(),
+      arr,
+      layerId ?? null,
+      onTrackAdded === void 0 ? null : (raw) => onTrackAdded(this.resolveTrack(raw)),
+      onNotesAdded === void 0 ? null : (raw) => {
+        if (raw === null || raw === void 0) {
+          onNotesAdded(notes.map(() => void 0));
+          return;
+        }
+        onNotesAdded(
+          toArray(raw).map((rawNote) => this.resolveNote(rawNote))
+        );
+      }
+    );
   }
-  addNote(model, track) {
-    this.chartApi.addNote(model.toCSharp(), track.getRaw());
-    return true;
+  addNote(model, track, onNoteAdded) {
+    return this.chartApi.addNote(
+      model.toCSharp(),
+      track.getRaw(),
+      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
+    );
   }
-  addDraftNote(model) {
-    this.chartApi.addDraftNote(model.toCSharp());
-    return true;
+  addDraftNote(model, onNoteAdded) {
+    return this.chartApi.addDraftNote(
+      model.toCSharp(),
+      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
+    );
   }
   removeComponent(component) {
     this.chartApi.removeComponent(component.getRaw());
@@ -1064,7 +1082,6 @@ var ChartSnapshot = class {
   createTrack(raw) {
     return new TrackSnapshot(raw, this);
   }
-  // TODO: addNote、addTrack
 };
 var ChartSelectSet = class {
   constructor(api, chart) {
@@ -1455,12 +1472,9 @@ var emptyChartApi = {
   },
   clearSelected: () => {
   },
-  addTrack: () => {
-  },
-  addNote: () => {
-  },
-  addDraftNote: () => {
-  },
+  addTrack: () => false,
+  addNote: () => false,
+  addDraftNote: () => false,
   removeComponent: () => {
   }
 };

@@ -37,10 +37,12 @@ namespace EditorPlugin.PluginSystem
 
 		public PluginRuntimeEnv? Env { get; private set; }
 
+		/// <summary> The module namespace produced by executing <see cref="PluginManifest.JsEntry" />, null when not loaded. </summary>
+		public ScriptObject? Module { get; private set; }
+
 		// Private
 		private readonly string? librariesDirectory;
 		private readonly Action<PluginRuntimeEnv>? bridgeInit;
-		private ScriptObject? entryObject;
 
 		// Defined Functions
 		public PluginInstance(
@@ -72,7 +74,7 @@ namespace EditorPlugin.PluginSystem
 				}
 
 				InitializeParams(env);
-				entryObject = env.ExecuteModule(Manifest.JsEntry);
+				Module = env.ExecuteModule(Manifest.JsEntry);
 				State = PluginState.Loaded;
 			}
 			catch
@@ -105,7 +107,7 @@ namespace EditorPlugin.PluginSystem
 			{
 				EnsureLoaded();
 				if (State != PluginState.Loaded) return;
-				entryObject!.Get<ScriptObject>("default").Get<Action>("execute")();
+				Module!.Get<ScriptObject>("default").Get<Action>("execute")();
 			}
 			catch (Exception e)
 			{

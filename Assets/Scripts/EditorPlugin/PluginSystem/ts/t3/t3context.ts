@@ -38,9 +38,18 @@ export interface ChartApi {
   addSelected(raw: any): void;
   removeSelected(raw: any): void;
   clearSelected(): void;
-  addTrack(model: any, noteModels: any[]): void;
-  addNote(model: any, track: any): void;
-  addDraftNote(model: any): void;
+  addTrack(
+    model: any,
+    noteModels: any[],
+    layerId: number | null,
+    onTrackAdded: ((raw: any) => void) | null,
+    onNotesAdded: ((raw: any) => void) | null,
+  ): boolean;
+  addNote(model: any, track: any, onNoteAdded: ((raw: any) => void) | null): boolean;
+  addDraftNote(
+    model: any,
+    onNoteAdded: ((raw: any) => void) | null,
+  ): boolean;
   removeComponent(raw: any): void;
 }
 
