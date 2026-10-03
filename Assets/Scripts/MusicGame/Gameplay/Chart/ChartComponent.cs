@@ -184,6 +184,8 @@ namespace MusicGame.Gameplay.Chart
 			return dict;
 		}
 
+		public static ChartComponent Deserialize(JObject dict) => Deserialize(dict, null!);
+
 		internal static ChartComponent Deserialize(JObject dict, object chartObject)
 		{
 			ChartInfo? chart = null;

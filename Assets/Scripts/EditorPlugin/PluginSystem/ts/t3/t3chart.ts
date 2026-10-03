@@ -20,6 +20,57 @@ export function toArray(arr: any): any[] {
   return result;
 }
 
+/**
+ * What a snapshot needs from the container it belongs to: resolving a raw object back to its snapshot.
+ * A real chart and one clipboard read both provide one, which is why the copies of a clipboard read resolve
+ * their own children instead of looking them up in the chart.
+ */
+export interface SnapshotRegistry {
+  resolveNote(raw: any): NoteSnapshot | undefined;
+  resolveTrack(raw: any): TrackSnapshot | undefined;
+}
+
+/** Marshals models into the C# object array the add methods expect. */
+export function toCSharpObjectArray(models: { toCSharp(): any }[]): any {
+  const array = CS.System.Array.CreateInstance(
+    // @ts-expect-error
+    puer.$typeof(CS.System.Object),
+    models.length,
+  );
+  for (let i = 0; i < models.length; i++) {
+    array.set_Item(i, models[i].toCSharp());
+  }
+  return array;
+}
+
+/** Creates the snapshot of a raw component; also used for clipboard copies, whose raw is not in any chart. */
+export function createSnapshot(
+  raw: any,
+  registry: SnapshotRegistry,
+): ComponentSnapshot {
+  return raw.type === "Track"
+    ? new TrackSnapshot(raw, registry)
+    : createNoteSnapshot(raw, registry);
+}
+
+function createNoteSnapshot(
+  raw: any,
+  registry: SnapshotRegistry,
+): NoteSnapshot {
+  switch (raw.type) {
+    case "Hit":
+      return new HitSnapshot(raw, registry);
+    case "Hold":
+      return new HoldSnapshot(raw, registry);
+    case "DraftHit":
+      return new DraftHitSnapshot(raw, registry);
+    case "DraftHold":
+      return new DraftHoldSnapshot(raw, registry);
+    default:
+      return new HoldSnapshot(raw, registry);
+  }
+}
+
 export class BpmListWrapper implements Map<T3Time, number> {
   constructor(private raw: any) {}
 
@@ -166,7 +217,7 @@ export class SetView<T> implements ReadonlySet<T> {
   }
 }
 
-export class ChartSnapshot {
+export class ChartSnapshot implements SnapshotRegistry {
   readonly notes: ReadonlySet<NoteSnapshot>;
   readonly tracks: ReadonlySet<TrackSnapshot>;
   readonly bpmList: BpmListWrapper;
@@ -241,14 +292,9 @@ export class ChartSnapshot {
     onTrackAdded?: (track: TrackSnapshot | undefined) => void,
     onNotesAdded?: (notes: (NoteSnapshot | undefined)[]) => void,
   ): boolean {
-    // @ts-expect-error
-    let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
-    for (let i = 0; i < notes.length; i++) {
-      arr.set_Item(i, notes[i].toCSharp());
-    }
     return this.chartApi.addTrack(
       model.toCSharp(),
-      arr,
+      toCSharpObjectArray(notes),
       layerId ?? null,
       onTrackAdded === undefined
         ? null
@@ -338,18 +384,7 @@ export class ChartSnapshot {
   }
 
   private createNote(raw: any): NoteSnapshot {
-    switch (raw.type) {
-      case "Hit":
-        return new HitSnapshot(raw, this);
-      case "Hold":
-        return new HoldSnapshot(raw, this);
-      case "DraftHit":
-        return new DraftHitSnapshot(raw, this);
-      case "DraftHold":
-        return new DraftHoldSnapshot(raw, this);
-      default:
-        return new HoldSnapshot(raw, this);
-    }
+    return createNoteSnapshot(raw, this);
   }
 
   private createTrack(raw: any): TrackSnapshot {

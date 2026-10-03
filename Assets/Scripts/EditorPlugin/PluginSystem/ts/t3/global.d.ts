@@ -27,6 +27,11 @@ declare var TrackSnapshot: any;
 declare var TrackEdgeNode: any;
 declare var TrackDirectNode: any;
 
+// t3clipboard.ts
+declare var TrackClipboardContent: any;
+declare var NoteClipboardContent: any;
+declare var DraftNoteClipboardContent: any;
+
 // t3pluginbase.ts
 declare var T3PluginBase: any;
 

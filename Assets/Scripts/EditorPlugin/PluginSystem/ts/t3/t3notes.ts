@@ -5,7 +5,7 @@ import {
   ComponentModel,
   ComponentSnapshot,
 } from "../model.js";
-import type { ChartSnapshot } from "./t3chart.js";
+import type { SnapshotRegistry } from "./t3chart.js";
 import type { TrackSnapshot } from "./t3track.js";
 
 export enum HitType {
@@ -98,7 +98,7 @@ export class HitSnapshot implements NoteSnapshot {
 
   constructor(
     private raw: RawHitData,
-    private chart: ChartSnapshot,
+    private registry: SnapshotRegistry,
   ) {
     this.id = raw.id;
     this.name = raw.name;
@@ -108,7 +108,7 @@ export class HitSnapshot implements NoteSnapshot {
   }
 
   get track(): TrackSnapshot {
-    const track = this.chart.resolveTrack(this.raw.track);
+    const track = this.registry.resolveTrack(this.raw.track);
     if (track === undefined) throw new Error("Track not found");
     return track;
   }
@@ -190,7 +190,7 @@ export class HoldSnapshot implements NoteSnapshot {
 
   constructor(
     private raw: RawHoldData,
-    private chart: ChartSnapshot,
+    private registry: SnapshotRegistry,
   ) {
     this.id = raw.id;
     this.name = raw.name;
@@ -200,7 +200,7 @@ export class HoldSnapshot implements NoteSnapshot {
   }
 
   get track(): TrackSnapshot {
-    const track = this.chart.resolveTrack(this.raw.track);
+    const track = this.registry.resolveTrack(this.raw.track);
     if (track === undefined) throw new Error("Track not found");
     return track;
   }
@@ -347,7 +347,7 @@ export class DraftHitSnapshot implements NoteSnapshot {
 
   constructor(
     private raw: RawDraftHitData,
-    private chart: ChartSnapshot,
+    private registry: SnapshotRegistry,
   ) {
     this.id = raw.id;
     this.name = raw.name;
@@ -395,7 +395,7 @@ export class DraftHoldSnapshot implements NoteSnapshot {
 
   constructor(
     private raw: RawDraftHoldData,
-    private chart: ChartSnapshot,
+    private registry: SnapshotRegistry,
   ) {
     this.id = raw.id;
     this.name = raw.name;

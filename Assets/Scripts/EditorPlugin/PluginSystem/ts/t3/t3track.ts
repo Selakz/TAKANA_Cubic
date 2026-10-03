@@ -5,7 +5,8 @@ import {
   Wrapper,
 } from "../model.js";
 import type { NoteSnapshot } from "./t3notes.js";
-import type { ChartSnapshot, Layer } from "./t3chart.js";
+import { toArray } from "./t3chart.js";
+import type { Layer, SnapshotRegistry } from "./t3chart.js";
 
 // Eases: mirror of C# T3Framework.Static.Easing.Eases
 export enum Eases {
@@ -518,7 +519,7 @@ export class TrackSnapshot implements ComponentSnapshot {
 
   constructor(
     private raw: any,
-    private chart: ChartSnapshot,
+    private registry: SnapshotRegistry,
   ) {
     this.id = raw.id;
     this.name = raw.name;
@@ -532,9 +533,14 @@ export class TrackSnapshot implements ComponentSnapshot {
     return this.getNotes();
   }
 
+  /**
+   * The notes of this track. They come from the raw component's children, so a clipboard copy hands out its own
+   * copied notes (which never exist in the chart) instead of looking them up in the chart.
+   */
   private *getNotes(): IterableIterator<NoteSnapshot> {
-    for (const note of this.chart.notes) {
-      if (note.track === this) yield note;
+    for (const raw of toArray(this.raw.getChildren())) {
+      const note = this.registry.resolveNote(raw);
+      if (note !== undefined) yield note;
     }
   }
 

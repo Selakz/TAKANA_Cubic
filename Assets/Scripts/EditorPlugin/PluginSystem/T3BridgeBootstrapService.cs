@@ -6,10 +6,12 @@ using EditorPlugin.Shared;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
+using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
 using MusicGame.ChartEditor.Message;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using VContainer;
@@ -34,6 +36,7 @@ namespace EditorPlugin.PluginSystem
 		[Inject] private IGameAudioPlayer music = default!;
 		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
 		[Inject] private CommandManager commandManager = default!;
+		[Inject] private IDataset<ClipboardItem> clipboard = default!;
 		[Inject] private ChartSelectDataset chartSelectDataset = default!;
 		[Inject] private EdgeNodeDataset edgeNodeDataset = default!;
 		[Inject] private DirectNodeDataset directNodeDataset = default!;
@@ -50,12 +53,14 @@ namespace EditorPlugin.PluginSystem
 
 			var registry = new StagingRegistry(commandManager);
 			var chartApi = new ChartApi(info.Chart, registry, chartSelectDataset);
+			var clipboardApi = new ClipboardApi(clipboard, chartApi);
 			var editorApi = new EditorApi(music, messageBox);
 			var stagingApi = new StagingApi(registry);
 			var nodeApi = new NodeApi(
 				edgeNodeDataset, directNodeDataset, edgeNodeSelectDataset, directNodeSelectDataset, chartApi);
 			var mouseApi = new MouseApi(timeRetriever, widthRetriever);
-			var api = new T3CSharpApi(chartApi, editorApi, stagingApi, nodeApi, mouseApi, env.RootDirectory);
+			var api = new T3CSharpApi(
+				chartApi, clipboardApi, editorApi, stagingApi, nodeApi, mouseApi, env.RootDirectory);
 			env.AddDisposable(api);
 			env.BridgeObject.Get<Action<object>>("__t3_bridge_init")(api);
 			return api;

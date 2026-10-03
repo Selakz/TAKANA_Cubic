@@ -22,6 +22,11 @@ import {
   TrackDirectMovementWrapper,
 } from "./t3track.js";
 import { TrackEdgeNode, TrackDirectNode } from "./t3nodes.js";
+import {
+  TrackClipboardContent,
+  NoteClipboardContent,
+  DraftNoteClipboardContent,
+} from "./t3clipboard.js";
 import { T3CSharpApi, T3Context, createContext } from "./t3context.js";
 import { T3PluginBase } from "./t3pluginbase.js";
 import { EmptyWrapper } from "../model.js";
@@ -66,6 +71,15 @@ const emptyChartApi = {
 
 const emptyApi: T3CSharpApi = {
   chart: emptyChartApi,
+  chartClipboard: {
+    getAll: () => [],
+    beginOverride: () => {},
+    addTrack: () => false,
+    addNote: () => false,
+    addDraftNote: () => false,
+    commitOverride: () => {},
+    cancelOverride: () => {},
+  },
   staging: {
     hasPending: false,
     commit: () => {},
@@ -128,6 +142,11 @@ globalThis.TrackSnapshot = TrackSnapshot;
 // t3nodes.ts
 globalThis.TrackEdgeNode = TrackEdgeNode;
 globalThis.TrackDirectNode = TrackDirectNode;
+
+// t3clipboard.ts
+globalThis.TrackClipboardContent = TrackClipboardContent;
+globalThis.NoteClipboardContent = NoteClipboardContent;
+globalThis.DraftNoteClipboardContent = DraftNoteClipboardContent;
 
 // t3pluginbase.ts
 globalThis.T3PluginBase = T3PluginBase;

@@ -5,7 +5,9 @@ using EditorPlugin.EditorIntegration;
 using EditorPlugin.PluginSystem;
 using EditorPlugin.Tests;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
 using MusicGame.Gameplay.Level;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using UnityEditor;
@@ -42,9 +44,17 @@ namespace EditorPlugin.Editor
 				return;
 			}
 
-			// The level property is a plain container singleton, so it can only be resolved from the scene scope.
+			// The level property and the clipboard are plain container singletons, so they can only be resolved
+			// from the scene scope.
 			var levelInfo = scope.Container.Resolve<NotifiableProperty<LevelInfo?>>();
-			var runner = new PluginTestRunner(levelInfo, commandManager, bridge, manage,
+			if (!scope.Container.TryResolve<IDataset<ClipboardItem>>(out var clipboard))
+			{
+				Debug.LogError("[PluginTest] The editor clipboard is not registered. " +
+				               "Run this while playing the ChartEditor scene.");
+				return;
+			}
+
+			var runner = new PluginTestRunner(levelInfo, commandManager, clipboard, bridge, manage,
 				manage.ApiVersion?.ToString());
 			var report = runner.Run();
 			if (report.Succeeded) Debug.Log(report.Format());

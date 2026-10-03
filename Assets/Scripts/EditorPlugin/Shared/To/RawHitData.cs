@@ -24,15 +24,17 @@ namespace EditorPlugin.Shared.To
 
 		public IWrapper<bool> isDummy { get; }
 
-		public object track => api.GetComponentSnapshot(component.Parent!);
+		public object? track => relations.GetParent(component) is { } parent
+			? relations.GetSnapshot(parent)
+			: null;
 
 		private readonly ChartComponent component;
-		private readonly ChartApi api;
+		private readonly IComponentRelations relations;
 
-		public RawHitData(ChartComponent component, StagingRegistry? registry, ChartApi api)
+		public RawHitData(ChartComponent component, StagingRegistry? registry, IComponentRelations relations)
 		{
 			this.component = component;
-			this.api = api;
+			this.relations = relations;
 			type = "Hit";
 			id = new ValueWrapper<int>(() => component.Id, v => component.Id = v, registry);
 			name = new ValueWrapper<string?>(() => component.Name, v => component.Name = v, registry);
@@ -41,7 +43,11 @@ namespace EditorPlugin.Shared.To
 				h => h.TimeJudge.Milli,
 				(h, v) =>
 				{
-					v = Mathf.Clamp(v, component.Parent!.Model.TimeMin, component.Parent.Model.TimeMax);
+					if (relations.GetParent(component) is { } parent)
+					{
+						v = Mathf.Clamp(v, parent.Model.TimeMin, parent.Model.TimeMax);
+					}
+
 					h.Nudge(v - h.TimeJudge.Milli);
 				},
 				registry);

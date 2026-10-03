@@ -9,10 +9,12 @@ using EditorPlugin.PluginSystem;
 using EditorPlugin.PuerTS;
 using EditorPlugin.Shared;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
 using MusicGame.ChartEditor.Level;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
 using Puerts;
+using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.I18N;
 using T3Framework.Runtime.Log;
 using T3Framework.Static.Event;
@@ -38,6 +40,7 @@ namespace EditorPlugin.Tests
 		// Private
 		private readonly NotifiableProperty<LevelInfo?> levelInfo;
 		private readonly CommandManager commandManager;
+		private readonly IDataset<ClipboardItem> clipboard;
 		private readonly IBridgeBootstrapService bridgeService;
 		private readonly PluginManageService manageService;
 		private readonly string apiVersion;
@@ -59,18 +62,21 @@ namespace EditorPlugin.Tests
 		public PluginTestReport Report => report;
 
 		public PluginTestRunner(NotifiableProperty<LevelInfo?> levelInfo, CommandManager commandManager,
-			IBridgeBootstrapService bridgeService, PluginManageService manageService, string? apiVersion) : this(
-			levelInfo, commandManager, bridgeService, manageService, apiVersion,
+			IDataset<ClipboardItem> clipboard, IBridgeBootstrapService bridgeService,
+			PluginManageService manageService, string? apiVersion) : this(
+			levelInfo, commandManager, clipboard, bridgeService, manageService, apiVersion,
 			PluginSystemPaths.TestPluginSourceDirectory, PluginSystemPaths.TestWorkspaceDirectory)
 		{
 		}
 
 		public PluginTestRunner(NotifiableProperty<LevelInfo?> levelInfo, CommandManager commandManager,
-			IBridgeBootstrapService bridgeService, PluginManageService manageService, string? apiVersion,
+			IDataset<ClipboardItem> clipboard, IBridgeBootstrapService bridgeService,
+			PluginManageService manageService, string? apiVersion,
 			string sourceDirectory, string workspaceDirectory)
 		{
 			this.levelInfo = levelInfo;
 			this.commandManager = commandManager;
+			this.clipboard = clipboard;
 			this.bridgeService = bridgeService;
 			this.manageService = manageService;
 			this.apiVersion = string.IsNullOrEmpty(apiVersion) ? "0.1.0" : apiVersion!;
@@ -152,7 +158,7 @@ namespace EditorPlugin.Tests
 			}
 
 			commands.Reset();
-			currentContext = new PluginTestCheckContext(name, levelInfo.Value!, commands, report);
+			currentContext = new PluginTestCheckContext(name, levelInfo.Value!, commands, clipboard, report);
 			try
 			{
 				body.Invoke();

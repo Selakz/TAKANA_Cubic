@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using EditorPlugin.PluginSystem;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.EditPanel.Commands;
@@ -31,11 +32,13 @@ namespace EditorPlugin.Shared.To
 
 		private readonly ChartComponent component;
 		private readonly StagingRegistry? registry;
+		private readonly IComponentRelations relations;
 
-		public RawTrackData(ChartComponent component, StagingRegistry? registry)
+		public RawTrackData(ChartComponent component, StagingRegistry? registry, IComponentRelations relations)
 		{
 			this.component = component;
 			this.registry = registry;
+			this.relations = relations;
 			type = "Track";
 			id = new ValueWrapper<int>(() => component.Id, v => component.Id = v, registry);
 			name = new ValueWrapper<string?>(() => component.Name, v => component.Name = v, registry);
@@ -52,9 +55,21 @@ namespace EditorPlugin.Shared.To
 
 		public RawLayerData getLayer()
 		{
-			return component.GetLayerInfo() is { } info
+			return relations.GetLayer(component) is { } info
 				? new RawLayerData(info)
 				: throw new InvalidOperationException("Track has no layer info.");
+		}
+
+		/// <summary> The plugin visible children of the track, which are its notes. </summary>
+		public object[] getChildren()
+		{
+			List<object> children = new();
+			foreach (var child in component.Children)
+			{
+				if (relations.GetSnapshot(child) is { } raw) children.Add(raw);
+			}
+
+			return children.ToArray();
 		}
 
 		public void setLayer(int id)

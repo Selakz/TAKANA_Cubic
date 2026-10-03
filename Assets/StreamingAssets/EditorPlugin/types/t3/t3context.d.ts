@@ -45,6 +45,12 @@ interface T3Context {
   readonly chart: ChartSnapshot;
 
   /**
+   * The clipboard used by the editor's copy/paste.
+   * Reading it hands out copies; the only way to change it is `override`.
+   */
+  readonly chartClipboard: ChartClipboard;
+
+  /**
    * Selection set of chart components.
    * Selection changes apply immediately (no commit needed).
    */

@@ -28,6 +28,7 @@ namespace EditorPlugin.Shared
 	public class T3CSharpApi : IDisposable
 	{
 		public ChartApi chart { get; }
+		public ClipboardApi chartClipboard { get; }
 		public EditorApi editor { get; }
 		public StagingApi staging { get; }
 		public NodeApi nodes { get; }
@@ -35,10 +36,11 @@ namespace EditorPlugin.Shared
 
 		private readonly string pluginDirectory;
 
-		public T3CSharpApi(ChartApi chartApi, EditorApi editorApi, StagingApi stagingApi, NodeApi nodeApi,
-			MouseApi mouseApi, string pluginDirectory)
+		public T3CSharpApi(ChartApi chartApi, ClipboardApi clipboardApi, EditorApi editorApi, StagingApi stagingApi,
+			NodeApi nodeApi, MouseApi mouseApi, string pluginDirectory)
 		{
 			chart = chartApi;
+			chartClipboard = clipboardApi;
 			editor = editorApi;
 			staging = stagingApi;
 			nodes = nodeApi;
@@ -49,6 +51,7 @@ namespace EditorPlugin.Shared
 		public void Dispose()
 		{
 			chart.Dispose();
+			chartClipboard.Dispose();
 			editor.Dispose();
 			staging.Dispose();
 			nodes.Dispose();
@@ -86,7 +89,7 @@ namespace EditorPlugin.Shared
 		private string ResolvePath(string path) => Path.IsPathRooted(path) ? path : Path.Combine(pluginDirectory, path);
 	}
 
-	public class ChartApi : IDisposable
+	public class ChartApi : IDisposable, IComponentRelations
 	{
 		private readonly ChartInfo chart;
 		private readonly StagingRegistry? registry;
@@ -137,7 +140,17 @@ namespace EditorPlugin.Shared
 		internal object GetComponentSnapshot(ChartComponent component) => componentSnapshots[component];
 
 		/// <summary> Returns the component's snapshot, or null when it is not registered (e.g. editor-only models). </summary>
-		private object? ResolveSnapshot(ChartComponent component) => componentSnapshots.GetValueOrDefault(component);
+		internal object? ResolveSnapshot(ChartComponent component) => componentSnapshots.GetValueOrDefault(component);
+
+		/// <summary> Resolves a raw snapshot object back to the component it was built for. </summary>
+		internal bool TryGetComponent(object raw, out ChartComponent component) =>
+			rawToComponent.TryGetValue(raw, out component!);
+
+		ChartComponent? IComponentRelations.GetParent(ChartComponent component) => component.Parent;
+
+		object? IComponentRelations.GetSnapshot(ChartComponent component) => ResolveSnapshot(component);
+
+		LayerInfo? IComponentRelations.GetLayer(ChartComponent track) => track.GetLayerInfo();
 
 		public object[] getAllNotes() =>
 			componentSnapshots.Where(pair => pair.Key.Model is INote).Select(pair => pair.Value).ToArray();
@@ -432,7 +445,7 @@ namespace EditorPlugin.Shared
 				DraftHold => new RawDraftHoldData(component, registry),
 				Hit => new RawHitData(component, registry, this),
 				Hold => new RawHoldData(component, registry, this),
-				ITrack => new RawTrackData(component, registry),
+				ITrack => new RawTrackData(component, registry, this),
 				_ => throw new InvalidOperationException($"Unsupported component model: {component.Model.GetType()}")
 			};
 		}

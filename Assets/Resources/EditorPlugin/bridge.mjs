@@ -109,9 +109,9 @@ var HitModel = class {
   }
 };
 var HitSnapshot = class {
-  constructor(raw, chart) {
+  constructor(raw, registry) {
     this.raw = raw;
-    this.chart = chart;
+    this.registry = registry;
     this.id = raw.id;
     this.name = raw.name;
     this.hitType = raw.hitType;
@@ -119,7 +119,7 @@ var HitSnapshot = class {
     this.isDummy = raw.isDummy;
   }
   get track() {
-    const track = this.chart.resolveTrack(this.raw.track);
+    const track = this.registry.resolveTrack(this.raw.track);
     if (track === void 0) throw new Error("Track not found");
     return track;
   }
@@ -187,9 +187,9 @@ var HoldModel = class {
   }
 };
 var HoldSnapshot = class {
-  constructor(raw, chart) {
+  constructor(raw, registry) {
     this.raw = raw;
-    this.chart = chart;
+    this.registry = registry;
     this.id = raw.id;
     this.name = raw.name;
     this.timeJudge = new T3TimeWrapper(raw.timeJudge);
@@ -197,7 +197,7 @@ var HoldSnapshot = class {
     this.isDummy = raw.isDummy;
   }
   get track() {
-    const track = this.chart.resolveTrack(this.raw.track);
+    const track = this.registry.resolveTrack(this.raw.track);
     if (track === void 0) throw new Error("Track not found");
     return track;
   }
@@ -290,9 +290,9 @@ var DraftHoldModel = class extends HoldModel {
   }
 };
 var DraftHitSnapshot = class {
-  constructor(raw, chart) {
+  constructor(raw, registry) {
     this.raw = raw;
-    this.chart = chart;
+    this.registry = registry;
     this.id = raw.id;
     this.name = raw.name;
     this.hitType = raw.hitType;
@@ -326,9 +326,9 @@ var DraftHitSnapshot = class {
   }
 };
 var DraftHoldSnapshot = class {
-  constructor(raw, chart) {
+  constructor(raw, registry) {
     this.raw = raw;
-    this.chart = chart;
+    this.registry = registry;
     this.id = raw.id;
     this.name = raw.name;
     this.timeJudge = new T3TimeWrapper(raw.timeJudge);
@@ -360,6 +360,347 @@ var DraftHoldSnapshot = class {
       this.raw.width.value,
       this.raw.isDummy.value
     );
+  }
+};
+
+// ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3chart.ts
+function toArray(arr) {
+  if (Array.isArray(arr)) return arr;
+  const result = [];
+  for (let i = 0; i < arr.Length; i++) {
+    result.push(arr.get_Item(i));
+  }
+  return result;
+}
+function toCSharpObjectArray(models) {
+  const array = CS.System.Array.CreateInstance(
+    // @ts-expect-error
+    puer.$typeof(CS.System.Object),
+    models.length
+  );
+  for (let i = 0; i < models.length; i++) {
+    array.set_Item(i, models[i].toCSharp());
+  }
+  return array;
+}
+function createSnapshot(raw, registry) {
+  return raw.type === "Track" ? new TrackSnapshot(raw, registry) : createNoteSnapshot(raw, registry);
+}
+function createNoteSnapshot(raw, registry) {
+  switch (raw.type) {
+    case "Hit":
+      return new HitSnapshot(raw, registry);
+    case "Hold":
+      return new HoldSnapshot(raw, registry);
+    case "DraftHit":
+      return new DraftHitSnapshot(raw, registry);
+    case "DraftHold":
+      return new DraftHoldSnapshot(raw, registry);
+    default:
+      return new HoldSnapshot(raw, registry);
+  }
+}
+var BpmListWrapper = class {
+  constructor(raw) {
+    this.raw = raw;
+  }
+  getFloorTime(time, gridDivision) {
+    return new T3Time(this.raw.getFloorTime(time.milli, gridDivision));
+  }
+  getCeilTime(time, gridDivision) {
+    return new T3Time(this.raw.getCeilTime(time.milli, gridDivision));
+  }
+  has(key) {
+    return this.raw.has(key.milli);
+  }
+  get(key) {
+    const value = this.raw.get(key.milli);
+    return value === null || value === void 0 ? void 0 : value;
+  }
+  delete(key) {
+    return this.raw.delete(key.milli);
+  }
+  clear() {
+    this.raw.clear();
+  }
+  get size() {
+    return this.raw.size;
+  }
+  set(key, value) {
+    this.raw.set(key.milli, value);
+    return this;
+  }
+  *keys() {
+    for (const milli of toArray(this.raw.keys())) {
+      yield new T3Time(milli);
+    }
+  }
+  *values() {
+    for (const value of toArray(this.raw.values())) {
+      yield value;
+    }
+  }
+  *entries() {
+    for (const milli of toArray(this.raw.keys())) {
+      yield [new T3Time(milli), this.get(new T3Time(milli))];
+    }
+  }
+  forEach(callbackfn, thisArg) {
+    for (const [key, value] of this.entries()) {
+      callbackfn.call(thisArg, value, key, this);
+    }
+  }
+  *[Symbol.iterator]() {
+    yield* this.entries();
+  }
+  get [Symbol.toStringTag]() {
+    return "Map";
+  }
+};
+var LayersInfoWrapper = class {
+  constructor(raw) {
+    this.raw = raw;
+  }
+  get layers() {
+    return toArray(this.raw.layers);
+  }
+  get defaultLayer() {
+    return this.raw.defaultLayer;
+  }
+  add(layer) {
+    return this.raw.add(toCSharpLayer(layer));
+  }
+  remove(layerId) {
+    return this.raw.remove(layerId);
+  }
+  update(layerId, layer) {
+    return this.raw.update(layerId, toCSharpLayer(layer));
+  }
+};
+function toCSharpLayer(layer) {
+  const info = new CS.MusicGame.ChartEditor.TrackLayer.LayerInfo();
+  info.Name = layer.name;
+  info.Color = new CS.UnityEngine.Color(
+    layer.color.r,
+    layer.color.g,
+    layer.color.b,
+    layer.color.a
+  );
+  info.IsDecoration = layer.isDecoration;
+  info.IsSelected = layer.isSelected;
+  return info;
+}
+var SetView = class {
+  constructor(map) {
+    this.map = map;
+  }
+  get size() {
+    return this.map.size;
+  }
+  has(value) {
+    for (const v of this.map.values()) {
+      if (v === value) return true;
+    }
+    return false;
+  }
+  forEach(callbackfn, thisArg) {
+    for (const v of this.map.values()) callbackfn.call(thisArg, v, v, this);
+  }
+  keys() {
+    return this.map.values();
+  }
+  values() {
+    return this.map.values();
+  }
+  *entries() {
+    for (const v of this.map.values()) yield [v, v];
+  }
+  [Symbol.iterator]() {
+    return this.map.values();
+  }
+  get [Symbol.toStringTag]() {
+    return "Set";
+  }
+};
+var ChartSnapshot = class {
+  constructor(chartApi) {
+    this.chartApi = chartApi;
+    this.noteByRaw = /* @__PURE__ */ new Map();
+    this.trackByRaw = /* @__PURE__ */ new Map();
+    this.noteAddedListeners = [];
+    this.noteRemovedListeners = [];
+    this.trackAddedListeners = [];
+    this.trackRemovedListeners = [];
+    this.notes = new SetView(this.noteByRaw);
+    this.tracks = new SetView(this.trackByRaw);
+    this.bpmList = new BpmListWrapper(this.chartApi.bpmList);
+    this.layersInfo = new LayersInfoWrapper(this.chartApi.layersInfo);
+    this.chartApi.onNoteAdded((raw) => {
+      const note = this.createNote(raw);
+      this.noteByRaw.set(raw, note);
+      this.fireNoteAdded(note);
+    });
+    this.chartApi.onNoteRemoved((raw) => {
+      const note = this.noteByRaw.get(raw);
+      if (note) {
+        this.fireNoteRemoved(note);
+        this.noteByRaw.delete(raw);
+      }
+    });
+    this.chartApi.onTrackAdded((raw) => {
+      const track = this.createTrack(raw);
+      this.trackByRaw.set(raw, track);
+      this.fireTrackAdded(track);
+    });
+    this.chartApi.onTrackRemoved((raw) => {
+      const track = this.trackByRaw.get(raw);
+      if (track) {
+        this.fireTrackRemoved(track);
+        this.trackByRaw.delete(raw);
+      }
+    });
+    const initialNotes = this.chartApi.getAllNotes();
+    for (let i = 0; i < initialNotes.Length; i++) {
+      const raw = initialNotes.get_Item(i);
+      this.noteByRaw.set(raw, this.createNote(raw));
+    }
+    const initialTracks = this.chartApi.getAllTracks();
+    for (let i = 0; i < initialTracks.Length; i++) {
+      const raw = initialTracks.get_Item(i);
+      this.trackByRaw.set(raw, this.createTrack(raw));
+    }
+  }
+  get offset() {
+    return new T3Time(this.chartApi.offsetMilli);
+  }
+  getChartApi() {
+    return this.chartApi;
+  }
+  addTrack(model, notes = [], layerId, onTrackAdded, onNotesAdded) {
+    return this.chartApi.addTrack(
+      model.toCSharp(),
+      toCSharpObjectArray(notes),
+      layerId ?? null,
+      onTrackAdded === void 0 ? null : (raw) => onTrackAdded(this.resolveTrack(raw)),
+      onNotesAdded === void 0 ? null : (raw) => {
+        if (raw === null || raw === void 0) {
+          onNotesAdded(notes.map(() => void 0));
+          return;
+        }
+        onNotesAdded(
+          toArray(raw).map((rawNote) => this.resolveNote(rawNote))
+        );
+      }
+    );
+  }
+  addNote(model, track, onNoteAdded) {
+    return this.chartApi.addNote(
+      model.toCSharp(),
+      track.getRaw(),
+      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
+    );
+  }
+  addDraftNote(model, onNoteAdded) {
+    return this.chartApi.addDraftNote(
+      model.toCSharp(),
+      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
+    );
+  }
+  removeComponent(component) {
+    this.chartApi.removeComponent(component.getRaw());
+  }
+  resolveNote(raw) {
+    return this.noteByRaw.get(raw);
+  }
+  resolveTrack(raw) {
+    return this.trackByRaw.get(raw);
+  }
+  _onNoteAdded(listener) {
+    this.noteAddedListeners.push(listener);
+  }
+  _onNoteRemoved(listener) {
+    this.noteRemovedListeners.push(listener);
+  }
+  _onTrackAdded(listener) {
+    this.trackAddedListeners.push(listener);
+  }
+  _onTrackRemoved(listener) {
+    this.trackRemovedListeners.push(listener);
+  }
+  fireNoteAdded(note) {
+    for (const listener of this.noteAddedListeners) listener(note);
+  }
+  fireNoteRemoved(note) {
+    for (const listener of this.noteRemovedListeners) listener(note);
+  }
+  fireTrackAdded(track) {
+    for (const listener of this.trackAddedListeners) listener(track);
+  }
+  fireTrackRemoved(track) {
+    for (const listener of this.trackRemovedListeners) listener(track);
+  }
+  createNote(raw) {
+    return createNoteSnapshot(raw, this);
+  }
+  createTrack(raw) {
+    return new TrackSnapshot(raw, this);
+  }
+};
+var ChartSelectSet = class {
+  constructor(api, chart) {
+    this.api = api;
+    this.chart = chart;
+  }
+  get currentSelecting() {
+    const raw = this.api.getCurrentSelecting();
+    if (raw === null || raw === void 0) return void 0;
+    return this.resolve(raw);
+  }
+  get size() {
+    return toArray(this.api.getAllSelected()).length;
+  }
+  has(value) {
+    const raw = value.getRaw();
+    for (const selected of toArray(this.api.getAllSelected())) {
+      if (selected === raw) return true;
+    }
+    return false;
+  }
+  add(value) {
+    this.api.addSelected(value.getRaw());
+    return this;
+  }
+  delete(value) {
+    const existed = this.has(value);
+    this.api.removeSelected(value.getRaw());
+    return existed;
+  }
+  clear() {
+    this.api.clearSelected();
+  }
+  forEach(callbackfn, thisArg) {
+    for (const v of this.values()) callbackfn.call(thisArg, v, v, this);
+  }
+  keys() {
+    return this.values();
+  }
+  *values() {
+    for (const raw of toArray(this.api.getAllSelected())) {
+      const resolved = this.resolve(raw);
+      if (resolved !== void 0) yield resolved;
+    }
+  }
+  *entries() {
+    for (const v of this.values()) yield [v, v];
+  }
+  [Symbol.iterator]() {
+    return this.values();
+  }
+  get [Symbol.toStringTag]() {
+    return "Set";
+  }
+  resolve(raw) {
+    return this.chart.resolveNote(raw) ?? this.chart.resolveTrack(raw);
   }
 };
 
@@ -635,7 +976,7 @@ var TrackDirectMovement = class {
     );
   }
 };
-var TrackModel = class {
+var TrackModel2 = class {
   constructor(timeStart, timeEnd, movement) {
     this.timeStart = timeStart;
     this.timeEnd = timeEnd;
@@ -756,9 +1097,9 @@ var TrackDirectMovementWrapper = class {
   }
 };
 var TrackSnapshot = class {
-  constructor(raw, chart) {
+  constructor(raw, registry) {
     this.raw = raw;
-    this.chart = chart;
+    this.registry = registry;
     this.id = raw.id;
     this.name = raw.name;
     this.movement = raw.movement.type === "Edge" ? new TrackEdgeMovementWrapper(raw.movement) : new TrackDirectMovementWrapper(raw.movement);
@@ -766,9 +1107,14 @@ var TrackSnapshot = class {
   get notes() {
     return this.getNotes();
   }
+  /**
+   * The notes of this track. They come from the raw component's children, so a clipboard copy hands out its own
+   * copied notes (which never exist in the chart) instead of looking them up in the chart.
+   */
   *getNotes() {
-    for (const note of this.chart.notes) {
-      if (note.track === this) yield note;
+    for (const raw of toArray(this.raw.getChildren())) {
+      const note = this.registry.resolveNote(raw);
+      if (note !== void 0) yield note;
     }
   }
   getRaw() {
@@ -805,339 +1151,11 @@ var TrackSnapshot = class {
     this.raw.shift(offset);
   }
   getModel() {
-    return new TrackModel(
+    return new TrackModel2(
       new T3Time(this.raw.timeStart.value),
       new T3Time(this.raw.timeEnd.value),
       this.movement.getModel()
     );
-  }
-};
-
-// ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3chart.ts
-function toArray(arr) {
-  if (Array.isArray(arr)) return arr;
-  const result = [];
-  for (let i = 0; i < arr.Length; i++) {
-    result.push(arr.get_Item(i));
-  }
-  return result;
-}
-var BpmListWrapper = class {
-  constructor(raw) {
-    this.raw = raw;
-  }
-  getFloorTime(time, gridDivision) {
-    return new T3Time(this.raw.getFloorTime(time.milli, gridDivision));
-  }
-  getCeilTime(time, gridDivision) {
-    return new T3Time(this.raw.getCeilTime(time.milli, gridDivision));
-  }
-  has(key) {
-    return this.raw.has(key.milli);
-  }
-  get(key) {
-    const value = this.raw.get(key.milli);
-    return value === null || value === void 0 ? void 0 : value;
-  }
-  delete(key) {
-    return this.raw.delete(key.milli);
-  }
-  clear() {
-    this.raw.clear();
-  }
-  get size() {
-    return this.raw.size;
-  }
-  set(key, value) {
-    this.raw.set(key.milli, value);
-    return this;
-  }
-  *keys() {
-    for (const milli of toArray(this.raw.keys())) {
-      yield new T3Time(milli);
-    }
-  }
-  *values() {
-    for (const value of toArray(this.raw.values())) {
-      yield value;
-    }
-  }
-  *entries() {
-    for (const milli of toArray(this.raw.keys())) {
-      yield [new T3Time(milli), this.get(new T3Time(milli))];
-    }
-  }
-  forEach(callbackfn, thisArg) {
-    for (const [key, value] of this.entries()) {
-      callbackfn.call(thisArg, value, key, this);
-    }
-  }
-  *[Symbol.iterator]() {
-    yield* this.entries();
-  }
-  get [Symbol.toStringTag]() {
-    return "Map";
-  }
-};
-var LayersInfoWrapper = class {
-  constructor(raw) {
-    this.raw = raw;
-  }
-  get layers() {
-    return toArray(this.raw.layers);
-  }
-  get defaultLayer() {
-    return this.raw.defaultLayer;
-  }
-  add(layer) {
-    return this.raw.add(toCSharpLayer(layer));
-  }
-  remove(layerId) {
-    return this.raw.remove(layerId);
-  }
-  update(layerId, layer) {
-    return this.raw.update(layerId, toCSharpLayer(layer));
-  }
-};
-function toCSharpLayer(layer) {
-  const info = new CS.MusicGame.ChartEditor.TrackLayer.LayerInfo();
-  info.Name = layer.name;
-  info.Color = new CS.UnityEngine.Color(
-    layer.color.r,
-    layer.color.g,
-    layer.color.b,
-    layer.color.a
-  );
-  info.IsDecoration = layer.isDecoration;
-  info.IsSelected = layer.isSelected;
-  return info;
-}
-var SetView = class {
-  constructor(map) {
-    this.map = map;
-  }
-  get size() {
-    return this.map.size;
-  }
-  has(value) {
-    for (const v of this.map.values()) {
-      if (v === value) return true;
-    }
-    return false;
-  }
-  forEach(callbackfn, thisArg) {
-    for (const v of this.map.values()) callbackfn.call(thisArg, v, v, this);
-  }
-  keys() {
-    return this.map.values();
-  }
-  values() {
-    return this.map.values();
-  }
-  *entries() {
-    for (const v of this.map.values()) yield [v, v];
-  }
-  [Symbol.iterator]() {
-    return this.map.values();
-  }
-  get [Symbol.toStringTag]() {
-    return "Set";
-  }
-};
-var ChartSnapshot = class {
-  constructor(chartApi) {
-    this.chartApi = chartApi;
-    this.noteByRaw = /* @__PURE__ */ new Map();
-    this.trackByRaw = /* @__PURE__ */ new Map();
-    this.noteAddedListeners = [];
-    this.noteRemovedListeners = [];
-    this.trackAddedListeners = [];
-    this.trackRemovedListeners = [];
-    this.notes = new SetView(this.noteByRaw);
-    this.tracks = new SetView(this.trackByRaw);
-    this.bpmList = new BpmListWrapper(this.chartApi.bpmList);
-    this.layersInfo = new LayersInfoWrapper(this.chartApi.layersInfo);
-    this.chartApi.onNoteAdded((raw) => {
-      const note = this.createNote(raw);
-      this.noteByRaw.set(raw, note);
-      this.fireNoteAdded(note);
-    });
-    this.chartApi.onNoteRemoved((raw) => {
-      const note = this.noteByRaw.get(raw);
-      if (note) {
-        this.fireNoteRemoved(note);
-        this.noteByRaw.delete(raw);
-      }
-    });
-    this.chartApi.onTrackAdded((raw) => {
-      const track = this.createTrack(raw);
-      this.trackByRaw.set(raw, track);
-      this.fireTrackAdded(track);
-    });
-    this.chartApi.onTrackRemoved((raw) => {
-      const track = this.trackByRaw.get(raw);
-      if (track) {
-        this.fireTrackRemoved(track);
-        this.trackByRaw.delete(raw);
-      }
-    });
-    const initialNotes = this.chartApi.getAllNotes();
-    for (let i = 0; i < initialNotes.Length; i++) {
-      const raw = initialNotes.get_Item(i);
-      this.noteByRaw.set(raw, this.createNote(raw));
-    }
-    const initialTracks = this.chartApi.getAllTracks();
-    for (let i = 0; i < initialTracks.Length; i++) {
-      const raw = initialTracks.get_Item(i);
-      this.trackByRaw.set(raw, this.createTrack(raw));
-    }
-  }
-  get offset() {
-    return new T3Time(this.chartApi.offsetMilli);
-  }
-  getChartApi() {
-    return this.chartApi;
-  }
-  addTrack(model, notes = [], layerId, onTrackAdded, onNotesAdded) {
-    let arr = CS.System.Array.CreateInstance(puer.$typeof(CS.System.Object), notes.length);
-    for (let i = 0; i < notes.length; i++) {
-      arr.set_Item(i, notes[i].toCSharp());
-    }
-    return this.chartApi.addTrack(
-      model.toCSharp(),
-      arr,
-      layerId ?? null,
-      onTrackAdded === void 0 ? null : (raw) => onTrackAdded(this.resolveTrack(raw)),
-      onNotesAdded === void 0 ? null : (raw) => {
-        if (raw === null || raw === void 0) {
-          onNotesAdded(notes.map(() => void 0));
-          return;
-        }
-        onNotesAdded(
-          toArray(raw).map((rawNote) => this.resolveNote(rawNote))
-        );
-      }
-    );
-  }
-  addNote(model, track, onNoteAdded) {
-    return this.chartApi.addNote(
-      model.toCSharp(),
-      track.getRaw(),
-      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
-    );
-  }
-  addDraftNote(model, onNoteAdded) {
-    return this.chartApi.addDraftNote(
-      model.toCSharp(),
-      onNoteAdded === void 0 ? null : (raw) => onNoteAdded(this.resolveNote(raw))
-    );
-  }
-  removeComponent(component) {
-    this.chartApi.removeComponent(component.getRaw());
-  }
-  resolveNote(raw) {
-    return this.noteByRaw.get(raw);
-  }
-  resolveTrack(raw) {
-    return this.trackByRaw.get(raw);
-  }
-  _onNoteAdded(listener) {
-    this.noteAddedListeners.push(listener);
-  }
-  _onNoteRemoved(listener) {
-    this.noteRemovedListeners.push(listener);
-  }
-  _onTrackAdded(listener) {
-    this.trackAddedListeners.push(listener);
-  }
-  _onTrackRemoved(listener) {
-    this.trackRemovedListeners.push(listener);
-  }
-  fireNoteAdded(note) {
-    for (const listener of this.noteAddedListeners) listener(note);
-  }
-  fireNoteRemoved(note) {
-    for (const listener of this.noteRemovedListeners) listener(note);
-  }
-  fireTrackAdded(track) {
-    for (const listener of this.trackAddedListeners) listener(track);
-  }
-  fireTrackRemoved(track) {
-    for (const listener of this.trackRemovedListeners) listener(track);
-  }
-  createNote(raw) {
-    switch (raw.type) {
-      case "Hit":
-        return new HitSnapshot(raw, this);
-      case "Hold":
-        return new HoldSnapshot(raw, this);
-      case "DraftHit":
-        return new DraftHitSnapshot(raw, this);
-      case "DraftHold":
-        return new DraftHoldSnapshot(raw, this);
-      default:
-        return new HoldSnapshot(raw, this);
-    }
-  }
-  createTrack(raw) {
-    return new TrackSnapshot(raw, this);
-  }
-};
-var ChartSelectSet = class {
-  constructor(api, chart) {
-    this.api = api;
-    this.chart = chart;
-  }
-  get currentSelecting() {
-    const raw = this.api.getCurrentSelecting();
-    if (raw === null || raw === void 0) return void 0;
-    return this.resolve(raw);
-  }
-  get size() {
-    return toArray(this.api.getAllSelected()).length;
-  }
-  has(value) {
-    const raw = value.getRaw();
-    for (const selected of toArray(this.api.getAllSelected())) {
-      if (selected === raw) return true;
-    }
-    return false;
-  }
-  add(value) {
-    this.api.addSelected(value.getRaw());
-    return this;
-  }
-  delete(value) {
-    const existed = this.has(value);
-    this.api.removeSelected(value.getRaw());
-    return existed;
-  }
-  clear() {
-    this.api.clearSelected();
-  }
-  forEach(callbackfn, thisArg) {
-    for (const v of this.values()) callbackfn.call(thisArg, v, v, this);
-  }
-  keys() {
-    return this.values();
-  }
-  *values() {
-    for (const raw of toArray(this.api.getAllSelected())) {
-      const resolved = this.resolve(raw);
-      if (resolved !== void 0) yield resolved;
-    }
-  }
-  *entries() {
-    for (const v of this.values()) yield [v, v];
-  }
-  [Symbol.iterator]() {
-    return this.values();
-  }
-  get [Symbol.toStringTag]() {
-    return "Set";
-  }
-  resolve(raw) {
-    return this.chart.resolveNote(raw) ?? this.chart.resolveTrack(raw);
   }
 };
 
@@ -1319,6 +1337,157 @@ var NodeSelectSet = class {
   }
 };
 
+// ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3clipboard.ts
+function isModel(value) {
+  return value !== null && value !== void 0 && typeof value.toCSharp === "function";
+}
+var TrackClipboardContent = class {
+  constructor() {
+    this.entries = [];
+  }
+  /**
+   * Adds a track (and optionally its notes) to the content.
+   *
+   * @param layerId The id of the layer the track belongs to (see `ctx.chart.layersInfo.layers`). `undefined`
+   *   keeps the default layer. Whether the id still exists is checked when the content is applied.
+   * @returns Whether the arguments look like models. `false` means nothing was added to the content.
+   */
+  addTrack(model, notes = [], layerId) {
+    if (!isModel(model)) return false;
+    for (const note of notes) {
+      if (!isModel(note)) return false;
+    }
+    this.entries.push({ track: model, notes, layerId });
+    return true;
+  }
+  _apply(api) {
+    api.beginOverride();
+    for (const entry of this.entries) {
+      if (!api.addTrack(
+        entry.track.toCSharp(),
+        toCSharpObjectArray(entry.notes),
+        entry.layerId ?? null
+      )) {
+        api.cancelOverride();
+        return false;
+      }
+    }
+    api.commitOverride();
+    return true;
+  }
+};
+var NoteClipboardContent = class {
+  constructor() {
+    this.entries = [];
+  }
+  /**
+   * Adds a note attached to the given track to the content.
+   *
+   * @param track A track of `ctx.chart`; it becomes the track the pasted note is attached to. A track that is
+   *   not in the current chart is rejected when the content is applied.
+   * @returns Whether the arguments look like models. `false` means nothing was added to the content.
+   */
+  addNote(model, track) {
+    if (!isModel(model)) return false;
+    if (track === null || track === void 0) return false;
+    if (typeof track.getRaw !== "function") return false;
+    this.entries.push({ note: model, track });
+    return true;
+  }
+  _apply(api) {
+    api.beginOverride();
+    for (const entry of this.entries) {
+      if (!api.addNote(entry.note.toCSharp(), entry.track.getRaw())) {
+        api.cancelOverride();
+        return false;
+      }
+    }
+    api.commitOverride();
+    return true;
+  }
+};
+var DraftNoteClipboardContent = class {
+  constructor() {
+    this.entries = [];
+  }
+  /**
+   * Adds a floating (draft) note to the content.
+   *
+   * @returns Whether the argument looks like a model. `false` means nothing was added to the content.
+   */
+  addDraftNote(model) {
+    if (!isModel(model)) return false;
+    this.entries.push(model);
+    return true;
+  }
+  _apply(api) {
+    api.beginOverride();
+    for (const entry of this.entries) {
+      if (!api.addDraftNote(entry.toCSharp())) {
+        api.cancelOverride();
+        return false;
+      }
+    }
+    api.commitOverride();
+    return true;
+  }
+};
+var ChartClipboard = class {
+  constructor(api, chart) {
+    this.api = api;
+    this.chart = chart;
+  }
+  /**
+   * The clipboard content, in no particular order. It is read from C# and copied again on every access, so it is
+   * cheaper to keep the returned array in a local variable than to read it repeatedly.
+   */
+  get items() {
+    const registry = new ClipboardSnapshot(this.chart);
+    return toArray(this.api.getAll()).map((raw) => ({
+      component: registry.create(raw),
+      parent: raw.type === "Hit" || raw.type === "Hold" ? this.chart.resolveTrack(raw.track) : void 0
+    }));
+  }
+  /**
+   * Replaces the clipboard content with the given one, immediately and without touching the undo history, as a
+   * single all or nothing operation: when anything is rejected (an unknown layer id, a track that is not in the
+   * chart, a model of the wrong kind), the clipboard keeps its previous content and `false` is returned.
+   *
+   * An empty content clears the clipboard.
+   */
+  override(content) {
+    return content._apply(this.api);
+  }
+};
+var ClipboardSnapshot = class {
+  constructor(chart) {
+    this.chart = chart;
+    this.noteByRaw = /* @__PURE__ */ new Map();
+    this.trackByRaw = /* @__PURE__ */ new Map();
+  }
+  create(raw) {
+    return raw.type === "Track" ? this.resolveTrack(raw) : this.resolveNote(raw);
+  }
+  resolveNote(raw) {
+    if (raw === null || raw === void 0 || raw.type === "Track")
+      return void 0;
+    const existing = this.noteByRaw.get(raw) ?? this.chart.resolveNote(raw);
+    if (existing !== void 0) return existing;
+    const note = createSnapshot(raw, this);
+    this.noteByRaw.set(raw, note);
+    return note;
+  }
+  resolveTrack(raw) {
+    if (raw === null || raw === void 0 || raw.type !== "Track")
+      return void 0;
+    const existing = this.trackByRaw.get(raw) ?? this.chart.resolveTrack(raw);
+    if (existing !== void 0) return existing;
+    const track = createSnapshot(raw, this);
+    this.trackByRaw.set(raw, track);
+    return track;
+  }
+};
+
 // ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3context.ts
 function createContext(api) {
   return new T3ContextImpl(api);
@@ -1327,6 +1496,7 @@ var T3ContextImpl = class {
   constructor(api) {
     this.api = api;
     this.chart = new ChartSnapshot(api.chart);
+    this.chartClipboard = new ChartClipboard(api.chartClipboard, this.chart);
     this.chartTime = new T3TimeWrapper(api.editor.chartTime);
     this.chartSelectDataset = new ChartSelectSet(api.chart, this.chart);
     this.nodes = new NodeDataset(api.nodes, this.chart);
@@ -1480,6 +1650,18 @@ var emptyChartApi = {
 };
 var emptyApi = {
   chart: emptyChartApi,
+  chartClipboard: {
+    getAll: () => [],
+    beginOverride: () => {
+    },
+    addTrack: () => false,
+    addNote: () => false,
+    addDraftNote: () => false,
+    commitOverride: () => {
+    },
+    cancelOverride: () => {
+    }
+  },
   staging: {
     hasPending: false,
     commit: () => {
@@ -1540,10 +1722,13 @@ globalThis.TrackEdgeMovement = TrackEdgeMovement;
 globalThis.TrackEdgeMovementWrapper = TrackEdgeMovementWrapper;
 globalThis.TrackDirectMovement = TrackDirectMovement;
 globalThis.TrackDirectMovementWrapper = TrackDirectMovementWrapper;
-globalThis.TrackModel = TrackModel;
+globalThis.TrackModel = TrackModel2;
 globalThis.TrackSnapshot = TrackSnapshot;
 globalThis.TrackEdgeNode = TrackEdgeNode;
 globalThis.TrackDirectNode = TrackDirectNode;
+globalThis.TrackClipboardContent = TrackClipboardContent;
+globalThis.NoteClipboardContent = NoteClipboardContent;
+globalThis.DraftNoteClipboardContent = DraftNoteClipboardContent;
 globalThis.T3PluginBase = T3PluginBase;
 var stubbedCtx = null;
 globalThis.getT3Context = () => {
