@@ -1,11 +1,13 @@
 #if UNITY_EDITOR
 #nullable enable
 
+using System.Collections.Generic;
 using EditorPlugin.EditorIntegration;
 using EditorPlugin.PluginSystem;
 using EditorPlugin.Tests;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
+using MusicGame.ChartEditor.TrackLine;
 using MusicGame.Gameplay.Level;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
@@ -44,8 +46,8 @@ namespace EditorPlugin.Editor
 				return;
 			}
 
-			// The level property and the clipboard are plain container singletons, so they can only be resolved
-			// from the scene scope.
+			// The level property and the clipboards are container singletons, so they can only be resolved from
+			// the scene scope.
 			var levelInfo = scope.Container.Resolve<NotifiableProperty<LevelInfo?>>();
 			if (!scope.Container.TryResolve<IDataset<ClipboardItem>>(out var clipboard))
 			{
@@ -54,7 +56,14 @@ namespace EditorPlugin.Editor
 				return;
 			}
 
-			var runner = new PluginTestRunner(levelInfo, commandManager, clipboard, bridge, manage,
+			if (!scope.Container.TryResolve<List<NodeRawInfo>>(out var nodeClipboard, "clipboard"))
+			{
+				Debug.LogError("[PluginTest] The node clipboard is not registered. " +
+				               "Run this while playing the ChartEditor scene.");
+				return;
+			}
+
+			var runner = new PluginTestRunner(levelInfo, commandManager, clipboard, nodeClipboard, bridge, manage,
 				manage.ApiVersion?.ToString());
 			var report = runner.Run();
 			if (report.Succeeded) Debug.Log(report.Format());

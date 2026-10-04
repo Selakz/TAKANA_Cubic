@@ -1488,6 +1488,45 @@ var ClipboardSnapshot = class {
   }
 };
 
+// ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3nodeclipboard.ts
+var NodeClipboard = class {
+  constructor(api) {
+    this.api = api;
+  }
+  /**
+   * The clipboard content as one movement, assembled from the editor on every access: the edge nodes come back
+   * as a `TrackEdgeMovement`, the position/width nodes as a `TrackDirectMovement`. `undefined` when the
+   * clipboard holds no node.
+   *
+   * It is assembled from value snapshots, so editing it changes neither the clipboard nor the chart.
+   */
+  get movement() {
+    const nodes = toArray(this.api.readNodes());
+    if (nodes.length === 0) return void 0;
+    const moveList = (type) => {
+      const list = new MoveList();
+      for (const raw of nodes) {
+        if (raw.type !== type) continue;
+        list.set(new T3Time(raw.time), createMoveItem(raw.getMoveItem()));
+      }
+      return list;
+    };
+    return nodes.some((raw) => raw.type === "Left" || raw.type === "Right") ? new TrackEdgeMovement(moveList("Left"), moveList("Right")) : new TrackDirectMovement(moveList("Pos"), moveList("Width"));
+  }
+  /**
+   * Replaces the clipboard content with the given movement, immediately and without touching the undo history:
+   * a `TrackEdgeMovement` writes left/right nodes, a `TrackDirectMovement` writes position/width nodes.
+   *
+   * Returns whether the movement was accepted. Anything else leaves the clipboard untouched, and an empty
+   * movement clears it.
+   */
+  override(movement) {
+    const model = movement?.toCSharp?.();
+    if (model === null || model === void 0) return false;
+    return this.api.overrideMovement(model);
+  }
+};
+
 // ../../UnityProjects/TAKANA_Cubic/Assets/Scripts/EditorPlugin/PluginSystem/ts/t3/t3context.ts
 function createContext(api) {
   return new T3ContextImpl(api);
@@ -1497,6 +1536,7 @@ var T3ContextImpl = class {
     this.api = api;
     this.chart = new ChartSnapshot(api.chart);
     this.chartClipboard = new ChartClipboard(api.chartClipboard, this.chart);
+    this.nodeClipboard = new NodeClipboard(api.nodeClipboard);
     this.chartTime = new T3TimeWrapper(api.editor.chartTime);
     this.chartSelectDataset = new ChartSelectSet(api.chart, this.chart);
     this.nodes = new NodeDataset(api.nodes, this.chart);
@@ -1661,6 +1701,10 @@ var emptyApi = {
     },
     cancelOverride: () => {
     }
+  },
+  nodeClipboard: {
+    readNodes: () => [],
+    overrideMovement: () => false
   },
   staging: {
     hasPending: false,

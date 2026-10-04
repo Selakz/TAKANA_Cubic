@@ -7,6 +7,7 @@ import {
 } from "../model.js";
 import { ChartSnapshot, ChartSelectSet } from "./t3chart.js";
 import { ChartClipboard } from "./t3clipboard.js";
+import { NodeClipboard } from "./t3nodeclipboard.js";
 import { NodeDataset, NodeSelectSet } from "./t3nodes.js";
 import type { TrackNode } from "./t3nodes.js";
 
@@ -70,6 +71,12 @@ export interface ClipboardApi {
   cancelOverride(): void;
 }
 
+/** The C# side of the node clipboard (see EditorPlugin.Shared.NodeClipboardApi). */
+export interface NodeClipboardApi {
+  readNodes(): any[];
+  overrideMovement(movement: any): boolean;
+}
+
 export interface EditorApi {
   readonly chartTime: Wrapper<number>;
   readonly audioLengthMilli: number;
@@ -102,6 +109,7 @@ export interface MouseApi {
 export interface T3CSharpApi {
   readonly chart: ChartApi;
   readonly chartClipboard: ClipboardApi;
+  readonly nodeClipboard: NodeClipboardApi;
   readonly staging: StagingApi;
   readonly editor: EditorApi;
   readonly nodes: NodeApi;
@@ -120,6 +128,12 @@ export interface T3Context {
    * the clipboard is `override`.
    */
   readonly chartClipboard: ChartClipboard;
+
+  /**
+   * The clipboard used by the editor's copy/paste of track movement nodes. Reading it hands out a copy as one
+   * `TrackMovement`; the only way to change it is `override`.
+   */
+  readonly nodeClipboard: NodeClipboard;
 
   readonly chartSelectDataset: SelectSet<ComponentSnapshot>;
   readonly chartTime: Wrapper<T3Time>;
@@ -150,6 +164,7 @@ export function createContext(api: T3CSharpApi): T3Context {
 class T3ContextImpl implements T3Context {
   readonly chart: ChartSnapshot;
   readonly chartClipboard: ChartClipboard;
+  readonly nodeClipboard: NodeClipboard;
   readonly chartTime: Wrapper<T3Time>;
   readonly chartSelectDataset: ChartSelectSet;
   readonly nodes: NodeDataset;
@@ -159,6 +174,7 @@ class T3ContextImpl implements T3Context {
   constructor(private api: T3CSharpApi) {
     this.chart = new ChartSnapshot(api.chart);
     this.chartClipboard = new ChartClipboard(api.chartClipboard, this.chart);
+    this.nodeClipboard = new NodeClipboard(api.nodeClipboard);
     this.chartTime = new T3TimeWrapper(api.editor.chartTime);
     this.chartSelectDataset = new ChartSelectSet(api.chart, this.chart);
     this.nodes = new NodeDataset(api.nodes, this.chart);

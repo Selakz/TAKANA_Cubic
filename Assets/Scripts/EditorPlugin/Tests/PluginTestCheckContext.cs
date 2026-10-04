@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
+using MusicGame.ChartEditor.TrackLine;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
 using MusicGame.Models.Note;
@@ -16,6 +17,7 @@ namespace EditorPlugin.Tests
 	{
 		private readonly PluginTestReport report;
 		private readonly IDataset<ClipboardItem> clipboard;
+		private readonly List<NodeRawInfo> nodeClipboard;
 
 		public string Scenario { get; }
 
@@ -30,17 +32,21 @@ namespace EditorPlugin.Tests
 		/// <summary> The editor clipboard the scenario read from and wrote to. </summary>
 		public IEnumerable<ClipboardItem> ClipboardItems => clipboard;
 
+		/// <summary> The node clipboard the scenario read from and wrote to. </summary>
+		public IEnumerable<NodeRawInfo> NodeClipboardItems => nodeClipboard;
+
 		public IEnumerable<ChartComponent> Tracks => Chart.Where(component => component.Model is ITrack);
 
 		public IEnumerable<ChartComponent> Notes => Chart.Where(component => component.Model is INote);
 
 		public PluginTestCheckContext(string scenario, LevelInfo levelInfo, PluginTestCommandRecorder commands,
-			IDataset<ClipboardItem> clipboard, PluginTestReport report)
+			IDataset<ClipboardItem> clipboard, List<NodeRawInfo> nodeClipboard, PluginTestReport report)
 		{
 			Scenario = scenario;
 			LevelInfo = levelInfo;
 			Commands = commands;
 			this.clipboard = clipboard;
+			this.nodeClipboard = nodeClipboard;
 			this.report = report;
 		}
 

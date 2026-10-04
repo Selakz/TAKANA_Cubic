@@ -80,6 +80,10 @@ const emptyApi: T3CSharpApi = {
     commitOverride: () => {},
     cancelOverride: () => {},
   },
+  nodeClipboard: {
+    readNodes: () => [],
+    overrideMovement: () => false,
+  },
   staging: {
     hasPending: false,
     commit: () => {},

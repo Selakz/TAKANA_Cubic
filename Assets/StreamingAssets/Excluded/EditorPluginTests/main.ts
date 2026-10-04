@@ -2,6 +2,7 @@ import type { PluginTestHarness } from "./harness.js";
 import { registerAddTrackCases } from "./cases/addTrack.js";
 import { registerChartBasicCases } from "./cases/chartBasics.js";
 import { registerChartClipboardCases } from "./cases/chartClipboard.js";
+import { registerNodeClipboardCases } from "./cases/nodeClipboard.js";
 
 /**
  * Test plugin used by PluginTestRunner (Tools/Editor Plugin/Run System Tests).
@@ -21,6 +22,7 @@ const plugin = {
     registerAddTrackCases(harness);
     registerChartBasicCases(harness);
     registerChartClipboardCases(harness);
+    registerNodeClipboardCases(harness);
   },
 };
 

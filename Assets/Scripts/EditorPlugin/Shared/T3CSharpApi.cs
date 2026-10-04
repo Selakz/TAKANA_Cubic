@@ -29,6 +29,7 @@ namespace EditorPlugin.Shared
 	{
 		public ChartApi chart { get; }
 		public ClipboardApi chartClipboard { get; }
+		public NodeClipboardApi nodeClipboard { get; }
 		public EditorApi editor { get; }
 		public StagingApi staging { get; }
 		public NodeApi nodes { get; }
@@ -36,11 +37,12 @@ namespace EditorPlugin.Shared
 
 		private readonly string pluginDirectory;
 
-		public T3CSharpApi(ChartApi chartApi, ClipboardApi clipboardApi, EditorApi editorApi, StagingApi stagingApi,
-			NodeApi nodeApi, MouseApi mouseApi, string pluginDirectory)
+		public T3CSharpApi(ChartApi chartApi, ClipboardApi clipboardApi, NodeClipboardApi nodeClipboardApi,
+			EditorApi editorApi, StagingApi stagingApi, NodeApi nodeApi, MouseApi mouseApi, string pluginDirectory)
 		{
 			chart = chartApi;
 			chartClipboard = clipboardApi;
+			nodeClipboard = nodeClipboardApi;
 			editor = editorApi;
 			staging = stagingApi;
 			nodes = nodeApi;
@@ -52,6 +54,7 @@ namespace EditorPlugin.Shared
 		{
 			chart.Dispose();
 			chartClipboard.Dispose();
+			nodeClipboard.Dispose();
 			editor.Dispose();
 			staging.Dispose();
 			nodes.Dispose();

@@ -51,6 +51,12 @@ interface T3Context {
   readonly chartClipboard: ChartClipboard;
 
   /**
+   * The clipboard used by the editor's copy/paste of track movement nodes.
+   * Reading it hands out a copy as one `TrackMovement`; the only way to change it is `override`.
+   */
+  readonly nodeClipboard: NodeClipboard;
+
+  /**
    * Selection set of chart components.
    * Selection changes apply immediately (no commit needed).
    */
