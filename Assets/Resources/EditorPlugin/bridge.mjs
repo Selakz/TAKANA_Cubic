@@ -102,10 +102,12 @@ var HitModel = class {
     this._timeJudge = new T3Time(this._timeJudge.milli + distance.milli);
   }
   toCSharp() {
-    return new CS.MusicGame.Models.Note.Hit(
+    var note = new CS.MusicGame.Models.Note.Hit(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       this.hitType
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 };
 var HitSnapshot = class {
@@ -180,10 +182,12 @@ var HoldModel = class {
     this._timeEnd = new T3Time(this._timeEnd.milli + distance.milli);
   }
   toCSharp() {
-    return new CS.MusicGame.Models.Note.Hold(
+    var note = new CS.MusicGame.Models.Note.Hold(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       new CS.T3Framework.Runtime.T3Time(this.timeEnd.milli)
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 };
 var HoldSnapshot = class {
@@ -254,12 +258,14 @@ var DraftHitModel = class extends HitModel {
     this._width = v;
   }
   toCSharp() {
-    return new CS.MusicGame.Models.Note.DraftHit(
+    var note = new CS.MusicGame.Models.Note.DraftHit(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       this.hitType,
       this.position,
       this.width
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 };
 var DraftHoldModel = class extends HoldModel {
@@ -281,12 +287,14 @@ var DraftHoldModel = class extends HoldModel {
     this._width = v;
   }
   toCSharp() {
-    return new CS.MusicGame.Models.Note.DraftHold(
+    var note = new CS.MusicGame.Models.Note.DraftHold(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       new CS.T3Framework.Runtime.T3Time(this.timeEnd.milli),
       this.position,
       this.width
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 };
 var DraftHitSnapshot = class {
@@ -1495,14 +1503,13 @@ var NodeClipboard = class {
   }
   /**
    * The clipboard content as one movement, assembled from the editor on every access: the edge nodes come back
-   * as a `TrackEdgeMovement`, the position/width nodes as a `TrackDirectMovement`. `undefined` when the
-   * clipboard holds no node.
+   * as a `TrackEdgeMovement`, the position/width nodes as a `TrackDirectMovement`. An empty clipboard reads as
+   * an edge movement without nodes, so callers never have to handle `undefined`.
    *
    * It is assembled from value snapshots, so editing it changes neither the clipboard nor the chart.
    */
   get movement() {
     const nodes = toArray(this.api.readNodes());
-    if (nodes.length === 0) return void 0;
     const moveList = (type) => {
       const list = new MoveList();
       for (const raw of nodes) {
@@ -1511,7 +1518,8 @@ var NodeClipboard = class {
       }
       return list;
     };
-    return nodes.some((raw) => raw.type === "Left" || raw.type === "Right") ? new TrackEdgeMovement(moveList("Left"), moveList("Right")) : new TrackDirectMovement(moveList("Pos"), moveList("Width"));
+    const isEdge = nodes.length === 0 || nodes.some((raw) => raw.type === "Left" || raw.type === "Right");
+    return isEdge ? new TrackEdgeMovement(moveList("Left"), moveList("Right")) : new TrackDirectMovement(moveList("Pos"), moveList("Width"));
   }
   /**
    * Replaces the clipboard content with the given movement, immediately and without touching the undo history:

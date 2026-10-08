@@ -82,10 +82,12 @@ export class HitModel implements NoteModel {
   }
 
   toCSharp(): any {
-    return new CS.MusicGame.Models.Note.Hit(
+    var note = new CS.MusicGame.Models.Note.Hit(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       this.hitType,
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 }
 
@@ -174,10 +176,12 @@ export class HoldModel implements NoteModel {
   }
 
   toCSharp(): any {
-    return new CS.MusicGame.Models.Note.Hold(
+    var note = new CS.MusicGame.Models.Note.Hold(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       new CS.T3Framework.Runtime.T3Time(this.timeEnd.milli),
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 }
 
@@ -293,12 +297,14 @@ export class DraftHitModel extends HitModel implements DraftNoteModel {
   }
 
   toCSharp(): any {
-    return new CS.MusicGame.Models.Note.DraftHit(
+    var note = new CS.MusicGame.Models.Note.DraftHit(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       this.hitType,
       this.position,
       this.width,
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 }
 
@@ -327,12 +333,14 @@ export class DraftHoldModel extends HoldModel implements DraftNoteModel {
   }
 
   toCSharp(): any {
-    return new CS.MusicGame.Models.Note.DraftHold(
+    var note = new CS.MusicGame.Models.Note.DraftHold(
       new CS.T3Framework.Runtime.T3Time(this.timeJudge.milli),
       new CS.T3Framework.Runtime.T3Time(this.timeEnd.milli),
       this.position,
       this.width,
     );
+    CS.MusicGame.Models.Note.DummyFlagExtensions.SetDummy(note, this.isDummy);
+    return note;
   }
 }
 
