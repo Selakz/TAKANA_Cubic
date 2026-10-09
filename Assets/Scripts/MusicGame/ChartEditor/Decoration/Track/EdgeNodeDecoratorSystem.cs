@@ -21,7 +21,7 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			// Edge
 			new ViewPoolPluginRegistrar<EdgePMLComponent, EdgeNodeComponent>(edgeDecoratorPool, edgeViewPool,
 				moveList => edgeDataset[moveList]
-					.Select(c => (c, $"{edgeNodeNamePrefix}{c.Locator.Time.Milli}"))),
+					.Select(c => (c, $"{edgeNodeNamePrefix}{c.GetHashCode()}"))),
 			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
 				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataAdded,
 				component =>
@@ -30,7 +30,7 @@ namespace MusicGame.ChartEditor.Decoration.Track
 					    edgeDecoratorPool[moveList] is not { } decorator) return;
 					if (edgeViewPool.Add(component))
 					{
-						decorator.AddPlugin($"{edgeNodeNamePrefix}{component.Locator.Time.Milli}",
+						decorator.AddPlugin($"{edgeNodeNamePrefix}{component.GetHashCode()}",
 							edgeViewPool[component]!);
 					}
 				}),
@@ -47,7 +47,7 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			// Direct
 			new ViewPoolPluginRegistrar<DirectPMLComponent, DirectNodeComponent>(directDecoratorPool, directViewPool,
 				moveList => directDataset[moveList]
-					.Select(c => (c, $"{directNodeNamePrefix}{c.Locator.Time.Milli}"))),
+					.Select(c => (c, $"{directNodeNamePrefix}{c.GetHashCode()}"))),
 			new DatasetRegistrar<DirectNodeComponent>(directDataset,
 				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataAdded,
 				component =>
@@ -56,7 +56,7 @@ namespace MusicGame.ChartEditor.Decoration.Track
 					    directDecoratorPool[moveList] is not { } decorator) return;
 					if (directViewPool.Add(component))
 					{
-						decorator.AddPlugin($"{directNodeNamePrefix}{component.Locator.Time.Milli}",
+						decorator.AddPlugin($"{directNodeNamePrefix}{component.GetHashCode()}",
 							directViewPool[component]!);
 					}
 				}),
