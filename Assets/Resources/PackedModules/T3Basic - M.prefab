@@ -297,6 +297,7 @@ MonoBehaviour:
   sortingOrderPriority:
     config: {fileID: 11400000, guid: 12bd8f195b1279043b71251ec2f00e07, type: 2}
     id: hold-order
+  holdTextureConfigCount: 3
 --- !u!1 &7330975352032577260
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Level;
-using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
@@ -23,6 +22,9 @@ namespace MusicGame.Gameplay.Basic.T3
 	{
 		// Serializable and Public
 		[SerializeField] private SequencePriority sortingOrderPriority = default!;
+
+		[Tooltip("It's expected that each hold texture's sorting order in config only differs by 1")] [SerializeField]
+		private int holdTextureConfigCount;
 
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -56,9 +58,13 @@ namespace MusicGame.Gameplay.Basic.T3
 					{
 						var component = viewPool[handler]!;
 						if (component.Model is not Hold) return;
+						var presenter = viewPool[component]!.Script<T3NoteViewPresenter>();
 						var order = holdOrderCalculator.GetLevel(component);
-						var presenter = handler.Script<T3NoteViewPresenter>();
-						SetHoldOrder(presenter, order);
+						foreach (var texture in presenter.Textures.Values)
+						{
+							texture.SortingOrderModifier.Register(o => o + order * holdTextureConfigCount,
+								sortingOrderPriority);
+						}
 					},
 					() =>
 					{
@@ -74,9 +80,6 @@ namespace MusicGame.Gameplay.Basic.T3
 		// Private
 		[Inject] private readonly NotifiableProperty<LevelInfo?> levelInfo = default!;
 		[Inject] [Key("stage")] private readonly IViewPool<ChartComponent> viewPool = default!;
-
-		private SubViewPool<ChartComponent, T3Flag>? holdPool;
-		private SubViewPool<ChartComponent, T3Flag> HoldPool => holdPool ??= new(viewPool, T3ChartClassifier.Instance);
 
 		private readonly DAGLevelCalculator<ChartComponent> holdOrderCalculator = new(
 			(a, b) =>
@@ -99,17 +102,24 @@ namespace MusicGame.Gameplay.Basic.T3
 					var (bLeft, bRight) = (bTrack.Movement.GetLeftPos(time), bTrack.Movement.GetRightPos(time));
 					if (aLeft <= bLeft && aRight >= bRight) return -1;
 					else if (bLeft <= aLeft && bRight >= aRight) return 1;
-					else return 0;
+
+					var overlapLength = Mathf.Max(0, Mathf.Min(aRight, bRight) - Mathf.Max(aLeft, bLeft));
+					return overlapLength > 0 ? aHold.TimeMin.CompareTo(bHold.TimeMin) : 0;
 				}
 			});
 
 		// Defined Functions
-		private void SetHoldOrder(T3NoteViewPresenter presenter, int order)
+		private void RefreshHoldOrder()
 		{
-			var count = presenter.Textures.Count;
-			foreach (var texture in presenter.Textures.Values)
+			foreach (var component in viewPool)
 			{
-				texture.SortingOrderModifier.Register(o => o + order * count, sortingOrderPriority);
+				if (component.Model is not Hold) continue;
+				var presenter = viewPool[component]!.Script<T3NoteViewPresenter>();
+				var order = holdOrderCalculator.GetLevel(component);
+				foreach (var texture in presenter.Textures.Values)
+				{
+					texture.SortingOrderModifier.Register(o => o + order * holdTextureConfigCount, sortingOrderPriority);
+				}
 			}
 		}
 
@@ -118,10 +128,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		{
 			if (component.Model is not Hold) return;
 			holdOrderCalculator.Add(component);
-			if (viewPool[component] is { } handler)
-			{
-				SetHoldOrder(handler.Script<T3NoteViewPresenter>(), holdOrderCalculator.GetLevel(component));
-			}
+			RefreshHoldOrder();
 		}
 
 		private void BeforeComponentParentChanged(ChartComponent component, ChartComponent? lastParent)
@@ -131,10 +138,7 @@ namespace MusicGame.Gameplay.Basic.T3
 			{
 				holdOrderCalculator.Remove(component);
 				holdOrderCalculator.Add(component);
-				if (viewPool[component] is { } handler)
-				{
-					SetHoldOrder(handler.Script<T3NoteViewPresenter>(), holdOrderCalculator.GetLevel(component));
-				}
+				RefreshHoldOrder();
 			});
 		}
 
@@ -149,10 +153,7 @@ namespace MusicGame.Gameplay.Basic.T3
 			if (component.Model is not Hold) return;
 			holdOrderCalculator.Remove(component);
 			holdOrderCalculator.Add(component);
-			if (viewPool[component] is { } handler)
-			{
-				SetHoldOrder(handler.Script<T3NoteViewPresenter>(), holdOrderCalculator.GetLevel(component));
-			}
+			RefreshHoldOrder();
 		}
 
 		[ContextMenu("Print Orders")]
