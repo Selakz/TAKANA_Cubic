@@ -103,7 +103,7 @@ namespace MusicGame.Gameplay.Basic.T3
 		{
 			foreach (var note in viewPool)
 			{
-				if (!T3ChartClassifier.Instance.IsOfType(note, T3Flag.Live | T3Flag.Note)) continue;
+				if (!T3ChartClassifier.Instance.IsOfType(note, T3Flag.Note)) continue;
 				var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
 				presenter.PositionModifier.Update();
 				foreach (var modifier in presenter.Textures.Values)

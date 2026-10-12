@@ -89,5 +89,23 @@ namespace MusicGame.Gameplay.Basic.Falling
 
 		// Static
 		private const float StageWidth = 9f;
+
+		// System Functions
+		void Update()
+		{
+			foreach (var note in viewPool)
+			{
+				if (!T3ChartClassifier.Instance.IsOfType(note, T3Flag.Note)) continue;
+				var presenter = viewPool[note]!.Script<T3NoteViewPresenter>();
+				presenter.PositionModifier.Update();
+				foreach (var modifier in presenter.Textures.Values)
+				{
+					modifier.SizeModifier.Update();
+					modifier.ColorModifier.Update();
+				}
+
+				presenter.EndPosModifier?.Update();
+			}
+		}
 	}
 }
