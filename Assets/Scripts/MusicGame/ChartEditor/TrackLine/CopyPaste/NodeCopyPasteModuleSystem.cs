@@ -8,6 +8,7 @@ using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.Select;
 using MusicGame.ChartEditor.TrackLine.Commands;
 using MusicGame.Gameplay.Chart;
+using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
@@ -34,7 +35,9 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 			// Critically these registrars should be a single system but whatever.
 			new PropertyRegistrar<ChartComponent?>(chartSelectDataset.CurrentSelecting, () =>
 			{
-				if (moduleInfo.CurrentModule == nodeModuleId) moduleInfo.Unregister(nodeModuleId);
+				bool changeInTrack = chartSelectDataset.CurrentSelecting.LastValue?.Model is ITrack &&
+				                     chartSelectDataset.CurrentSelecting.Value?.Model is ITrack;
+				if (moduleInfo.CurrentModule == nodeModuleId && !changeInTrack) moduleInfo.Unregister(nodeModuleId);
 			}),
 			new PropertyRegistrar<EdgeNodeComponent?>(edgeSelectDataset.CurrentSelecting, () =>
 			{

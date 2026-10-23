@@ -1,6 +1,8 @@
 #nullable enable
 
 using MusicGame.ChartEditor.Decoration.Track;
+using MusicGame.ChartEditor.Select;
+using T3Framework.Preset.Event;
 using T3Framework.Preset.Select;
 using T3Framework.Runtime;
 using T3Framework.Runtime.ECS;
@@ -12,11 +14,10 @@ using T3Framework.Static.Event;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.TrackLine
 {
-	public class NodeSelectInputSystem : T3MonoBehaviour, ISelfInstaller
+	public class NodeSelectInputSystem : HierarchySystem<NodeSelectInputSystem>
 	{
 		// Serializable and Public
 		[SerializeField] private LayerMask raycastLayerMask;
@@ -34,28 +35,33 @@ namespace MusicGame.ChartEditor.TrackLine
 					var edgeSpan = EdgeSystem.DoRaycast(edgeRaycastMode.Value);
 					var directSpan = DirectSystem.DoRaycast(directRaycastMode.Value);
 					return edgeSpan.Length == 0 && directSpan.Length == 0;
-				})
+				}),
+			new PropertyRegistrar<EdgeNodeComponent?>(edgeDataset.CurrentSelecting, component =>
+			{
+				if (component is not null)
+					selectDataset.CurrentSelecting.Value = component.Locator.Track;
+			}),
+			new PropertyRegistrar<DirectNodeComponent?>(directDataset.CurrentSelecting, component =>
+			{
+				if (component is not null)
+					selectDataset.CurrentSelecting.Value = component.Locator.Track;
+			})
 		};
 
 		// Private
-		private Camera levelCamera = default!;
-		private NotifiableProperty<ISelectRaycastMode<EdgeNodeComponent>> edgeRaycastMode = default!;
-		private NotifiableProperty<ISelectRaycastMode<DirectNodeComponent>> directRaycastMode = default!;
+		[Inject, Key("stage")] private Camera levelCamera = default!;
+		[Inject] private NotifiableProperty<ISelectRaycastMode<EdgeNodeComponent>> edgeRaycastMode = default!;
+		[Inject] private NotifiableProperty<ISelectRaycastMode<DirectNodeComponent>> directRaycastMode = default!;
+		[Inject] private ChartSelectDataset selectDataset = default!;
+		[Inject] private EdgeNodeSelectDataset edgeDataset = default!;
+		[Inject] private DirectNodeSelectDataset directDataset = default!;
+		[Inject] private IViewPool<EdgeNodeComponent> edgeViewPool = default!;
+		[Inject] private IViewPool<DirectNodeComponent> directViewPool = default!;
 
 		// Defined Functions
 		[Inject]
-		private void Construct(
-			[Key("stage")] Camera levelCamera,
-			NotifiableProperty<ISelectRaycastMode<EdgeNodeComponent>> edgeRaycastMode,
-			NotifiableProperty<ISelectRaycastMode<DirectNodeComponent>> directRaycastMode,
-			EdgeNodeSelectDataset edgeDataset,
-			DirectNodeSelectDataset directDataset,
-			IViewPool<EdgeNodeComponent> edgeViewPool,
-			IViewPool<DirectNodeComponent> directViewPool)
+		private void Construct()
 		{
-			this.levelCamera = levelCamera;
-			this.edgeRaycastMode = edgeRaycastMode;
-			this.directRaycastMode = directRaycastMode;
 			EdgeSystem = new(edgeDataset, new MouseRayMaker(levelCamera), 100,
 				collider => collider.transform.parent.GetComponent<PrefabHandler>())
 			{
@@ -69,7 +75,5 @@ namespace MusicGame.ChartEditor.TrackLine
 				RaycastLayerMask = raycastLayerMask
 			};
 		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
 	}
 }
