@@ -38,7 +38,7 @@ namespace MusicGame.ChartEditor.Level
 				3 => MasterChartFileName,
 				4 => InsanityChartFileName,
 				5 => RavageChartFileName,
-				_ => MasterChartFileName,
+				_ => $"custom{difficulty}",
 			};
 		}
 	}

@@ -85,7 +85,7 @@ namespace MusicGame.EditorEntry
 				FileHelper.GetAbsolutePathFromRelative(projectSettingPath, projectSetting.PreferenceFileName);
 			var preference = ISetting<EditorPreference>.Load(preferencePath);
 			// 4. Load chart
-			difficulty = difficulty is >= 1 and <= 5 ? difficulty : preference.Difficulty;
+			difficulty = DifficultyCatalog.IsValid(difficulty) ? difficulty : preference.Difficulty;
 			ChartLoader.LoadFromEditorProject(projectSettingPath, projectSetting, difficulty)
 				.AsUniTask().ContinueWith(chart =>
 				{

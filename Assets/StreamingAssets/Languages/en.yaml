@@ -57,6 +57,12 @@ EditorEntry:
   TargetT3pkg: "Chart package will be exported to {0}"
   TargetTakana: "TAKANA³ chart will be exported to {0}"
   Intro: Shift + Right Click to create the first track
+  AddCustomDifficulty: Add Difficulty
+  DeleteCustomDifficultyConfirm: Delete custom difficulty {0}? Its chart files will also be deleted.
+
+DifficultyView:
+  BuiltIn: Built-in
+  Custom: Custom
 
 Editor:
   TrackLayer: Track Layer
@@ -341,6 +347,7 @@ Setting:
     ScrollSensitivity: Mouse scroll sensitivity (lines per scroll; negative to invert)
     ShouldForcePause: Force pause on left-click during music playback
     AutoSaveInterval: "Auto-save interval | Unit: ms"
+    DefaultCustomDifficultyColor: Default custom difficulty color
     PluginPath: Plugin directory path
     SaveIndented: Indent chart files; disabling this reduces file size
     WindowWidth: Window width (Height calculated automatically to maintain 16:9)
@@ -396,8 +403,11 @@ Setting:
   DifficultyInfo:
     LevelDisplay: Display difficulty level text
     Charter: Display charter info
+    IsCustom: Whether this is a custom difficulty
+    Name: Display name of a custom difficulty
+    Color: Indicator color of a custom difficulty
   EditorPreference:
-    Difficulty: Initial default difficulty | 1 ~ 5 corresponds to Normal ~ Ravage
+    Difficulty: Initial default difficulty | 1 ~ 5 corresponds to Normal ~ Ravage, custom difficulties start from 11
     Offset: Chart time offset
     MusicVolumePercent: Music volume percentage (Integer) | Range [0, 100]
     Speed: Initial default speed | Range [0, 10]

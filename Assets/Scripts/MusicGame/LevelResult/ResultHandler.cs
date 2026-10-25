@@ -78,16 +78,10 @@ namespace MusicGame.LevelResult
 		private void UpdateSongInfo(LevelInfo levelInfo)
 		{
 			infoHeaderView.SongNameText.text = levelInfo.SongInfo.Title.Value;
-			if (difficultyConfig.Value.TryGetValue(levelInfo.Difficulty, out var data))
-			{
-				infoHeaderView.DifficultyNameText.text = data.name;
-				infoHeaderView.DifficultyNameText.color = data.color;
-			}
-			else
-			{
-				infoHeaderView.DifficultyNameText.text = string.Empty;
-				infoHeaderView.DifficultyNameText.color = Color.white;
-			}
+			var (name, color, found) = DifficultyCatalog.ResolveNameColor(
+				levelInfo.SongInfo, levelInfo.Difficulty, difficultyConfig);
+			infoHeaderView.DifficultyNameText.text = found ? name : string.Empty;
+			infoHeaderView.DifficultyNameText.color = found ? color : Color.white;
 
 			infoHeaderView.DifficultyValueText.text =
 				levelInfo.SongInfo.Difficulties.TryGetValue(levelInfo.Difficulty, out var difficulty)

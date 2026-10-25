@@ -26,6 +26,9 @@ namespace MusicGame.ChartEditor.Level
 		[MinValue(30000)]
 		public NotifiableProperty<T3Time> AutoSaveInterval { get; set; } = new(180000);
 
+		[Description("DefaultCustomDifficultyColor")]
+		public NotifiableProperty<Color> DefaultCustomDifficultyColor { get; set; } = new(new Color(0.25f, 0.7f, 0.225f));
+
 		[Description("PluginPath")]
 		public NotifiableProperty<string> PluginPath { get; set; } =
 			new(Path.Combine(Application.persistentDataPath, "Plugins"));

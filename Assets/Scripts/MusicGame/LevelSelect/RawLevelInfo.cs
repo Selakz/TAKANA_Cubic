@@ -102,7 +102,7 @@ namespace MusicGame.LevelSelect
 			    Preference.Value is not { } preference) return null;
 
 			// 5. Load chart
-			difficulty = difficulty is >= 1 and <= 5 ? difficulty : preference.Difficulty;
+			difficulty = DifficultyCatalog.IsValid(difficulty) ? difficulty : preference.Difficulty;
 			// var chartName = setting.GetChartFileName(difficulty);
 			// ChartInfo? chart = null;
 			// foreach (var extension in extensions.Length == 0 ? Enumerable.Repeat(".json", 1) : extensions)

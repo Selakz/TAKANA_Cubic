@@ -57,6 +57,12 @@ EditorEntry:
   TargetT3pkg: "谱面包将导出为 {0}"
   TargetTakana: "TAKANA³谱面将导出为 {0}"
   Intro: Shift + 右键以创建第一个轨道
+  AddCustomDifficulty: 新增难度
+  DeleteCustomDifficultyConfirm: 确定删除自定义难度 {0} 吗？该难度对应的谱面文件也会一并删除。
+
+DifficultyView:
+  BuiltIn: 内置难度
+  Custom: 自定义难度
 
 Editor:
   TrackLayer: 轨道图层
@@ -342,6 +348,7 @@ Setting:
     ScrollSensitivity: 鼠标滚动灵敏度（即每次滚动移动的格线数量，负数则反向）
     ShouldForcePause: 音乐播放时左键强制暂停
     AutoSaveInterval: 自动保存的时间间隔 | 单位：毫秒
+    DefaultCustomDifficultyColor: 自定义难度默认颜色
     PluginPath: 插件目录路径
     SaveIndented: 谱面文件是否缩进，不缩进可减小文件大小
     WindowWidth: 窗口宽度，高度将在保持16：9窗口比例的前提下自动计算
@@ -397,8 +404,11 @@ Setting:
   DifficultyInfo:
     LevelDisplay: 展示的难度等级文字
     Charter: 展示的谱师信息
+    IsCustom: 是否为自定义难度
+    Name: 自定义难度的显示名称
+    Color: 自定义难度的标识颜色
   EditorPreference:
-    Difficulty: 初始默认选择的难度 | 1 ~ 5 依次为 Normal ~ Ravage
+    Difficulty: 初始默认选择的难度 | 1 ~ 5 依次为 Normal ~ Ravage，自定义难度从 11 开始
     Offset: 谱面时间偏移量
     MusicVolumePercent: 音乐音量大小百分比（整数） | 范围 [0, 100]
     Speed: 初始默认设置的速度 | 范围 [0, 10]
