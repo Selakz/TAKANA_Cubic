@@ -34,6 +34,9 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		[Description("ShowPositionIndicator")]
 		public NotifiableProperty<bool> ShowPositionIndicator { get; set; } = new(true);
 
+		[Description("TrackSelectedColor")]
+		public NotifiableProperty<Color> TrackSelectedColor { get; set; } = new(new(0.01f, 0f, 0.5f, 1f));
+
 		[Description("WidthGridColor")]
 		public NotifiableProperty<Color> WidthGridColor { get; set; } = new(new(0f, 0.8f, 1f, 1f));
 

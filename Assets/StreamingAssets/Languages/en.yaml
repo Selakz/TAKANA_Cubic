@@ -275,9 +275,6 @@ Setting:
   ExperimentalSetting:
     Header: Experimental Settings
     UseExperimentalAudioPlayer: Use experimental audio player (if old one has lag)
-  SelectSetting:
-    Header: Selection Settings
-    TrackSelectedColor: Color when track is selected
   PlayfieldSetting:
     Header: Gameplay Settings
     PlayerId: Displayed Player ID
@@ -335,6 +332,7 @@ Setting:
     TimeDragThreshold: "Minimum drag distance required to trigger a drag action | Unit: ms"
     ShowTimeIndicator: Show time indicator
     ShowPositionIndicator: Show position indicator
+    TrackSelectedColor: Color when track is selected
     WidthGridColor: Vertical grid color
     WidthGridSecondColor: Vertical grid second color
     BeatColor: Grid color for Quarter notes (Beats)

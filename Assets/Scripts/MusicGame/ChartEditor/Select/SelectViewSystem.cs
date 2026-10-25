@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.Gameplay.Basic;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Stage;
@@ -114,7 +115,7 @@ namespace MusicGame.ChartEditor.Select
 			if (classifier.IsSubType(T3Flag.Track, type))
 			{
 				foreach (var cm in presenter.ColorModifiers)
-					cm.Register(_ => ISingleton<SelectSetting>.Instance.TrackSelectedColor, trackColorPriority.Value);
+					cm.Register(_ => ISingleton<InScreenEditSetting>.Instance.TrackSelectedColor, trackColorPriority.Value);
 				presenter.Textures["main"].SortingOrderModifier.Assign
 					(50, trackSortingOrderPriority.Value); // Temp
 			}

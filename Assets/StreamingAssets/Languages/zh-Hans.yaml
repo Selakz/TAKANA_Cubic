@@ -276,9 +276,6 @@ Setting:
   ExperimentalSetting:
     Header: 实验性设置
     UseExperimentalAudioPlayer: 实验性播放器 (如果旧播放器存在延迟问题)
-  SelectSetting:
-    Header: 点选设置
-    TrackSelectedColor: 轨道被选中时的颜色
   PlayfieldSetting:
     Header: 游戏设置
     PlayerId: 展示的玩家ID
@@ -336,6 +333,7 @@ Setting:
     TimeDragThreshold: 尝试拖动时，只有拖动时间差大于该时间才会进行拖动 | 单位：毫秒
     ShowTimeIndicator: 是否显示时间指示器
     ShowPositionIndicator: 是否显示位置指示器
+    TrackSelectedColor: 轨道被选中时的颜色
     WidthGridColor: 纵向格线颜色
     WidthGridSecondColor: 纵向格线第二颜色
     BeatColor: 四分音符（拍）的横向格线颜色
