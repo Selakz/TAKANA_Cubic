@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
@@ -31,6 +32,21 @@ namespace MusicGame.ChartEditor.Command
 
 		/// <summary> Will be triggered also when first added. </summary>
 		public event Action<ICommand>? OnRedo;
+
+		/// <summary> Fingerprint of the current undo stack content, zero when empty. The redo stack is not reflected. </summary>
+		public int Revision
+		{
+			get
+			{
+				int revision = 0;
+				foreach (ICommand command in undoList)
+				{
+					revision = revision * 31 + RuntimeHelpers.GetHashCode(command);
+				}
+
+				return revision;
+			}
+		}
 
 		public static CommandManager Instance { get; private set; } = default!; // TODO: Delete this
 

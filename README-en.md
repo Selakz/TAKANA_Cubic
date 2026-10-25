@@ -31,11 +31,15 @@ If you are interested in developing this project, feel free to reach out to me. 
 
 ## 🏗️ Technical Architecture
 
-The project is divided into three main assemblies with a strict dependency flow:
+The project is divided into five main assemblies with a strict dependency flow:
 
 - **App**: Contains codes which are independent of the app's specific functions.
 
-- **MusicGame**: Contains all logic related to the chart editor. The `ChartEditor` module depends on other internal parts.
+- **DLCore**: Contains codes related to my original music game gameplay.
+
+- **EditorPlugin**: A wrapper for the editor plugin function.
+
+- **MusicGame**: Contains core codes related to TAKANA_Cubic. The `ChartEditor` module depends on other internal parts.
 
 - **T3Framework**: A general-purpose framework developed during this project:
 

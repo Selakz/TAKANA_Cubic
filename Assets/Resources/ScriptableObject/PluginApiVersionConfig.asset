@@ -16,3 +16,6 @@ MonoBehaviour:
   - appVersion: 0.5.0
     apiVersion: 0.1.0
     minCompatibleApiVersion: 0.1.0
+  - appVersion: 0.5.2
+    apiVersion: 0.2.0
+    minCompatibleApiVersion: 0.1.0

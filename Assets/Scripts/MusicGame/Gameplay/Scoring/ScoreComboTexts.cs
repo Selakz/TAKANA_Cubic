@@ -1,22 +1,23 @@
 #nullable enable
 
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.Gameplay.Scoring
 {
-	public class ScoreComboTexts : T3MonoBehaviour, ISelfInstaller
+	public class ScoreComboTexts : HierarchySystem<ScoreComboTexts>
 	{
 		// Serializable and Public
+		[SerializeField] private string? key = null;
 		[SerializeField] private TMP_Text scoreText = default!;
 		[SerializeField] private TMP_Text comboText = default!;
+
+		public override string? Key => key;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
@@ -25,20 +26,7 @@ namespace MusicGame.Gameplay.Scoring
 		};
 
 		// Private
-		private NotifiableProperty<double> score = default!;
-		private NotifiableProperty<int> combo = default!;
-
-		// Defined Functions
-		[Inject]
-		private void Construct(
-			[Key("score")] NotifiableProperty<double> score,
-			[Key("combo")] NotifiableProperty<int> combo)
-		{
-			this.score = score;
-			this.combo = combo;
-		}
-
-		// IDK why VContainer don't inject this component if I don't explicitly declare this...
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
+		[Inject, Key("score")] private NotifiableProperty<double> score = default!;
+		[Inject, Key("combo")] private NotifiableProperty<int> combo = default!;
 	}
 }

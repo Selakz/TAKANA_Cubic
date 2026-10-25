@@ -149,7 +149,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 0.5.1
+  bundleVersion: 0.5.2
   preloadedAssets:
   - {fileID: 11400000, guid: b85c40fc0cb7e5448b7274d44a02414c, type: 2}
   metroInputSource: 0
@@ -782,7 +782,7 @@ PlayerSettings:
     PS5: DOTWEEN
     QNX: DOTWEEN
     Stadia: DOTWEEN
-    Standalone: TAKANA_EDITOR;DOTWEEN
+    Standalone: TAKANA_EDITOR;DOTWEEN;APP_UI_EDITOR_ONLY
     VisionOS: DOTWEEN
     WebGL: DOTWEEN
     Windows Store Apps: DOTWEEN

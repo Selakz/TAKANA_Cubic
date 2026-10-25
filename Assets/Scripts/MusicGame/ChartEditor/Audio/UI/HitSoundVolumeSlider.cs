@@ -4,6 +4,8 @@ using MusicGame.Gameplay.Level;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.Setting;
+using T3Framework.Runtime.Threading;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using TMPro;
@@ -32,10 +34,13 @@ namespace MusicGame.ChartEditor.Audio.UI
 				{
 					ISingleton<PlayfieldSetting>.Instance.HitSoundVolumePercent.Value = Mathf.RoundToInt(value);
 					hitSoundVolumeText.text = Mathf.RoundToInt(value).ToString();
+					saveAction.Invoke(ISingletonSetting<PlayfieldSetting>.SaveInstance, 3000);
 				})
 		};
 
 		// Private
+		private readonly DebounceAction saveAction = new();
+
 		private int HitSoundVolumePercent
 		{
 			set

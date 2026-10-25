@@ -9,12 +9,11 @@ namespace T3Framework.Runtime.VContainer
 	public abstract class HierarchySystem<T> : T3MonoBehaviour, ISelfInstaller where T : HierarchySystem<T>
 	{
 		// Serializable and Public
-		// TODO: Use key to register component after VContainer supports it
+		// You know what? https://github.com/hadashiA/VContainer/pull/842
 		public virtual string? Key => null;
 
 		public virtual bool AsImplementedInterfaces => false;
 
-		// TODO: refactor it to NotifiableProperty<bool>
 		public bool IsEnabled
 		{
 			get => gameObject.activeInHierarchy;
@@ -33,7 +32,7 @@ namespace T3Framework.Runtime.VContainer
 		{
 			if (this is T self)
 			{
-				var registration = builder.RegisterComponent(self).AsSelf();
+				var registration = builder.RegisterComponent(self).AsSelf().Keyed(Key);
 				if (AsImplementedInterfaces) registration.AsImplementedInterfaces();
 			}
 		}

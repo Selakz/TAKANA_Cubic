@@ -171,7 +171,7 @@ namespace MusicGame.Gameplay.Chart
 
 		public void Dispose()
 		{
-			foreach (var component in components)
+			foreach (var component in components.ToList())
 			{
 				component.OnComponentUpdated -= OnComponentUpdated;
 				component.BeforeBelongingChartChanged -= BeforeBelongingChartChanged;

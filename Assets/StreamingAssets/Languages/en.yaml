@@ -78,6 +78,7 @@ Editor:
   SavePure: Export Pure Chart
   MusicSound: Music
   RaycastMode: Raycast Mode
+  ScoreStyle: Score UI
   Skin: Skin
 
   Camera:

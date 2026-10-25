@@ -78,6 +78,7 @@ Editor:
   SavePure: 导出纯谱面
   MusicSound: 音乐音量
   RaycastMode: 点选模式
+  ScoreStyle: 分数UI
   Skin: 皮肤
 
   Camera:
