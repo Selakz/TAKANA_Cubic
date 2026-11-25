@@ -10,11 +10,10 @@ using T3Framework.Static.Event;
 using TMPro;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Audio.UI
 {
-	public class OffsetInputField : T3MonoBehaviour, ISelfInstaller
+	public class OffsetInputField : HierarchySystem<OffsetInputField>
 	{
 		// Serializable and Public
 		[SerializeField] private TMP_InputField offsetInputField = default!;
@@ -50,12 +49,10 @@ namespace MusicGame.ChartEditor.Audio.UI
 			this.music = music;
 		}
 
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
 		// Event Handlers
 		private void OnOffsetInputFieldEndEdit(string content)
 		{
-			if (int.TryParse(content, out int offset) && offset >= 0)
+			if (int.TryParse(content, out int offset))
 			{
 				music.Offset = offset;
 				if (levelInfo.Value?.Chart is { } chart) chart.SetOffsetInfo(offset);
