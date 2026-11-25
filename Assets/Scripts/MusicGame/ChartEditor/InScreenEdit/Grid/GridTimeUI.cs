@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MusicGame.Gameplay.Audio;
 using MusicGame.Gameplay.Level;
@@ -17,11 +18,10 @@ using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UI;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class GridTimeUI : T3MonoBehaviour, ISelfInstaller
+	public class GridTimeUI : HierarchySystem<GridTimeUI>
 	{
 		// Serializable and Public
 		[SerializeField] private Toggle toggle = default!;
@@ -30,8 +30,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		[SerializeField] private Transform timeGridRoot = default!;
 		[SerializeField] private RectTransform timingBlockRoot = default!;
 
-		public event Action? OnBeforeResetGrid;
-
+		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<LevelInfo?>(levelInfo, () =>
@@ -41,7 +40,9 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 				var info = levelInfo.Value;
 				if (info is not null)
 				{
-					info.GetsBpmList().OnBpmListUpdate += ResetGrid;
+					var bpmList = info.GetsBpmList();
+					bpmList.OnBpmListUpdate -= ResetGrid;
+					bpmList.OnBpmListUpdate += ResetGrid;
 					timeRetriever.Value = gridTimeRetriever;
 				}
 			}),
@@ -73,19 +74,26 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		};
 
 		// Private
-		private IObjectResolver resolver = default!;
-		private NotifiableProperty<LevelInfo?> levelInfo = default!;
-		private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
-		private IGameAudioPlayer music = default!;
-		private NotifiableProperty<ISpeed> speed = default!;
-		private ITimeRetriever defaultTimeRetriever = default!;
-		private GridTimeRetriever gridTimeRetriever = default!;
+		[Inject, Key("stage")] private Camera levelCamera = default!;
+		[Inject] private NotifiableProperty<LevelInfo?> levelInfo = default!;
+		[Inject] private NotifiableProperty<ITimeRetriever> timeRetriever = default!;
+		[Inject] private IGameAudioPlayer music = default!;
+		[Inject] private NotifiableProperty<ISpeed> speed = default!;
+		[Inject] private ITimeRetriever defaultTimeRetriever = default!;
+		[Inject] private GridTimeRetriever gridTimeRetriever = default!;
 
+		private readonly Queue<(T3Time time, TimeGridController view)> activeGrids = new();
+		private Camera? timingBlockUiCamera;
 		private T3Time currentGridTime;
 		private T3Time upHeightTimeIncrement;
 
 		private ObjectPool<TimeGridController> TimeGridPool => timeGridPool ??= new(
-			() => timeGridPrefab.Instantiate(resolver, timeGridRoot).GetComponent<TimeGridController>(),
+			() =>
+			{
+				var grid = timeGridPrefab.SimpleInstantiate(timeGridRoot).GetComponent<TimeGridController>();
+				grid.SetTimingBlockParent(timingBlockRoot);
+				return grid;
+			},
 			grid => grid.gameObject.SetActive(true),
 			grid => grid.gameObject.SetActive(false),
 			grid => Destroy(grid.gameObject));
@@ -93,78 +101,88 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		private ObjectPool<TimeGridController>? timeGridPool;
 
 		// Defined Functions
-		[Inject]
-		private void Construct(
-			IObjectResolver resolver,
-			NotifiableProperty<LevelInfo?> levelInfo,
-			NotifiableProperty<ITimeRetriever> timeRetriever,
-			IGameAudioPlayer music,
-			NotifiableProperty<ISpeed> speed,
-			ITimeRetriever defaultTimeRetriever,
-			GridTimeRetriever gridTimeRetriever)
+		private void ResetGrid()
 		{
-			this.resolver = resolver;
-			this.levelInfo = levelInfo;
-			this.timeRetriever = timeRetriever;
-			this.music = music;
-			this.speed = speed;
-			this.defaultTimeRetriever = defaultTimeRetriever;
-			this.gridTimeRetriever = gridTimeRetriever;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
-		public void ResetGrid()
-		{
+			while (activeGrids.Count > 0) TimeGridPool.Release(activeGrids.Dequeue().view);
 			if (gridTimeRetriever.BpmList is not null)
 			{
-				OnBeforeResetGrid?.Invoke();
-				currentGridTime = gridTimeRetriever.BpmList.GetFloorTime
-					(music.ChartTime, gridTimeRetriever.GridDivision, out _);
+				currentGridTime = gridTimeRetriever.BpmList.GetFloorTime(
+					music.ChartTime, gridTimeRetriever.GridDivision, out _);
 			}
 		}
-
-		private Color GetColor(int gridIndex)
-		{
-			int remainder = gridIndex % gridTimeRetriever.GridDivision;
-			if (remainder == 0) return ISingleton<InScreenEditSetting>.Instance.BeatColor;
-			if (gridTimeRetriever.GridDivision % 3 == 0)
-			{
-				int[] target = { 1, 2, 4, 5 };
-				if (target.Any(i => remainder == gridTimeRetriever.GridDivision * i / 6))
-				{
-					return ISingleton<InScreenEditSetting>.Instance.TripletColor;
-				}
-			}
-
-			if (gridTimeRetriever.GridDivision % 2 == 0)
-			{
-				if (remainder == gridTimeRetriever.GridDivision / 2)
-					return ISingleton<InScreenEditSetting>.Instance.QuaverColor;
-				if (remainder == gridTimeRetriever.GridDivision / 4 ||
-				    remainder == gridTimeRetriever.GridDivision * 3 / 4)
-					return ISingleton<InScreenEditSetting>.Instance.SemiQuaverColor;
-			}
-
-			return ISingleton<InScreenEditSetting>.Instance.DefaultColor;
-		}
-
-		public void ReleaseTimeGrid(TimeGridController timeGrid) => TimeGridPool.Release(timeGrid);
 
 		// System Functions
+		protected override void Awake()
+		{
+			base.Awake();
+			var rootCanvas = timingBlockRoot.GetComponentInParent<Canvas>()?.rootCanvas;
+			timingBlockUiCamera = rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay
+				? rootCanvas.worldCamera
+				: null;
+		}
+
 		void Update()
 		{
-			if (timeRetriever.Value == gridTimeRetriever && gridTimeRetriever.BpmList is not null)
+			if (timeRetriever.Value != gridTimeRetriever || gridTimeRetriever.BpmList is null) return;
+
+			var chartTime = music.ChartTime;
+			var bpmList = gridTimeRetriever.BpmList;
+			var division = gridTimeRetriever.GridDivision;
+			while (currentGridTime < chartTime + upHeightTimeIncrement)
 			{
-				while (currentGridTime < music.ChartTime + upHeightTimeIncrement)
+				currentGridTime = bpmList.GetCeilTime(currentGridTime, division, out var gridIndex);
+				if (currentGridTime == T3Time.MaxValue) break;
+				var view = TimeGridPool.Get();
+				view.SetData(currentGridTime, GetColor(gridIndex));
+				activeGrids.Enqueue((currentGridTime, view));
+			}
+
+			while (activeGrids.Count > 0 && chartTime > activeGrids.Peek().time)
+			{
+				TimeGridPool.Release(activeGrids.Dequeue().view);
+			}
+
+			var speedRate = speed.Value.SpeedRate;
+			foreach (var (time, view) in activeGrids)
+			{
+				var y = (time - chartTime).Second * speedRate;
+				view.SetPositionY(y, GetTimingBlockY(y));
+			}
+
+			return;
+
+			float? GetTimingBlockY(float y)
+			{
+				var worldPos = timeGridRoot.TransformPoint(new(0, y, 0));
+				var screenPos = levelCamera.WorldToScreenPoint(worldPos);
+				if (screenPos.z <= 0) return null;
+				RectTransformUtility.ScreenPointToLocalPointInRectangle(
+					timingBlockRoot, screenPos, timingBlockUiCamera, out var localPoint);
+				return localPoint.y;
+			}
+
+			Color GetColor(int gridIndex)
+			{
+				int remainder = gridIndex % division;
+				if (remainder == 0) return ISingleton<InScreenEditSetting>.Instance.BeatColor;
+				if (division % 3 == 0)
 				{
-					currentGridTime = gridTimeRetriever.BpmList.GetCeilTime
-						(currentGridTime, gridTimeRetriever.GridDivision, out var gridIndex);
-					var timeGrid = TimeGridPool.Get();
-					timeGrid.transform.SetParent(timeGridRoot);
-					timeGrid.TimingBlockRoot = timingBlockRoot;
-					timeGrid.Init(this, currentGridTime, GetColor(gridIndex));
+					int[] target = { 1, 2, 4, 5 };
+					if (target.Any(i => remainder == division * i / 6))
+					{
+						return ISingleton<InScreenEditSetting>.Instance.TripletColor;
+					}
 				}
+
+				if (division % 2 == 0)
+				{
+					if (remainder == division / 2)
+						return ISingleton<InScreenEditSetting>.Instance.QuaverColor;
+					if (remainder == division / 4 || remainder == division * 3 / 4)
+						return ISingleton<InScreenEditSetting>.Instance.SemiQuaverColor;
+				}
+
+				return ISingleton<InScreenEditSetting>.Instance.DefaultColor;
 			}
 		}
 	}

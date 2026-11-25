@@ -132,14 +132,14 @@ namespace MusicGame.Gameplay.Judge
 		// Event Handlers
 		private void OnAudioPlay()
 		{
-			OnPlay?.Invoke();
 			Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			OnPlay?.Invoke();
 		}
 
 		private void OnAudioTimeJump()
 		{
-			OnTimeJump?.Invoke();
 			Align(gameAudioPlayer.ChartTime, AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+			OnTimeJump?.Invoke();
 		}
 
 		// System Functions

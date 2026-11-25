@@ -1,96 +1,66 @@
-using MusicGame.Gameplay.Audio;
-using MusicGame.Gameplay.Speed;
-using MusicGame.Models.Note.Movement;
+#nullable enable
+
+using T3Framework.Preset.Event;
 using T3Framework.Runtime;
-using T3Framework.Static.Event;
+using T3Framework.Runtime.Event;
 using UnityEngine;
-using VContainer;
 
 namespace MusicGame.ChartEditor.InScreenEdit.Grid
 {
-	public class TimeGridController : MonoBehaviour
+	public class TimeGridController : T3MonoBehaviour
 	{
 		// Serializable and Public
-		[SerializeField] private float pixelPerGameYForTimingBlock;
-		[SerializeField] private SpriteRenderer lineImage;
-		[SerializeField] private TimingBlock timingBlock;
-		[SerializeField] private RectTransform timingBlockTransform;
-		[SerializeField] private RectTransform timingBlockRoot;
+		[SerializeField] private SpriteRenderer lineImage = default!;
+		[SerializeField] private TimingBlock timingBlock = default!;
+		[SerializeField] private RectTransform timingBlockTransform = default!;
 
-		public RectTransform TimingBlockRoot
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			get => timingBlockRoot;
-			set => timingBlockRoot = value;
-		}
-
-		// Private
-		private IGameAudioPlayer music;
-		private NotifiableProperty<ISpeed> speed;
-
-		private GridTimeUI ui;
-		private T3Time time;
-		private V1LSMoveList moveList;
-
-		// Static
+			new PropertyRegistrar<bool>(timingBlock.IsHovered,
+				isHovered => transform.localScale = new(1, isHovered ? 1.5f : 1f, 1))
+		};
 
 		// Defined Functions
-		[Inject]
-		private void Construct(IGameAudioPlayer music, NotifiableProperty<ISpeed> speed)
-		{
-			this.music = music;
-			this.speed = speed;
-		}
+		public void SetTimingBlockParent(Transform parent) => timingBlockTransform.SetParent(parent, false);
 
-		public void Init(GridTimeUI ui, T3Time time, Color color)
+		public void SetData(T3Time time, Color color)
 		{
-			this.ui = ui;
-			this.time = time;
-			moveList = new(time, 0);
 			lineImage.color = color;
 			timingBlock.Init(time, color);
-			ui.OnBeforeResetGrid += Destroy;
 		}
 
-		public void Destroy()
+		public void SetPositionY(float y, float? timingBlockY)
 		{
-			transform.localPosition = new(0, 100);
-			timingBlockTransform.anchoredPosition = new(0, 100 * pixelPerGameYForTimingBlock);
-			ui.ReleaseTimeGrid(this);
-			ui.OnBeforeResetGrid -= Destroy;
-		}
-
-		// System Functions
-		void Start()
-		{
-			if (timingBlockRoot == null)
+			transform.localPosition = new(0, y);
+			if (timingBlockY.HasValue)
 			{
-				Debug.LogWarning("Timing block root is not set");
-				timingBlockTransform.gameObject.SetActive(false);
+				timingBlock.gameObject.SetActive(true);
+				timingBlockTransform.anchoredPosition = new(0, timingBlockY.Value);
 			}
 			else
 			{
-				timingBlockTransform.SetParent(TimingBlockRoot, false);
-				timingBlockTransform.gameObject.SetActive(true);
+				timingBlock.gameObject.SetActive(false);
 			}
 		}
 
-		void Update()
+		// System Functions
+		protected override void OnEnable()
 		{
-			T3Time chartTime = music.ChartTime;
-			var y = -moveList.GetPos(chartTime) * speed.Value.SpeedRate;
-			transform.localPosition = new(0, y);
-			timingBlockTransform.anchoredPosition = new(0, y * pixelPerGameYForTimingBlock);
-			if (chartTime > time) Destroy();
+			base.OnEnable();
+			timingBlock.gameObject.SetActive(true);
 		}
 
-		void OnEnable()
+		protected override void OnDisable()
 		{
-			if (timingBlock != null) timingBlock.gameObject.SetActive(true);
+			timingBlock.gameObject.SetActive(false);
+			base.OnDisable();
 		}
 
-		void OnDisable()
+		protected override void OnDestroy()
 		{
-			if (timingBlock != null) timingBlock.gameObject.SetActive(false);
+			base.OnDestroy();
+			if (timingBlock != null) Destroy(timingBlock.gameObject);
 		}
 	}
 }
