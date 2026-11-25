@@ -494,3 +494,26 @@ InputRebinding:
   PluginHotkey8: 插件热键 8
   PluginHotkey9: 插件热键 9
   PluginHotkey10: 插件热键 10
+
+ExceptionReport:
+  ButtonTitle: 提交报错
+  Title: 提交报错
+  ReporterName: "用户名："
+  ReporterPlaceholder: 请输入用户名（可选）
+  Summary: "报错概述："
+  SummaryPlaceholder: 请简要描述出错前的操作（可选）
+  TimeRange: "历史报错时长："
+  RangeCurrentSession: 仅本次会话
+  RangeLast15Minutes: 15分钟内
+  RangeLast1Hour: 1小时内
+  RangeToday: 今天全部
+  MatchedLogCount: "将附上 {0} 条报错记录"
+  IncludeProject: 附带当前工程
+  NoProject: 当前未打开工程
+  ProjectSelected: "当前工程：{0}"
+  Submit: 提交
+  Submitting: 正在打包并提交，请稍候...因为作者没钱买带宽，此过程可能需要60s左右
+  SubmitSuccess: 报错已提交，感谢反馈！
+  SubmitSuccessTrimmed: "报错已提交（因工程超过 {0} MB，已自动剔除音频/曲绘）"
+  SubmitFailed: "提交失败：{0}"
+  ConfigMissing: 未配置上报服务器地址

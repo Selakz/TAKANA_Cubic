@@ -493,3 +493,26 @@ InputRebinding:
   PluginHotkey8: Plugin Hotkey 8
   PluginHotkey9: Plugin Hotkey 9
   PluginHotkey10: Plugin Hotkey 10
+
+ExceptionReport:
+  ButtonTitle: Report Bug
+  Title: Report Exception
+  ReporterName: "Username: "
+  ReporterPlaceholder: Enter username (optional)
+  Summary: "Summary: "
+  SummaryPlaceholder: Briefly describe what happened (optional)
+  TimeRange: "Log Time Range: "
+  RangeCurrentSession: Current Session
+  RangeLast15Minutes: Last 15 Minutes
+  RangeLast1Hour: Last 1 Hour
+  RangeToday: All Today
+  MatchedLogCount: "Will attach {0} exception record(s)"
+  IncludeProject: Attach Current Project
+  NoProject: No project loaded
+  ProjectSelected: "Project: {0}"
+  Submit: Submit
+  Submitting: Packaging and submitting, please wait...Due to low bandwidth, this process may take about 60s
+  SubmitSuccess: Report submitted, thank you!
+  SubmitSuccessTrimmed: "Report submitted (audio/cover excluded due to {0} MB limit)"
+  SubmitFailed: "Submit failed: {0}"
+  ConfigMissing: Report server URL is not configured

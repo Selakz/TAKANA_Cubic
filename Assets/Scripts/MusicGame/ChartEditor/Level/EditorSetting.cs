@@ -69,5 +69,9 @@ namespace MusicGame.ChartEditor.Level
 
 		[Description("LastExportDirectory")]
 		public NotifiableProperty<string> LastExportDirectory { get; set; } = new(string.Empty);
+
+		[Description("LastReporterName")]
+		[HideInGame]
+		public NotifiableProperty<string> LastReporterName { get; set; } = new(string.Empty);
 	}
 }
