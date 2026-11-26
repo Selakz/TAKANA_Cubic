@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using T3Framework.Runtime;
 using T3Framework.Static.Event;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		[SerializeField] private Image image = default!;
 
 		public NotifiableProperty<bool> IsHovered { get; } = new(false);
+
+		public event Action<T3Time>? OnClicked;
 
 		// Private
 		private T3Time time;
@@ -33,6 +36,10 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			{
 				TimingInputField.Current.text = time.ToString();
 				TimingInputField.Current.onEndEdit.Invoke(time.ToString());
+			}
+			else
+			{
+				OnClicked?.Invoke(time);
 			}
 		}
 

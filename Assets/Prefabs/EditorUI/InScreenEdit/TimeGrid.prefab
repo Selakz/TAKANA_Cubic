@@ -46,11 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92ac84d9f6a8469a9a7849fcfb4c6e3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pixelPerGameYForTimingBlock: 153.6
   lineImage: {fileID: 8411852670647197306}
   timingBlock: {fileID: 4725072205301832760}
   timingBlockTransform: {fileID: 2351402329133594233}
-  timingBlockRoot: {fileID: 0}
 --- !u!1 &3275340108551559171
 GameObject:
   m_ObjectHideFlags: 0

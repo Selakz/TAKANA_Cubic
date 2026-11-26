@@ -14,6 +14,8 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		[SerializeField] private TimingBlock timingBlock = default!;
 		[SerializeField] private RectTransform timingBlockTransform = default!;
 
+		public TimingBlock TimingBlock => timingBlock;
+
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{

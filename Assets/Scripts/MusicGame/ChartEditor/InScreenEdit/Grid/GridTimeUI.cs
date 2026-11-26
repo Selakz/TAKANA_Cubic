@@ -81,6 +81,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 		[Inject] private NotifiableProperty<ISpeed> speed = default!;
 		[Inject] private ITimeRetriever defaultTimeRetriever = default!;
 		[Inject] private GridTimeRetriever gridTimeRetriever = default!;
+		[Inject] private NotifiableProperty<T3Time> timingBlockClickTime = default!;
 
 		private readonly Queue<(T3Time time, TimeGridController view)> activeGrids = new();
 		private Camera? timingBlockUiCamera;
@@ -92,15 +93,27 @@ namespace MusicGame.ChartEditor.InScreenEdit.Grid
 			{
 				var grid = timeGridPrefab.SimpleInstantiate(timeGridRoot).GetComponent<TimeGridController>();
 				grid.SetTimingBlockParent(timingBlockRoot);
+				grid.TimingBlock.OnClicked += OnTimingBlockClicked;
 				return grid;
 			},
 			grid => grid.gameObject.SetActive(true),
 			grid => grid.gameObject.SetActive(false),
-			grid => Destroy(grid.gameObject));
+			grid =>
+			{
+				grid.TimingBlock.OnClicked -= OnTimingBlockClicked;
+				Destroy(grid.gameObject);
+			});
 
 		private ObjectPool<TimeGridController>? timeGridPool;
 
 		// Defined Functions
+		private void OnTimingBlockClicked(T3Time time)
+		{
+			if (!IsEnabled) return;
+			timingBlockClickTime.Value = time;
+			timingBlockClickTime.AddUpNotify();
+		}
+
 		private void ResetGrid()
 		{
 			while (activeGrids.Count > 0) TimeGridPool.Release(activeGrids.Dequeue().view);

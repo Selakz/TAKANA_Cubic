@@ -29,6 +29,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			builder.Register<GridTimeRetriever>(Lifetime.Singleton);
 			builder.Register<NotifiableProperty<ITimeRetriever>>(Lifetime.Singleton);
 			builder.Register<StageMouseTimeRetriever>(Lifetime.Singleton);
+			builder.RegisterNotifiableProperty<T3Time>(0);
 
 			// WidthRetriever
 			builder.Register<IWidthRetriever, DefaultWidthRetriever>(Lifetime.Singleton);
