@@ -21,6 +21,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 		private readonly ChartComponent component;
 		private readonly Action<ChartComponent>? postAction;
 		private readonly List<ChartComponent> clonedComponents = new();
+		private ChartComponent? clonedParent;
 
 		public CloneComponentCommand(
 			ChartComponent component, Action<ChartComponent>? postAction = null)
@@ -43,6 +44,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 			if (clonedComponents.Count > 0)
 			{
 				clonedComponents[0].BelongingChart = chart;
+				clonedComponents[0].SetParent(clonedParent);
 				return;
 			}
 
@@ -61,7 +63,11 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 
 		public void Undo()
 		{
-			if (clonedComponents.Count > 0) clonedComponents[0].BelongingChart = null;
+			if (clonedComponents.Count > 0)
+			{
+				clonedParent = clonedComponents[0].Parent;
+				clonedComponents[0].BelongingChart = null;
+			}
 		}
 	}
 }

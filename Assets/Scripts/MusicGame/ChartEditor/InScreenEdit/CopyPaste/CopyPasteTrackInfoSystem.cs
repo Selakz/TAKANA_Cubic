@@ -1,5 +1,7 @@
 #nullable enable
 
+using MusicGame.Gameplay.Chart;
+using MusicGame.Gameplay.Level;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime;
@@ -31,6 +33,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 
 		// Private
 		private ModuleInfo moduleInfo = default!;
+		private NotifiableProperty<LevelInfo?> levelInfo = default!;
 		private NotifiableProperty<PasteMode> pasteMode = default!;
 		private IDataset<ClipboardItem> clipboard = default!;
 		private IDataset<TrackRawInfo> dataset = default!;
@@ -43,6 +46,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 		[Inject]
 		private void Construct(
 			ModuleInfo moduleInfo,
+			NotifiableProperty<LevelInfo?> levelInfo,
 			NotifiableProperty<PasteMode> pasteMode,
 			IDataset<ClipboardItem> clipboard,
 			IDataset<TrackRawInfo> dataset,
@@ -50,6 +54,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 			StageMouseWidthRetriever widthRetriever)
 		{
 			this.moduleInfo = moduleInfo;
+			this.levelInfo = levelInfo;
 			this.pasteMode = pasteMode;
 			this.clipboard = clipboard;
 			this.dataset = dataset;
@@ -92,7 +97,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.CopyPaste
 				{
 					if (TrackRawInfo.FromComponent(item.Component) is { } info)
 					{
-						info.Parent.Value = item.Parent;
+						info.Parent.Value = item.Parent ?? levelInfo.Value?.Chart.DefaultJudgeLine();
 						dataset.Add(info);
 						if (info.Track.Model.TimeMin < minTime)
 						{

@@ -18,13 +18,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new InputRegistrar("InScreenEdit", "Create",
-				() =>
-				{
-					commandManager.Add(new BatchCommand(rawDataset.Select(
-							info => new CloneComponentCommand(info.Track, info.Parent.Value?.BelongingChart,
-								track => track.Parent = info.Parent)),
-						"CreateTrack"));
-				}),
+				() => commandManager.Add(CreateCloneTracksCommand())),
 			new InputRegistrar("InScreenEdit", "CreateTrack",
 				() =>
 				{
@@ -36,10 +30,7 @@ namespace MusicGame.ChartEditor.InScreenEdit
 					float left = position - width / 2, right = position + width / 2;
 					var command = service.CreateTrack(timeStart, timeEnd, left, right);
 					if (command is not null) commandManager.Add(command);
-					commandManager.Add(new BatchCommand(rawDataset.Select(
-							info => new CloneComponentCommand(info.Track, info.Parent.Value!.BelongingChart,
-								track => track.Parent = info.Parent)),
-						"CreateTrack"));
+					commandManager.Add(CreateCloneTracksCommand());
 				}),
 			new InputRegistrar("TrackEdit", "ConnectTrack", () =>
 			{
@@ -83,6 +74,15 @@ namespace MusicGame.ChartEditor.InScreenEdit
 			this.timeRetriever = timeRetriever;
 			this.widthRetriever = widthRetriever;
 			this.commandManager = commandManager;
+		}
+
+		private BatchCommand CreateCloneTracksCommand()
+		{
+			return new BatchCommand(rawDataset
+					.Where(info => info.Parent.Value is not null)
+					.Select(info => new CloneComponentCommand(info.Track, info.Parent.Value!.BelongingChart,
+						track => track.Parent = info.Parent)),
+				"CreateTrack");
 		}
 	}
 }

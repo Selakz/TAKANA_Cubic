@@ -5,6 +5,7 @@ using System.Linq;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Note;
 using T3Framework.Preset.Event;
 using T3Framework.Runtime.Event;
@@ -47,7 +48,9 @@ namespace MusicGame.ChartEditor.Draft
 		private void NoteMirrorCopy()
 		{
 			var notes = dataset.Where(component => component.Model is ISolitaryNote).ToArray();
-			IEnumerable<ICommand> cloneCommands = notes.Select(note => new CloneComponentCommand(note));
+			IEnumerable<ICommand> cloneCommands = notes.Select(note =>
+				new CloneComponentCommand(note, note.BelongingChart,
+					cloned => cloned.SetParent(note.Parent ?? note.BelongingChart?.DefaultJudgeLine())));
 			IEnumerable<ICommand> mirrorCommands = notes.Select(note => new UpdateComponentCommand(note,
 				model => (model as ISolitaryNote)!.Position *= -1,
 				model => (model as ISolitaryNote)!.Position *= -1));

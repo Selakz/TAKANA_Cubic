@@ -5,6 +5,7 @@ using System.Linq;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime;
@@ -71,7 +72,9 @@ namespace MusicGame.ChartEditor.InScreenEdit
 		private void TrackMirrorCopy()
 		{
 			var tracks = dataset.Where(component => component.Model is ITrack).ToArray();
-			IEnumerable<ICommand> cloneCommands = tracks.Select(track => new CloneComponentCommand(track));
+			IEnumerable<ICommand> cloneCommands = tracks.Select(track =>
+				new CloneComponentCommand(track, track.BelongingChart,
+					cloned => cloned.SetParent(track.Parent ?? track.BelongingChart?.DefaultJudgeLine())));
 			IEnumerable<ICommand> mirrorCommands = tracks.Select(track => new UpdateComponentCommand(track,
 				model => MirrorTrackAction((model as ITrack)!), model => MirrorTrackAction((model as ITrack)!)));
 			var command = new BatchCommand(cloneCommands.Concat(mirrorCommands), "Mirror and Copy Tracks");

@@ -164,6 +164,7 @@ namespace MusicGame.ChartEditor.InScreenEdit.Commands
 				trackModel.TimeEnd = splitTime;
 			});
 			newTrackComponent.BelongingChart = chart;
+			newTrackComponent.SetParent(track.Parent ?? chart?.DefaultJudgeLine());
 		}
 
 		public void Undo()
