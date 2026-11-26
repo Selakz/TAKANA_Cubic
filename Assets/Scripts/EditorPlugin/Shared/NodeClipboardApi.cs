@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using EditorPlugin.Shared.To;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
@@ -51,7 +52,7 @@ namespace EditorPlugin.Shared
 			List<NodeRawInfo> direct = new();
 			foreach (var info in clipboard)
 			{
-				if (info.Type.Value is NodeType.Left or NodeType.Right) edge.Add(info);
+				if (info.Type.Value is TrackNodeType.Left or TrackNodeType.Right) edge.Add(info);
 				else direct.Add(info);
 			}
 
@@ -73,12 +74,12 @@ namespace EditorPlugin.Shared
 			switch (trackMovement)
 			{
 				case TrackEdgeMovement { Movement1: ChartPosMoveList left, Movement2: ChartPosMoveList right }:
-					AddNodes(nodes, left, NodeType.Left);
-					AddNodes(nodes, right, NodeType.Right);
+					AddNodes(nodes, left, TrackNodeType.Left);
+					AddNodes(nodes, right, TrackNodeType.Right);
 					break;
 				case TrackDirectMovement { Movement1: ChartPosMoveList position, Movement2: ChartPosMoveList width }:
-					AddNodes(nodes, position, NodeType.Pos);
-					AddNodes(nodes, width, NodeType.Width);
+					AddNodes(nodes, position, TrackNodeType.Pos);
+					AddNodes(nodes, width, TrackNodeType.Width);
 					break;
 				default:
 					return false;
@@ -90,7 +91,7 @@ namespace EditorPlugin.Shared
 
 			// The clipboard keeps its own item copies, so a plugin that holds on to the movement it wrote cannot
 			// change the clipboard afterwards.
-			static void AddNodes(List<NodeRawInfo> target, ChartPosMoveList list, NodeType type)
+			static void AddNodes(List<NodeRawInfo> target, ChartPosMoveList list, TrackNodeType type)
 			{
 				foreach (var (time, item) in list) target.Add(new NodeRawInfo(time, type, item.Clone(), Stub));
 			}

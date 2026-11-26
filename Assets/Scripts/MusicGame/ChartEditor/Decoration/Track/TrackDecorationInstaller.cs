@@ -1,11 +1,9 @@
 #nullable enable
 
 using MusicGame.Gameplay.Chart;
-using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.VContainer;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.Decoration.Track
 {
@@ -17,37 +15,14 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			var trackDataset = new HashDataset<ChartComponent>();
 			builder.RegisterInstance<IDataset<ChartComponent>>(trackDataset)
 				.Keyed("track-decoration");
-			builder.RegisterEntryPoint<TrackSourceSystem>();
 
-			// Track's TrackEdgeMovement Decorator
-			var edgeMovementDataset = new EdgeDataset(trackDataset, MovementLocator<TrackEdgeMovement>.Factory);
-			builder.RegisterInstance(edgeMovementDataset);
-
-			// Track's TrackEdgeMovement's ChartPosMoveList Decorator
-			var edgeSideMoveListDataset =
-				new EdgePMLDataset(edgeMovementDataset, EdgeSideMovementLocator<ChartPosMoveList>.Factory);
-			builder.RegisterInstance(edgeSideMoveListDataset);
-
-			// Track's TrackEdgeMovement's ChartPosMoveList's IPositionMoveItem Decorator (Such a four-layer nesting!!)
-			var edgeNodeDataset = new EdgeNodeDataset(edgeSideMoveListDataset, EdgeSideMoveItemLocator.Factory);
-			builder.RegisterInstance(edgeNodeDataset);
-
-			builder.Register<EdgeNodeSelectDataset>(Lifetime.Singleton);
-
-			// Track's TrackDirectMovement Decorator
-			var directMovementDataset = new DirectDataset(trackDataset, MovementLocator<TrackDirectMovement>.Factory);
-			builder.RegisterInstance(directMovementDataset);
-
-			// Track's TrackDirectMovement's ChartPosMoveList Decorator
-			var directSideMoveListDataset =
-				new DirectPMLDataset(directMovementDataset, DirectSideMovementLocator<ChartPosMoveList>.Factory);
-			builder.RegisterInstance(directSideMoveListDataset);
-
-			// Track's TrackDirectMovement's ChartPosMoveList's IPositionMoveItem Decorator (Another four-layer nesting!!)
-			var directNodeDataset = new DirectNodeDataset(directSideMoveListDataset, DirectSideMoveItemLocator.Factory);
-			builder.RegisterInstance(directNodeDataset);
-
-			builder.Register<DirectNodeSelectDataset>(Lifetime.Singleton);
+			// Track Node
+			var trackNodeDataset = new TrackNodeDataset();
+			builder.RegisterInstance(trackNodeDataset)
+				.AsSelf()
+				.As<IDataset<TrackNodeComponent>>()
+				.As<IReadOnlyDataset<TrackNodeComponent>>();
+			builder.Register<TrackNodeSelectDataset>(Lifetime.Singleton);
 		}
 	}
 }

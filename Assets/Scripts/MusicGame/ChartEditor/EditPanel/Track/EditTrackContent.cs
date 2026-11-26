@@ -3,6 +3,7 @@
 using System;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.EditPanel.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
@@ -36,7 +37,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		public Button DeleteButton { get; set; } = default!;
 
 		[field: SerializeField]
-		public Transform ContentRoot { get; set; } = default!;
+		public EditTrackMovementContent MovementContent { get; set; } = default!;
 
 		[field: SerializeField]
 		public TMP_InputField TimeStartInputField { get; set; } = default!;
@@ -50,6 +51,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		// Private
 		private PrefabHandler handler = default!;
 
+		// Constructor
 		[Inject]
 		private void Construct()
 		{
@@ -57,11 +59,13 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			handler.OnPluginAdded += OnPluginAdded;
 		}
 
-		// Temp
+		// Event Handlers
 		private void OnPluginAdded(string id)
 		{
-			var plugin = handler[id];
-			plugin!.transform.SetParent(ContentRoot, false);
+			if (handler[id] is not { } plugin) return;
+			if (!TrackNodeDecoratorSystem.TryParseIsFirst(id, out var isFirst)) return;
+			var targetList = isFirst ? MovementContent.MoveList1 : MovementContent.MoveList2;
+			plugin.transform.SetParent(targetList.ListItemRoot, false);
 		}
 
 		// System Functions
@@ -182,6 +186,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			var track = (ITrack)component.Model;
 			editTrackContent.TimeStartInputField.SetTextWithoutNotify(track.TimeStart.ToString());
 			editTrackContent.TimeEndInputField.SetTextWithoutNotify(track.TimeEnd.ToString());
+			editTrackContent.MovementContent.SetMovementMode(track.Movement);
 			if (manageSystem.LayersInfo.Value is { } info) SetLayer(info);
 			editTrackContent.transform.localScale = Vector3.one;
 		}

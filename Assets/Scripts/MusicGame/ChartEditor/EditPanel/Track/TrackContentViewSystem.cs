@@ -1,6 +1,8 @@
 #nullable enable
 
+using System;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.Select;
 using MusicGame.ChartEditor.TrackLayer;
 using MusicGame.Gameplay.Chart;
@@ -10,134 +12,91 @@ using T3Framework.Runtime.Event;
 using T3Framework.Runtime.VContainer;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace MusicGame.ChartEditor.EditPanel.Track
 {
-	public class TrackContentViewSystem : T3MonoBehaviour, ISelfInstaller
+	public class TrackContentViewSystem : HierarchySystem<TrackContentViewSystem>
 	{
 		// Serializable and Public
 		[SerializeField] private float singleHeight = 600;
 
-		// Private
-		private IViewPool<ChartComponent> decoratorPool = default!;
-		private IViewPool<EdgeComponent> edgePool = default!;
-		private IViewPool<EdgePMLComponent> edgePmlPool = default!;
-		private IViewPool<EdgeNodeComponent> edgeNodePool = default!;
-		private IViewPool<DirectComponent> directPool = default!;
-		private IViewPool<DirectPMLComponent> directPmlPool = default!;
-		private IViewPool<DirectNodeComponent> directNodePool = default!;
-		private ChartSelectDataset selectDataset = default!;
-		private TrackLayerManageSystem trackLayerManageSystem = default!;
-		private CommandManager commandManager = default!;
-
+		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new ViewPoolLifetimeRegistrar<ChartComponent>(decoratorPool, handler => new TrackContentRegistrar(
 				handler.Script<EditTrackContent>(), decoratorPool[handler]!, selectDataset, trackLayerManageSystem)),
-			// Edge Movement
-			// new ViewPoolLifetimeRegistrar<EdgeComponent>(edgePool, handler => new EdgeMovementContentRegistrar()),
-			new ViewPoolLifetimeRegistrar<EdgePMLComponent>(edgePmlPool, handler => new MoveListContentRegistrar(
-				handler.Script<EditMoveListContent>())),
-			new ViewPoolLifetimeRegistrar<EdgeNodeComponent>(edgeNodePool, EdgeNodeRegistrarFactory),
-			// Direct Movement
-			// new ViewPoolLifetimeRegistrar<DirectComponent>(directPool, handler => new EdgeMovementContentRegistrar()),
-			new ViewPoolLifetimeRegistrar<DirectPMLComponent>(directPmlPool, handler => new MoveListContentRegistrar(
-				handler.Script<EditMoveListContent>())),
-			new ViewPoolLifetimeRegistrar<DirectNodeComponent>(directNodePool, DirectNodeRegistrarFactory),
-			// Add Height
-			new ViewPoolRegistrar<EdgePMLComponent>(edgePmlPool,
-				ViewPoolRegistrar<EdgePMLComponent>.RegisterTarget.Get,
-				handler =>
+			new ViewPoolLifetimeRegistrar<TrackNodeComponent>(nodePool, NodeRegistrarFactory),
+			new DatasetRegistrar<ChartComponent>(decoratorPool,
+				DatasetRegistrar<ChartComponent>.RegisterTarget.DataAdded,
+				track =>
 				{
-					if (decoratorPool.Count == 1)
-					{
-						var content = handler.Script<EditMoveListContent>();
-						content.HeightModifier.Assign(singleHeight, 1);
-					}
-					else
-					{
-						foreach (var data in edgePmlPool)
-						{
-							var content = edgePmlPool[data]!.Script<EditMoveListContent>();
-							content.HeightModifier.Unregister(1);
-						}
-					}
+					UpdateMoveListHeights();
+					SortTrackMoveLists(track);
 				}),
-			new ViewPoolRegistrar<DirectPMLComponent>(directPmlPool,
-				ViewPoolRegistrar<DirectPMLComponent>.RegisterTarget.Get,
-				handler =>
-				{
-					if (decoratorPool.Count == 1)
-					{
-						var content = handler.Script<EditMoveListContent>();
-						content.HeightModifier.Assign(singleHeight, 1);
-					}
-					else
-					{
-						foreach (var data in edgePmlPool)
-						{
-							var content = edgePmlPool[data]!.Script<EditMoveListContent>();
-							content.HeightModifier.Unregister(1);
-						}
-					}
-				})
+			new DatasetRegistrar<ChartComponent>(decoratorPool,
+				DatasetRegistrar<ChartComponent>.RegisterTarget.DataRemoved,
+				track => UpdateMoveListHeights(track)),
+			CustomRegistrar.Generic<Action<ChartComponent>>(
+				e => nodeDataset.OnTrackSynced += e,
+				e => nodeDataset.OnTrackSynced -= e,
+				SortTrackMoveLists)
 		};
 
+		// Private
+		[Inject] [Key("track-decoration")] private readonly IViewPool<ChartComponent> decoratorPool = default!;
+		[Inject] private readonly IViewPool<TrackNodeComponent> nodePool = default!;
+		[Inject] private readonly TrackNodeDataset nodeDataset = default!;
+		[Inject] private readonly ChartSelectDataset selectDataset = default!;
+		[Inject] private readonly TrackLayerManageSystem trackLayerManageSystem = default!;
+		[Inject] private readonly CommandManager commandManager = default!;
+
 		// Defined Functions
-		[Inject]
-		private void Construct(
-			[Key("track-decoration")] IViewPool<ChartComponent> decoratorPool,
-			IViewPool<EdgeComponent> edgePool,
-			IViewPool<EdgePMLComponent> edgePmlPool,
-			IViewPool<EdgeNodeComponent> edgeNodePool,
-			IViewPool<DirectComponent> directPool,
-			IViewPool<DirectPMLComponent> directPmlPool,
-			IViewPool<DirectNodeComponent> directNodePool,
-			ChartSelectDataset selectDataset,
-			TrackLayerManageSystem trackLayerManageSystem,
-			CommandManager commandManager)
+		private MoveItemContentRegistrar NodeRegistrarFactory(PrefabHandler handler)
 		{
-			this.decoratorPool = decoratorPool;
-			this.edgePool = edgePool;
-			this.edgePmlPool = edgePmlPool;
-			this.edgeNodePool = edgeNodePool;
-			this.directPool = directPool;
-			this.directPmlPool = directPmlPool;
-			this.directNodePool = directNodePool;
-			this.selectDataset = selectDataset;
-			this.trackLayerManageSystem = trackLayerManageSystem;
-			this.commandManager = commandManager;
-		}
-
-		public void SelfInstall(IContainerBuilder builder) => builder.RegisterComponent(this);
-
-		private MoveItemContentRegistrar EdgeNodeRegistrarFactory(PrefabHandler handler)
-		{
-			var component = edgeNodePool[handler]!;
+			var node = nodePool[handler]!;
 			var content = handler.Script<IEditMoveItemContent>();
 			return content switch
 			{
-				EditV1EItemContent eContent => new V1EItemContentRegistrar(eContent, component.Locator.Track,
-					component.Locator.Time, component, component.Locator.IsLeft, commandManager, true),
-				EditV1BItemContent bContent => new V1BItemContentRegistrar(bContent, component.Locator.Track,
-					component.Locator.Time, component, component.Locator.IsLeft, commandManager, true),
+				EditV1EItemContent eContent => new V1EItemContentRegistrar(eContent, node, commandManager),
+				EditV1BItemContent bContent => new V1BItemContentRegistrar(bContent, node, commandManager),
 				_ => null!
 			};
 		}
 
-		private MoveItemContentRegistrar DirectNodeRegistrarFactory(PrefabHandler handler)
+		private void UpdateMoveListHeights(ChartComponent? removing = null)
 		{
-			var component = directNodePool[handler]!;
-			var content = handler.Script<IEditMoveItemContent>();
-			return content switch
+			var activeCount = removing is null ? decoratorPool.Count : decoratorPool.Count - 1;
+			foreach (var track in decoratorPool)
 			{
-				EditV1EItemContent eContent => new V1EItemContentRegistrar(eContent, component.Locator.Track,
-					component.Locator.Time, component, component.Locator.IsPos, commandManager, false),
-				EditV1BItemContent bContent => new V1BItemContentRegistrar(bContent, component.Locator.Track,
-					component.Locator.Time, component, component.Locator.IsPos, commandManager, false),
-				_ => null!
-			};
+				if (track == removing || decoratorPool[track] is not { } handler) continue;
+				var movement = handler.Script<EditTrackContent>().MovementContent;
+				if (activeCount == 1)
+				{
+					movement.MoveList1.HeightModifier.Assign(singleHeight, 1);
+					movement.MoveList2.HeightModifier.Assign(singleHeight, 1);
+				}
+				else
+				{
+					movement.MoveList1.HeightModifier.Unregister(1);
+					movement.MoveList2.HeightModifier.Unregister(1);
+				}
+			}
+		}
+
+		private void SortTrackMoveLists(ChartComponent track)
+		{
+			if (decoratorPool[track] is not { } handler) return;
+			var movement = handler.Script<EditTrackContent>().MovementContent;
+			movement.MoveList1.SortListItems(CompareNodeHandler);
+			movement.MoveList2.SortListItems(CompareNodeHandler);
+			return;
+
+			int CompareNodeHandler(PrefabHandler a, PrefabHandler b)
+			{
+				var timeA = nodePool[a]?.Time.Value ?? T3Time.MinValue;
+				var timeB = nodePool[b]?.Time.Value ?? T3Time.MinValue;
+				return timeA.CompareTo(timeB);
+			}
 		}
 	}
 }

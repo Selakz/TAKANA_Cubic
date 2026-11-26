@@ -23,55 +23,40 @@ namespace MusicGame.ChartEditor.TrackLine
 		[SerializeField] private LayerMask raycastLayerMask;
 		[SerializeField] private SequencePriority raycastPriority = default!;
 
-		public ViewSelectRaycastSystem<EdgeNodeComponent> EdgeSystem { get; private set; } = default!;
-		public ViewSelectRaycastSystem<DirectNodeComponent> DirectSystem { get; private set; } = default!;
+		public ViewSelectRaycastSystem<TrackNodeComponent> System { get; private set; } = default!;
 
+		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", raycastPriority.Value,
 				() =>
 				{
 					if (!levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
-					var edgeSpan = EdgeSystem.DoRaycast(edgeRaycastMode.Value);
-					var directSpan = DirectSystem.DoRaycast(directRaycastMode.Value);
-					return edgeSpan.Length == 0 && directSpan.Length == 0;
+					var span = System.DoRaycast(raycastMode.Value);
+					return span.Length == 0;
 				}),
-			new PropertyRegistrar<EdgeNodeComponent?>(edgeDataset.CurrentSelecting, component =>
+			new PropertyRegistrar<TrackNodeComponent?>(nodeSelectDataset.CurrentSelecting, node =>
 			{
-				if (component is not null)
-					selectDataset.CurrentSelecting.Value = component.Locator.Track;
-			}),
-			new PropertyRegistrar<DirectNodeComponent?>(directDataset.CurrentSelecting, component =>
-			{
-				if (component is not null)
-					selectDataset.CurrentSelecting.Value = component.Locator.Track;
+				if (node is not null)
+					selectDataset.CurrentSelecting.Value = node.Track;
 			})
 		};
 
 		// Private
-		[Inject, Key("stage")] private Camera levelCamera = default!;
-		[Inject] private NotifiableProperty<ISelectRaycastMode<EdgeNodeComponent>> edgeRaycastMode = default!;
-		[Inject] private NotifiableProperty<ISelectRaycastMode<DirectNodeComponent>> directRaycastMode = default!;
-		[Inject] private ChartSelectDataset selectDataset = default!;
-		[Inject] private EdgeNodeSelectDataset edgeDataset = default!;
-		[Inject] private DirectNodeSelectDataset directDataset = default!;
-		[Inject] private IViewPool<EdgeNodeComponent> edgeViewPool = default!;
-		[Inject] private IViewPool<DirectNodeComponent> directViewPool = default!;
+		[Inject, Key("stage")] private readonly Camera levelCamera = default!;
+		[Inject] private readonly NotifiableProperty<ISelectRaycastMode<TrackNodeComponent>> raycastMode = default!;
+		[Inject] private readonly ChartSelectDataset selectDataset = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
+		[Inject] private readonly IViewPool<TrackNodeComponent> nodeViewPool = default!;
 
-		// Defined Functions
+		// Constructor
 		[Inject]
 		private void Construct()
 		{
-			EdgeSystem = new(edgeDataset, new MouseRayMaker(levelCamera), 100,
+			System = new(nodeSelectDataset, new MouseRayMaker(levelCamera), 100,
 				collider => collider.transform.parent.GetComponent<PrefabHandler>())
 			{
-				ViewPool = edgeViewPool,
-				RaycastLayerMask = raycastLayerMask
-			};
-			DirectSystem = new(directDataset, new MouseRayMaker(levelCamera), 100,
-				collider => collider.transform.parent.GetComponent<PrefabHandler>())
-			{
-				ViewPool = directViewPool,
+				ViewPool = nodeViewPool,
 				RaycastLayerMask = raycastLayerMask
 			};
 		}

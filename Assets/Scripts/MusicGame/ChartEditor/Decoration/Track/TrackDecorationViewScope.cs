@@ -13,18 +13,7 @@ namespace MusicGame.ChartEditor.Decoration.Track
 	public class TrackDecorationViewScope : HierarchyLifetimeScope
 	{
 		[SerializeField] private ViewPoolInstaller decoratorPool = default!;
-
-		[Header("Edge Movement")] [SerializeField]
-		private ViewPoolInstaller edgeMovementPool = default!;
-
-		[SerializeField] private ViewPoolInstaller edgeSideMoveListPool = default!;
-		[SerializeField] private ClassViewPoolInstaller<NodeClassifyType> edgeNodePool = default!;
-
-		[Header("Direct Movement")] [SerializeField]
-		private ViewPoolInstaller directMovementPool = default!;
-
-		[SerializeField] private ViewPoolInstaller directSideMoveListPool = default!;
-		[SerializeField] private ClassViewPoolInstaller<NodeClassifyType> directNodePool = default!;
+		[SerializeField] private ClassViewPoolInstaller<NodeClassifyType> trackNodePool = default!;
 
 		protected override void Configure(IContainerBuilder builder)
 		{
@@ -34,28 +23,8 @@ namespace MusicGame.ChartEditor.Decoration.Track
 			decoratorPool.Register<ViewPool<ChartComponent>, ChartComponent>(builder, Lifetime.Singleton)
 				.Keyed("track-decoration");
 
-			// Track's TrackEdgeMovement Decorator
-			edgeMovementPool.Register<ViewPool<EdgeComponent>, EdgeComponent>(
-				builder, Lifetime.Singleton);
-
-			// Track's TrackEdgeMovement's ChartPosMoveList Decorator
-			edgeSideMoveListPool.Register<ViewPool<EdgePMLComponent>, EdgePMLComponent>(
-				builder, Lifetime.Singleton);
-
-			// Track's TrackEdgeMovement's ChartPosMoveList's IPositionMoveItem Decorator (Such a four-layer nesting!!)
-			edgeNodePool.Register<ViewPool<EdgeNodeComponent, NodeClassifyType>, EdgeNodeComponent>(
-				builder, Lifetime.Singleton, new NodeClassifier());
-
-			// Track's TrackDirectMovement Decorator
-			directMovementPool.Register<ViewPool<DirectComponent>, DirectComponent>(
-				builder, Lifetime.Singleton);
-
-			// Track's TrackDirectMovement's ChartPosMoveList Decorator
-			directSideMoveListPool.Register<ViewPool<DirectPMLComponent>, DirectPMLComponent>(
-				builder, Lifetime.Singleton);
-
-			// Track's TrackDirectMovement's ChartPosMoveList's IPositionMoveItem Decorator (Again a four-layer nesting!!)
-			directNodePool.Register<ViewPool<DirectNodeComponent, NodeClassifyType>, DirectNodeComponent>(
+			// Track Node
+			trackNodePool.Register<ViewPool<TrackNodeComponent, NodeClassifyType>, TrackNodeComponent>(
 				builder, Lifetime.Singleton, NodeClassifier.Instance);
 		}
 	}
@@ -78,18 +47,12 @@ namespace MusicGame.ChartEditor.Decoration.Track
 		{
 			return component switch
 			{
-				EdgeNodeComponent edgeNode => edgeNode.Model switch
+				TrackNodeComponent trackNode => trackNode.Model switch
 				{
-					V1EMoveItem => NodeClassifyType.Ease | NodeClassifyType.Position,
-					V1BMoveItem => NodeClassifyType.Bezier | NodeClassifyType.Position,
-					_ => NodeClassifyType.None
-				},
-				DirectNodeComponent directNode => directNode.Model switch
-				{
-					V1EMoveItem when directNode.Locator.IsPos => NodeClassifyType.Ease | NodeClassifyType.Position,
-					V1EMoveItem when !directNode.Locator.IsPos => NodeClassifyType.Ease | NodeClassifyType.Width,
-					V1BMoveItem when directNode.Locator.IsPos => NodeClassifyType.Bezier | NodeClassifyType.Position,
-					V1BMoveItem when !directNode.Locator.IsPos => NodeClassifyType.Bezier | NodeClassifyType.Width,
+					V1EMoveItem when trackNode.IsPosition => NodeClassifyType.Ease | NodeClassifyType.Position,
+					V1EMoveItem => NodeClassifyType.Ease | NodeClassifyType.Width,
+					V1BMoveItem when trackNode.IsPosition => NodeClassifyType.Bezier | NodeClassifyType.Position,
+					V1BMoveItem => NodeClassifyType.Bezier | NodeClassifyType.Width,
 					_ => NodeClassifyType.None
 				},
 				_ => NodeClassifyType.None

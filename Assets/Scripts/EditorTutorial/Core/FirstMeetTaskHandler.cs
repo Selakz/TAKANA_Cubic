@@ -3,6 +3,7 @@
 using System.ComponentModel;
 using DynamicPanels;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
@@ -84,7 +85,7 @@ namespace MusicGame.EditorTutorial
 					("InScreenEdit", "Create"));
 				tryCreateNodeCompletionSource?.TrySetCanceled();
 				tryCreateNodeCompletionSource = new();
-				new TryCreateNodeRegistrar(edgeNodeDataset,
+				new TryCreateNodeRegistrar(trackNodeDataset,
 					tryCreateNodeCompletionSource).Register();
 				return tryCreateNodeCompletionSource.Task;
 			}),
@@ -108,7 +109,7 @@ namespace MusicGame.EditorTutorial
 					("CurveSwitch", "CheckCurve"));
 				trySwitchEaseCompletionSource?.TrySetCanceled();
 				trySwitchEaseCompletionSource = new();
-				new TrySwitchEaseRegistrar(edgeNodeDataset, easeId,
+				new TrySwitchEaseRegistrar(trackNodeDataset, easeId,
 					trySwitchEaseCompletionSource).Register();
 				return trySwitchEaseCompletionSource.Task;
 			}),
@@ -118,7 +119,7 @@ namespace MusicGame.EditorTutorial
 		[Inject] private readonly TutorialTaskDispatcher dispatcher = default!;
 		[Inject] private readonly DialogueRunner dialogueRunner = default!;
 		[Inject] private readonly NotifiableProperty<LevelInfo?> levelInfo = default!;
-		[Inject] private readonly EdgeNodeDataset edgeNodeDataset = default!;
+		[Inject] private readonly TrackNodeDataset trackNodeDataset = default!;
 		[Inject, Key("ease-id")] private readonly NotifiableProperty<int> easeId = default!;
 		[Inject] private readonly CommandManager commandManager = default!;
 		[Inject] private readonly NotifiableProperty<ITimeRetriever> timeRetriever = default!;
@@ -226,13 +227,13 @@ namespace MusicGame.EditorTutorial
 
 		private class TryCreateNodeRegistrar : IEventRegistrar
 		{
-			private readonly EdgeNodeDataset dataset;
+			private readonly TrackNodeDataset dataset;
 			private readonly YarnTaskCompletionSource completionSource;
 
 			private const int LeftNodeCount = 3;
 			private const int RightNodeCount = 3;
 
-			public TryCreateNodeRegistrar(EdgeNodeDataset dataset,
+			public TryCreateNodeRegistrar(TrackNodeDataset dataset,
 				YarnTaskCompletionSource completionSource)
 			{
 				this.dataset = dataset;
@@ -249,15 +250,15 @@ namespace MusicGame.EditorTutorial
 				dataset.OnDataAdded -= UpdateTarget;
 			}
 
-			private void UpdateTarget(EdgeNodeComponent component)
+			private void UpdateTarget(TrackNodeComponent component)
 			{
 				int left = 0, right = 0;
 				foreach (var node in dataset)
 				{
-					var model = (node.Locator.Track.Model as ITrack)!;
-					if (node.Locator.Time != model.TimeMin && node.Locator.Time != model.TimeMax)
+					var model = node.TrackModel;
+					if (node.Time.Value != model.TimeMin && node.Time.Value != model.TimeMax)
 					{
-						if (node.Locator.IsLeft) left++;
+						if (node.IsFirst) left++;
 						else right++;
 					}
 				}
@@ -272,14 +273,14 @@ namespace MusicGame.EditorTutorial
 
 		private class TrySwitchEaseRegistrar : IEventRegistrar
 		{
-			private readonly EdgeNodeDataset dataset;
+			private readonly TrackNodeDataset dataset;
 			private readonly NotifiableProperty<int> easeId;
 			private readonly YarnTaskCompletionSource completionSource;
 
 			private int changeFamilyCount = 1;
 			private int easeCount = 5;
 
-			public TrySwitchEaseRegistrar(EdgeNodeDataset dataset, NotifiableProperty<int> easeId,
+			public TrySwitchEaseRegistrar(TrackNodeDataset dataset, NotifiableProperty<int> easeId,
 				YarnTaskCompletionSource completionSource)
 			{
 				this.dataset = dataset;
@@ -299,7 +300,7 @@ namespace MusicGame.EditorTutorial
 				easeId.PropertyChanged -= UpdateEaseFamily;
 			}
 
-			private void UpdateTarget(EdgeNodeComponent component)
+			private void UpdateTarget(TrackNodeComponent component)
 			{
 				easeCount--;
 				if (changeFamilyCount <= 0 && easeCount <= 0)

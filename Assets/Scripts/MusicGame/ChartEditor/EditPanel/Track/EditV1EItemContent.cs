@@ -2,17 +2,14 @@
 
 using System.Linq;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine.Commands;
-using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Modifier;
 using T3Framework.Static.Easing;
-using T3Framework.Static.Movement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,6 +40,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 		public Modifier<Color> BgColorModifier { get; private set; } = default!;
 
+		// Constructor
 		[Inject]
 		private void Construct()
 		{
@@ -73,11 +71,12 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 									: CurveCalculator.GetEaseById(curveInt)
 								: CurveCalculator.GetEaseByName(value);
 							content.EaseInputField.SetTextWithoutNotify(newEase.GetString());
-							if (item.Model is not V1EMoveItem model || newEase == model.Ease) return;
+							if (node.Model is not V1EMoveItem model || newEase == model.Ease) return;
+							var time = node.Time.Value;
 							V1EMoveItem newModel = new(model.Position, newEase);
-							UpdateMoveListArg arg = new(isFirst, time, new(time, newModel));
+							UpdateMoveListArg arg = new(node.IsFirst, time, new(time, newModel));
 							var command = new UpdateMoveListCommand(arg);
-							if (!command.SetInit(track))
+							if (!command.SetInit(node.Track))
 							{
 								T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
 								return;
@@ -90,17 +89,19 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			}
 		}
 
-		public V1EItemContentRegistrar(EditV1EItemContent content, ChartComponent track, T3Time time,
-			IComponent<IPositionMoveItem<float>> item, bool isFirst, CommandManager manager, bool isLrPos)
-			: base(content, track, time, item, isFirst, manager, isLrPos)
+		public V1EItemContentRegistrar(
+			EditV1EItemContent content,
+			TrackNodeComponent node,
+			CommandManager manager)
+			: base(content, node, manager)
 		{
 			this.content = content;
 		}
 
-		protected override void Initialize()
+		protected override void UpdateUI()
 		{
-			base.Initialize();
-			content.EaseInputField.SetTextWithoutNotify((item.Model as V1EMoveItem)?.Ease.GetString());
+			base.UpdateUI();
+			content.EaseInputField.SetTextWithoutNotify((node.Model as V1EMoveItem)?.Ease.GetString());
 		}
 	}
 }

@@ -23,17 +23,17 @@ namespace MusicGame.ChartEditor.TrackLine
 		[SerializeField] private SequencePriority chartEditPriority = default!;
 		[SerializeField] private SequencePriority copyPasteModuleId = default!;
 
+		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new InputRegistrar("InScreenEdit", "Mirror", "mirror", chartEditPriority.Value, NodeMirror)
 		};
 
 		// Private
-		[Inject] private CommandManager commandManager = default!;
-		[Inject] private EdgeNodeSelectDataset edgeNodeSelectDataset = default!;
-		[Inject] private DirectNodeSelectDataset directNodeSelectDataset = default!;
-		[Inject] private ModuleInfo moduleInfo = default!;
-		[Inject] private IDataset<NodeRawInfo> previewDataset = default!;
+		[Inject] private readonly CommandManager commandManager = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
+		[Inject] private readonly ModuleInfo moduleInfo = default!;
+		[Inject] private readonly IDataset<NodeRawInfo> previewDataset = default!;
 
 		// Event Handlers
 		private bool NodeMirror()
@@ -42,12 +42,12 @@ namespace MusicGame.ChartEditor.TrackLine
 			{
 				foreach (var data in previewDataset)
 				{
-					if (data.Type.Value is NodeType.Width) continue;
+					if (data.Type.Value is TrackNodeType.Width) continue;
 					data.Node.Value.Position = -data.Node.Value.Position;
 					data.Type.Value = data.Type.Value switch
 					{
-						NodeType.Left => NodeType.Right,
-						NodeType.Right => NodeType.Left,
+						TrackNodeType.Left => TrackNodeType.Right,
+						TrackNodeType.Right => TrackNodeType.Left,
 						_ => data.Type.Value
 					};
 					data.Type.AddUpNotify();
@@ -56,11 +56,13 @@ namespace MusicGame.ChartEditor.TrackLine
 				return false;
 			}
 
-			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return true;
+			if (nodeSelectDataset.Count == 0) return true;
 
 			// Mirror selected nodes
 			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-			foreach (var group in edgeNodeSelectDataset.GroupBy(node => (node.Locator.Track, node.Locator.Time)))
+			foreach (var group in nodeSelectDataset
+				         .Where(node => node.IsEdge)
+				         .GroupBy(node => (node.Track, Time: node.Time.Value)))
 			{
 				var groupNodes = group.ToList();
 				for (var i = 0; i < groupNodes.Count; i++)
@@ -68,36 +70,31 @@ namespace MusicGame.ChartEditor.TrackLine
 					var node = groupNodes[i];
 					var item = node.Model;
 					var newItem = item.SetPosition(-item.Position);
-					var time = node.Locator.Time;
+					var time = node.Time.Value;
 
 					// Swap the sides of node pairs that share the same track and time.
-					var isLeft = node.Locator.IsLeft;
+					var isFirst = node.IsFirst;
 					if (i % 2 == 0 && i + 1 < groupNodes.Count)
 					{
-						isLeft = groupNodes[i + 1].Locator.IsLeft;
+						isFirst = groupNodes[i + 1].IsFirst;
 					}
 					else if (i % 2 == 1)
 					{
-						isLeft = groupNodes[i - 1].Locator.IsLeft;
+						isFirst = groupNodes[i - 1].IsFirst;
 					}
 
-					var arg = new UpdateMoveListArg(isLeft, time, new(time, newItem));
-					var track = node.Locator.Track;
-					if (!args.ContainsKey(track)) args[track] = new() { arg };
-					else args[track].Add(arg);
+					var arg = new UpdateMoveListArg(isFirst, time, new(time, newItem));
+					AddArg(node.Track, arg);
 				}
 			}
 
-			foreach (var node in directNodeSelectDataset)
+			foreach (var node in nodeSelectDataset.Where(node => node.Type == TrackNodeType.Pos))
 			{
-				if (!node.Locator.IsPos) continue;
 				var item = node.Model;
 				var newItem = item.SetPosition(-item.Position);
-				var time = node.Locator.Time;
-				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(time, newItem));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
+				var time = node.Time.Value;
+				var arg = new UpdateMoveListArg(node.IsFirst, time, new(time, newItem));
+				AddArg(node.Track, arg);
 			}
 
 			List<ICommand> commands = (
@@ -108,6 +105,17 @@ namespace MusicGame.ChartEditor.TrackLine
 				.Cast<ICommand>().ToList();
 			commandManager.Add(new BatchCommand(commands, "Mirror Nodes"));
 			return false;
+
+			void AddArg(ChartComponent track, UpdateMoveListArg arg)
+			{
+				if (!args.TryGetValue(track, out var list))
+				{
+					list = new();
+					args[track] = list;
+				}
+
+				list.Add(arg);
+			}
 		}
 	}
 }

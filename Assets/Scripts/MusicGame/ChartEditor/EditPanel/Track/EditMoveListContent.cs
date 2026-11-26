@@ -1,26 +1,21 @@
 #nullable enable
 
 using System;
-using System.Linq;
-using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using T3Framework.Runtime.ECS;
-using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Modifier;
-using T3Framework.Runtime.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using VContainer;
 
 namespace MusicGame.ChartEditor.EditPanel.Track
 {
-	[RequireComponent(typeof(PrefabHandler))]
 	public class EditMoveListContent : MonoBehaviour
 	{
 		// Serializable and Public
 		[SerializeField] private LayoutElement layoutElement = default!;
-		[SerializeField] private Transform listItemRoot = default!;
 
-		public PrefabHandler Handler { get; private set; } = default!;
+		[field: SerializeField]
+		public Transform ListItemRoot { get; set; } = default!;
 
 		public Modifier<float> HeightModifier => heightModifier ??=
 			new(() => layoutElement.minHeight, value => layoutElement.minHeight = value);
@@ -28,81 +23,23 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 		// Private
 		private Modifier<float>? heightModifier;
 
-		// Constructor
-		[Inject]
-		private void Construct()
+		// Defined Functions
+		public void SortListItems(Comparison<PrefabHandler> comparison)
 		{
-			Handler = GetComponent<PrefabHandler>();
-			Handler.OnPluginAdded += OnPluginAdded;
-		}
-
-		public void SortListItem(Comparison<PrefabHandler> comparison)
-		{
-			var plugins = Handler.GetPlugins().Where(plugin => plugin.transform.parent == listItemRoot).ToArray();
-			Array.Sort(plugins, comparison);
-			for (int i = 0; i < plugins.Length; i++)
+			List<PrefabHandler> items = new(ListItemRoot.childCount);
+			for (var i = 0; i < ListItemRoot.childCount; i++)
 			{
-				plugins[i].transform.SetSiblingIndex(i);
+				if (ListItemRoot.GetChild(i).TryGetComponent<PrefabHandler>(out var handler))
+				{
+					items.Add(handler);
+				}
 			}
-		}
 
-		// Event Handlers
-		private void OnPluginAdded(string id)
-		{
-			if (id.Contains("ListItem"))
+			items.Sort(comparison);
+			for (var i = 0; i < items.Count; i++)
 			{
-				var plugin = Handler.GetPlugin(id);
-				plugin?.transform.SetParent(listItemRoot, false);
+				items[i].transform.SetSiblingIndex(i);
 			}
-		}
-
-		// System Functions
-		void OnDestroy()
-		{
-			Handler.OnPluginAdded -= OnPluginAdded;
-		}
-	}
-
-	public class MoveListContentRegistrar : IEventRegistrar
-	{
-		private readonly ReusableCancellationTokenSource rcts = new();
-		private readonly IEventRegistrar[] registrars;
-
-		public MoveListContentRegistrar(EditMoveListContent content)
-		{
-			registrars = new IEventRegistrar[]
-			{
-				CustomRegistrar.Generic<Action<string>>(
-					a => content.Handler.OnPluginAdded += a,
-					a => content.Handler.OnPluginAdded -= a,
-					_ =>
-					{
-						rcts.CancelAndReset();
-						UniTask.DelayFrame(5, cancellationToken: rcts.Token).ContinueWith(() =>
-						{
-							content.SortListItem(ListItemCompare);
-						});
-					})
-			};
-		}
-
-		public void Register()
-		{
-			foreach (var registrar in registrars) registrar.Register();
-		}
-
-		public void Unregister()
-		{
-			foreach (var registrar in registrars) registrar.Unregister();
-		}
-
-		private static int ListItemCompare(PrefabHandler a, PrefabHandler b)
-		{
-			var nodeA = a.Script<IEditMoveItemContent>();
-			var nodeB = b.Script<IEditMoveItemContent>();
-			var timeA = int.TryParse(nodeA.TimeInputField.text, out var time1) ? time1 : 0;
-			var timeB = int.TryParse(nodeB.TimeInputField.text, out var time2) ? time2 : 0;
-			return timeA.CompareTo(timeB);
 		}
 	}
 }

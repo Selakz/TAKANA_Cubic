@@ -39,11 +39,12 @@ namespace MusicGame.ChartEditor.TrackLine
 		[SerializeField] private ColliderEnterExitListener listener = default!;
 		[SerializeField] private int selectColliderLayer;
 
+		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new PropertyRegistrar<bool>(dragHelper.IsDragging, () =>
 			{
-				if (dragHelper.IsDragging && !isCtrlPressing) edgeDataset.Clear();
+				if (dragHelper.IsDragging && !isCtrlPressing) nodeSelectDataset.Clear();
 			}),
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", dragPriority.Value, OnBeginDragInput,
 				InputActionPhase.Started),
@@ -55,30 +56,18 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		// Private
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
-		private ModuleInfo moduleInfo = default!;
-		private Camera levelCamera = default!;
-		private EdgeNodeSelectDataset edgeDataset = default!;
-		private DirectNodeSelectDataset directNodeDataset = default!;
-		private NodeSelectInputSystem inputSystem = default!;
-		private NodeSelectionBoxHelper dragHelper = default!;
+		[Inject] private readonly ModuleInfo moduleInfo = default!;
+		[Inject, Key("stage")] private readonly Camera levelCamera = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
+		[Inject] private readonly NodeSelectInputSystem inputSystem = default!;
 
+		private NodeSelectionBoxHelper dragHelper = default!;
 		private bool isCtrlPressing = false;
 
-		// Defined Functions
+		// Constructor
 		[Inject]
-		private void Construct(
-			ModuleInfo moduleInfo,
-			[Key("stage")] Camera levelCamera,
-			EdgeNodeSelectDataset edgeDataset,
-			DirectNodeSelectDataset directNodeDataset,
-			NodeSelectInputSystem inputSystem)
+		private void Construct()
 		{
-			this.moduleInfo = moduleInfo;
-			this.levelCamera = levelCamera;
-			this.edgeDataset = edgeDataset;
-			this.directNodeDataset = directNodeDataset;
-			this.inputSystem = inputSystem;
-
 			if (listener.Collider is not BoxCollider boxCollider)
 			{
 				Debug.LogError("NodeDragSelectPlugin needs a BoxCollider.");
@@ -120,10 +109,8 @@ namespace MusicGame.ChartEditor.TrackLine
 		private void OnCollisionChange(Collider collider)
 		{
 			if (collider is MeshCollider) return; // Exclude line mesh
-			var edgeData = inputSystem.EdgeSystem.GetData(collider);
-			if (edgeData is not null) edgeDataset.ToggleSelecting(edgeData);
-			var directData = inputSystem.DirectSystem.GetData(collider);
-			if (directData is not null) directNodeDataset.ToggleSelecting(directData);
+			var data = inputSystem.System.GetData(collider);
+			if (data is not null) nodeSelectDataset.ToggleSelecting(data);
 		}
 
 		// System Functions

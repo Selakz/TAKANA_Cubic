@@ -5,35 +5,30 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
+using T3Framework.Runtime.VContainer;
 using VContainer;
 
 namespace MusicGame.ChartEditor.Decoration.Track
 {
-	public class TrackSourceSystem : T3System
+	public class TrackSourceSystem : HierarchySystem<TrackSourceSystem>
 	{
-		private readonly IDataset<ChartComponent> trackDataset;
-		private readonly ChartSelectDataset selectDataset;
-
-		protected override IEventRegistrar[] ActiveRegistrars => new IEventRegistrar[]
+		// Event Registrars
+		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			new DatasetRegistrar<ChartComponent>(selectDataset,
-				DatasetRegistrar<ChartComponent>.RegisterTarget.DataAdded, component =>
-				{
-					if (component.Model is ITrack) trackDataset.Add(component);
-				}),
-			new DatasetRegistrar<ChartComponent>(selectDataset,
-				DatasetRegistrar<ChartComponent>.RegisterTarget.DataRemoved, component =>
-				{
-					if (component.Model is ITrack) trackDataset.Remove(component);
-				})
+			new DatasetLifetimeRegistrar<ChartComponent>(selectDataset,
+				component => new CustomRegistrar(
+					() =>
+					{
+						if (component.Model is ITrack) trackDataset.Add(component);
+					},
+					() =>
+					{
+						if (component.Model is ITrack) trackDataset.Remove(component);
+					}), true)
 		};
 
-		public TrackSourceSystem(
-			[Key("track-decoration")] IDataset<ChartComponent> trackDataset,
-			ChartSelectDataset selectDataset) : base(true)
-		{
-			this.trackDataset = trackDataset;
-			this.selectDataset = selectDataset;
-		}
+		// Private
+		[Inject, Key("track-decoration")] private readonly IDataset<ChartComponent> trackDataset = default!;
+		[Inject] private readonly ChartSelectDataset selectDataset = default!;
 	}
 }

@@ -87,30 +87,18 @@ namespace MusicGame.ChartEditor.TrackLine
 			new InputRegistrar("InScreenEdit", "Delete",
 				() =>
 				{
+					if (nodeSelectDataset.Count == 0) return;
 					Dictionary<ChartComponent, List<UpdateMoveListArg>> tracks = new();
-					if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
-					foreach (var node in edgeNodeSelectDataset)
+					foreach (var node in nodeSelectDataset)
 					{
-						var track = node.Locator.Track;
+						var track = node.Track;
 						if (!tracks.TryGetValue(track, out var args))
 						{
 							args = new();
 							tracks[track] = args;
 						}
 
-						args.Add(new UpdateMoveListArg(node.Locator.IsLeft, node.Locator.Time, null));
-					}
-
-					foreach (var node in directNodeSelectDataset)
-					{
-						var track = node.Locator.Track;
-						if (!tracks.TryGetValue(track, out var args))
-						{
-							args = new();
-							tracks[track] = args;
-						}
-
-						args.Add(new UpdateMoveListArg(node.Locator.IsPos, node.Locator.Time, null));
+						args.Add(new UpdateMoveListArg(node.IsFirst, node.Time.Value, null));
 					}
 
 					List<ICommand> commands = (
@@ -123,34 +111,21 @@ namespace MusicGame.ChartEditor.TrackLine
 				}),
 			new InputRegistrar("CurveSwitch", "ChangeNodeState", () =>
 			{
-				if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
+				if (nodeSelectDataset.Count == 0) return;
 				Dictionary<ChartComponent, List<UpdateMoveListArg>> tracks = new();
-				foreach (var node in edgeNodeSelectDataset)
+				foreach (var node in nodeSelectDataset)
 				{
 					if (node.Model is not V1EMoveItem v1e) continue;
-					var track = node.Locator.Track;
+					var track = node.Track;
 					if (!tracks.TryGetValue(track, out var args))
 					{
 						args = new();
 						tracks[track] = args;
 					}
 
-					args.Add(new UpdateMoveListArg(node.Locator.IsLeft, node.Locator.Time,
-						new(node.Locator.Time, new V1EMoveItem(v1e.Position, GetNextEase(v1e.Ease)))));
-				}
-
-				foreach (var node in directNodeSelectDataset)
-				{
-					if (node.Model is not V1EMoveItem v1e) continue;
-					var track = node.Locator.Track;
-					if (!tracks.TryGetValue(track, out var args))
-					{
-						args = new();
-						tracks[track] = args;
-					}
-
-					args.Add(new UpdateMoveListArg(node.Locator.IsPos, node.Locator.Time,
-						new(node.Locator.Time, new V1EMoveItem(v1e.Position, GetNextEase(v1e.Ease)))));
+					var time = node.Time.Value;
+					args.Add(new UpdateMoveListArg(node.IsFirst, time,
+						new(time, new V1EMoveItem(v1e.Position, GetNextEase(v1e.Ease)))));
 				}
 
 				List<ICommand> commands = (
@@ -159,9 +134,8 @@ namespace MusicGame.ChartEditor.TrackLine
 						where command.SetInit(pair.Key)
 						select command)
 					.Cast<ICommand>().ToList();
-				commandManager.Add(new BatchCommand(commands, "Delete Nodes"));
+				commandManager.Add(new BatchCommand(commands, "Change Node State"));
 			}),
-
 			new PropertyRegistrar<int>(currentEaseId, id =>
 			{
 				ISingletonSetting<TrackLineSetting>.Instance.DefaultEaseId.Value = id;
@@ -174,8 +148,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		[Inject] private readonly StageMouseTimeRetriever timeRetriever = default!;
 		[Inject] private readonly StageMouseWidthRetriever widthRetriever = default!;
 		[Inject] [Key("ease-id")] private readonly NotifiableProperty<int> currentEaseId = default!;
-		[Inject] private readonly EdgeNodeSelectDataset edgeNodeSelectDataset = default!;
-		[Inject] private readonly DirectNodeSelectDataset directNodeSelectDataset = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
 		[Inject] private readonly IDataset<NodeRawInfo> nodeDataset = default!;
 		[Inject] private readonly CommandManager commandManager = default!;
 
@@ -183,29 +156,23 @@ namespace MusicGame.ChartEditor.TrackLine
 		public void UpdatePosition(Func<float, float> newPositionFunc)
 		{
 			if (moduleInfo.CurrentModule.Value != updateModuleId.Value) return;
-			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
+			if (nodeSelectDataset.Count == 0) return;
 			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-			foreach (var node in edgeNodeSelectDataset)
+			foreach (var node in nodeSelectDataset)
 			{
 				var item = node.Model;
 				var newItem = item.SetPosition(newPositionFunc.Invoke(item.Position));
-				var time = node.Locator.Time;
-				var arg = new UpdateMoveListArg(node.Locator.IsLeft, time, new(time, newItem));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
-			}
+				if (node.Type == TrackNodeType.Width && newItem.Position < 0) continue;
+				var time = node.Time.Value;
+				var arg = new UpdateMoveListArg(node.IsFirst, time, new(time, newItem));
+				var track = node.Track;
+				if (!args.TryGetValue(track, out var list))
+				{
+					list = new();
+					args[track] = list;
+				}
 
-			foreach (var node in directNodeSelectDataset)
-			{
-				var item = node.Model;
-				var newItem = item.SetPosition(newPositionFunc.Invoke(item.Position));
-				if (!node.Locator.IsPos && newItem.Position < 0) continue;
-				var time = node.Locator.Time;
-				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(time, newItem));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
+				list.Add(arg);
 			}
 
 			BatchCommand command = new(args
@@ -219,28 +186,22 @@ namespace MusicGame.ChartEditor.TrackLine
 		public void UpdateTime(Func<T3Time, T3Time> newTimeFunc)
 		{
 			if (moduleInfo.CurrentModule.Value != updateModuleId.Value) return;
-			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
+			if (nodeSelectDataset.Count == 0) return;
 			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-			foreach (var node in edgeNodeSelectDataset)
+			foreach (var node in nodeSelectDataset)
 			{
 				var item = node.Model;
-				var time = node.Locator.Time;
+				var time = node.Time.Value;
 				var newTime = newTimeFunc.Invoke(time);
-				var arg = new UpdateMoveListArg(node.Locator.IsLeft, time, new(newTime, item));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
-			}
+				var arg = new UpdateMoveListArg(node.IsFirst, time, new(newTime, item));
+				var track = node.Track;
+				if (!args.TryGetValue(track, out var list))
+				{
+					list = new();
+					args[track] = list;
+				}
 
-			foreach (var node in directNodeSelectDataset)
-			{
-				var item = node.Model;
-				var time = node.Locator.Time;
-				var newTime = newTimeFunc.Invoke(time);
-				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(newTime, item));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
+				list.Add(arg);
 			}
 
 			BatchCommand command = new(args
@@ -254,19 +215,24 @@ namespace MusicGame.ChartEditor.TrackLine
 		public void UpdateWidth(Func<float, float> newWidthFunc)
 		{
 			if (moduleInfo.CurrentModule.Value != updateModuleId.Value) return;
-			if (edgeNodeSelectDataset.Count == 0 && directNodeSelectDataset.Count == 0) return;
+			if (nodeSelectDataset.Count == 0) return;
 			Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-			foreach (var node in directNodeSelectDataset.Where(node => !node.Locator.IsPos))
+			foreach (var node in nodeSelectDataset.Where(node => node.Type == TrackNodeType.Width))
 			{
 				var item = node.Model;
 				var newWidth = newWidthFunc.Invoke(item.Position);
 				if (newWidth < 0) continue;
 				var newItem = item.SetPosition(newWidth);
-				var time = node.Locator.Time;
-				var arg = new UpdateMoveListArg(node.Locator.IsPos, time, new(time, newItem));
-				var track = node.Locator.Track;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
+				var time = node.Time.Value;
+				var arg = new UpdateMoveListArg(node.IsFirst, time, new(time, newItem));
+				var track = node.Track;
+				if (!args.TryGetValue(track, out var list))
+				{
+					list = new();
+					args[track] = list;
+				}
+
+				list.Add(arg);
 			}
 
 			BatchCommand command = new(args
@@ -320,9 +286,9 @@ namespace MusicGame.ChartEditor.TrackLine
 					case TrackDirectMovement:
 						arg = info.Type.Value switch
 						{
-							NodeType.Pos or NodeType.Left or NodeType.Right =>
+							TrackNodeType.Pos or TrackNodeType.Left or TrackNodeType.Right =>
 								new UpdateMoveListArg(true, null, new(time, newNode)),
-							NodeType.Width =>
+							TrackNodeType.Width =>
 								new UpdateMoveListArg(false, null, new(time, newNode)),
 							_ => throw new ArgumentOutOfRangeException()
 						};
@@ -331,14 +297,14 @@ namespace MusicGame.ChartEditor.TrackLine
 					case TrackEdgeMovement:
 						switch (info.Type.Value)
 						{
-							case NodeType.Left or NodeType.Right:
-								arg = new UpdateMoveListArg(info.Type == NodeType.Left, null, new(time, newNode));
+							case TrackNodeType.Left or TrackNodeType.Right:
+								arg = new UpdateMoveListArg(info.Type == TrackNodeType.Left, null, new(time, newNode));
 								break;
-							case NodeType.Pos:
+							case TrackNodeType.Pos:
 								if (posIsLeft is null)
 								{
 									var (minTime, minTimePos) = nodeDataset.Min(node => (
-										node.Type == NodeType.Pos ? node.Time.Value : T3Time.MaxValue,
+										node.Type == TrackNodeType.Pos ? node.Time.Value : T3Time.MaxValue,
 										node.Node.Value.Position));
 									float leftX = model.Movement.GetLeftPos(minTime);
 									float rightX = model.Movement.GetRightPos(minTime);
@@ -347,7 +313,7 @@ namespace MusicGame.ChartEditor.TrackLine
 
 								arg = new UpdateMoveListArg(posIsLeft.Value, null, new(time, newNode));
 								break;
-							case NodeType.Width:
+							case TrackNodeType.Width:
 								break;
 							default:
 								throw new ArgumentOutOfRangeException();
@@ -357,8 +323,13 @@ namespace MusicGame.ChartEditor.TrackLine
 				}
 
 				if (arg is null) continue;
-				if (!args.ContainsKey(track)) args[track] = new() { arg };
-				else args[track].Add(arg);
+				if (!args.TryGetValue(track, out var list))
+				{
+					list = new();
+					args[track] = list;
+				}
+
+				list.Add(arg);
 			}
 
 			BatchCommand command = new(args

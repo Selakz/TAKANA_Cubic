@@ -2,17 +2,14 @@
 
 using System;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine;
 using MusicGame.ChartEditor.TrackLine.Commands;
-using MusicGame.Gameplay.Chart;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Modifier;
 using T3Framework.Static;
-using T3Framework.Static.Movement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,43 +34,38 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 	public abstract class MoveItemContentRegistrar : CompositeRegistrar
 	{
 		private readonly IEditMoveItemContent content;
-		protected readonly IComponent<IPositionMoveItem<float>> item;
-		protected readonly ChartComponent track;
-		protected readonly T3Time time;
-		protected readonly bool isFirst;
+		protected readonly TrackNodeComponent node;
 		protected readonly CommandManager manager;
-		private readonly bool isLrPos;
 
 		protected MoveItemContentRegistrar(
-			IEditMoveItemContent content, ChartComponent track, T3Time time,
-			IComponent<IPositionMoveItem<float>> item, bool isFirst, CommandManager manager, bool isLrPos)
+			IEditMoveItemContent content,
+			TrackNodeComponent node,
+			CommandManager manager)
 		{
 			this.content = content;
-			this.track = track;
-			this.time = time;
-			this.item = item;
-			this.isFirst = isFirst;
+			this.node = node;
 			this.manager = manager;
-			this.isLrPos = isLrPos;
 		}
 
 		protected override IEventRegistrar[] InnerRegistrars => new IEventRegistrar[]
 		{
 			CustomRegistrar.Generic<EventHandler>(
-				e => item.OnComponentUpdated += e,
-				e => item.OnComponentUpdated -= e,
-				(_, _) => Initialize()),
+				e => node.OnComponentUpdated += e,
+				e => node.OnComponentUpdated -= e,
+				(_, _) => UpdateUI()),
 			new InputFieldRegistrar(content.TimeInputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
 				value =>
 				{
+					var time = node.Time.Value;
 					if (int.TryParse(value, out int newTime))
 					{
 						if (newTime == time) return;
-						UpdateMoveListArg arg = new(isFirst, time, new(newTime, item.Model));
+						UpdateMoveListArg arg = new(node.IsFirst, time, new(newTime, node.Model));
 						var command = new UpdateMoveListCommand(arg);
-						if (!command.SetInit(track))
+						if (!command.SetInit(node.Track))
 						{
 							T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
+							content.TimeInputField.SetTextWithoutNotify(time.ToString());
 							return;
 						}
 
@@ -90,13 +82,15 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 				{
 					if (float.TryParse(value, out float newPosition))
 					{
-						if (Mathf.Approximately(newPosition, item.Model.Position)) return;
-						var model = item.Model.SetPosition(newPosition);
-						UpdateMoveListArg arg = new(isFirst, time, new(time, model));
+						if (Mathf.Approximately(newPosition, node.Model.Position)) return;
+						var time = node.Time.Value;
+						var model = node.Model.SetPosition(newPosition);
+						UpdateMoveListArg arg = new(node.IsFirst, time, new(time, model));
 						var command = new UpdateMoveListCommand(arg);
-						if (!command.SetInit(track))
+						if (!command.SetInit(node.Track))
 						{
 							T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
+							content.PositionInputField.SetTextWithoutNotify(node.Model.Position.ToString("0.000"));
 							return;
 						}
 
@@ -105,16 +99,16 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 					else
 					{
 						T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
-						content.PositionInputField.SetTextWithoutNotify(item.Model.Position.ToString("0.000"));
+						content.PositionInputField.SetTextWithoutNotify(node.Model.Position.ToString("0.000"));
 					}
 				}),
 			new ButtonRegistrar(content.AddButton, () =>
 			{
-				var newTime = time + ISingleton<TrackLineSetting>.Instance.AddNodeTimeDistance;
-				var model = item.Model.SetPosition(item.Model.Position);
-				UpdateMoveListArg arg = new(isFirst, null, new(newTime, model));
+				var newTime = node.Time.Value + ISingleton<TrackLineSetting>.Instance.AddNodeTimeDistance;
+				var model = node.Model.Clone();
+				UpdateMoveListArg arg = new(node.IsFirst, null, new(newTime, model));
 				var command = new UpdateMoveListCommand(arg);
-				if (!command.SetInit(track))
+				if (!command.SetInit(node.Track))
 				{
 					T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
 					return;
@@ -124,9 +118,9 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			}),
 			new ButtonRegistrar(content.RemoveButton, () =>
 			{
-				UpdateMoveListArg arg = new(isFirst, time, null);
+				UpdateMoveListArg arg = new(node.IsFirst, node.Time.Value, null);
 				var command = new UpdateMoveListCommand(arg);
-				if (!command.SetInit(track))
+				if (!command.SetInit(node.Track))
 				{
 					T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
 					return;
@@ -136,19 +130,25 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 			})
 		};
 
+		protected virtual void UpdateUI()
+		{
+			content.TimeInputField.SetTextWithoutNotify(node.Time.Value.ToString());
+			content.PositionInputField.SetTextWithoutNotify(node.Model.Position.ToString("0.000"));
+			((MonoBehaviour)content).transform.localScale = Vector3.one;
+		}
+
 		protected override void Initialize()
 		{
-			content.TimeInputField.SetTextWithoutNotify(time.ToString());
-			content.PositionInputField.SetTextWithoutNotify(item.Model.Position.ToString("0.000"));
-			((MonoBehaviour)content).transform.localScale = Vector3.one;
+			UpdateUI();
 			content.BgColorModifier.Register(
-				_ => isFirst
-					? isLrPos
-						? ISingleton<TrackLineSetting>.Instance.LeftSideNodeColor
-						: ISingleton<TrackLineSetting>.Instance.PosSideNodeColor
-					: isLrPos
-						? ISingleton<TrackLineSetting>.Instance.RightSideNodeColor
-						: ISingleton<TrackLineSetting>.Instance.WidthSideNodeColor, 0);
+				_ => node.Type switch
+				{
+					TrackNodeType.Left => ISingleton<TrackLineSetting>.Instance.LeftSideNodeColor,
+					TrackNodeType.Right => ISingleton<TrackLineSetting>.Instance.RightSideNodeColor,
+					TrackNodeType.Pos => ISingleton<TrackLineSetting>.Instance.PosSideNodeColor,
+					TrackNodeType.Width => ISingleton<TrackLineSetting>.Instance.WidthSideNodeColor,
+					_ => Color.white
+				}, 0);
 		}
 
 		protected override void Deinitialize()

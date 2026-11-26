@@ -2,16 +2,13 @@
 
 using System.Linq;
 using MusicGame.ChartEditor.Command;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine.Commands;
-using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Log;
 using T3Framework.Runtime.Modifier;
-using T3Framework.Static.Movement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +48,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 		public Modifier<Color> BgColorModifier { get; private set; } = default!;
 
+		// Constructor
 		[Inject]
 		private void Construct()
 		{
@@ -74,28 +72,30 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 				{
 					new InputFieldRegistrar(content.T1InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
 						value => DoUpdateCommand(value, 0, content.T1InputField)),
-					new InputFieldRegistrar(content.T1InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+					new InputFieldRegistrar(content.X1InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
 						value => DoUpdateCommand(value, 1, content.X1InputField)),
-					new InputFieldRegistrar(content.T1InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+					new InputFieldRegistrar(content.T2InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
 						value => DoUpdateCommand(value, 2, content.T2InputField)),
-					new InputFieldRegistrar(content.T1InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
+					new InputFieldRegistrar(content.X2InputField, InputFieldRegistrar.RegisterTarget.OnEndEdit,
 						value => DoUpdateCommand(value, 3, content.X2InputField)),
 				};
 				return base.InnerRegistrars.Concat(innerRegistrars).ToArray();
 			}
 		}
 
-		public V1BItemContentRegistrar(EditV1BItemContent content, ChartComponent track, T3Time time,
-			IComponent<IPositionMoveItem<float>> item, bool isFirst, CommandManager manager, bool isLrPos)
-			: base(content, track, time, item, isFirst, manager, isLrPos)
+		public V1BItemContentRegistrar(
+			EditV1BItemContent content,
+			TrackNodeComponent node,
+			CommandManager manager)
+			: base(content, node, manager)
 		{
 			this.content = content;
 		}
 
-		protected override void Initialize()
+		protected override void UpdateUI()
 		{
-			base.Initialize();
-			if (item.Model is not V1BMoveItem model) return;
+			base.UpdateUI();
+			if (node.Model is not V1BMoveItem model) return;
 			content.T1InputField.SetTextWithoutNotify(model.StartControlFactor.x.ToString("0.00"));
 			content.X1InputField.SetTextWithoutNotify(model.StartControlFactor.y.ToString("0.00"));
 			content.T2InputField.SetTextWithoutNotify(model.EndControlFactor.x.ToString("0.00"));
@@ -104,7 +104,7 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 		private void DoUpdateCommand(string value, int index, TMP_InputField inputField)
 		{
-			if (item.Model is not V1BMoveItem model) return;
+			if (node.Model is not V1BMoveItem model) return;
 			if (float.TryParse(value, out var result) && !Mathf.Approximately(result, index switch
 			    {
 				    0 => model.StartControlFactor.x,
@@ -131,14 +131,13 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 					case 3:
 						end.y = result;
 						break;
-					default:
-						break;
 				}
 
-				var newModel = new V1BMoveItem(item.Model.Position, start, end);
-				UpdateMoveListArg arg = new(isFirst, time, new(time, newModel));
+				var time = node.Time.Value;
+				var newModel = new V1BMoveItem(node.Model.Position, start, end);
+				UpdateMoveListArg arg = new(node.IsFirst, time, new(time, newModel));
 				var command = new UpdateMoveListCommand(arg);
-				if (!command.SetInit(track))
+				if (!command.SetInit(node.Track))
 				{
 					T3Logger.Log("Notice", "Edit_Fail", T3LogType.Warn);
 					return;

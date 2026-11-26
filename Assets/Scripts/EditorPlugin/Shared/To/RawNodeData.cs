@@ -1,9 +1,6 @@
 #nullable enable
 
-using System;
-using MusicGame.Models.Track;
-using MusicGame.Models.Track.Movement;
-using T3Framework.Static.Movement;
+using MusicGame.ChartEditor.Decoration.Track;
 
 // ReSharper disable InconsistentNaming
 namespace EditorPlugin.Shared.To
@@ -14,49 +11,29 @@ namespace EditorPlugin.Shared.To
 
 		public object track { get; }
 
-		public int time { get; }
+		public int time => Component.Time.Value.Milli;
 
 		public bool isLeft { get; }
 
 		public bool isPosition { get; }
 
-		internal EdgeNodeComponent? EdgeComponent { get; }
+		internal TrackNodeComponent Component { get; }
 
-		internal DirectNodeComponent? DirectComponent { get; }
-
-		private readonly Func<IPositionMoveItem<float>> getItem;
-
-		public RawNodeData(EdgeNodeComponent component, ChartApi api)
+		public RawNodeData(TrackNodeComponent component, ChartApi api)
 		{
-			type = "Edge";
-			track = api.GetComponentSnapshot(component.Locator.Track);
-			time = component.Locator.Time.Milli;
-			isLeft = component.Locator.IsLeft;
-			isPosition = false;
-			EdgeComponent = component;
-			getItem = () => component.Model;
+			type = component.IsEdge ? "Edge" : "Direct";
+			track = api.GetComponentSnapshot(component.Track);
+			isLeft = component.Type == TrackNodeType.Left;
+			isPosition = component.Type == TrackNodeType.Pos;
+			Component = component;
 		}
 
-		public RawNodeData(DirectNodeComponent component, ChartApi api)
-		{
-			type = "Direct";
-			track = api.GetComponentSnapshot(component.Locator.Track);
-			time = component.Locator.Time.Milli;
-			isLeft = false;
-			isPosition = component.Locator.IsPos;
-			DirectComponent = component;
-			getItem = () => component.Model;
-		}
-
-		public RawMoveItem getMoveItem() => RawMoveItem.From(getItem(), time);
+		public RawMoveItem getMoveItem() => RawMoveItem.From(Component.Model, time);
 
 		public int getNextTime()
 		{
-			var nodeTime = EdgeComponent?.Locator.Time ?? DirectComponent!.Locator.Time;
-			var isFirst = EdgeComponent?.Locator.IsLeft ?? DirectComponent!.Locator.IsPos;
-			var nodeTrack = EdgeComponent?.Locator.Track ?? DirectComponent!.Locator.Track;
-			var model = (nodeTrack.Model as ITrack)!;
-			var list = (ChartPosMoveList)(isFirst ? model.Movement.Movement1 : model.Movement.Movement2)!;
+			var nodeTime = Component.Time.Value;
+			if (Component.MoveList is not { } list) return nodeTime;
 			foreach (var (t, _) in list)
 			{
 				if (t > nodeTime) return t;

@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using MusicGame.ChartEditor.Command;
 using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
@@ -21,7 +20,6 @@ using T3Framework.Runtime.Input;
 using T3Framework.Runtime.VContainer;
 using T3Framework.Static;
 using T3Framework.Static.Event;
-using T3Framework.Static.Movement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
@@ -45,6 +43,7 @@ namespace MusicGame.ChartEditor.TrackLine
 		public Vector2 NewFactor { get; private set; } = Vector2.zero;
 
 		private BezierEditPlugin? innerPlugin;
+		private ISpeed? speed;
 
 		public BezierDragHelper(Camera camera, ITimeRetriever timeRetriever, IWidthRetriever widthRetriever)
 		{
@@ -52,8 +51,6 @@ namespace MusicGame.ChartEditor.TrackLine
 			this.timeRetriever = timeRetriever;
 			this.widthRetriever = widthRetriever;
 		}
-
-		private ISpeed? speed;
 
 		public void Prepare(BezierEditPlugin plugin, int index, ChartComponent track, ISpeed speed)
 		{
@@ -117,42 +114,34 @@ namespace MusicGame.ChartEditor.TrackLine
 		// Event Registrars
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
-			// Add to plugin pool with each selected data in two datasets
-			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
-				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataAdded, node =>
+			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
+				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataAdded, node =>
 				{
-					// We assume if the node is selected, it must have a view
-					if (node.Model is not V1BMoveItem || edgePool[node] is not { } view) return;
-					pluginPool.Add(node);
-					view.AddPlugin(PluginName, pluginPool[node]!);
-					InitPlugin(pluginPool[node]!.Script<BezierEditPlugin>(), node);
+					if (!node.IsPosition || node.Model is not V1BMoveItem || nodePool[node] is not { } view) return;
+					if (pluginPool.Add(node))
+					{
+						var pluginHandler = pluginPool[node]!;
+						view.AddPlugin(PluginName, pluginHandler);
+						InitPlugin(pluginHandler.Script<BezierEditPlugin>(), node);
+					}
 				}),
-			new DatasetRegistrar<DirectNodeComponent>(directDataset,
-				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataAdded, node =>
+			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
+				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataRemoved, node =>
 				{
-					// We assume if the node is selected, it must have a view
-					if (!node.Locator.IsPos || node.Model is not V1BMoveItem ||
-					    directPool[node] is not { } view) return;
-					pluginPool.Add(node);
-					view.AddPlugin(PluginName, pluginPool[node]!);
-					InitPlugin(pluginPool[node]!.Script<BezierEditPlugin>(), node);
+					if (nodePool[node] is not { } view) return;
+					if (pluginPool.Remove(node))
+					{
+						view.RemovePlugin(PluginName, pluginPool.DefaultTransform);
+					}
 				}),
-			new DatasetRegistrar<EdgeNodeComponent>(edgeDataset,
-				DatasetRegistrar<EdgeNodeComponent>.RegisterTarget.DataRemoved, node =>
+			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
+				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataUpdated, node =>
 				{
-					if (node.Model is not V1BMoveItem || edgePool[node] is not { } view) return;
-					pluginPool.Remove(node);
-					view.RemovePlugin(PluginName, pluginPool.DefaultTransform);
+					if (pluginPool[node] is { } pluginHandler)
+					{
+						InitPlugin(pluginHandler.Script<BezierEditPlugin>(), node);
+					}
 				}),
-			new DatasetRegistrar<DirectNodeComponent>(directDataset,
-				DatasetRegistrar<DirectNodeComponent>.RegisterTarget.DataRemoved, node =>
-				{
-					if (!node.Locator.IsPos || node.Model is not V1BMoveItem ||
-					    directPool[node] is not { } view) return;
-					pluginPool.Remove(node);
-					view.RemovePlugin(PluginName, pluginPool.DefaultTransform);
-				}),
-			// If raycast the plugin, do update
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", raycastPriority.Value, OnBeginDrag,
 				InputActionPhase.Started),
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", raycastPriority.Value, OnEndDrag,
@@ -162,11 +151,9 @@ namespace MusicGame.ChartEditor.TrackLine
 		};
 
 		// Private
-		[Inject] private readonly EdgeNodeSelectDataset edgeDataset = default!;
-		[Inject] private readonly DirectNodeSelectDataset directDataset = default!;
-		[Inject] private readonly IViewPool<EdgeNodeComponent> edgePool = default!;
-		[Inject] private readonly IViewPool<DirectNodeComponent> directPool = default!;
-		[Inject] [Key("bezier")] private readonly IViewPool<IComponent<IPositionMoveItem<float>>> pluginPool = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
+		[Inject] private readonly IViewPool<TrackNodeComponent> nodePool = default!;
+		[Inject] [Key("bezier")] private readonly IViewPool<TrackNodeComponent> pluginPool = default!;
 		[Inject] private readonly NotifiableProperty<ISpeed> speed = default!;
 		[Inject] private readonly CommandManager commandManager = default!;
 
@@ -174,10 +161,15 @@ namespace MusicGame.ChartEditor.TrackLine
 		private MouseRayMaker rayMaker = default!;
 		private readonly RaycastHit[] hitBuffer = new RaycastHit[2];
 
+		// Static
+		private const string PluginName = "bezier-edit";
+
 		// Constructor
 		[Inject]
-		private void Construct([Key("stage")] Camera levelCamera,
-			ITimeRetriever timeRetriever, IWidthRetriever widthRetriever)
+		private void Construct(
+			[Key("stage")] Camera levelCamera,
+			ITimeRetriever timeRetriever,
+			IWidthRetriever widthRetriever)
 		{
 			dragHelper = new BezierDragHelper(levelCamera, timeRetriever, widthRetriever);
 			rayMaker = new MouseRayMaker(levelCamera);
@@ -186,23 +178,13 @@ namespace MusicGame.ChartEditor.TrackLine
 		public override void SelfInstall(IContainerBuilder builder)
 		{
 			base.SelfInstall(builder);
-			builder.RegisterViewPool<IComponent<IPositionMoveItem<float>>>(pluginPoolInstaller).Keyed("bezier");
+			builder.RegisterViewPool<TrackNodeComponent>(pluginPoolInstaller).Keyed("bezier");
 		}
-
-		// Static
-		private const string PluginName = "bezier-edit";
 
 		// Defined Functions
-		private void InitPlugin(BezierEditPlugin plugin, EdgeNodeComponent node)
+		private void InitPlugin(BezierEditPlugin plugin, TrackNodeComponent node)
 		{
-			if (edgePool[node]?.Script<BezierLineRenderer>() is not { } renderer) return;
-			plugin.Init(
-				renderer.StartFactorBuffer, renderer.EndFactorBuffer, renderer.CurrentBuffer, renderer.NextBuffer);
-		}
-
-		private void InitPlugin(BezierEditPlugin plugin, DirectNodeComponent node)
-		{
-			if (directPool[node]?.Script<BezierLineRenderer>() is not { } renderer) return;
+			if (nodePool[node]?.Script<BezierLineRenderer>() is not { } renderer) return;
 			plugin.Init(
 				renderer.StartFactorBuffer, renderer.EndFactorBuffer, renderer.CurrentBuffer, renderer.NextBuffer);
 		}
@@ -210,7 +192,6 @@ namespace MusicGame.ChartEditor.TrackLine
 		private bool OnBeginDrag()
 		{
 			if (dragHelper.IsDragging.Value) return true;
-			// See if raycast the plugin
 			Ray ray = rayMaker.GetRay();
 			var hitCount = Physics.RaycastNonAlloc(ray.origin, ray.direction, hitBuffer, 100, layerMask);
 			for (var i = 0; i < hitCount; i++)
@@ -221,12 +202,7 @@ namespace MusicGame.ChartEditor.TrackLine
 				{
 					var plugin = handler.Script<BezierEditPlugin>();
 					var index = hit.collider == plugin.ControlPoint1 ? 1 : 2;
-					dragHelper.Prepare(plugin, index, node switch
-					{
-						EdgeNodeComponent edge => edge.Locator.Track,
-						DirectNodeComponent direct => direct.Locator.Track,
-						_ => throw new NotSupportedException()
-					}, speed.Value);
+					dragHelper.Prepare(plugin, index, node.Track, speed.Value);
 					return !dragHelper.BeginDrag();
 				}
 			}
@@ -242,23 +218,13 @@ namespace MusicGame.ChartEditor.TrackLine
 			if (pluginPool[plugin!.GetComponent<PrefabHandler>()] is not { } node) return true;
 			var index = dragHelper.Index;
 			var factor = dragHelper.NewFactor;
-			var track = dragHelper.Track!;
 			var item = (node.Model.Clone() as V1BMoveItem)!;
 			if (index == 1) item.StartControlFactor = factor;
 			if (index == 2) item.EndControlFactor = factor;
-			var time = node switch
-			{
-				EdgeNodeComponent edge => edge.Locator.Time, DirectNodeComponent direct => direct.Locator.Time,
-				_ => new(0)
-			};
-			var isFirst = node switch
-			{
-				EdgeNodeComponent edge => edge.Locator.IsLeft, DirectNodeComponent direct => direct.Locator.IsPos,
-				_ => false
-			};
-			UpdateMoveListArg arg = new(isFirst, time, new(time, item));
+			var time = node.Time.Value;
+			UpdateMoveListArg arg = new(node.IsFirst, time, new(time, item));
 			UpdateMoveListCommand command = new(arg);
-			if (command.SetInit(track)) commandManager.Add(command);
+			if (command.SetInit(node.Track)) commandManager.Add(command);
 			return !result;
 		}
 	}

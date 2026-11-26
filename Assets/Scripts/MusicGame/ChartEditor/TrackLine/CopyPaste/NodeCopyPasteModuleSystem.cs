@@ -32,22 +32,16 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 		{
 			new PropertyRegistrar<int>(moduleInfo.CurrentModule,
 				id => IsEnabled = aliveModules.Values.Any(moduleId => moduleId == id)),
-			// Critically these registrars should be a single system but whatever.
 			new PropertyRegistrar<ChartComponent?>(chartSelectDataset.CurrentSelecting, () =>
 			{
 				bool changeInTrack = chartSelectDataset.CurrentSelecting.LastValue?.Model is ITrack &&
 				                     chartSelectDataset.CurrentSelecting.Value?.Model is ITrack;
 				if (moduleInfo.CurrentModule == nodeModuleId && !changeInTrack) moduleInfo.Unregister(nodeModuleId);
 			}),
-			new PropertyRegistrar<EdgeNodeComponent?>(edgeSelectDataset.CurrentSelecting, () =>
+			new PropertyRegistrar<TrackNodeComponent?>(nodeSelectDataset.CurrentSelecting, () =>
 			{
-				if (edgeSelectDataset.CurrentSelecting.LastValue is null &&
-				    edgeSelectDataset.CurrentSelecting.Value is not null) moduleInfo.Register(nodeModuleId);
-			}),
-			new PropertyRegistrar<DirectNodeComponent?>(directSelectDataset.CurrentSelecting, () =>
-			{
-				if (directSelectDataset.CurrentSelecting.LastValue is null &&
-				    directSelectDataset.CurrentSelecting.Value is not null) moduleInfo.Register(nodeModuleId);
+				if (nodeSelectDataset.CurrentSelecting.LastValue is null &&
+				    nodeSelectDataset.CurrentSelecting.Value is not null) moduleInfo.Register(nodeModuleId);
 			})
 		};
 
@@ -55,28 +49,24 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 		{
 			new InputRegistrar("InScreenEdit", "Cut", () =>
 			{
-				if (edgeSelectDataset.Count == 0 && directSelectDataset.Count == 0) return;
+				if (nodeSelectDataset.Count == 0) return;
 				clipboard.Clear();
 				Dictionary<ChartComponent, List<UpdateMoveListArg>> args = new();
-				foreach (var component in edgeSelectDataset)
+				foreach (var node in nodeSelectDataset)
 				{
-					clipboard.Add(NodeRawInfo.FromComponent(component));
-					var track = component.Locator.Track;
-					var arg = new UpdateMoveListArg(component.Locator.IsLeft, component.Locator.Time, null);
-					if (!args.ContainsKey(track)) args[track] = new() { arg };
-					else args[track].Add(arg);
+					clipboard.Add(NodeRawInfo.FromComponent(node));
+					var track = node.Track;
+					var arg = new UpdateMoveListArg(node.IsFirst, node.Time.Value, null);
+					if (!args.TryGetValue(track, out var list))
+					{
+						list = new();
+						args[track] = list;
+					}
+
+					list.Add(arg);
 				}
 
-				foreach (var component in directSelectDataset)
-				{
-					clipboard.Add(NodeRawInfo.FromComponent(component));
-					var track = component.Locator.Track;
-					var arg = new UpdateMoveListArg(component.Locator.IsPos, component.Locator.Time, null);
-					if (!args.ContainsKey(track)) args[track] = new() { arg };
-					else args[track].Add(arg);
-				}
-
-				clipboard.Sort((a, b) => a.Time.Value.CompareTo(b.Time));
+				clipboard.Sort((a, b) => a.Time.Value.CompareTo(b.Time.Value));
 
 				List<ICommand> commands = (
 						from pair in args
@@ -88,11 +78,10 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 			}),
 			new InputRegistrar("InScreenEdit", "Copy", () =>
 			{
-				if (edgeSelectDataset.Count == 0 && directSelectDataset.Count == 0) return;
+				if (nodeSelectDataset.Count == 0) return;
 				clipboard.Clear();
-				foreach (var component in edgeSelectDataset) clipboard.Add(NodeRawInfo.FromComponent(component));
-				foreach (var component in directSelectDataset) clipboard.Add(NodeRawInfo.FromComponent(component));
-				clipboard.Sort((a, b) => a.Time.Value.CompareTo(b.Time));
+				foreach (var node in nodeSelectDataset) clipboard.Add(NodeRawInfo.FromComponent(node));
+				clipboard.Sort((a, b) => a.Time.Value.CompareTo(b.Time.Value));
 				T3Logger.Log("Notice", "Edit_CopyPaste_CopySuccess", T3LogType.Success);
 			}),
 			new InputRegistrar("InScreenEdit", "Paste", ChangeModule),
@@ -112,8 +101,7 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 		[Inject] private readonly ModuleInfo moduleInfo = default!;
 		[Inject] [Key("clipboard")] private readonly List<NodeRawInfo> clipboard = default!;
 		[Inject] private readonly ChartSelectDataset chartSelectDataset = default!;
-		[Inject] private readonly EdgeNodeSelectDataset edgeSelectDataset = default!;
-		[Inject] private readonly DirectNodeSelectDataset directSelectDataset = default!;
+		[Inject] private readonly TrackNodeSelectDataset nodeSelectDataset = default!;
 		[Inject] private readonly CommandManager commandManager = default!;
 
 		// Event Handlers

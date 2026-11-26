@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.TrackLine.Render;
 using MusicGame.Gameplay.Chart;
 using MusicGame.Gameplay.Speed;
@@ -146,13 +147,13 @@ namespace MusicGame.ChartEditor.TrackLine
 					var nextInfo = list.Skip(i + 1).FirstOrDefault(next => next.Type.Value == info.Type.Value);
 					switch (info.Type.Value)
 					{
-						case NodeType.Left:
+						case TrackNodeType.Left:
 							InitPosNodePreview(info, prevInfo, nextInfo, true);
 							break;
-						case NodeType.Right:
+						case TrackNodeType.Right:
 							InitPosNodePreview(info, prevInfo, nextInfo, false);
 							break;
-						case NodeType.Pos:
+						case TrackNodeType.Pos:
 							if (isPosLeft is null)
 							{
 								// When isPosLeft is null, this info is the first pos info.
@@ -171,7 +172,7 @@ namespace MusicGame.ChartEditor.TrackLine
 							}
 
 							break;
-						case NodeType.Width:
+						case TrackNodeType.Width:
 							InitWidthNodePreview(info);
 							break;
 						default:

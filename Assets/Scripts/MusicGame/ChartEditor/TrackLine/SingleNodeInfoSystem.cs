@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.Select;
 using MusicGame.Gameplay.Chart;
@@ -20,7 +21,7 @@ using VContainer;
 namespace MusicGame.ChartEditor.TrackLine
 {
 	/// <summary>
-	/// Handles one node, and its type is either <see cref="NodeType.Pos"/> or <see cref="NodeType.Width"/>.
+	/// Handles one node, and its type is either <see cref="TrackNodeType.Pos"/> or <see cref="TrackNodeType.Width"/>.
 	/// As to how the node fits in edge movement, this system does not care about it.
 	/// </summary>
 	public class SingleNodeInfoSystem : HierarchySystem<SingleNodeInfoSystem>
@@ -65,8 +66,8 @@ namespace MusicGame.ChartEditor.TrackLine
 					{
 						info.Type.Value = info.Type.Value switch
 						{
-							NodeType.Pos => NodeType.Width,
-							NodeType.Width => NodeType.Pos,
+							TrackNodeType.Pos => TrackNodeType.Width,
+							TrackNodeType.Width => TrackNodeType.Pos,
 							_ => throw new ArgumentOutOfRangeException()
 						};
 					}
@@ -101,7 +102,7 @@ namespace MusicGame.ChartEditor.TrackLine
 			    selectDataset.CurrentSelecting.Value is not { Model: ITrack model } track) return;
 			if (dataset.Count == 0)
 			{
-				dataset.Add(new NodeRawInfo(0, NodeType.Pos, curveType.Value switch
+				dataset.Add(new NodeRawInfo(0, TrackNodeType.Pos, curveType.Value switch
 				{
 					NodeCurveType.Ease => new V1EMoveItem(0, Eases.Unmove),
 					NodeCurveType.Bezier => new V1BMoveItem(0),
@@ -114,7 +115,7 @@ namespace MusicGame.ChartEditor.TrackLine
 				info.Time.Value = baseTime;
 
 				// Change "Position" value
-				if (info.Type.Value is NodeType.Pos)
+				if (info.Type.Value is TrackNodeType.Pos)
 				{
 					if (!widthRetriever.GetMouseAttachedPosition(out var actualPosition)) continue;
 					if (!Mathf.Approximately(info.Node.Value.Position, actualPosition))

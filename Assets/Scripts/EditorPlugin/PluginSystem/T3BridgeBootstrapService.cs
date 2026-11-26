@@ -41,10 +41,8 @@ namespace EditorPlugin.PluginSystem
 		[Inject] private IDataset<ClipboardItem> clipboard = default!;
 		[Inject] [Key("clipboard")] private List<NodeRawInfo> nodeClipboard = default!;
 		[Inject] private ChartSelectDataset chartSelectDataset = default!;
-		[Inject] private EdgeNodeDataset edgeNodeDataset = default!;
-		[Inject] private DirectNodeDataset directNodeDataset = default!;
-		[Inject] private EdgeNodeSelectDataset edgeNodeSelectDataset = default!;
-		[Inject] private DirectNodeSelectDataset directNodeSelectDataset = default!;
+		[Inject] private TrackNodeDataset trackNodeDataset = default!;
+		[Inject] private TrackNodeSelectDataset trackNodeSelectDataset = default!;
 		[Inject] private StageMouseTimeRetriever timeRetriever = default!;
 		[Inject] private StageMouseWidthRetriever widthRetriever = default!;
 		[Inject] private MessageBox messageBox = default!;
@@ -60,8 +58,7 @@ namespace EditorPlugin.PluginSystem
 			var nodeClipboardApi = new NodeClipboardApi(nodeClipboard);
 			var editorApi = new EditorApi(music, messageBox);
 			var stagingApi = new StagingApi(registry);
-			var nodeApi = new NodeApi(
-				edgeNodeDataset, directNodeDataset, edgeNodeSelectDataset, directNodeSelectDataset, chartApi);
+			var nodeApi = new NodeApi(trackNodeDataset, trackNodeSelectDataset, chartApi);
 			var mouseApi = new MouseApi(timeRetriever, widthRetriever);
 			var api = new T3CSharpApi(
 				chartApi, clipboardApi, nodeClipboardApi, editorApi, stagingApi, nodeApi, mouseApi, env.RootDirectory);

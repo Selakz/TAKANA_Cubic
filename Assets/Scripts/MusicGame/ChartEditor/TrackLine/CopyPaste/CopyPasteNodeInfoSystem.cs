@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.InScreenEdit;
 using MusicGame.ChartEditor.InScreenEdit.CopyPaste;
 using MusicGame.ChartEditor.InScreenEdit.Grid;
@@ -82,7 +83,7 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 		{
 			foreach (var data in dataset)
 			{
-				if (data.Type.Value is NodeType.Width) continue;
+				if (data.Type.Value is TrackNodeType.Width) continue;
 				data.Node.Value.Position = newPositionFunc(data.Node.Value.Position);
 				data.Node.ForceNotify();
 			}
@@ -124,7 +125,7 @@ namespace MusicGame.ChartEditor.TrackLine.CopyPaste
 			if (pasteMode.Value == PasteMode.NormalPaste && baseInfo?.Parent.Value.Model is ITrack baseTrack)
 			{
 				var offset = model.Movement.GetPos(time) - baseTrack.Movement.GetPos(baseInfo.Time);
-				foreach (var info in dataset.Where(i => i.Type.Value != NodeType.Width))
+				foreach (var info in dataset.Where(i => i.Type.Value != TrackNodeType.Width))
 				{
 					var actualOffset = offset - lastOffset;
 					if (!Mathf.Approximately(actualOffset, 0))
