@@ -7,6 +7,7 @@ using MusicGame.Gameplay.Chart;
 using MusicGame.Models.Track;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Runtime;
+using T3Framework.Static.Easing;
 using T3Framework.Static.Movement;
 using UnityEngine;
 
@@ -46,6 +47,8 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 		private T3Time newTrackStartTime = T3Time.MaxValue;
 		private T3Time oldTrackEndTime;
 		private T3Time newTrackEndTime = T3Time.MinValue;
+		private (T3Time Time, IPositionMoveItem<float> Item)? alignedOldEndItem1;
+		private (T3Time Time, IPositionMoveItem<float> Item)? alignedOldEndItem2;
 
 		public UpdateMoveListCommand(UpdateMoveListArg arg)
 		{
@@ -159,6 +162,8 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 			    model.Movement.Movement2 is not ChartPosMoveList moveList2) return;
 
 			hasExecuted = true;
+			alignedOldEndItem1 = null;
+			alignedOldEndItem2 = null;
 
 			foreach (var arg in args)
 			{
@@ -182,7 +187,32 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 
 			if (newTrackStartTime != T3Time.MaxValue) model.TimeStart = newTrackStartTime;
 			if (newTrackEndTime != T3Time.MinValue) model.TimeEnd = newTrackEndTime;
+
+			// Special logic: after all modifications and before Notify, if the end-time node was not
+			// modified in this command, exists, and its previous node is an Unmove node, align its position.
+			alignedOldEndItem1 = TryAlignEndNodeToPreviousUnmove(moveList1, true, model.TimeEnd);
+			alignedOldEndItem2 = TryAlignEndNodeToPreviousUnmove(moveList2, false, model.TimeEnd);
+
 			track.UpdateNotify();
+
+			// Special logic helper
+			(T3Time Time, IPositionMoveItem<float> Item)? TryAlignEndNodeToPreviousUnmove(
+				ChartPosMoveList moveList, bool isFirst, T3Time endTime)
+			{
+				bool isEndNodeModified = args.Any(arg =>
+					arg.IsFirst == isFirst &&
+					((arg.NewItem is not null && arg.NewItem.Value.Key == endTime) ||
+					 arg.OldTime == endTime));
+				if (isEndNodeModified) return null;
+
+				int index = moveList.BinarySearch(endTime);
+				if (index <= 0) return null;
+				if (moveList[index - 1].Value is not V1EMoveItem { Ease: Eases.Unmove } prevItem) return null;
+				var endItem = moveList[index].Value;
+				if (endItem.Position == prevItem.Position) return null;
+				moveList.Insert(endTime, endItem.SetPosition(prevItem.Position));
+				return (endTime, endItem);
+			}
 		}
 
 		public void Undo()
@@ -216,6 +246,20 @@ namespace MusicGame.ChartEditor.TrackLine.Commands
 
 			if (newTrackStartTime != T3Time.MaxValue) model.TimeStart = oldTrackStartTime;
 			if (newTrackEndTime != T3Time.MinValue) model.TimeEnd = oldTrackEndTime;
+
+			// Special logic: restore the end-time node's original item if it was aligned in Do().
+			if (alignedOldEndItem1 is { } oldEnd1)
+			{
+				moveList1.Insert(oldEnd1.Time, oldEnd1.Item);
+				alignedOldEndItem1 = null;
+			}
+
+			if (alignedOldEndItem2 is { } oldEnd2)
+			{
+				moveList2.Insert(oldEnd2.Time, oldEnd2.Item);
+				alignedOldEndItem2 = null;
+			}
+
 			track.UpdateNotify();
 		}
 	}
