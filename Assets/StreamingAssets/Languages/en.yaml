@@ -43,6 +43,12 @@ EditorEntry:
   SongId: "Song ID: "
   ProjectTypeTakana: TAKANA³
   ExportT3Pkg: Export .t3pkg
+  ImportT3Pkg: Import .t3pkg
+  ImportExportT3Pkg: Import / Export .t3pkg
+  Import: Import
+  PackagePath: "Package Path: "
+  ExtractDirectory: "Extract Directory: "
+  OpenAfterImport: Open project after import
   ToConvertType: "Target Chart Format: "
   SearchProjects: Search Projects (Not searchable)
   Open: Open
@@ -55,6 +61,12 @@ EditorEntry:
   SuggestId: IDs are suggested to be camelCase words without spaces, e.g., "RedRose"
   InvalidCurrentProject: No project currently open, cannot export
   TargetT3pkg: "Chart package will be exported to {0}"
+  ValidT3pkg: "Package to import: {0}"
+  InvalidT3pkg: "{0} is not a valid .t3pkg file"
+  SelectValidT3pkgFirst: Please select a valid .t3pkg file first
+  TargetExtractDirectory: "Project will be extracted to {0}"
+  ImportSuccess: Package imported successfully
+  ImportFailed: Failed to import package
   TargetTakana: "TAKANA³ chart will be exported to {0}"
   Intro: Shift + Right Click to create the first track
   AddCustomDifficulty: Add Difficulty

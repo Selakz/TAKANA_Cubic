@@ -43,6 +43,12 @@ EditorEntry:
   SongId: "乐曲id："
   ProjectTypeTakana: TAKANA³
   ExportT3Pkg: 导出 .t3pkg
+  ImportT3Pkg: 导入 .t3pkg
+  ImportExportT3Pkg: 导入 / 导出 .t3pkg
+  Import: 导入
+  PackagePath: "谱面包路径："
+  ExtractDirectory: "解压目录："
+  OpenAfterImport: 在导入后打开该项目
   ToConvertType: "要转换的谱面格式："
   SearchProjects: 搜索项目（并不能搜索）
   Open: 打开
@@ -55,6 +61,12 @@ EditorEntry:
   SuggestId: 各Id均建议为大小写字母混合的无空格单词，如“RedRose”
   InvalidCurrentProject: 当前无打开的工程，不可导出
   TargetT3pkg: "谱面包将导出为 {0}"
+  ValidT3pkg: "将导入谱面包：{0}"
+  InvalidT3pkg: "{0} 不是一个有效的 .t3pkg 文件"
+  SelectValidT3pkgFirst: 请先选择有效的 .t3pkg 文件
+  TargetExtractDirectory: "项目将解压至 {0}"
+  ImportSuccess: 谱面包导入成功
+  ImportFailed: 谱面包导入失败
   TargetTakana: "TAKANA³谱面将导出为 {0}"
   Intro: Shift + 右键以创建第一个轨道
   AddCustomDifficulty: 新增难度
