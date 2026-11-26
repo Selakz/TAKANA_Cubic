@@ -54,7 +54,13 @@ namespace MusicGame.ChartEditor.TrackLine
 					initRcts.CancelAndReset();
 					RemoveFromMap(info);
 					AddToMap(info);
-					if (!viewPool.Contains(info)) return;
+					if (viewPool[info] is not { } handler) return;
+					if (decoratorPool[info.Parent] is { } decorator && decorator != handler.Parent)
+					{
+						handler.Parent?.RemovePlugin(handler, decorator.transform);
+						decorator.AddPlugin(GetNodeName(info), handler);
+					}
+
 					WaitAndInitAllPreview().Forget();
 				}),
 			new DatasetRegistrar<NodeRawInfo>(dataset,
@@ -124,11 +130,13 @@ namespace MusicGame.ChartEditor.TrackLine
 
 		private void RemoveFromMap(NodeRawInfo info)
 		{
-			if (previewMap.TryGetValue(info.Parent.Value, out var list))
+			ChartComponent? key = null;
+			foreach (var (k, l) in previewMap)
 			{
-				list.Remove(info);
-				if (list.Count == 0) previewMap.Remove(info.Parent.Value);
+				if (l.Remove(info)) key = k;
 			}
+
+			if (key is not null && previewMap[key].Count == 0) previewMap.Remove(key);
 		}
 
 		public async UniTask WaitAndInitAllPreview()
@@ -201,8 +209,7 @@ namespace MusicGame.ChartEditor.TrackLine
 			}
 		}
 
-		public void InitPosNodePreview(
-			NodeRawInfo info, NodeRawInfo? prevInfo, NodeRawInfo? nextInfo, bool isFirst)
+		public void InitPosNodePreview(NodeRawInfo info, NodeRawInfo? prevInfo, NodeRawInfo? nextInfo, bool isFirst)
 		{
 			var track = (info.Parent.Value.Model as ITrack)!;
 			var move = isFirst ? track.Movement.Movement1 : track.Movement.Movement2;
@@ -257,8 +264,7 @@ namespace MusicGame.ChartEditor.TrackLine
 			view.ColorModifier.Register(c => (isLegal ? c : illegalColor) with { a = previewAlpha }, 1);
 		}
 
-		private static void InitPosCurve(IPositionMoveItem<float> item, PrefabHandler handler, Vector2 current,
-			Vector2 next)
+		private static void InitPosCurve(IPositionMoveItem<float> item, PrefabHandler handler, Vector2 current, Vector2 next)
 		{
 			switch (item)
 			{
@@ -268,8 +274,7 @@ namespace MusicGame.ChartEditor.TrackLine
 					break;
 				case V1BMoveItem bezierItem:
 					var bezierRenderer = handler.Script<BezierLineRenderer>();
-					bezierRenderer.Init(bezierItem.StartControlFactor, bezierItem.EndControlFactor,
-						current, next);
+					bezierRenderer.Init(bezierItem.StartControlFactor, bezierItem.EndControlFactor, current, next);
 					break;
 			}
 		}
