@@ -1,6 +1,8 @@
 #nullable enable
 
+using System.Collections.Generic;
 using MusicGame.ChartEditor.Level;
+using MusicGame.Gameplay.Chart;
 using MusicGame.Models;
 using T3Framework.Preset.Drag;
 using T3Framework.Preset.Event;
@@ -54,6 +56,7 @@ namespace MusicGame.ChartEditor.Select
 
 		// Private
 		private readonly Plane gamePlane = new(Vector3.forward, Vector3.zero);
+		private readonly HashSet<ChartComponent> pendingToggleComponents = new();
 		private Camera levelCamera = default!;
 		private ChartSelectDataset dataset = default!;
 		private SelectInputSystem inputSystem = default!;
@@ -91,6 +94,7 @@ namespace MusicGame.ChartEditor.Select
 			if (!levelCamera.ContainsScreenPoint(Mouse.current.position.ReadValue())) return true;
 			if (!inputSystem.RaycastSystems.TryGetValue(T3Flag.Note, out _)) return true;
 
+			pendingToggleComponents.Clear();
 			listener.CollisionEnter += OnCollisionChange;
 			listener.CollisionExit += OnCollisionChange;
 			return !dragHelper.BeginDrag();
@@ -101,6 +105,7 @@ namespace MusicGame.ChartEditor.Select
 			listener.CollisionEnter -= OnCollisionChange;
 			listener.CollisionExit -= OnCollisionChange;
 			boxView.enabled = false;
+			FlushPendingToggles();
 			return !dragHelper.EndDrag();
 		}
 
@@ -109,6 +114,7 @@ namespace MusicGame.ChartEditor.Select
 			listener.CollisionEnter -= OnCollisionChange;
 			listener.CollisionExit -= OnCollisionChange;
 			boxView.enabled = false;
+			pendingToggleComponents.Clear();
 			dragHelper.CancelDrag();
 		}
 
@@ -117,12 +123,27 @@ namespace MusicGame.ChartEditor.Select
 			if (!inputSystem.RaycastSystems.TryGetValue(T3Flag.Note, out var raycastSystem)) return;
 
 			var data = raycastSystem.GetData(collider);
-			if (data is not null) dataset.ToggleSelecting(data);
+			if (data is null) return;
+			// Defer dataset mutation out of physics trigger callbacks to avoid SetActive(false) destroying TMP meshes immediately.
+			if (!pendingToggleComponents.Add(data)) pendingToggleComponents.Remove(data);
+		}
+
+		private void FlushPendingToggles()
+		{
+			if (pendingToggleComponents.Count == 0) return;
+
+			foreach (var component in pendingToggleComponents)
+			{
+				dataset.ToggleSelecting(component);
+			}
+
+			pendingToggleComponents.Clear();
 		}
 
 		// System Functions
 		void Update()
 		{
+			FlushPendingToggles();
 			if (dragHelper.IsDragging.Value)
 			{
 				boxView.size = dragHelper.BoxCollider.size;
