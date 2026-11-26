@@ -39,7 +39,7 @@ namespace MusicGame.ChartEditor.Select
 							var plugin = handler!.Script<SelectColliderPlugin>();
 							plugin.gameObject.layer = pair.Value.colliderLayer;
 							plugin.ColliderModifier.EnabledModifier.Register(
-								_ => data.Model.TimeMax > music.ChartTime, 0);
+								isEnabled => isEnabled && data.Model.TimeMax > music.ChartTime, 0);
 							UniTask.DelayFrame(1).ContinueWith(() => plugin.StartAligning(pair.Value));
 							return;
 						}

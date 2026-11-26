@@ -65,12 +65,15 @@ namespace MusicGame.ChartEditor.TrackLayer
 				() =>
 				{
 					var track = pluginPool[handler]!;
+					if (track.Model is not ITrack) return;
 					var layerInfo = manageSystem.GetLayer(track);
 					var plugin = handler.Script<SelectColliderPlugin>();
 					plugin.ColliderModifier.EnabledModifier.Register(_ => layerInfo.IsSelected, layerColorPriority);
 				},
 				() =>
 				{
+					var track = pluginPool[handler]!;
+					if (track.Model is not ITrack) return;
 					var plugin = handler.Script<SelectColliderPlugin>();
 					plugin.ColliderModifier.EnabledModifier.Unregister(layerColorPriority);
 				}), true)

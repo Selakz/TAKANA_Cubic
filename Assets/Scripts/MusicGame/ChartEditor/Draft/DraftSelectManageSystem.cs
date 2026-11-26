@@ -26,13 +26,13 @@ namespace MusicGame.ChartEditor.Draft
 					{
 						var plugin = handler.Script<SelectColliderPlugin>();
 						plugin.ColliderModifier.EnabledModifier.Register(
-							_ => !draftContainer.IsInDraftMode, 5);
+							isEnabled => isEnabled && !draftContainer.IsInDraftMode, 5);
 					}
 					else if (T3ChartClassifier.Instance.IsOfType(component, T3Flag.Draft | T3Flag.Note))
 					{
 						var plugin = handler.Script<SelectColliderPlugin>();
 						plugin.ColliderModifier.EnabledModifier.Register(
-							_ => draftContainer.IsInDraftMode, 5);
+							isEnabled => isEnabled && draftContainer.IsInDraftMode, 5);
 					}
 				},
 				() =>
