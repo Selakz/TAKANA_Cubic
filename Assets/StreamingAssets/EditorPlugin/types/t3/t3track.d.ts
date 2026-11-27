@@ -315,7 +315,7 @@ declare class BezierMoveItem implements MoveItem {
  * Edits apply to this object immediately; inject it into the chart via a TrackModel.
  */
 declare class MoveList {
-  /** Read-only view of the nodes. */
+  /** Read-only view of the nodes (`has`/`get` match by `T3Time.milli`). */
   readonly items: ReadonlyMap<T3Time, MoveItem>;
 
   constructor(items?: ReadonlyMap<T3Time, MoveItem>);

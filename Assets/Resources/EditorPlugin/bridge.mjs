@@ -850,28 +850,67 @@ function cubicDerivative(start, startControl, endControl, end, t) {
   const u = 1 - t;
   return 3 * u * u * (startControl - start) + 6 * u * t * (endControl - startControl) + 3 * t * t * (end - endControl);
 }
+var MoveListItemsView = class {
+  constructor(map) {
+    this.map = map;
+  }
+  get size() {
+    return this.map.size;
+  }
+  has(key) {
+    return key != null && this.map.has(key.milli);
+  }
+  get(key) {
+    return key == null ? void 0 : this.map.get(key.milli);
+  }
+  *keys() {
+    for (const milli of this.map.keys()) {
+      yield new T3Time(milli);
+    }
+  }
+  values() {
+    return this.map.values();
+  }
+  *entries() {
+    for (const [milli, item] of this.map.entries()) {
+      yield [new T3Time(milli), item];
+    }
+  }
+  [Symbol.iterator]() {
+    return this.entries();
+  }
+  forEach(callbackfn, thisArg) {
+    for (const [time, item] of this.entries()) {
+      callbackfn.call(thisArg, item, time, this);
+    }
+  }
+  get [Symbol.toStringTag]() {
+    return "Map";
+  }
+};
 var MoveList = class {
   constructor(items) {
-    this.items = /* @__PURE__ */ new Map();
+    this.itemsMap = /* @__PURE__ */ new Map();
+    this.items = new MoveListItemsView(this.itemsMap);
     if (items === void 0) return;
     for (const [time, item] of items) {
-      this.items.set(time.milli, item);
+      this.itemsMap.set(time.milli, item);
     }
   }
   set(time, item) {
-    this.items.set(time.milli, item);
+    this.itemsMap.set(time.milli, item);
     return true;
   }
   delete(time) {
-    return this.items.delete(time.milli);
+    return this.itemsMap.delete(time.milli);
   }
   getPosition(time) {
-    const times = [...this.items.keys()].sort((a, b) => a - b);
+    const times = [...this.itemsMap.keys()].sort((a, b) => a - b);
     if (times.length === 0) return 0;
     const first = times[0];
-    if (time.milli <= first) return this.items.get(first).position;
+    if (time.milli <= first) return this.itemsMap.get(first).position;
     const last = times[times.length - 1];
-    if (time.milli >= last) return this.items.get(last).position;
+    if (time.milli >= last) return this.itemsMap.get(last).position;
     let prev = first;
     for (const key of times) {
       if (key > time.milli) break;
@@ -884,21 +923,21 @@ var MoveList = class {
         break;
       }
     }
-    return this.items.get(prev).getPosition(new T3Time(prev), time, new T3Time(next), this.items.get(next).position);
+    return this.itemsMap.get(prev).getPosition(new T3Time(prev), time, new T3Time(next), this.itemsMap.get(next).position);
   }
   nudge(distance) {
-    const entries = [...this.items.entries()];
-    this.items.clear();
+    const entries = [...this.itemsMap.entries()];
+    this.itemsMap.clear();
     for (const [time, item] of entries) {
-      this.items.set(time + distance.milli, item);
+      this.itemsMap.set(time + distance.milli, item);
     }
   }
   shift(offset) {
-    for (const item of this.items.values()) item.position += offset;
+    for (const item of this.itemsMap.values()) item.position += offset;
   }
   toCSharp() {
     const list = CS.EditorPlugin.Shared.To.RawTrackData.NewMoveList();
-    for (const [time, item] of this.items) {
+    for (const [time, item] of this.itemsMap) {
       CS.EditorPlugin.Shared.To.RawTrackData.Insert(list, new CS.T3Framework.Runtime.T3Time(time), item.toCSharp());
     }
     return list;

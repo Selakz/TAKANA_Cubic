@@ -206,32 +206,91 @@ function cubicDerivative(
   );
 }
 
+/**
+ * Read-only T3Time-keyed view over a MoveList's millisecond-keyed map.
+ * Matches keys by `T3Time.milli` so callers can query with newly constructed `T3Time` instances.
+ */
+class MoveListItemsView implements ReadonlyMap<T3Time, MoveItem> {
+  constructor(private readonly map: Map<number, MoveItem>) {}
+
+  get size(): number {
+    return this.map.size;
+  }
+
+  has(key: T3Time): boolean {
+    return key != null && this.map.has(key.milli);
+  }
+
+  get(key: T3Time): MoveItem | undefined {
+    return key == null ? undefined : this.map.get(key.milli);
+  }
+
+  *keys(): IterableIterator<T3Time> {
+    for (const milli of this.map.keys()) {
+      yield new T3Time(milli);
+    }
+  }
+
+  values(): IterableIterator<MoveItem> {
+    return this.map.values();
+  }
+
+  *entries(): IterableIterator<[T3Time, MoveItem]> {
+    for (const [milli, item] of this.map.entries()) {
+      yield [new T3Time(milli), item];
+    }
+  }
+
+  [Symbol.iterator](): IterableIterator<[T3Time, MoveItem]> {
+    return this.entries();
+  }
+
+  forEach(
+    callbackfn: (
+      value: MoveItem,
+      key: T3Time,
+      map: ReadonlyMap<T3Time, MoveItem>,
+    ) => void,
+    thisArg?: any,
+  ): void {
+    for (const [time, item] of this.entries()) {
+      callbackfn.call(thisArg, item, time, this);
+    }
+  }
+
+  get [Symbol.toStringTag](): string {
+    return "Map";
+  }
+}
+
 export class MoveList {
-  readonly items: Map<number, MoveItem> = new Map();
-  
+  private readonly itemsMap: Map<number, MoveItem> = new Map();
+  readonly items: ReadonlyMap<T3Time, MoveItem>;
+
   constructor(items?: ReadonlyMap<T3Time, MoveItem>) {
+    this.items = new MoveListItemsView(this.itemsMap);
     if (items === undefined) return;
     for (const [time, item] of items) {
-      this.items.set(time.milli, item);
+      this.itemsMap.set(time.milli, item);
     }
   }
 
   set(time: T3Time, item: MoveItem): boolean {
-    this.items.set(time.milli, item);
+    this.itemsMap.set(time.milli, item);
     return true;
   }
 
   delete(time: T3Time): boolean {
-    return this.items.delete(time.milli);
+    return this.itemsMap.delete(time.milli);
   }
 
   getPosition(time: T3Time): number {
-    const times = [...this.items.keys()].sort((a, b) => a - b);
+    const times = [...this.itemsMap.keys()].sort((a, b) => a - b);
     if (times.length === 0) return 0;
     const first = times[0];
-    if (time.milli <= first) return this.items.get(first)!.position;
+    if (time.milli <= first) return this.itemsMap.get(first)!.position;
     const last = times[times.length - 1];
-    if (time.milli >= last) return this.items.get(last)!.position;
+    if (time.milli >= last) return this.itemsMap.get(last)!.position;
 
     let prev = first;
     for (const key of times) {
@@ -245,26 +304,26 @@ export class MoveList {
         break;
       }
     }
-    return this.items
+    return this.itemsMap
       .get(prev)!
-      .getPosition(new T3Time(prev), time, new T3Time(next), this.items.get(next)!.position);
+      .getPosition(new T3Time(prev), time, new T3Time(next), this.itemsMap.get(next)!.position);
   }
 
   nudge(distance: T3Time): void {
-    const entries = [...this.items.entries()];
-    this.items.clear();
+    const entries = [...this.itemsMap.entries()];
+    this.itemsMap.clear();
     for (const [time, item] of entries) {
-      this.items.set(time + distance.milli, item);
+      this.itemsMap.set(time + distance.milli, item);
     }
   }
 
   shift(offset: number): void {
-    for (const item of this.items.values()) item.position += offset;
+    for (const item of this.itemsMap.values()) item.position += offset;
   }
 
   toCSharp(): any {
     const list = CS.EditorPlugin.Shared.To.RawTrackData.NewMoveList();
-    for (const [time, item] of this.items) {
+    for (const [time, item] of this.itemsMap) {
       CS.EditorPlugin.Shared.To.RawTrackData.Insert(list, new CS.T3Framework.Runtime.T3Time(time), item.toCSharp());
     }
     return list;
