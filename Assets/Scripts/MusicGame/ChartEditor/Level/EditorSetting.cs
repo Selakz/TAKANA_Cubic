@@ -33,6 +33,14 @@ namespace MusicGame.ChartEditor.Level
 		public NotifiableProperty<string> PluginPath { get; set; } =
 			new(Path.Combine(Application.persistentDataPath, "Plugins"));
 
+		[Description("RemoteBridgeEnabled")]
+		public NotifiableProperty<bool> RemoteBridgeEnabled { get; set; } = new(false);
+
+		[Description("RemoteBridgePort")]
+		[MinValue(1024)]
+		[MaxValue(65535)]
+		public NotifiableProperty<int> RemoteBridgePort { get; set; } = new(57333);
+
 		[Description("SaveIndented")]
 		public NotifiableProperty<bool> SaveIndented { get; set; } = new(true);
 

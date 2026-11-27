@@ -116,6 +116,8 @@ Editor:
     Tutorial: View Tutorial
     CheckUpdate: Check for Updates
     Resolution: Resolution
+    RemoteBridge: Remote Bridge
+    RemoteBridgePort: Bridge Port
     FrameRate: Frame Rate
     SettingPanel: Settings Panel
     GoToGithub: Go to Homepage
@@ -360,6 +362,8 @@ Setting:
     AutoSaveInterval: "Auto-save interval | Unit: ms"
     DefaultCustomDifficultyColor: Default custom difficulty color
     PluginPath: Plugin directory path
+    RemoteBridgeEnabled: Enable local HTTP remote bridge server
+    RemoteBridgePort: "Local HTTP remote bridge port (127.0.0.1) | Range [1024, 65535]"
     SaveIndented: Indent chart files; disabling this reduces file size
     WindowWidth: Window width (Height calculated automatically to maintain 16:9)
     WindowWidthChoices: Resolution options available in the editor interface

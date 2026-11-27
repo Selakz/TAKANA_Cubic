@@ -535,6 +535,10 @@ namespace EditorPlugin.Shared
 
 		public bool hasPending => registry.HasPending;
 
+		internal int FlushCount => registry.FlushCount;
+
 		public void commit() => registry.Flush();
+
+		internal void Discard() => registry.Discard();
 	}
 }

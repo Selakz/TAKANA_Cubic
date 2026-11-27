@@ -116,6 +116,8 @@ Editor:
     Tutorial: 查看教程
     CheckUpdate: 检查更新
     Resolution: 窗口分辨率
+    RemoteBridge: 远程接口
+    RemoteBridgePort: 监听端口
     FrameRate: 帧率
     SettingPanel: 设置面板
     GoToGithub: 前往主页
@@ -361,6 +363,8 @@ Setting:
     AutoSaveInterval: 自动保存的时间间隔 | 单位：毫秒
     DefaultCustomDifficultyColor: 自定义难度默认颜色
     PluginPath: 插件目录路径
+    RemoteBridgeEnabled: 启用本地 HTTP 远程桥接服务
+    RemoteBridgePort: 本地 HTTP 远程桥接端口（127.0.0.1） | 范围 [1024, 65535]
     SaveIndented: 谱面文件是否缩进，不缩进可减小文件大小
     WindowWidth: 窗口宽度，高度将在保持16：9窗口比例的前提下自动计算
     WindowWidthChoices: 在编辑器界面提供的分辨率调整选项，同样均为窗口宽度

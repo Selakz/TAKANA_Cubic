@@ -49,8 +49,12 @@ namespace EditorPlugin.PluginSystem
 			}
 		}
 
-		public bool Compile(string pluginDirectory, string tsEntry, string jsEntry)
+		public bool Compile(string pluginDirectory, string tsEntry, string jsEntry) =>
+			Compile(pluginDirectory, tsEntry, jsEntry, out _);
+
+		public bool Compile(string pluginDirectory, string tsEntry, string jsEntry, out string diagnostics)
 		{
+			diagnostics = string.Empty;
 			string distDirectory = Path.Combine(pluginDirectory, "dist");
 			string tsEntryPath = Path.Combine(pluginDirectory, tsEntry);
 			string jsEntryPath = Path.Combine(pluginDirectory, jsEntry);
@@ -79,6 +83,7 @@ namespace EditorPlugin.PluginSystem
 				success = process.ExitCode == 0 && File.Exists(jsEntryPath);
 				if (!success)
 				{
+					diagnostics = $"{output}\n{error}".Trim();
 					Debug.LogError(
 						$"compilation failed (exit {process.ExitCode}): {pluginDirectory}\n{output}\n{error}");
 				}
@@ -86,6 +91,7 @@ namespace EditorPlugin.PluginSystem
 			catch (Exception e)
 			{
 				success = false;
+				diagnostics = e.Message;
 				Debug.LogWarning($"compilation failed due to exception: {pluginDirectory}: {e.Message}");
 			}
 

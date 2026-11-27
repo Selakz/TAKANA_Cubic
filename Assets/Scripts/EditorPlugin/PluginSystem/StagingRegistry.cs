@@ -9,29 +9,46 @@ namespace EditorPlugin.PluginSystem
 {
 	public sealed class StagingRegistry : IDisposable
 	{
-		private readonly List<Func<ICommand>> commandFactories = new();
+		private readonly List<(Func<ICommand> Factory, Action? OnDiscard)> entries = new();
 		private readonly CommandManager commandManager;
 
-		public bool HasPending => commandFactories.Count > 0;
+		public bool HasPending => entries.Count > 0;
+
+		public int FlushCount { get; private set; }
 
 		public StagingRegistry(CommandManager commandManager)
 		{
 			this.commandManager = commandManager;
 		}
 
-		public void Add(Func<ICommand> commandFactory) => commandFactories.Add(commandFactory);
+		public void Add(Func<ICommand> commandFactory, Action? onDiscard = null) =>
+			entries.Add((commandFactory, onDiscard));
 
-		public bool Remove(Func<ICommand> commandFactory) => commandFactories.Remove(commandFactory);
+		public bool Remove(Func<ICommand> commandFactory)
+		{
+			int index = entries.FindIndex(entry => entry.Factory == commandFactory);
+			if (index < 0) return false;
+			entries.RemoveAt(index);
+			return true;
+		}
 
-		public void Dispose() => commandFactories.Clear();
+		public void Discard()
+		{
+			if (entries.Count == 0) return;
+			foreach (var entry in entries) entry.OnDiscard?.Invoke();
+			entries.Clear();
+		}
+
+		public void Dispose() => entries.Clear();
 
 		public void Flush()
 		{
-			if (commandFactories.Count == 0) return;
-			var commands = new List<ICommand>(commandFactories.Count);
-			commands.AddRange(commandFactories.Select(factory => factory.Invoke()));
+			if (entries.Count == 0) return;
+			var commands = new List<ICommand>(entries.Count);
+			commands.AddRange(entries.Select(entry => entry.Factory.Invoke()));
 			commandManager.Add(new BatchCommand(commands, "Plugin edit"));
-			commandFactories.Clear();
+			entries.Clear();
+			FlushCount++;
 		}
 	}
 }

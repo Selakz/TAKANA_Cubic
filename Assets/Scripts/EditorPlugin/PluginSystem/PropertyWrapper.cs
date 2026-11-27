@@ -47,7 +47,11 @@ namespace EditorPlugin.PluginSystem
 
 				if (!dirty)
 				{
-					registry.Add(Factory);
+					registry.Add(Factory, () =>
+					{
+						dirty = false;
+						stagedValue = default!;
+					});
 					dirty = true;
 				}
 
