@@ -387,10 +387,5 @@ namespace MusicGame.ChartEditor.Message
 
 			static string NormalizeRelativePath(string path) => path.Replace('\\', '/').TrimStart('.', '/');
 		}
-
-		void Start()
-		{
-			print(Environment.GetEnvironmentVariable("TAKANA_REPORT_TOKEN"));
-		}
 	}
 }

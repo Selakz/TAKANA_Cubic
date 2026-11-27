@@ -34,9 +34,11 @@ namespace MusicGame.ChartEditor.Level
 			new(Path.Combine(Application.persistentDataPath, "Plugins"));
 
 		[Description("RemoteBridgeEnabled")]
+		[HideInGame]
 		public NotifiableProperty<bool> RemoteBridgeEnabled { get; set; } = new(false);
 
 		[Description("RemoteBridgePort")]
+		[HideInGame]
 		[MinValue(1024)]
 		[MaxValue(65535)]
 		public NotifiableProperty<int> RemoteBridgePort { get; set; } = new(57333);

@@ -5,24 +5,27 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/ChartEditor.unity
-    guid: 8edc6939e51e3174598ac004e41d2bdb
   - enabled: 1
+    path: Assets/Scenes/ChartEditor.unity
+    guid: b1ab46a3ba2388042a6393009578ea32
+  - enabled: 0
     path: Assets/Scenes/AppEntry.unity
     guid: 435143a237eedb34390e62b40ef01d5e
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LevelSelect.unity
     guid: edd7cb3822c95d640a8344da62dd57c5
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Playfield.unity
     guid: 3392b755d9288bf47a5e4cf3749362d0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LevelResult.unity
     guid: 70617e7e5845b08478923863b437ae56
   - enabled: 0
     path: Assets/Scenes/DLPlayfield.unity
     guid: a601a428e02f7f84abdb2ca02e264ba9
+  - enabled: 0
+    path: Assets/Scenes/DeemoPlayfield.unity
+    guid: f60e09f0acd7e274d9216ad6cc0fccfb
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 97e9af14117602b4588acd31b30e91c3, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
