@@ -13,12 +13,12 @@ namespace T3Framework.Preset.UICollection
 	{
 		// Serializable and Public
 		[SerializeField] private NotifiableDataContainer<bool> boolDataContainer = default!;
-		[SerializeField] private Image backgroundImage = default!;
 		[SerializeField] private Image arrowImage = default!;
 		[SerializeField] private GameObject content = default!;
+		[Header("Optional"), SerializeField] private Image? backgroundImage;
 
 		public GameObject Content => content;
-		
+
 		public NotifiableProperty<bool> IsCollapsed => boolDataContainer.Property;
 
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
@@ -27,7 +27,7 @@ namespace T3Framework.Preset.UICollection
 			(boolDataContainer, (_, _) =>
 			{
 				var value = boolDataContainer.Property.Value;
-				backgroundImage.enabled = value;
+				if (backgroundImage != null) backgroundImage.enabled = value;
 				content.gameObject.SetActive(value);
 
 				var scale = arrowImage.rectTransform.localScale;

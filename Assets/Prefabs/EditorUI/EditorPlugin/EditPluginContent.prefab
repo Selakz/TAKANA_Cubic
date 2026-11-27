@@ -676,9 +676,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boolDataContainer: {fileID: 8962362998653772720}
-  backgroundImage: {fileID: 6568044617687988650}
   arrowImage: {fileID: 5215139608172249127}
   content: {fileID: 2865550797159478452}
+  backgroundImage: {fileID: 6568044617687988650}
 --- !u!114 &8381556590303545926
 MonoBehaviour:
   m_ObjectHideFlags: 0

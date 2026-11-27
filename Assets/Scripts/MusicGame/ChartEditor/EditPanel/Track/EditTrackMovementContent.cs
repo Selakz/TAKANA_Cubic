@@ -3,6 +3,7 @@
 using MusicGame.ChartEditor.TrackLine;
 using MusicGame.Models.Track.Movement;
 using T3Framework.Preset.Event;
+using T3Framework.Preset.UICollection;
 using T3Framework.Runtime;
 using T3Framework.Runtime.Event;
 using T3Framework.Static;
@@ -14,6 +15,9 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 	public class EditTrackMovementContent : T3MonoBehaviour
 	{
 		// Serializable and Public
+		[field: SerializeField]
+		public Collapsable Collapsable { get; set; } = default!;
+
 		[field: SerializeField]
 		public Toggle Toggle1 { get; set; } = default!;
 

@@ -3,7 +3,6 @@
 using System;
 using System.Linq;
 using MusicGame.ChartEditor.Command;
-using MusicGame.ChartEditor.Decoration.Track;
 using MusicGame.ChartEditor.EditPanel.Commands;
 using MusicGame.ChartEditor.InScreenEdit.Commands;
 using MusicGame.ChartEditor.Select;
@@ -13,14 +12,12 @@ using MusicGame.Models;
 using MusicGame.Models.Note;
 using MusicGame.Models.Track;
 using T3Framework.Preset.Event;
-using T3Framework.Runtime.ECS;
 using T3Framework.Runtime.Event;
 using T3Framework.Runtime.Extensions;
 using T3Framework.Runtime.Log;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using VContainer;
 
 namespace MusicGame.ChartEditor.EditPanel.Track
 {
@@ -47,29 +44,6 @@ namespace MusicGame.ChartEditor.EditPanel.Track
 
 		[field: SerializeField]
 		public TMP_Dropdown LayerDropdown { get; set; } = default!;
-
-		// Private
-		private PrefabHandler handler = default!;
-
-		// Constructor
-		[Inject]
-		private void Construct()
-		{
-			handler = GetComponent<PrefabHandler>();
-			handler.OnPluginAdded += OnPluginAdded;
-		}
-
-		// Event Handlers
-		private void OnPluginAdded(string id)
-		{
-			if (handler[id] is not { } plugin) return;
-			if (!TrackNodeDecoratorSystem.TryParseIsFirst(id, out var isFirst)) return;
-			var targetList = isFirst ? MovementContent.MoveList1 : MovementContent.MoveList2;
-			plugin.transform.SetParent(targetList.ListItemRoot, false);
-		}
-
-		// System Functions
-		void OnDestroy() => handler.OnPluginAdded -= OnPluginAdded;
 	}
 
 	public class TrackContentRegistrar : IEventRegistrar

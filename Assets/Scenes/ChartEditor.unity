@@ -11294,7 +11294,7 @@ GameObject:
   - component: {fileID: 282474425}
   - component: {fileID: 282474426}
   m_Layer: 0
-  m_Name: TrackNodeDecoratorSystem - S
+  m_Name: TrackLineNodeDecoratorSystem - S
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11324,9 +11324,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 282474424}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79a75a1db062d984fa8b2b728c595a7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1af2180b9ce1eb04baec2d0d2e050a2a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MusicGame::MusicGame.ChartEditor.Decoration.Track.TrackNodeDecoratorSystem
+  m_EditorClassIdentifier: MusicGame::MusicGame.ChartEditor.TrackLine.TrackLineNodeDecoratorSystem
   nodeNamePrefix: TrackNode
 --- !u!1 &282481954
 GameObject:
@@ -34556,7 +34556,7 @@ GameObject:
   - component: {fileID: 856810633}
   - component: {fileID: 856810634}
   m_Layer: 0
-  m_Name: TrackNodeDecoratorSystem - S
+  m_Name: EditTrackNodeDecoratorSystem - S
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34586,9 +34586,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 856810632}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79a75a1db062d984fa8b2b728c595a7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 17c43ee641ac4684ab11f6d80a7f3524, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: MusicGame::MusicGame.ChartEditor.Decoration.Track.TrackNodeDecoratorSystem
+  m_EditorClassIdentifier: MusicGame::MusicGame.ChartEditor.EditPanel.Track.EditTrackNodeDecoratorSystem
   nodeNamePrefix: TrackNode
 --- !u!1 &862549183
 GameObject:

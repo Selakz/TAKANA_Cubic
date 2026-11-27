@@ -115,24 +115,11 @@ namespace MusicGame.ChartEditor.TrackLine
 		protected override IEventRegistrar[] EnableRegistrars => new IEventRegistrar[]
 		{
 			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
-				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataAdded, node =>
-				{
-					if (!node.IsPosition || node.Model is not V1BMoveItem || nodePool[node] is not { } view) return;
-					if (pluginPool.Add(node))
-					{
-						var pluginHandler = pluginPool[node]!;
-						view.AddPlugin(PluginName, pluginHandler);
-						InitPlugin(pluginHandler.Script<BezierEditPlugin>(), node);
-					}
-				}),
+				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataAdded, TryAddPlugin),
 			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
 				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataRemoved, node =>
 				{
-					if (nodePool[node] is not { } view) return;
-					if (pluginPool.Remove(node))
-					{
-						view.RemovePlugin(PluginName, pluginPool.DefaultTransform);
-					}
+					if (nodePool[node] is { } view) TryRemovePlugin(node, view);
 				}),
 			new DatasetRegistrar<TrackNodeComponent>(nodeSelectDataset,
 				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataUpdated, node =>
@@ -141,6 +128,20 @@ namespace MusicGame.ChartEditor.TrackLine
 					{
 						InitPlugin(pluginHandler.Script<BezierEditPlugin>(), node);
 					}
+					else
+					{
+						TryAddPlugin(node);
+					}
+				}),
+			new DatasetRegistrar<TrackNodeComponent>(nodePool,
+				DatasetRegistrar<TrackNodeComponent>.RegisterTarget.DataAdded, node =>
+				{
+					if (nodeSelectDataset.Contains(node)) TryAddPlugin(node);
+				}),
+			new ViewPoolRegistrar<TrackNodeComponent>(nodePool,
+				ViewPoolRegistrar<TrackNodeComponent>.RegisterTarget.Release, handler =>
+				{
+					if (nodePool[handler] is { } node) TryRemovePlugin(node, handler);
 				}),
 			new InputRegistrar("InScreenEdit", "Raycast", "raycast", raycastPriority.Value, OnBeginDrag,
 				InputActionPhase.Started),
@@ -182,6 +183,25 @@ namespace MusicGame.ChartEditor.TrackLine
 		}
 
 		// Defined Functions
+		private void TryAddPlugin(TrackNodeComponent node)
+		{
+			if (!node.IsPosition || node.Model is not V1BMoveItem || nodePool[node] is not { } view) return;
+			if (pluginPool.Add(node))
+			{
+				var pluginHandler = pluginPool[node]!;
+				view.AddPlugin(PluginName, pluginHandler);
+				InitPlugin(pluginHandler.Script<BezierEditPlugin>(), node);
+			}
+		}
+
+		private void TryRemovePlugin(TrackNodeComponent node, PrefabHandler view)
+		{
+			if (pluginPool.Remove(node))
+			{
+				view.RemovePlugin(PluginName, pluginPool.DefaultTransform);
+			}
+		}
+
 		private void InitPlugin(BezierEditPlugin plugin, TrackNodeComponent node)
 		{
 			if (nodePool[node]?.Script<BezierLineRenderer>() is not { } renderer) return;
